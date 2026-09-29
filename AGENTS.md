@@ -12,8 +12,8 @@
   export behavior change, also run `tools/test-with-console.sh` to check the
   exported core. Record actual results and distinguish host validation from
   unverified BlackBerry runtime behavior.
-- Refresh `BerryBoy-Source.html` with `python3 tools/build_source_view.py` when
-  delivering source changes, so the phone-friendly viewer matches the code.
+- Use Git history as the primary source review and delivery channel. Do not
+  generate HTML source summaries or ZIP archives unless explicitly requested.
 - After each completed and verified project update, commit the relevant changes
   and push them to the configured repository. Preserve unrelated work and do not
   rewrite published history. If the remote or write access is missing, finish the

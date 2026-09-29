@@ -150,7 +150,9 @@ The detailed validation record is [docs/TEST-RESULTS.txt](docs/TEST-RESULTS.txt)
 ## Repository workflow
 
 Commit and push each verified project update to the configured repository. Use
-English commit messages and Markdown documentation. See [AGENTS.md](AGENTS.md).
+English commit messages and Markdown documentation. Review ongoing updates in
+Git history; HTML viewers and ZIP archives are generated only when requested.
+See [AGENTS.md](AGENTS.md).
 A missing remote or unavailable write access must be reported explicitly.
 
 The downloadable source archive also includes `BerryBoy-Advance.bundle`, which
