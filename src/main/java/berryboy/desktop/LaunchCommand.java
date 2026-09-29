@@ -7,11 +7,15 @@ sealed interface LaunchCommand {
     String DEMO_USAGE = "demo [--headless]";
     String HEADER_USAGE = "header <file.gba>";
     String RUN_USAGE = "run <file.gba> <instructions> [--headless]";
+    String AUDIO_USAGE = "audio-demo [--headless]";
 
     record Demo(boolean headless) implements LaunchCommand {
     }
 
     record Header(Path rom) implements LaunchCommand {
+    }
+
+    record AudioDemo(boolean headless) implements LaunchCommand {
     }
 
     record Run(Path rom, int instructions, boolean headless) implements LaunchCommand {
@@ -30,7 +34,9 @@ sealed interface LaunchCommand {
             case "demo" -> new Demo(headlessOption(arguments, 1, DEMO_USAGE));
             case "header" -> parseHeader(arguments);
             case "run" -> parseRun(arguments);
-            default -> throw new IllegalArgumentException("Usage: " + DEMO_USAGE + " | " + HEADER_USAGE + " | " + RUN_USAGE);
+            case "audio-demo" -> new AudioDemo(headlessOption(arguments, 1, AUDIO_USAGE));
+            default -> throw new IllegalArgumentException(
+                    "Usage: " + DEMO_USAGE + " | " + HEADER_USAGE + " | " + RUN_USAGE + " | " + AUDIO_USAGE);
         };
     }
 

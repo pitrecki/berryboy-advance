@@ -13,10 +13,9 @@ public final class Memory {
     static final int DISPLAY_CONTROL = IO_BASE;
     static final int BACKGROUND_2_CONTROL = IO_BASE + 0x0c;
     static final int BACKGROUND_2_TRANSFORM = IO_BASE + 0x20;
-    static final int KEY_INPUT = IO_BASE + 0x130;
+    public static final int KEY_INPUT = IO_BASE + 0x130;
 
     private static final int BIOS_SIZE = 0x4000;
-    private static final int KEY_MASK = 0x3ff;
 
     private final Cartridge cartridge;
     private final byte[] externalRam = new byte[0x40000];
@@ -27,7 +26,8 @@ public final class Memory {
     private final byte[] objectAttributes = new byte[0x400];
 
     private byte[] bios;
-    private int pressedKeys;
+    private final Keypad keypad = new Keypad();
+    private final AudioUnit audio = new AudioUnit();
 
     public Memory(Cartridge cartridge) {
         this.cartridge = cartridge;
@@ -47,7 +47,11 @@ public final class Memory {
 
     /** GBA bit order: A, B, Select, Start, Right, Left, Up, Down, R, L. */
     public void setPressedKeys(int mask) {
-        pressedKeys = mask & KEY_MASK;
+        keypad.setPressed(mask);
+    }
+
+    public AudioUnit audio() {
+        return audio;
     }
 
     public int read8(int address) {
@@ -116,10 +120,13 @@ public final class Memory {
 
     private int readIo(int address) {
         if (address == KEY_INPUT) {
-            return ~pressedKeys & 0xff;
+            return keypad.readInput() & 0xff;
         }
         if (address == KEY_INPUT + 1) {
-            return (~pressedKeys & KEY_MASK) >>> 8;
+            return keypad.readInput() >>> 8;
+        }
+        if (AudioUnit.handles(address)) {
+            return audio.read8(address);
         }
         if (isDisplayRegister(address)) {
             return ioRegisters[address - IO_BASE] & 0xff;
@@ -130,6 +137,10 @@ public final class Memory {
     private void writeIo(int address, int value) {
         if (address == KEY_INPUT || address == KEY_INPUT + 1) {
             return; // KEYINPUT is read-only.
+        }
+        if (AudioUnit.handles(address)) {
+            audio.write8(address, value);
+            return;
         }
         if (!isDisplayRegister(address)) {
             unavailable(address);

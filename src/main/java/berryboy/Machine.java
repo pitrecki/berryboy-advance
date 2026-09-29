@@ -8,6 +8,7 @@ public final class Machine {
     public final Memory memory;
     public final Cpu cpu;
     public final BitmapRenderer video;
+    public final AudioUnit audio;
 
     /** Development cartridge entry, not a replacement for the real BIOS boot. */
     public Machine(byte[] image) {
@@ -15,6 +16,7 @@ public final class Machine {
         memory = new Memory(cartridge);
         cpu = new Cpu(memory);
         video = new BitmapRenderer(memory);
+        audio = memory.audio();
         cpu.setPc(Memory.ROM_BASE);
         cpu.setRegister(CpuState.STACK_POINTER, DEVELOPMENT_STACK_TOP);
     }

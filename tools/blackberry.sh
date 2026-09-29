@@ -62,7 +62,7 @@ wine "$bb_jdk6/bin/jar.exe" cf "$(windows_path "$midlet_jar")" -C "$classes_win"
 jar_size=$(wc -c < "$midlet_jar" | tr -d ' ')
 cat > "$build_root/output/BerryBoyAdvance.jad" <<JAD
 MIDlet-Name: BerryBoy Advance
-MIDlet-Version: 0.2.0
+MIDlet-Version: 0.6.0
 MIDlet-Vendor: BerryBoy
 MIDlet-1: BerryBoy Advance,,berryboy.BlackBerryMidlet
 MIDlet-Jar-URL: BerryBoyAdvance.jar

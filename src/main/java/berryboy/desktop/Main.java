@@ -4,16 +4,12 @@ import berryboy.BitmapRenderer;
 import berryboy.Cartridge;
 import berryboy.DemoRom;
 import berryboy.Machine;
-import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import javax.imageio.ImageIO;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 /** Java 21 desktop frontend; the BlackBerry build does not include this package. */
@@ -25,6 +21,7 @@ public final class Main {
         switch (LaunchCommand.parse(args)) {
             case LaunchCommand.Demo(var headless) -> runDemo(headless);
             case LaunchCommand.Header(var rom) -> printHeader(rom);
+            case LaunchCommand.AudioDemo(var headless) -> AudioDemo.run(headless);
             case LaunchCommand.Run(var rom, var instructions, var headless) ->
                     run(readRom(rom), instructions, Path.of("target/frame.png"), headless);
         }
@@ -41,7 +38,7 @@ public final class Main {
         saveFrame(result.frame(), output);
         printResult(result, output);
         if (!headless && !GraphicsEnvironment.isHeadless()) {
-            SwingUtilities.invokeLater(() -> show(result.frame()));
+            SwingUtilities.invokeLater(() -> DesktopWindow.show(result.machine()));
         }
     }
 
@@ -53,7 +50,8 @@ public final class Main {
         var frame = new BufferedImage(BitmapRenderer.WIDTH, BitmapRenderer.HEIGHT, BufferedImage.TYPE_INT_RGB);
         frame.setRGB(0, 0, BitmapRenderer.WIDTH, BitmapRenderer.HEIGHT,
                 machine.video.render(), 0, BitmapRenderer.WIDTH);
-        return new ExecutionResult(frame, machine.cpu.instructions(), machine.cpu.pc(), machine.cpu.isThumb(), elapsedMillis);
+        return new ExecutionResult(machine, frame, machine.cpu.instructions(), machine.cpu.pc(),
+                machine.cpu.isThumb(), elapsedMillis);
     }
 
     private static void saveFrame(BufferedImage frame, Path output) throws IOException {
@@ -84,24 +82,7 @@ public final class Main {
         return Files.readAllBytes(path);
     }
 
-    private static void show(BufferedImage image) {
-        var frame = new JFrame("BerryBoy Advance | Java 21 desktop | ARM -> Thumb -> VRAM");
-        var panel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics graphics) {
-                super.paintComponent(graphics);
-                graphics.drawImage(image, 0, 0, getWidth(), getHeight(), null);
-            }
-        };
-        panel.setPreferredSize(new Dimension(720, 480));
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.add(panel);
-        frame.pack();
-        frame.setLocationByPlatform(true);
-        frame.setVisible(true);
-    }
-
-    private record ExecutionResult(BufferedImage frame, long instructions, int programCounter,
+    private record ExecutionResult(Machine machine, BufferedImage frame, long instructions, int programCounter,
             boolean thumb, double elapsedMillis) {
     }
 }

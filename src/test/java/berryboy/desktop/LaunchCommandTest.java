@@ -32,6 +32,8 @@ class LaunchCommandTest {
                 Arguments.of("default demo", new String[]{}, new LaunchCommand.Demo(false)),
                 Arguments.of("demo window", new String[]{"demo"}, new LaunchCommand.Demo(false)),
                 Arguments.of("headless demo", new String[]{"demo", "--headless"}, new LaunchCommand.Demo(true)),
+                Arguments.of("audio playback", new String[]{"audio-demo"}, new LaunchCommand.AudioDemo(false)),
+                Arguments.of("audio WAV only", new String[]{"audio-demo", "--headless"}, new LaunchCommand.AudioDemo(true)),
                 Arguments.of("header with spaces in path", new String[]{"header", "my game.gba"},
                         new LaunchCommand.Header(Path.of("my game.gba"))),
                 Arguments.of("run with window", new String[]{"run", "game.gba", "200000"},
@@ -46,6 +48,8 @@ class LaunchCommandTest {
         return Stream.of(
                 Arguments.of("unknown command", new String[]{"unknown"}),
                 Arguments.of("unknown demo option", new String[]{"demo", "--quiet"}),
+                Arguments.of("unknown audio option", new String[]{"audio-demo", "--quiet"}),
+                Arguments.of("extra audio argument", new String[]{"audio-demo", "--headless", "extra"}),
                 Arguments.of("extra demo argument", new String[]{"demo", "--headless", "extra"}),
                 Arguments.of("header without a path", new String[]{"header"}),
                 Arguments.of("header with extra argument", new String[]{"header", "game.gba", "extra"}),
