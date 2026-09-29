@@ -1,10 +1,9 @@
-package berryboy;
+package berryboy.build;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-import berryboy.build.LegacyExport;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 @Tag("build")
 @DisplayName("Legacy source export")
@@ -70,6 +70,48 @@ class LegacyExportTest {
         assertThatThrownBy(() -> LegacyExport.export(sources, generated))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining(sample.reason());
+    }
+
+    @ParameterizedTest(name = "host dependency: {0}")
+    @ValueSource(strings = {"berryboy.Cpu", "berryboy.desktop.Main", "org.junit.jupiter.api.Test"})
+    void rejectsTypesAvailableOnlyOnTheHostClasspath(String type) throws IOException {
+        writeSample("package berryboy; public class Sample { " + type + " dependency; }");
+
+        assertThatThrownBy(() -> LegacyExport.export(sources, generated))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Sample.java");
+        assertThat(generated).doesNotExist();
+    }
+
+    @Test
+    void compilesCrossFileReferencesFromTheExportInputs() throws IOException {
+        writeSample("""
+                package berryboy;
+                public class Sample {
+                    public static int run() { var value = Helper.answer(); return value; }
+                }
+                """);
+        Files.writeString(sources.resolve("Helper.java"), """
+                package berryboy;
+                final class Helper { static int answer() { return 42; } }
+                """);
+
+        LegacyExport.export(sources, generated);
+
+        var compilation = CompilerFixture.compileLegacySources(generated, temporary.resolve("classes"));
+        assertThat(compilation.successful()).as(compilation::diagnostics).isTrue();
+    }
+
+    @Test
+    void generatedCompilationCannotResolveMissingClassesFromTheHost() throws IOException {
+        writeSample("package berryboy; public class Sample { Cpu missingCoreClass; }");
+
+        var compilation = CompilerFixture.compileLegacySources(sources, temporary.resolve("classes"));
+
+        assertSoftly(softly -> {
+            softly.assertThat(compilation.successful()).isFalse();
+            softly.assertThat(compilation.diagnostics()).contains("Cpu");
+        });
     }
 
     private void writeSample(String source) throws IOException {

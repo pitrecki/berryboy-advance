@@ -11,11 +11,11 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaFileObject;
+import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
 
 /**
@@ -34,6 +34,7 @@ public final class LegacyExport {
     }
 
     public static int export(Path root, Path output) throws IOException {
+        var outputDirectory = GeneratedSources.outputDirectory(root, output);
         var compiler = ToolProvider.getSystemJavaCompiler();
         if (compiler == null) {
             throw new IllegalStateException("Legacy export requires a full JDK 21+");
@@ -42,6 +43,10 @@ public final class LegacyExport {
         var paths = sourcePaths(root);
         var diagnostics = new DiagnosticCollector<JavaFileObject>();
         try (var manager = compiler.getStandardFileManager(diagnostics, null, StandardCharsets.UTF_8)) {
+            // Only explicit core inputs and JDK symbols may participate in type resolution.
+            // Maven's host classes and test dependencies must never hide a missing source.
+            manager.setLocationFromPaths(StandardLocation.CLASS_PATH, List.of());
+            manager.setLocationFromPaths(StandardLocation.SOURCE_PATH, List.of());
             var inputs = manager.getJavaFileObjectsFromPaths(paths);
             var release = System.getProperty("berryboy.sourceRelease", "21");
             var options = List.of("--release", release, "-proc:none");
@@ -57,16 +62,17 @@ public final class LegacyExport {
             // Resolve every source before writing any output, including inferred var types.
             var outputs = new LinkedHashMap<Path, String>();
             for (var source : sources) {
-                outputs.put(output.resolve(source.fileName()), source.rewrite(trees));
+                outputs.put(outputDirectory.resolve(source.fileName()), source.rewrite(trees));
             }
-            writeOutputs(output, outputs);
+            GeneratedSources.write(outputDirectory, outputs);
             return sources.stream().mapToInt(source -> source.edits().size()).sum();
         }
     }
 
     private static List<Path> sourcePaths(Path root) throws IOException {
         try (var files = Files.list(root)) {
-            var paths = files.filter(path -> path.toString().endsWith(".java")).sorted().toList();
+            var paths = files.filter(Files::isRegularFile)
+                    .filter(path -> path.toString().endsWith(".java")).sorted().toList();
             if (paths.isEmpty()) {
                 throw new IllegalArgumentException("No core Java files in " + root);
             }
@@ -94,13 +100,6 @@ public final class LegacyExport {
         }
     }
 
-    private static void writeOutputs(Path output, Map<Path, String> sources) throws IOException {
-        Files.createDirectories(output);
-        for (var source : sources.entrySet()) {
-            Files.writeString(source.getKey(), source.getValue(), StandardCharsets.UTF_8);
-        }
-    }
-
     private record SourceFile(CompilationUnitTree tree, String text, List<LegacySyntaxScanner.Edit> edits) {
         Path fileName() {
             return Path.of(tree.getSourceFile().toUri()).getFileName();
@@ -114,7 +113,7 @@ public final class LegacyExport {
             for (var edit : reverseOrder) {
                 result.replace(edit.start(), edit.end(), edit.resolve(trees));
             }
-            return "// Generated from Java 21 sources by LegacyExport; edit the original.\n" + result;
+            return result.toString();
         }
     }
 }

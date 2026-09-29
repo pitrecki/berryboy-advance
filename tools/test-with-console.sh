@@ -28,11 +28,14 @@ dependencies=$(< "$dependencies_file")
 "$java_command" -Dberryboy.sourceRelease="$source_release" -cp "$main_classes" berryboy.build.LegacyExport
 find target/blackberry/generated -name '*.java' -type f | sort > "$build_dir/legacy-sources.txt"
 "$java_command" com.sun.tools.javac.Main --release 8 -encoding UTF-8 \
+  -proc:none -classpath "$legacy_classes" -sourcepath "$legacy_classes" \
   -d "$legacy_classes" @"$build_dir/legacy-sources.txt"
 
-# Generated classes precede host classes; Jupiter runs all tests tagged core against them.
-"$java_command" -cp "$legacy_classes:$main_classes:$test_classes:$dependencies" \
+# No host production classes are available: a missing export must fail, never fall back.
+# Keep build/desktop suites out of discovery because their host-only types are absent.
+"$java_command" -cp "$legacy_classes:$test_classes:$dependencies" \
   org.junit.platform.console.ConsoleLauncher execute \
   --scan-class-path="$test_classes" --include-engine junit-jupiter --include-tag core \
+  --exclude-package berryboy.build --exclude-package berryboy.desktop \
   --fail-if-no-tests --disable-banner --details=summary \
   --reports-dir "$build_dir/reports/legacy"

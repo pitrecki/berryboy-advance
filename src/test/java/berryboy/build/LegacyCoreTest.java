@@ -1,8 +1,7 @@
-package berryboy;
+package berryboy.build;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import berryboy.build.LegacyExport;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;

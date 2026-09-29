@@ -51,7 +51,7 @@ final class LegacyApiScanner extends TreePathScanner<Void, Void> {
             return;
         }
         var owner = type.getQualifiedName().toString();
-        if (owner.startsWith("berryboy.")) {
+        if (trees.getPath(type) != null) {
             return;
         }
         var method = element.getSimpleName().toString();
