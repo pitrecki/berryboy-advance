@@ -1,10 +1,7 @@
 package berryboy;
 
 import static berryboy.EmulatorFixtures.arm;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
@@ -26,10 +23,11 @@ class ArmShiftTest {
 
         machine.cpu.step();
 
-        assertAll(
-                () -> assertEquals(sample.result(), machine.cpu.register(2)),
-                () -> assertEquals(sample.carry(), machine.cpu.carry(), "carry-out"),
-                () -> assertTrue(machine.cpu.overflow(), "logical shift preserves V"));
+        assertSoftly(softly -> {
+            softly.assertThat(machine.cpu.register(2)).isEqualTo(sample.result());
+            softly.assertThat(machine.cpu.carry()).as("carry-out").isEqualTo(sample.carry());
+            softly.assertThat(machine.cpu.overflow()).as("logical shift preserves V").isTrue();
+        });
     }
 
     @Test
@@ -40,9 +38,10 @@ class ArmShiftTest {
 
         machine.cpu.step();
 
-        assertAll(
-                () -> assertEquals(0x80000001, machine.cpu.register(1)),
-                () -> assertFalse(machine.cpu.carry()));
+        assertSoftly(softly -> {
+            softly.assertThat(machine.cpu.register(1)).isEqualTo(0x80000001);
+            softly.assertThat(machine.cpu.carry()).isFalse();
+        });
     }
 
     @Test
@@ -51,9 +50,10 @@ class ArmShiftTest {
 
         machine.runInstructions(2);
 
-        assertAll(
-                () -> assertEquals(Memory.ROM_BASE + 8, machine.cpu.register(0), "ordinary PC operand"),
-                () -> assertEquals(Memory.ROM_BASE + 16, machine.cpu.register(1), "register-shifted PC operand"));
+        assertSoftly(softly -> {
+            softly.assertThat(machine.cpu.register(0)).as("ordinary PC operand").isEqualTo(Memory.ROM_BASE + 8);
+            softly.assertThat(machine.cpu.register(1)).as("register-shifted PC operand").isEqualTo(Memory.ROM_BASE + 16);
+        });
     }
 
     private static Stream<ShiftCase> registerShifts() {

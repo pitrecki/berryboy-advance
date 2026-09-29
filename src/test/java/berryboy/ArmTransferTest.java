@@ -2,8 +2,8 @@ package berryboy;
 
 import static berryboy.EmulatorFixtures.STACK_TOP;
 import static berryboy.EmulatorFixtures.arm;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -28,7 +28,7 @@ class ArmTransferTest {
 
         machine.cpu.step();
 
-        assertEquals((int) expected, machine.cpu.register(1));
+        assertThat(machine.cpu.register(1)).isEqualTo((int) expected);
     }
 
     @Test
@@ -42,9 +42,10 @@ class ArmTransferTest {
 
         machine.runInstructions(2);
 
-        assertAll(
-                () -> assertEquals(Memory.EWRAM_BASE, machine.cpu.register(0)),
-                () -> assertEquals(0x12345678, machine.cpu.register(2)));
+        assertSoftly(softly -> {
+            softly.assertThat(machine.cpu.register(0)).isEqualTo(Memory.EWRAM_BASE);
+            softly.assertThat(machine.cpu.register(2)).isEqualTo(0x12345678);
+        });
     }
 
     @Test
@@ -56,9 +57,10 @@ class ArmTransferTest {
 
         machine.runInstructions(2);
 
-        assertAll(
-                () -> assertEquals(123, machine.cpu.register(3)),
-                () -> assertEquals(123, machine.memory.read32(Memory.EWRAM_BASE + 12)));
+        assertSoftly(softly -> {
+            softly.assertThat(machine.cpu.register(3)).isEqualTo(123);
+            softly.assertThat(machine.memory.read32(Memory.EWRAM_BASE + 12)).isEqualTo(123);
+        });
     }
 
     @Test
@@ -73,11 +75,12 @@ class ArmTransferTest {
 
         machine.runInstructions(2);
 
-        assertAll(
-                () -> assertEquals(11, machine.cpu.register(2)),
-                () -> assertEquals(22, machine.cpu.register(3)),
-                () -> assertEquals(33, machine.cpu.register(14)),
-                () -> assertEquals(STACK_TOP, machine.cpu.register(13)));
+        assertSoftly(softly -> {
+            softly.assertThat(machine.cpu.register(2)).isEqualTo(11);
+            softly.assertThat(machine.cpu.register(3)).isEqualTo(22);
+            softly.assertThat(machine.cpu.register(14)).isEqualTo(33);
+            softly.assertThat(machine.cpu.register(13)).isEqualTo(STACK_TOP);
+        });
     }
 
     @Test
@@ -89,9 +92,10 @@ class ArmTransferTest {
 
         machine.cpu.step();
 
-        assertAll(
-                () -> assertEquals(0x44112233, machine.cpu.register(2)),
-                () -> assertEquals(0xaabbccdd, machine.memory.read32(Memory.EWRAM_BASE)));
+        assertSoftly(softly -> {
+            softly.assertThat(machine.cpu.register(2)).isEqualTo(0x44112233);
+            softly.assertThat(machine.memory.read32(Memory.EWRAM_BASE)).isEqualTo(0xaabbccdd);
+        });
     }
 
     @Test
@@ -102,7 +106,7 @@ class ArmTransferTest {
 
         machine.cpu.step();
 
-        assertEquals(Memory.EWRAM_BASE, machine.memory.read32(Memory.EWRAM_BASE));
+        assertThat(machine.memory.read32(Memory.EWRAM_BASE)).isEqualTo(Memory.EWRAM_BASE);
     }
 
     @Test
@@ -112,7 +116,7 @@ class ArmTransferTest {
 
         machine.cpu.step();
 
-        assertEquals(Memory.EWRAM_BASE + 8, machine.memory.read32(Memory.EWRAM_BASE + 4));
+        assertThat(machine.memory.read32(Memory.EWRAM_BASE + 4)).isEqualTo(Memory.EWRAM_BASE + 8);
     }
 
     @Test
@@ -123,6 +127,6 @@ class ArmTransferTest {
 
         machine.cpu.step();
 
-        assertEquals(17, machine.cpu.register(0));
+        assertThat(machine.cpu.register(0)).isEqualTo(17);
     }
 }

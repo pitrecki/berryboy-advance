@@ -1,9 +1,8 @@
 package berryboy;
 
 import static berryboy.EmulatorFixtures.blankRom;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.DisplayName;
@@ -23,15 +22,16 @@ class CartridgeTest {
 
         var cartridge = new Cartridge(image);
 
-        assertAll(
-                () -> assertEquals("BERRYBOY", cartridge.title()),
-                () -> assertEquals("BBA1", cartridge.gameCode()));
+        assertSoftly(softly -> {
+            softly.assertThat(cartridge.title()).isEqualTo("BERRYBOY");
+            softly.assertThat(cartridge.gameCode()).isEqualTo("BBA1");
+        });
     }
 
     @Test
     void acceptsTheDemoHeaderChecksum() {
         var cartridge = new Cartridge(DemoRom.create());
 
-        assertTrue(cartridge.headerChecksumValid());
+        assertThat(cartridge.headerChecksumValid()).isTrue();
     }
 }

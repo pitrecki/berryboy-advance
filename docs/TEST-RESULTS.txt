@@ -1,8 +1,10 @@
-BerryBoy Advance 0.4 — JUnit 5 migration and refactor validation
+BerryBoy Advance 0.5 — AssertJ migration and English documentation
+Validation date: 2026-09-29
 
 Host: Eclipse Adoptium 21.0.12.1, Linux
 Build: Apache Maven 3.9.9; Java release 21; no preview features
-Tests: JUnit Jupiter 5.13.4; Maven Surefire 3.5.2
+Tests: JUnit Jupiter 5.13.4; AssertJ Core 3.27.7; Maven Surefire 3.5.2
+All 16 host test classes use AssertJ; no JUnit assertion imports remain.
 
 mvn verify: BUILD SUCCESS
 Tests run: 860, Failures: 0, Errors: 0, Skipped: 0
@@ -25,7 +27,8 @@ Suites (parameterized invocations count separately):
 - berryboy.ThumbInstructionTest: 6
 - berryboy.desktop.LaunchCommandTest: 19
 
-JUnit Platform Console 1.13.4, JDK 21:
+tools/test-with-console.sh: successful exit
+JUnit Platform Console 1.13.4, JDK 21; classpath resolved by Maven:
 - Complete host suite: 860 passed, none skipped.
 - Exported core: 834 tests tagged core passed, none skipped.
 - LegacyExport: 237 supported syntax rewrites.
@@ -33,15 +36,17 @@ JUnit Platform Console 1.13.4, JDK 21:
 - LegacyCoreTest also loads generated classes with a platform-parent classloader.
 
 Desktop validation:
-- mvn compile exec:java -Dexec.args="demo --headless": BUILD SUCCESS.
+- java -jar target/berryboy-advance-0.5.0-SNAPSHOT.jar demo --headless: successful exit.
 - 200,000 guest instructions, final PC=0x080000fa, Thumb.
 - Demo ROM and PNG remain byte-identical to version 0.3.
-- Runnable JAR contains Java 21 class files and excludes tests/JUnit.
+- Runnable JAR contains Java 21 class files and excludes tests, JUnit, AssertJ and Byte Buddy.
 
 Source viewer validation:
-- All 47 embedded files and rendered lines match the current source files.
+- All 48 embedded files and rendered lines match the current source files.
 - JavaScript syntax and method navigation checks pass.
 - Shell scripts pass bash -n.
+- All project Markdown documentation is in English.
+- git diff --check passes.
 
 Not verified:
 - Legacy JDK 6 + BlackBerry SDK compilation and RAPC conversion.

@@ -1,8 +1,6 @@
 package berryboy;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import berryboy.build.LegacyExport;
 import java.net.URL;
@@ -28,14 +26,14 @@ class LegacyCoreTest {
 
         LegacyExport.export(sourceRoot, generated);
         var compilation = CompilerFixture.compileLegacySources(generated, classes);
-        assertTrue(compilation.successful(), compilation::diagnostics);
+        assertThat(compilation.successful()).as(compilation::diagnostics).isTrue();
 
         // A platform parent prevents the host core from shadowing the generated classes.
         var classpath = new URL[]{classes.toUri().toURL()};
         try (var loader = new URLClassLoader(classpath, ClassLoader.getPlatformClassLoader())) {
             var checks = loader.loadClass("berryboy.RuntimeChecks");
-            assertSame(loader, checks.getClassLoader());
-            assertEquals(8, checks.getMethod("run").invoke(null));
+            assertThat(checks.getClassLoader()).isSameAs(loader);
+            assertThat(checks.getMethod("run").invoke(null)).isEqualTo(8);
         }
     }
 }

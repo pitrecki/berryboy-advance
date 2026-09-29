@@ -1,121 +1,125 @@
-# Rdzeń 0.4: zakres i założenia
+# Core architecture and scope
 
-## Podział kodu
+## Responsibilities
 
-| Klasa | Zadanie |
-|---|---|
-| `Cpu` | Pobiera instrukcję, wybiera ARM/Thumb i dodaje diagnostykę błędów |
-| `CpuState` | Przechowuje rejestry i flagi, przełącza banki, obsługuje CPSR/SPSR |
-| `ArmInterpreter` | Rozpoznaje kodowanie ARM i kieruje je do metody danej rodziny |
-| `ThumbInterpreter` | Rozpoznaje kodowanie Thumb i wykonuje jego rodziny instrukcji |
-| `ArithmeticLogicUnit` | Oblicza wyniki i flagi NZCV |
-| `BarrelShifter` | Oblicza przesunięcia, rotacje i bit carry-out |
-| `InstructionInterpreter` | Współdzieli reguły odczytu niewyrównanego, BX i SWI |
+| Class | Responsibility |
+| --- | --- |
+| `Cpu` | Fetches instructions, chooses ARM/Thumb and adds failure diagnostics |
+| `CpuState` | Stores registers and flags, switches banks and handles CPSR/SPSR |
+| `ArmInterpreter` | Decodes ARM encodings and dispatches instruction families |
+| `ThumbInterpreter` | Decodes and executes Thumb instruction families |
+| `ArithmeticLogicUnit` | Calculates results and NZCV flags |
+| `BarrelShifter` | Calculates shifts, rotations and carry-out |
+| `InstructionInterpreter` | Shares unaligned-read, BX and SWI rules |
 
-Dekodery współdzielą jeden `CpuState` i jedną magistralę `Memory`. Ich ALU oraz
-shiftery powstają w konstruktorze, bez tworzenia obiektów dla kolejnych instrukcji.
-`Machine` i publiczne API `Cpu` zachowują dotychczasowy sposób użycia.
-
-W nazwach operandów używamy roli (`destination`, `baseRegister`, `registerList`),
-a skróty zostają przy nazwach sprzętowych, takich jak CPSR, SWI i ALU.
+The decoders share one `CpuState` and one `Memory` bus. Their ALUs and shifters are
+created during construction, with no per-instruction allocation on successful
+execution. `Machine` and the public `Cpu` API provide the main integration points.
+Operand names describe their roles, such as `destination`, `baseRegister` and
+`registerList`; hardware abbreviations such as CPSR, SWI and ALU remain intact.
 
 ## CPU
 
-Interpreter ARMv4T, krok instrukcji bez modelowania cykli zegara. `r15` wewnętrznie
-przechowuje adres następnej instrukcji; odczyty operandu PC dodają offset pipeline.
-ARM używa PC+8 (lub +12 przy przesunięciu rejestrowym / STR), Thumb PC+4.
+The ARMv4T interpreter advances by instruction, without cycle timing. Internally,
+`r15` holds the next instruction address; operand reads add the pipeline offset.
+ARM reads use PC+8, or PC+12 for register shifts and STR. Thumb reads use PC+4.
 
-Obsługiwane rodziny:
+Supported instruction families:
 
-- ARM: wszystkie 16 operacji ALU, flagi NZCV, warunki, pełny barrel shifter,
-  B/BL/BX, LDR/STR bajt/słowo, transfery halfword/signed, LDM/STM, SWP,
-  MUL/MLA i mnożenie long, MRS/MSR, banki rejestrów i podstawowe wejście SWI.
-- Thumb: formaty ARMv4T 1–19, w tym ALU, rejestry wysokie, loads/stores,
-  SP/PC relative, PUSH/POP, multiple transfer, skoki i dwuczęściowy BL.
-- SWI wymaga dostarczonego BIOS w `Memory.setBios`; bez niego zgłasza błąd.
-  Powrót przez `MOVS pc,lr` przywraca SPSR. Nie ma implementacji BIOS HLE.
+- ARM: all 16 ALU operations, NZCV flags, conditions, the barrel shifter, B/BL/BX,
+  byte/word LDR/STR, halfword and signed transfers, LDM/STM, SWP, MUL/MLA, long
+  multiplication, MRS/MSR, register banks and basic SWI entry.
+- Thumb: ARMv4T formats 1–19, including ALU operations, high registers, loads and
+  stores, SP/PC-relative access, PUSH/POP, multiple transfers, branches and two-part BL.
+- SWI requires a supplied BIOS through `Memory.setBios`; otherwise it reports an
+  error. `MOVS pc,lr` restores SPSR on return. BIOS HLE is not implemented.
 
-To pokrycie rodzin instrukcji, nie deklaracja pełnej zgodności. Puste listy
-LDM/STM/PUSH/POP oraz wybrane nieprzewidywalne kombinacje operandów zatrzymują
-wykonanie. Flaga C po MUL jest zachowywana (ARMv4 definiuje ją jako nieprzewidywalną).
-Nie ma jeszcze IRQ scheduler, abortów, wyjątków undefined, cykli, waitstates
-ani zachowania pipeline dla samomodyfikującego kodu. ARMv5/Thumb-2 nie są celem.
+Instruction-family coverage does not imply full conformance. Empty register lists
+and selected unpredictable operand combinations stop execution. MUL preserves C,
+which ARMv4 defines as unpredictable. IRQ scheduling, aborts, undefined exceptions,
+cycles, wait states and self-modifying pipeline behavior are not implemented.
+ARMv5 and Thumb-2 are outside the target architecture.
 
-## Magistrala
+## Memory bus
 
-EWRAM 256 KiB, IWRAM 32 KiB, palette 1 KiB, VRAM 96 KiB i OAM 1 KiB, ROM do
-32 MiB. Mirroring RAM, obszar VRAM 0x18000..0x1ffff, trzy okna ROM.
-Niewyrównane LDR rotują słowo; LDRH/LDRSH mają zachowanie ARM7 opisane w GBATEK.
-STR/STRH i transfery blokowe wymuszają wyrównanie.
+The bus provides 256 KiB EWRAM, 32 KiB IWRAM, 1 KiB palette RAM, 96 KiB VRAM,
+1 KiB OAM and up to 32 MiB ROM. It implements RAM mirroring, the VRAM mirror at
+`0x18000..0x1ffff` and three ROM windows. Unaligned LDR rotates the word;
+LDRH/LDRSH follow the ARM7 behavior described in GBATEK. STR/STRH and block
+transfers enforce alignment.
 
-Bajtowy zapis palette/BG VRAM duplikuje bajt w półsłowie, a OAM i OBJ VRAM
-ignorują taki zapis. `KEYINPUT` jest aktywne stanem niskim i tylko do odczytu.
-Rejestry DISPCNT, BG2CNT i BG2 affine służą rendererowi.
+Byte writes to palette RAM and BG VRAM duplicate the byte across the halfword.
+OAM and OBJ VRAM ignore byte stores. `KEYINPUT` is active-low and read-only.
+DISPCNT, BG2CNT and the BG2 affine registers drive the renderer.
 
-Niezaimplementowane obszary/IO przerywają pracę zamiast udawać działanie timera
-czy DMA. Brak save hardware, EEPROM, flash, RTC, ochrony BIOS, prefetch/open-bus
-latch i niuansów magistrali kartridża. ROM poza rozmiarem zwraca wzorzec adresu.
+Unimplemented regions and I/O stop execution. Save hardware, EEPROM, flash, RTC,
+BIOS protection, prefetch/open-bus latches and cartridge bus details are absent.
+ROM reads beyond the cartridge size return an address-derived pattern.
 
-## Obraz
+## Rendering
 
-`BitmapRenderer` tworzy snapshot BG2 (modes 3/4/5), obsługuje stronę obrazu,
-paletę, kolor tła, forced blank i prostą transformację affine z BG2PA/B/C/D/X/Y.
-Ma jeden bufor RGB888 i nie alokuje nowej tablicy co render.
+`BitmapRenderer` produces a BG2 snapshot in bitmap modes 3, 4 and 5. It handles
+frame selection, palette lookup, backdrop color, forced blank and basic affine
+transforms through BG2PA/B/C/D/X/Y. One RGB888 buffer is reused between renders.
 
-Nie ma synchronizacji z CPU/scanline, VBlank, kafelków, OBJ, blendingu, okien,
-mosaic ani bitmap wrap. Włączone nieobsługiwane efekty zgłaszają błąd.
-Demo zapisuje rejestry transformacji — renderer nie dopisuje ich ukrycie.
+CPU/scanline synchronization, VBlank, tiles, OBJ, blending, windows, mosaic and
+bitmap wrapping are not implemented. Enabled unsupported effects report errors.
+The demo writes the transform registers explicitly; the renderer does not supply
+hidden defaults.
 
-## Java i wydajność
+## Java and performance
 
-Kod źródłowy projektu targetuje Javę 21. Ścieżka wykonywania instrukcji używa
-prymitywów/tablic i nie tworzy obiektów przy poprawnej instrukcji. `var` zmienia
-wyłącznie składnię; eksporter rozwiązuje typy przed budowaniem wersji na BB.
+The development project targets Java 21. The instruction execution path uses
+primitives and arrays. Local `var` changes source syntax only; the exporter
+resolves concrete types before generating the BlackBerry sources.
 
-Nie ma JIT/dynarec gościa ARM. To interpretacja ARM/Thumb w interpreterze/JVM
-hosta. Czas demo na desktopie nie przewiduje FPS ani wydajności na Boldzie.
+There is no ARM guest JIT or dynamic recompiler. ARM/Thumb instructions are
+interpreted on the host JVM or interpreter. Desktop demo timing does not predict
+frame rate or performance on a Bold device.
 
-## Warstwa desktopowa
+## Desktop layer
 
-`LaunchCommand` parsuje argumenty do jednego z trzech rekordów: `Demo`, `Header`
-lub `Run`. Sealed interface zamyka zbiór komend, więc `Main` rozpatruje wszystkie
-warianty w `switch` z dopasowaniem rekordów. Wymaga to JDK 21 bez funkcji preview.
+`LaunchCommand` parses arguments into `Demo`, `Header` or `Run` records. A sealed
+interface closes the command hierarchy, allowing `Main` to handle every variant
+with Java 21 record patterns in a switch, without preview features.
 
-Parser nie czyta plików i nie uruchamia emulatora. `Main` osobno wykonuje program,
-zapisuje PNG, prezentuje wyniki i uruchamia okno Swing. Wynik wykonania opisuje
-rekord `ExecutionResult`. Cały pakiet desktopowy jest wyłączony z eksportu na BB.
+The parser performs no file I/O or emulation. `Main` separates program execution,
+PNG export, result presentation and Swing startup. `ExecutionResult` describes
+the completed run. The whole desktop package is excluded from BlackBerry export.
 
-## Testy
+## Tests and diagnostics
 
-JUnit Jupiter jest zależnością o zakresie `test`. Nie trafia do JAR-a aplikacji
-ani do wygenerowanego rdzenia. Surefire odkrywa klasy `*Test`, a parametryzacja
-zapewnia osobny wynik dla każdego zestawu operandów i flag.
+JUnit Jupiter runs the tests; AssertJ supplies every host assertion. Both are
+`test`-scope dependencies, excluded from the application JAR and generated core.
+Surefire discovers `*Test` classes, and parameterized tests report each operand
+and flag combination separately. `assertSoftly` groups related state checks.
 
-`LegacyCoreTest` ładuje wyeksportowany rdzeń przez `URLClassLoader` z rodzicem
-platformowym: klasy hosta nie mogą zastąpić testowanych klas. Pełne powtórzenie
-scenariuszy `core` jest dostępne w skrypcie konsolowym.
+`LegacyCoreTest` loads the generated core through a `URLClassLoader` with a
+platform parent, preventing host core classes from replacing the generated
+ones. The console script also repeats all tests tagged `core`, with generated
+classes first on its classpath.
 
-`RuntimeChecks` jest przenośną diagnostyką aplikacji MIDP. Pozostaje niezależne
-od JUnit, ponieważ stary runtime BlackBerry nie może uruchamiać Jupiter.
-`DemoRomTest` wykonuje te same kontrole także na JVM hosta.
+`RuntimeChecks` is portable application diagnostics for MIDP, independent of
+JUnit and AssertJ. The old BlackBerry runtime cannot execute Jupiter.
+`DemoRomTest` also runs those diagnostics on the host JVM.
 
-## Punkty wejścia do źródeł
+## Source reading order
 
-1. `Machine`: składa Cartridge, Memory, Cpu i BitmapRenderer.
-2. `DemoRom`: zawiera konkretne instrukcje i ich komentarze asemblerowe.
-3. `Cpu.step`: wybiera dekoder ARM lub Thumb i zapewnia diagnostykę.
-4. `ArmInterpreter.execute` / `ThumbInterpreter.execute`: wybór rodziny instrukcji.
-5. `ArithmeticLogicUnit` i `BarrelShifter`: wyniki obliczeń oraz flagi.
-6. `LegacyExport`: czytelna kolejność odczytu AST, typowania i zapisu.
-   `LegacySyntaxScanner` zbiera zmiany przed analizą typów, a `LegacyApiScanner`
-   sprawdza rozpoznane metody po analizie. Rekordy opisują źródła i poprawki.
-7. `BlackBerryMidlet`: uruchomienie tych samych klas w MIDP.
+1. `Machine`: assembles the cartridge, memory, CPU and renderer.
+2. `DemoRom`: contains actual guest instructions with assembly comments.
+3. `Cpu.step`: selects the decoder and supplies failure diagnostics.
+4. `ArmInterpreter.execute` and `ThumbInterpreter.execute`: select instruction families.
+5. `ArithmeticLogicUnit` and `BarrelShifter`: calculate results and flags.
+6. `LegacyExport`: coordinates AST reading, type resolution and source output.
+   `LegacySyntaxScanner` collects edits before type analysis; `LegacyApiScanner`
+   checks resolved methods after analysis. Records describe sources and edits.
+7. `BlackBerryMidlet`: runs the shared classes in MIDP.
 
-## Referencje
+## References
 
 - [ARM7TDMI Technical Reference Manual](https://documentation-service.arm.com/static/5f4786a179ff4c392c0ff819?token=)
-- [GBATEK — zachowana dokumentacja GBA](https://rust-console.github.io/gbatek-gbaonly/)
+- [GBATEK — preserved GBA documentation](https://rust-console.github.io/gbatek-gbaonly/)
 - [Tonc — bitmap modes](https://gbadev.net/tonc/bitmaps.html)
 - [Maven Compiler — release](https://maven.apache.org/plugins/maven-compiler-plugin/examples/set-compiler-release.html)
 
-Kod napisano na potrzeby tego eksperymentu; nie zawiera cudzego BIOS ani komercyjnego ROM.
+The code was written for this experiment and contains no third-party BIOS or commercial ROM.

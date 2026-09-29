@@ -4,10 +4,7 @@ import static berryboy.EmulatorFixtures.arm;
 import static berryboy.EmulatorFixtures.blankRom;
 import static berryboy.EmulatorFixtures.writeHalfword;
 import static berryboy.EmulatorFixtures.writeWord;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -25,18 +22,20 @@ class CpuExecutionTest {
         cpu.setRegister(14, Memory.ROM_BASE + 0x80);
 
         machine.runInstructions(8);
-        assertAll(
-                () -> assertEquals(12, cpu.register(1), "ARM addition"),
-                () -> assertEquals(1, cpu.register(2), "conditional MOV"),
-                () -> assertEquals(12, cpu.register(4), "store and load"),
-                () -> assertTrue(cpu.isThumb(), "BX enters Thumb"));
+        assertSoftly(softly -> {
+            softly.assertThat(cpu.register(1)).as("ARM addition").isEqualTo(12);
+            softly.assertThat(cpu.register(2)).as("conditional MOV").isEqualTo(1);
+            softly.assertThat(cpu.register(4)).as("store and load").isEqualTo(12);
+            softly.assertThat(cpu.isThumb()).as("BX enters Thumb").isTrue();
+        });
 
         machine.runInstructions(6);
-        assertAll(
-                () -> assertEquals(12, cpu.register(6), "Thumb addition"),
-                () -> assertEquals(1, cpu.register(7), "conditional branch"),
-                () -> assertFalse(cpu.isThumb(), "BX returns to ARM"),
-                () -> assertEquals(Memory.ROM_BASE + 0x80, cpu.pc()));
+        assertSoftly(softly -> {
+            softly.assertThat(cpu.register(6)).as("Thumb addition").isEqualTo(12);
+            softly.assertThat(cpu.register(7)).as("conditional branch").isEqualTo(1);
+            softly.assertThat(cpu.isThumb()).as("BX returns to ARM").isFalse();
+            softly.assertThat(cpu.pc()).isEqualTo(Memory.ROM_BASE + 0x80);
+        });
     }
 
     @Test
@@ -51,11 +50,12 @@ class CpuExecutionTest {
 
         machine.runInstructions(4);
 
-        assertAll(
-                () -> assertEquals(-1, machine.cpu.register(0)),
-                () -> assertTrue(machine.cpu.negative()),
-                () -> assertFalse(machine.cpu.carry(), "borrow clears carry"),
-                () -> assertEquals(4, machine.cpu.register(1)));
+        assertSoftly(softly -> {
+            softly.assertThat(machine.cpu.register(0)).isEqualTo(-1);
+            softly.assertThat(machine.cpu.negative()).isTrue();
+            softly.assertThat(machine.cpu.carry()).as("borrow clears carry").isFalse();
+            softly.assertThat(machine.cpu.register(1)).isEqualTo(4);
+        });
     }
 
     private static byte[] mixedInstructionProgram() {

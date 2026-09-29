@@ -1,28 +1,29 @@
-# Linux / Java 21 / BlackBerry OS 7.1
+# Linux, Java 21 and BlackBerry OS 7.1
 
-## Trzy różne runtime'y
+## Three separate runtimes
 
-- JVM 21 na Linuksie: Maven, testy, podgląd i eksporter.
-- Narzędzia kompilacyjne JDK 6 + BlackBerry JDE 7.1, uruchomione w Wine:
-  generują kod dla starego runtime. Nie muszą być domyślną Javą systemu.
-- Runtime symulatora / telefonu: wykonuje `.cod`, a nie klasy Java 21.
+- JVM 21 on Linux runs Maven, tests, the desktop viewer and the exporter.
+- Windows JDK 6 and BlackBerry JDE 7.1 run through Wine to produce code for the
+  legacy runtime. They do not need to be the system's default Java installation.
+- The simulator or phone executes `.cod` applications, not Java 21 class files.
 
-RIM udostępniał windowsowy symulator klasycznego BBOS. Profil `bb-sim` jest
-integracją tych narzędzi przez Wine. Nie jest nowym natywnym portem symulatora
-na Linuksa; zgodność konkretnego wydania symulatora z Wine wymaga sprawdzenia.
-Symulator BB10 nie zastępuje symulatora BBOS 7.1 dla Bolda 9900.
+RIM shipped a Windows simulator for classic BBOS. The `bb-sim` profile integrates
+those tools through Wine. It is not a native Linux simulator port; compatibility
+with a particular simulator release still needs verification. A BB10 simulator
+cannot replace the BBOS 7.1 simulator for the Bold 9900.
 
-## Lokalne wymagania
+## Local prerequisites
 
-1. Maven 3.9.x uruchomiony na JDK 21; sprawdź `mvn -v`.
-2. Wine z obsługą 32-bitowych programów i skonfigurowanym środowiskiem graficznym.
-3. Legalnie uzyskane BlackBerry JDE 7.1 (`bin/rapc.exe`, `lib/net_rim_api.jar`).
-4. Windowsowy JDK 6 w tym samym środowisku Wine (`bin/javac.exe`, `bin/jar.exe`).
-5. Symulator Bold 9900 z `9900.bat` i `fledgecontroller.exe`.
+1. Maven 3.9.x running on JDK 21; check `mvn -v`.
+2. Wine with 32-bit application support and a working graphical environment.
+3. A legally obtained BlackBerry JDE 7.1 installation containing `bin/rapc.exe`
+   and `lib/net_rim_api.jar`.
+4. Windows JDK 6 in the same Wine environment, with `bin/javac.exe` and `bin/jar.exe`.
+5. A Bold 9900 simulator containing `9900.bat` and `fledgecontroller.exe`.
 
-Wszystkie zmienne `BB_*` są **linuksowymi ścieżkami** do katalogów tych instalacji.
-Opcjonalny `WINEPREFIX` musi wskazywać ten sam prefix przy instalacji i buildzie.
-Skrypt używa `winepath` do konwersji ścieżek i nie modyfikuje globalnego `JAVA_HOME`.
+All `BB_*` variables are **Linux paths** to installation directories. If you set
+`WINEPREFIX`, use the same prefix during installation and builds. The script
+converts paths with `winepath` without changing the global `JAVA_HOME`.
 
 ```bash
 export BB_JDE_HOME="$HOME/.wine-bb/drive_c/BlackBerry JDE 7.1.0"
@@ -32,58 +33,58 @@ export WINEPREFIX="$HOME/.wine-bb"
 mvn -Pbb-sim verify
 ```
 
-Można też przekazać ścieżki przez `-Dbb.sdk=...`, `-Dbb.jdk6=...`,
-`-Dbb.simulator=...`. `-Dbb.model=9900` ustala nazwę launchera i sesji.
-Jeśli launcher ma inną nazwę sesji, dostosuj skrypt lub launcher lokalnie.
+You can also pass paths through `-Dbb.sdk=...`, `-Dbb.jdk6=...` and
+`-Dbb.simulator=...`. `-Dbb.model=9900` sets the launcher and session name.
+If the launcher uses another session name, adjust the script or launcher locally.
 
-Samo zbudowanie bez uruchamiania symulatora:
+Build without starting the simulator:
 
 ```bash
 mvn -Pbb-sim verify -Dbb.launch=false
 ```
 
-## Co robi profil
+## Profile behavior
 
-1. Kompiluje i testuje współczesny projekt na JDK 21.
-2. Eksportuje wspólny rdzeń do `target/blackberry/generated/berryboy`.
-3. Uruchamia w Wine `javac -source 1.4 -target 1.4` z API BlackBerry jako bootclasspath.
-4. Dołącza mały adapter `BlackBerryMidlet`, pakuje JAR i konwertuje go przez RAPC.
-5. Uruchamia oryginalny `9900.bat` i wysyła `LoadCod(...)` do kontrolera symulatora.
-6. Użytkownik otwiera ikonę BerryBoy Advance. MIDlet uruchamia lokalnie osiem
-   kontroli i program demo. Można ponowić je poleceniem `Run checks`.
+1. Compile and test the modern project on JDK 21.
+2. Export the shared core to `target/blackberry/generated/berryboy`.
+3. Run `javac -source 1.4 -target 1.4` through Wine, with BlackBerry APIs on the bootclasspath.
+4. Add the `BlackBerryMidlet` adapter, package a JAR and convert it through RAPC.
+5. Start the original `9900.bat` and send `LoadCod(...)` to the simulator controller.
+6. Open BerryBoy Advance in the simulator. The MIDlet runs eight local checks
+   and the demo. The `Run checks` command repeats them.
 
-Rezultaty: `target/blackberry/output/`, `simulator.log`, `controller.log`.
-Skrypt usuwa wyłącznie własne wygenerowane klasy i własny katalog output.
-Nie zamyka istniejącej sesji, nie resetuje flasha symulatora i nie instaluje nic
-na fizycznym telefonie. Najprościej uruchomić go po zamknięciu starej sesji 9900.
+Outputs are under `target/blackberry/output/`, including `simulator.log` and
+`controller.log`. The script removes only its own generated classes and output
+directory. It does not close an existing session, reset simulator flash or
+install anything on a physical phone. Close an old 9900 session before starting.
 
-**Stan: skrypt sprawdzony składniowo, ale nie uruchomiony z Wine/JDE/symulatorem.**
-RAPC może wymagać dopasowania ścieżek, preweryfikacji lub sposobu ładowania
-podmodułów COD w konkretnym SDK. Nie oznaczamy testu BB jako zaliczonego na
-podstawie samego wyjścia kontrolera; wynik musi pokazać aplikacja.
+**Status: shell syntax has been checked; Wine/JDE/simulator execution is unverified.**
+A particular SDK may require RAPC path adjustments, preverification or different
+COD submodule loading. Controller exit status alone does not establish success;
+the MIDlet must display the result.
 
-## Zakres eksportu źródeł
+## Source export boundaries
 
-| Konstrukcja | Współdzielony rdzeń |
-|---|---|
-| Typy prymitywne, tablice, klasy, metody, zwykłe pętle | Tak |
-| Lokalne `var` | Tak: typ rozwiązuje javac |
-| `return switch (int) { case ... -> wyrażenie; }` | Tak: eksport na klasyczny switch |
-| Kilka stałych w jednej etykiecie `case` | Tak: kilka etykiet starego switcha |
-| Lambdy / method references | Odrzucane |
-| Rekordy, generyki, pattern matching | Odrzucane |
-| Try-with-resources / enhanced for | Odrzucane |
-| Nowe API (`String.repeat`, kolekcje, streams, NIO) | Nieprzenośne; gate API / kompilator SDK |
-| Dowolny kod Java 21 | Nie; to nie implementacja JVM 21 |
+| Construct | Shared core support |
+| --- | --- |
+| Primitives, arrays, classes, methods and ordinary loops | Supported |
+| Local `var` | Supported; javac resolves the type |
+| `return switch (int) { case ... -> expression; }` | Lowered to a classic switch |
+| Multiple constants in one case label | Lowered to separate case labels |
+| Lambdas and method references | Rejected |
+| Records, generics and pattern matching | Rejected |
+| Try-with-resources and enhanced for loops | Rejected |
+| Modern APIs: `String.repeat`, collections, streams and NIO | Not portable; checked by the API gate and SDK compiler |
+| Arbitrary Java 21 code | Unsupported; this is not a JVM 21 implementation |
 
-Frontend i build tools nie są eksportowane: mogą używać nowoczesnej Javy bez
-ograniczeń wymuszonych przez telefon. Wydajność rzeczywistego Bolda nie była mierzona.
+The frontend, build tools and host tests are excluded from export and can use
+modern Java without the phone's restrictions. Real Bold performance has not been measured.
 
-## Dokumentacja źródłowa
+## References
 
-- [BlackBerry JDE — oficjalne przykłady](https://github.com/blackberry/JDE-Samples)
-- [RIM Simulator User Guide, zachowana kopia](https://device.report/m/43910e81f5369f8768176fc5b78a752fef304c90d0e777e0150ce082949a7c82)
-- [RIM MIDlet Developer Guide, zachowana kopia](https://www.scribd.com/doc/60656300/Blackberry-MIDlet-Developer-Guide)
+- [BlackBerry JDE official samples](https://github.com/blackberry/JDE-Samples)
+- [RIM Simulator User Guide, preserved copy](https://device.report/m/43910e81f5369f8768176fc5b78a752fef304c90d0e777e0150ce082949a7c82)
+- [RIM MIDlet Developer Guide, preserved copy](https://www.scribd.com/doc/60656300/Blackberry-MIDlet-Developer-Guide)
 - [CLDC 1.1 java.lang](https://docs.oracle.com/javame/config/cldc/ref-impl/cldc1.1/jsr139/java/lang/package-summary.html)
 - [JavacTask API](https://docs.oracle.com/en/java/javase/21/docs/api/jdk.compiler/com/sun/source/util/JavacTask.html)
 - [Wine](https://www.winehq.org/about)

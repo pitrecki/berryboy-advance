@@ -2,10 +2,8 @@ package berryboy;
 
 import static berryboy.EmulatorFixtures.arm;
 import static berryboy.EmulatorFixtures.thumb;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -18,30 +16,31 @@ class CpuFaultTest {
     void reportsOpcodeAndAddressWhenSoftwareInterruptHasNoBios() {
         var machine = arm(0xef000000);
 
-        var error = assertThrows(EmulationException.class, machine.cpu::step);
-
-        assertAll(
-                () -> assertTrue(error.getMessage().contains("SWI needs a supplied BIOS")),
-                () -> assertTrue(error.getMessage().contains("opcode=0xef000000")),
-                () -> assertTrue(error.getMessage().contains("pc=0x8000000")),
-                () -> assertEquals(Memory.ROM_BASE, machine.cpu.pc(), "faulting PC remains inspectable"));
+        assertSoftly(softly -> {
+            softly.assertThatThrownBy(machine.cpu::step)
+                    .isInstanceOf(EmulationException.class)
+                    .hasMessageContaining("SWI needs a supplied BIOS")
+                    .hasMessageContaining("opcode=0xef000000")
+                    .hasMessageContaining("pc=0x8000000");
+            softly.assertThat(machine.cpu.pc()).as("faulting PC remains inspectable").isEqualTo(Memory.ROM_BASE);
+        });
     }
 
     @Test
     void rejectsSavedStatusAccessFromSystemMode() {
         var machine = arm(0xe1b0f00e); // MOVS pc,lr
 
-        var error = assertThrows(EmulationException.class, machine.cpu::step);
-
-        assertTrue(error.getMessage().contains("no SPSR"));
+        assertThatThrownBy(machine.cpu::step)
+                .isInstanceOf(EmulationException.class)
+                .hasMessageContaining("no SPSR");
     }
 
     @Test
     void rejectsArmV5BranchLinkExchange() {
         var machine = thumb(0x4780);
 
-        var error = assertThrows(EmulationException.class, machine.cpu::step);
-
-        assertTrue(error.getMessage().contains("BLX"));
+        assertThatThrownBy(machine.cpu::step)
+                .isInstanceOf(EmulationException.class)
+                .hasMessageContaining("BLX");
     }
 }

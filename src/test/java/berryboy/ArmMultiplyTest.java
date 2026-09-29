@@ -1,8 +1,7 @@
 package berryboy;
 
 import static berryboy.EmulatorFixtures.arm;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -22,9 +21,10 @@ class ArmMultiplyTest {
 
         machine.runInstructions(2);
 
-        assertAll(
-                () -> assertEquals(-42, machine.cpu.register(2)),
-                () -> assertEquals(-84, machine.cpu.register(3)));
+        assertSoftly(softly -> {
+            softly.assertThat(machine.cpu.register(2)).isEqualTo(-42);
+            softly.assertThat(machine.cpu.register(3)).isEqualTo(-84);
+        });
     }
 
     @Test
@@ -38,10 +38,11 @@ class ArmMultiplyTest {
 
         machine.runInstructions(2);
 
-        assertAll(
-                () -> assertEquals(-2, machine.cpu.register(2), "UMULL low"),
-                () -> assertEquals(1, machine.cpu.register(3), "UMULL high"),
-                () -> assertEquals(-2, machine.cpu.register(4), "SMULL low"),
-                () -> assertEquals(-1, machine.cpu.register(5), "SMULL high"));
+        assertSoftly(softly -> {
+            softly.assertThat(machine.cpu.register(2)).as("UMULL low").isEqualTo(-2);
+            softly.assertThat(machine.cpu.register(3)).as("UMULL high").isEqualTo(1);
+            softly.assertThat(machine.cpu.register(4)).as("SMULL low").isEqualTo(-2);
+            softly.assertThat(machine.cpu.register(5)).as("SMULL high").isEqualTo(-1);
+        });
     }
 }

@@ -1,9 +1,9 @@
 package berryboy;
 
 import static berryboy.EmulatorFixtures.blankRom;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,9 +26,10 @@ class MemoryTest {
     void readsLittleEndianWordsAndExternalRamMirror() {
         memory.write32(Memory.EWRAM_BASE, 0x12345678);
 
-        assertAll(
-                () -> assertEquals(0x78, memory.read8(Memory.EWRAM_BASE)),
-                () -> assertEquals(0x12345678, memory.read32(Memory.EWRAM_BASE + 0x40000)));
+        assertSoftly(softly -> {
+            softly.assertThat(memory.read8(Memory.EWRAM_BASE)).isEqualTo(0x78);
+            softly.assertThat(memory.read32(Memory.EWRAM_BASE + 0x40000)).isEqualTo(0x12345678);
+        });
     }
 
     @ParameterizedTest(name = "{0}")
@@ -39,14 +40,14 @@ class MemoryTest {
     void mirrorsHalfwordWrites(String name, int original, int mirror, int value) {
         memory.write16(original, value);
 
-        assertEquals(value, memory.read16(mirror));
+        assertThat(memory.read16(mirror)).isEqualTo(value);
     }
 
     @Test
     void ignoresRomWrites() {
         memory.write8(Memory.ROM_BASE, 0x11);
 
-        assertEquals(0, memory.read8(Memory.ROM_BASE));
+        assertThat(memory.read8(Memory.ROM_BASE)).isEqualTo(0);
     }
 
     @ParameterizedTest(name = "{0}")
@@ -59,21 +60,22 @@ class MemoryTest {
     void appliesVideoBusByteWriteRules(String name, int address, int readAddress, int value, int expected) {
         memory.write8(address, value);
 
-        assertEquals(expected, memory.read16(readAddress));
+        assertThat(memory.read16(readAddress)).isEqualTo(expected);
     }
 
     @Test
     void exposesActiveLowKeysAndIgnoresWritesToKeyInput() {
         memory.setPressedKeys(0x11);
-        assertEquals(0x3ee, memory.read16(Memory.KEY_INPUT), "pressed keys are low");
+        assertThat(memory.read16(Memory.KEY_INPUT)).as("pressed keys are low").isEqualTo(0x3ee);
 
         memory.write16(Memory.KEY_INPUT, 0);
 
-        assertEquals(0x3ee, memory.read16(Memory.KEY_INPUT), "KEYINPUT is read-only");
+        assertThat(memory.read16(Memory.KEY_INPUT)).as("KEYINPUT is read-only").isEqualTo(0x3ee);
     }
 
     @Test
     void rejectsUnimplementedTimerRegisters() {
-        assertThrows(EmulationException.class, () -> memory.read16(Memory.IO_BASE + 0x100));
+        assertThatThrownBy(() -> memory.read16(Memory.IO_BASE + 0x100))
+                .isInstanceOf(EmulationException.class);
     }
 }

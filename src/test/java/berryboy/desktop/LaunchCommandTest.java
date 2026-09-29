@@ -1,7 +1,7 @@
 package berryboy.desktop;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.nio.file.Path;
 import java.util.stream.Stream;
@@ -17,13 +17,14 @@ class LaunchCommandTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("validCommands")
     void parsesCommandWithoutRunningTheEmulator(String name, String[] arguments, LaunchCommand expected) {
-        assertEquals(expected, LaunchCommand.parse(arguments));
+        assertThat(LaunchCommand.parse(arguments)).isEqualTo(expected);
     }
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("invalidCommands")
     void rejectsInvalidArgumentsBeforeOpeningAFile(String name, String[] arguments) {
-        assertThrows(IllegalArgumentException.class, () -> LaunchCommand.parse(arguments));
+        assertThatThrownBy(() -> LaunchCommand.parse(arguments))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     private static Stream<Arguments> validCommands() {

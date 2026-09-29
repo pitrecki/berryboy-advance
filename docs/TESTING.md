@@ -1,18 +1,18 @@
-# Testy JUnit 5
+# Testing with JUnit 5 and AssertJ
 
-Wymagane: Linux, JDK 21 i Maven 3.9.x. Testy nie wymagają własnego BIOS-u ani ROM-u.
-Używają krótkich programów ARM/Thumb i oryginalnego `DemoRom` z projektu.
+Requirements: Linux, JDK 21 and Maven 3.9.x. Tests use small ARM/Thumb programs
+and the project's original `DemoRom`; no external BIOS or ROM is required.
 
-## Standardowy przebieg
+## Standard workflow
 
 ```bash
 mvn test
 mvn verify
 ```
 
-`mvn test` kompiluje kod i uruchamia Jupiter przez Surefire. `mvn verify` dodatkowo
-buduje JAR aplikacji. Nie ma niestandardowego runnera ani wymuszonego pomijania
-testów. Raporty tekstowe i XML powstają w `target/surefire-reports`.
+`mvn test` compiles the project and runs Jupiter through Surefire. `mvn verify`
+also builds the application JAR. No custom test runner or forced test skipping
+is involved. Text and XML reports are written to `target/surefire-reports`.
 
 ```bash
 mvn -Dtest=ArmShiftTest test
@@ -22,73 +22,93 @@ mvn -Dgroups=build test
 mvn -Dgroups=desktop test
 ```
 
-`./test.sh` przekazuje opcje do `mvn verify`, np. `./test.sh -Dgroups=core`.
+`./test.sh` forwards arguments to `mvn verify`, for example `./test.sh -Dgroups=core`.
 
-## Podział scenariuszy
+## Scenario coverage
 
-| Klasa | Zakres |
-|---|---|
-| `ArmArithmeticTest` | 512 zestawów operandów, wynik i NZCV; dekodowanie immediate; logika |
-| `ArmConditionTest` | 16 warunków × 16 kombinacji NZCV |
-| `ArmShiftTest` | 17 brzegowych przesunięć, RRX i odczyty PC |
-| `ArmTransferTest` | Niewyrównane odczyty, writeback, stos, SWP i rejestr bazowy na liście |
-| `ArmMultiplyTest` | MUL/MLA i mnożenie signed/unsigned long |
-| `CpuStatusTest` | CPSR, banki FIQ/System, SWI i powrót do Thumb |
-| `CpuFaultTest` | Brak BIOS-u/SPSR i nieobsługiwane BLX; diagnostyka PC/opkodu |
-| `CpuExecutionTest` | Program mieszający ARM i Thumb; skok po underflow |
-| `ThumbInstructionTest` | Arytmetyka, stos, BL, wysokie rejestry i transfery |
-| `MemoryTest` | Endianowość, mirroring, byte stores i KEYINPUT |
-| `CartridgeTest` | Nagłówek i suma kontrolna |
-| `BitmapRendererTest` | Strony bitmapy, paleta, granice trybu 5 i forced blank |
-| `DemoRomTest` | Pełny program demo i przenośna diagnostyka |
-| `LegacyExportTest` | `var`, returned switch oraz odrzucanie nieobsługiwanej składni/API |
-| `LegacyCoreTest` | Eksport i kompilacja całego rdzenia, uruchomienie w izolacji |
-| `desktop/LaunchCommandTest` | Typowane komendy CLI i odrzucanie błędnych argumentów |
+| Class | Coverage |
+| --- | --- |
+| `ArmArithmeticTest` | 512 operand sets with results/NZCV, immediate decoding and logic |
+| `ArmConditionTest` | 16 conditions × 16 NZCV combinations |
+| `ArmShiftTest` | 17 register-shift edge cases, RRX and PC reads |
+| `ArmTransferTest` | Unaligned reads, writeback, stack, SWP and base-register overlap |
+| `ArmMultiplyTest` | MUL/MLA and signed/unsigned long multiplication |
+| `CpuStatusTest` | CPSR, FIQ/System banks, SWI and return to Thumb |
+| `CpuFaultTest` | Missing BIOS/SPSR, unsupported BLX and PC/opcode diagnostics |
+| `CpuExecutionTest` | Mixed ARM/Thumb program and branching after underflow |
+| `ThumbInstructionTest` | Arithmetic, stack, BL, high registers and transfers |
+| `MemoryTest` | Endianness, mirroring, byte stores and KEYINPUT |
+| `CartridgeTest` | Header fields and checksum |
+| `BitmapRendererTest` | Frame selection, palette, mode 5 boundaries and forced blank |
+| `DemoRomTest` | Complete demo and portable runtime checks |
+| `LegacyExportTest` | Local `var`, returned switches and rejected syntax/APIs |
+| `LegacyCoreTest` | Whole-core export, compilation and isolated execution |
+| `desktop/LaunchCommandTest` | Typed CLI commands and invalid argument rejection |
 
-`EmulatorFixtures` przechowuje wyłącznie przygotowanie obrazu ROM i sprzętu.
-`CompilerFixture` uruchamia rzeczywisty javac dla wygenerowanych źródeł. Asercje
-korzystają z JUnit: `assertEquals`, `assertAll`, `assertThrows` i pozostałych standardowych metod.
-Każdy przypadek dostaje świeży stan maszyny. Eksporter używa `@TempDir`.
+`EmulatorFixtures` only prepares ROMs and hardware state. `CompilerFixture`
+invokes the real javac compiler for generated sources. Each test gets fresh
+machine state; exporter tests isolate their files with `@TempDir`.
 
-Przypadki losowe arytmetyki mają stały seed `0xbba11`, więc są powtarzalne.
-Dotychczasowe scenariusze zostały zachowane; porównania CMP/CMN dodatkowo sprawdzają,
-czy rejestr docelowy pozostał niezmieniony. Liczba testów oznacza teraz wykonania
-JUnit, a nie ręcznie naliczane asercje z wcześniejszych wydań.
+Arithmetic sampling uses the fixed seed `0xbba11`. CMP/CMN cases also verify
+that the destination register remains unchanged. Counts refer to JUnit test
+invocations, including parameterized cases, rather than assertion counts.
 
-## Pełne powtórzenie na wyeksportowanym rdzeniu
+## Assertion conventions
 
-Do tej ścieżki potrzebny jest oficjalny
-`junit-platform-console-standalone-1.13.4.jar`. Można pobrać go przez Maven:
+Keep JUnit 5 annotations, lifecycle methods, tags and parameter providers. Use
+AssertJ for assertions, with the actual value first and descriptions where they
+explain a register or flag. Use native string, array and exception assertions
+instead of reducing a failure to a boolean.
 
-```bash
-mvn org.apache.maven.plugins:maven-dependency-plugin:3.8.1:copy \
-  -Dartifact=org.junit.platform:junit-platform-console-standalone:1.13.4 \
-  -DoutputDirectory=target/test-tools
+```java
+assertThat(cpu.register(0)).as("result register").isEqualTo(42);
+assertThat(pixels).hasSize(38400);
+assertThatThrownBy(cpu::step)
+        .isInstanceOf(EmulationException.class)
+        .hasMessageContaining("SWI needs a supplied BIOS");
 
-JUNIT_CONSOLE_JAR="$PWD/target/test-tools/junit-platform-console-standalone-1.13.4.jar" \
-  tools/test-with-console.sh
+assertSoftly(softly -> {
+    softly.assertThat(cpu.zero()).as("Z flag").isTrue();
+    softly.assertThat(cpu.carry()).as("C flag").isFalse();
+});
 ```
 
-Skrypt kompiluje źródła na Java 21, uruchamia Jupiter, eksportuje rdzeń, kompiluje
-wygenerowane źródła z `--release 8`, a następnie uruchamia testy z tagiem `core`
-z wygenerowanymi klasami na początku classpath. Raporty są w
-`target/junit-console/reports/host` oraz `target/junit-console/reports/legacy`.
+`assertSoftly` collects related failures and checks them when the consumer exits.
+AssertJ's soft assertions use Byte Buddy; Maven resolves that transitive
+dependency. JUnit and AssertJ are not runtime dependencies of the emulator.
 
-To kontrola semantyki na JVM hosta. Nie zastępuje kompilacji z CLDC SDK, RAPC ani
-uruchomienia MIDleta w rzeczywistym runtime BB.
+## Repeating the suite on the exported core
 
-## Symulator BlackBerry
+```bash
+tools/test-with-console.sh
+```
+
+The script uses Maven to compile the Java 21 project and build the complete test
+classpath, including JUnit Platform Console, AssertJ and Byte Buddy. It accepts
+Maven options, for example `tools/test-with-console.sh -o` when all dependencies
+and plugins are already cached. No manually downloaded standalone JAR is needed.
+
+It runs the full host suite, exports the core, compiles generated sources with
+`--release 8`, then repeats tests tagged `core` with generated classes first on
+the classpath. Reports are written to `target/junit-console/reports/host` and
+`target/junit-console/reports/legacy`.
+
+This checks semantics on the host JVM. It does not replace compilation against
+the CLDC SDK, RAPC conversion or execution in the actual BlackBerry runtime.
+
+## BlackBerry Simulator
 
 ```bash
 mvn -Pbb-sim verify
 ```
 
-Profil najpierw uruchamia testy JUnit na hoście, następnie eksportuje rdzeń i używa
-lokalnego SDK przez Wine. `RuntimeChecks` w MIDlecie jest osobną, przenośną
-diagnostyką urządzenia. JUnit nie jest pakowany do aplikacji na BlackBerry.
-Konfiguracja: [BLACKBERRY.md](BLACKBERRY.md).
+The profile runs host tests, exports the core and invokes the local SDK through
+Wine. The MIDlet's `RuntimeChecks` are separate portable device diagnostics.
+Neither JUnit nor AssertJ is packaged into the BlackBerry application.
+See [BLACKBERRY.md](BLACKBERRY.md) for setup.
 
-## Dokumentacja narzędzi
+## Tool documentation
 
 - [JUnit 5.13.4 User Guide](https://docs.junit.org/5.13.4/user-guide/index.html)
+- [AssertJ Core documentation](https://assertj.github.io/doc/)
 - [Maven Surefire: JUnit Platform](https://maven.apache.org/surefire/maven-surefire-plugin/examples/junit-platform.html)

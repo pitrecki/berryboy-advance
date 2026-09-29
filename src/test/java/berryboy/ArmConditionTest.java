@@ -1,7 +1,7 @@
 package berryboy;
 
 import static berryboy.EmulatorFixtures.arm;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -22,7 +22,7 @@ class ArmConditionTest {
 
         machine.cpu.step();
 
-        assertEquals(expected ? 1 : 0, machine.cpu.register(0));
+        assertThat(machine.cpu.register(0)).isEqualTo(expected ? 1 : 0);
     }
 
     private static Stream<Arguments> conditions() {

@@ -3,8 +3,8 @@ package berryboy;
 import static berryboy.EmulatorFixtures.arm;
 import static berryboy.EmulatorFixtures.thumb;
 import static berryboy.EmulatorFixtures.writeWord;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -20,7 +20,7 @@ class CpuStatusTest {
 
         machine.runInstructions(2);
 
-        assertEquals(Cpu.SYSTEM | Cpu.N | Cpu.C, machine.cpu.register(1));
+        assertThat(machine.cpu.register(1)).isEqualTo(Cpu.SYSTEM | Cpu.N | Cpu.C);
     }
 
     @Test
@@ -30,19 +30,21 @@ class CpuStatusTest {
         cpu.setRegister(13, 130);
 
         cpu.setCpsr(Cpu.FIQ);
-        assertEquals(0, cpu.register(8), "FIQ starts with a separate r8");
+        assertThat(cpu.register(8)).as("FIQ starts with a separate r8").isEqualTo(0);
         cpu.setRegister(8, 888);
         cpu.setRegister(13, 131);
 
         cpu.setCpsr(Cpu.SYSTEM);
-        assertAll(
-                () -> assertEquals(88, cpu.register(8), "shared r8"),
-                () -> assertEquals(130, cpu.register(13), "shared SP"));
+        assertSoftly(softly -> {
+            softly.assertThat(cpu.register(8)).as("shared r8").isEqualTo(88);
+            softly.assertThat(cpu.register(13)).as("shared SP").isEqualTo(130);
+        });
 
         cpu.setCpsr(Cpu.FIQ);
-        assertAll(
-                () -> assertEquals(888, cpu.register(8), "FIQ r8"),
-                () -> assertEquals(131, cpu.register(13), "FIQ SP"));
+        assertSoftly(softly -> {
+            softly.assertThat(cpu.register(8)).as("FIQ r8").isEqualTo(888);
+            softly.assertThat(cpu.register(13)).as("FIQ SP").isEqualTo(131);
+        });
     }
 
     @Test
@@ -55,15 +57,16 @@ class CpuStatusTest {
         machine.cpu.setCpsr(initialStatus);
 
         machine.cpu.step();
-        assertAll(
-                () -> assertEquals(8, machine.cpu.pc(), "SWI vector"),
-                () -> assertEquals(Memory.ROM_BASE + 2, machine.cpu.register(14), "return address"),
-                () -> assertEquals(Cpu.SUPERVISOR, machine.cpu.cpsr() & 31));
+        assertSoftly(softly -> {
+            softly.assertThat(machine.cpu.pc()).as("SWI vector").isEqualTo(8);
+            softly.assertThat(machine.cpu.register(14)).as("return address").isEqualTo(Memory.ROM_BASE + 2);
+            softly.assertThat(machine.cpu.cpsr() & 31).isEqualTo(Cpu.SUPERVISOR);
+        });
 
         machine.cpu.step();
-        assertEquals(initialStatus, machine.cpu.cpsr(), "SPSR restores CPSR");
+        assertThat(machine.cpu.cpsr()).as("SPSR restores CPSR").isEqualTo(initialStatus);
 
         machine.cpu.step();
-        assertEquals(7, machine.cpu.register(0), "execution resumes in Thumb");
+        assertThat(machine.cpu.register(0)).as("execution resumes in Thumb").isEqualTo(7);
     }
 }

@@ -1,10 +1,8 @@
 package berryboy;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import berryboy.build.LegacyExport;
 import java.io.IOException;
@@ -53,14 +51,15 @@ class LegacyExportTest {
         var changes = LegacyExport.export(sources, generated);
         var result = Files.readString(generated.resolve("Sample.java"));
 
-        assertAll(
-                () -> assertEquals(2, changes, "one var and one switch"),
-                () -> assertTrue(result.contains("int /* var is also in this comment */ value")),
-                () -> assertTrue(result.contains("case 2: case 3: return 7;")),
-                () -> assertFalse(result.contains("->")));
+        assertSoftly(softly -> {
+            softly.assertThat(changes).as("one var and one switch").isEqualTo(2);
+            softly.assertThat(result)
+                    .contains("int /* var is also in this comment */ value", "case 2: case 3: return 7;")
+                    .doesNotContain("->");
+        });
 
         var compilation = CompilerFixture.compileLegacySources(generated, temporary.resolve("classes"));
-        assertTrue(compilation.successful(), compilation::diagnostics);
+        assertThat(compilation.successful()).as(compilation::diagnostics).isTrue();
     }
 
     @ParameterizedTest(name = "{0}")
@@ -68,9 +67,9 @@ class LegacyExportTest {
     void rejectsUnsupportedSyntaxAndApis(RejectedSource sample) throws IOException {
         writeSample(sample.source());
 
-        var error = assertThrows(IllegalArgumentException.class, () -> LegacyExport.export(sources, generated));
-
-        assertTrue(error.getMessage().contains(sample.reason()), error::getMessage);
+        assertThatThrownBy(() -> LegacyExport.export(sources, generated))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining(sample.reason());
     }
 
     private void writeSample(String source) throws IOException {

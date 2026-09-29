@@ -1,8 +1,8 @@
 package berryboy;
 
 import static berryboy.EmulatorFixtures.bitmap;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -19,7 +19,7 @@ class BitmapRendererTest {
 
         var pixels = machine.video.render();
 
-        assertEquals(0x00ff00, pixels[0]);
+        assertThat(pixels[0]).isEqualTo(0x00ff00);
     }
 
     @Test
@@ -29,9 +29,10 @@ class BitmapRendererTest {
 
         var pixels = machine.video.render();
 
-        assertAll(
-                () -> assertEquals(0x0000ff, pixels[0]),
-                () -> assertEquals(0, pixels[160], "mode 5 bitmap ends at x=160"));
+        assertSoftly(softly -> {
+            softly.assertThat(pixels[0]).isEqualTo(0x0000ff);
+            softly.assertThat(pixels[160]).as("mode 5 bitmap ends at x=160").isEqualTo(0);
+        });
     }
 
     @Test
@@ -40,6 +41,6 @@ class BitmapRendererTest {
 
         var pixels = machine.video.render();
 
-        assertEquals(0xffffff, pixels[100]);
+        assertThat(pixels[100]).isEqualTo(0xffffff);
     }
 }

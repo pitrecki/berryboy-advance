@@ -1,9 +1,8 @@
 package berryboy;
 
 import static berryboy.EmulatorFixtures.arm;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import java.util.Random;
 import java.util.stream.Stream;
@@ -33,13 +32,14 @@ class ArmArithmeticTest {
 
         cpu.step();
 
-        assertAll(
-                () -> assertEquals(sample.operation().writesResult ? expected.value() : UNCHANGED_DESTINATION,
-                        cpu.register(2), "destination register"),
-                () -> assertEquals(expected.value() < 0, cpu.negative(), "N flag"),
-                () -> assertEquals(expected.value() == 0, cpu.zero(), "Z flag"),
-                () -> assertEquals(expected.carry(), cpu.carry(), "C flag"),
-                () -> assertEquals(expected.overflow(), cpu.overflow(), "V flag"));
+        assertSoftly(softly -> {
+            softly.assertThat(cpu.register(2)).as("destination register")
+                    .isEqualTo(sample.operation().writesResult ? expected.value() : UNCHANGED_DESTINATION);
+            softly.assertThat(cpu.negative()).as("N flag").isEqualTo(expected.value() < 0);
+            softly.assertThat(cpu.zero()).as("Z flag").isEqualTo(expected.value() == 0);
+            softly.assertThat(cpu.carry()).as("C flag").isEqualTo(expected.carry());
+            softly.assertThat(cpu.overflow()).as("V flag").isEqualTo(expected.overflow());
+        });
     }
 
     @ParameterizedTest(name = "MOV immediate {1}")
@@ -49,7 +49,7 @@ class ArmArithmeticTest {
 
         machine.cpu.step();
 
-        assertEquals(immediate, machine.cpu.register(0));
+        assertThat(machine.cpu.register(0)).isEqualTo(immediate);
     }
 
     @Test
@@ -65,10 +65,11 @@ class ArmArithmeticTest {
 
         machine.runInstructions(4);
 
-        assertAll(
-                () -> assertEquals(~0x55, machine.cpu.register(2), "MVN"),
-                () -> assertEquals(0x50, machine.cpu.register(3), "BIC"),
-                () -> assertTrue(machine.cpu.zero(), "TEQ compares equal operands"));
+        assertSoftly(softly -> {
+            softly.assertThat(machine.cpu.register(2)).as("MVN").isEqualTo(~0x55);
+            softly.assertThat(machine.cpu.register(3)).as("BIC").isEqualTo(0x50);
+            softly.assertThat(machine.cpu.zero()).as("TEQ compares equal operands").isTrue();
+        });
     }
 
     private static Stream<ArithmeticCase> arithmeticCases() {

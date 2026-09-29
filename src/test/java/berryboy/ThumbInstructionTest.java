@@ -2,9 +2,8 @@ package berryboy;
 
 import static berryboy.EmulatorFixtures.STACK_TOP;
 import static berryboy.EmulatorFixtures.thumb;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -27,7 +26,7 @@ class ThumbInstructionTest {
 
         machine.runInstructions(7);
 
-        assertEquals(((7 << 2) ^ 3) * 8, machine.cpu.register(3));
+        assertThat(machine.cpu.register(3)).isEqualTo(((7 << 2) ^ 3) * 8);
     }
 
     @Test
@@ -39,12 +38,13 @@ class ThumbInstructionTest {
 
         machine.runInstructions(4);
 
-        assertAll(
-                () -> assertEquals(17, machine.cpu.register(0)),
-                () -> assertEquals(19, machine.cpu.register(1)),
-                () -> assertEquals(Memory.ROM_BASE + 8, machine.cpu.pc()),
-                () -> assertTrue(machine.cpu.isThumb()),
-                () -> assertEquals(STACK_TOP, machine.cpu.register(13)));
+        assertSoftly(softly -> {
+            softly.assertThat(machine.cpu.register(0)).isEqualTo(17);
+            softly.assertThat(machine.cpu.register(1)).isEqualTo(19);
+            softly.assertThat(machine.cpu.pc()).isEqualTo(Memory.ROM_BASE + 8);
+            softly.assertThat(machine.cpu.isThumb()).isTrue();
+            softly.assertThat(machine.cpu.register(13)).isEqualTo(STACK_TOP);
+        });
     }
 
     @Test
@@ -57,10 +57,11 @@ class ThumbInstructionTest {
 
         machine.runInstructions(5);
 
-        assertAll(
-                () -> assertEquals(7, machine.cpu.register(6), "subroutine"),
-                () -> assertEquals(9, machine.cpu.register(7), "caller resumed"),
-                () -> assertEquals(Memory.ROM_BASE + 5, machine.cpu.register(14), "Thumb return address"));
+        assertSoftly(softly -> {
+            softly.assertThat(machine.cpu.register(6)).as("subroutine").isEqualTo(7);
+            softly.assertThat(machine.cpu.register(7)).as("caller resumed").isEqualTo(9);
+            softly.assertThat(machine.cpu.register(14)).as("Thumb return address").isEqualTo(Memory.ROM_BASE + 5);
+        });
     }
 
     @Test
@@ -76,11 +77,12 @@ class ThumbInstructionTest {
 
         machine.runInstructions(5);
 
-        assertAll(
-                () -> assertEquals(123, machine.cpu.register(8)),
-                () -> assertEquals(123, machine.cpu.register(1)),
-                () -> assertEquals(Memory.ROM_BASE + 8, machine.cpu.register(2)),
-                () -> assertEquals(STACK_TOP, machine.cpu.register(3)));
+        assertSoftly(softly -> {
+            softly.assertThat(machine.cpu.register(8)).isEqualTo(123);
+            softly.assertThat(machine.cpu.register(1)).isEqualTo(123);
+            softly.assertThat(machine.cpu.register(2)).isEqualTo(Memory.ROM_BASE + 8);
+            softly.assertThat(machine.cpu.register(3)).isEqualTo(STACK_TOP);
+        });
     }
 
     @Test
@@ -95,10 +97,11 @@ class ThumbInstructionTest {
 
         machine.runInstructions(6);
 
-        assertAll(
-                () -> assertEquals(0x80ff, machine.cpu.register(2)),
-                () -> assertEquals(0xff, machine.cpu.register(3)),
-                () -> assertEquals(0x123480ff, machine.cpu.register(4)));
+        assertSoftly(softly -> {
+            softly.assertThat(machine.cpu.register(2)).isEqualTo(0x80ff);
+            softly.assertThat(machine.cpu.register(3)).isEqualTo(0xff);
+            softly.assertThat(machine.cpu.register(4)).isEqualTo(0x123480ff);
+        });
     }
 
     @Test
@@ -110,8 +113,9 @@ class ThumbInstructionTest {
 
         machine.runInstructions(2);
 
-        assertAll(
-                () -> assertEquals(-128, machine.cpu.register(0), "signed byte"),
-                () -> assertEquals(-128, machine.cpu.register(3), "odd signed halfword"));
+        assertSoftly(softly -> {
+            softly.assertThat(machine.cpu.register(0)).as("signed byte").isEqualTo(-128);
+            softly.assertThat(machine.cpu.register(3)).as("odd signed halfword").isEqualTo(-128);
+        });
     }
 }
