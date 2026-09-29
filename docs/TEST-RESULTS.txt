@@ -1,0 +1,52 @@
+BerryBoy Advance 0.4 — JUnit 5 migration and refactor validation
+
+Host: Eclipse Adoptium 21.0.12.1, Linux
+Build: Apache Maven 3.9.9; Java release 21; no preview features
+Tests: JUnit Jupiter 5.13.4; Maven Surefire 3.5.2
+
+mvn verify: BUILD SUCCESS
+Tests run: 860, Failures: 0, Errors: 0, Skipped: 0
+
+Suites (parameterized invocations count separately):
+- berryboy.ArmArithmeticTest: 515
+- berryboy.ArmConditionTest: 256
+- berryboy.ArmMultiplyTest: 2
+- berryboy.ArmShiftTest: 19
+- berryboy.ArmTransferTest: 11
+- berryboy.BitmapRendererTest: 3
+- berryboy.CartridgeTest: 2
+- berryboy.CpuExecutionTest: 2
+- berryboy.CpuFaultTest: 3
+- berryboy.CpuStatusTest: 3
+- berryboy.DemoRomTest: 2
+- berryboy.LegacyCoreTest: 1
+- berryboy.LegacyExportTest: 6
+- berryboy.MemoryTest: 10
+- berryboy.ThumbInstructionTest: 6
+- berryboy.desktop.LaunchCommandTest: 19
+
+JUnit Platform Console 1.13.4, JDK 21:
+- Complete host suite: 860 passed, none skipped.
+- Exported core: 834 tests tagged core passed, none skipped.
+- LegacyExport: 237 supported syntax rewrites.
+- Generated sources compiled with --release 8.
+- LegacyCoreTest also loads generated classes with a platform-parent classloader.
+
+Desktop validation:
+- mvn compile exec:java -Dexec.args="demo --headless": BUILD SUCCESS.
+- 200,000 guest instructions, final PC=0x080000fa, Thumb.
+- Demo ROM and PNG remain byte-identical to version 0.3.
+- Runnable JAR contains Java 21 class files and excludes tests/JUnit.
+
+Source viewer validation:
+- All 47 embedded files and rendered lines match the current source files.
+- JavaScript syntax and method navigation checks pass.
+- Shell scripts pass bash -n.
+
+Not verified:
+- Legacy JDK 6 + BlackBerry SDK compilation and RAPC conversion.
+- Wine/BlackBerry Simulator or a physical Bold 9900.
+- External ARM/GBA conformance ROMs, timing and commercial game compatibility.
+- Interactive source viewer on a real mobile browser.
+
+These are project regression tests, not ARM or BlackBerry certification.

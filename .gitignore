@@ -1,0 +1,4 @@
+/target/
+/build/
+*.class
+/blackberry-local.properties
