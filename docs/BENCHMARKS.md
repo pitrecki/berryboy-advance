@@ -76,9 +76,13 @@ items as separate, reviewable changes with their own tests.
    Validation: 931 host tests and 869 exported-core tests passed, including
    exact deadlines, stable ties, cancellation/replacement, replay, reset,
    overflow and callback failure recovery (`CycleSchedulerTest`).
-2. **CPU and bus timing:** account for ARM/Thumb execution, conditional paths,
+2. **CPU and bus timing (initial implementation):** account for ARM/Thumb execution, conditional paths,
    branch/pipeline effects, memory regions, sequential accesses and WAITCNT.
    Test representative cycle traces against documented ARM7TDMI/GBA behavior.
+   `BusTimingTest` covers wait-state selection, memory widths, conditional
+   execution, register shifts, branch refill and device deadlines during a
+   load. Game Pak prefetch is rejected; contention, prefetch and pipeline
+   overlap need hardware/reference qualification before this step is complete.
 3. **LCD events:** schedule 1232 cycles per scanline and 228 lines per frame
    (280896 cycles), with HBlank/VBlank, VCOUNT and DISPSTAT transitions and IRQ
    requests. Test boundaries and several consecutive frames without drift.
@@ -163,8 +167,9 @@ alone cannot pass the gate.
 
 ## Current blockers and evidence
 
-The current PPU renders BG2 bitmap snapshots. There is no cycle scheduler,
-full PPU, complete mixer, cartridge peripheral support or commercial-game
+The current PPU renders BG2 bitmap snapshots. A portable cycle scheduler and
+initial CPU/bus timing are implemented. There is no full PPU, complete mixer,
+cartridge peripheral support or commercial-game
 benchmark runner. The new desktop session is an interactive diagnostic.
 No benchmark ROMs, save states or reference captures were supplied for this
 update. Consequently all five entries remain unrun, and 60 FPS on either target

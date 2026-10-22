@@ -22,7 +22,12 @@ Operand names describe their roles, such as `destination`, `baseRegister` and
 
 ## CPU
 
-The ARMv4T interpreter advances by instruction, without cycle timing. Internally,
+The ARMv4T interpreter advances the shared guest clock for instruction/data bus
+transfers, internal execution cycles and branch refills. `BusTiming` models
+memory widths and WAITCNT waits; `InstructionTiming` models internal cycles.
+Game Pak prefetch is rejected explicitly; display-bus contention and full
+pipeline overlap remain unverified. This is a timing foundation, not a claim of
+hardware-cycle accuracy across games. Internally,
 `r15` holds the next instruction address; operand reads add the pipeline offset.
 ARM reads use PC+8, or PC+12 for register shifts and STR. Thumb reads use PC+4.
 
@@ -82,7 +87,8 @@ instructions do not yet advance an emulated clock, so audio register writes are
 not synchronized to CPU cycles. Channel 1, wave/noise channels, Direct Sound,
 timer/DMA refill, PWM/BIAS effects and hardware sequencer edge cases remain open.
 
-The next step is a shared timing scheduler before extending graphics and audio.
+The shared timing scheduler now exists; LCD, timer, DMA and IRQ integration
+must follow before extending graphics and synchronized audio.
 See [BENCHMARKS.md](BENCHMARKS.md) for the implementation order and measurement gate.
 
 ## Java and performance

@@ -1,7 +1,7 @@
 package berryboy;
 
 /**
- * ARM7TDMI execution loop. One step executes one guest instruction, not one clock.
+ * ARM7TDMI execution loop. One step executes an instruction and advances guest cycles.
  * The interpreters and register banks are created once and reused for every step.
  */
 public final class Cpu {
@@ -35,22 +35,28 @@ public final class Cpu {
     public void step() {
         var address = state.programCounter();
         var thumbMode = state.isThumb();
-        var opcode = thumbMode ? memory.read16(address) : memory.read32(address);
-        state.beginInstruction(thumbMode ? 2 : 4);
-
+        int opcode = 0;
         try {
+            opcode = memory.fetch(address, thumbMode);
+            state.beginInstruction(thumbMode ? 2 : 4);
+            var execute = thumbMode || state.conditionPassed(opcode >>> 28);
+            var internal = execute ? InstructionTiming.internal(opcode, thumbMode, state) : 0;
             if (thumbMode) {
                 thumb.execute(opcode);
-            } else if (state.conditionPassed(opcode >>> 28)) {
+            } else if (execute) {
                 arm.execute(opcode);
             }
+            memory.clock().advance(internal);
+            if (state.branched()) memory.busTiming().refill(state.programCounter(), state.isThumb() ? 2 : 4);
             instructionCount++;
         } catch (EmulationException error) {
             // A diagnostic stop restores PC, but does not roll back memory side effects.
             state.writeRegister(CpuState.PROGRAM_COUNTER, address);
-            throw new EmulationException(error.getMessage()
-                    + " [opcode=0x" + Integer.toHexString(opcode)
+            memory.busTiming().invalidateFetch();
+            throw new EmulationException(error.getMessage() + " [opcode=0x" + Integer.toHexString(opcode)
                     + ", pc=0x" + Integer.toHexString(address) + "]");
+        } finally {
+            memory.finishInstruction();
         }
     }
 
@@ -67,6 +73,7 @@ public final class Cpu {
     }
 
     public void setPc(int address) {
+        memory.busTiming().invalidateFetch();
         state.writeRegister(CpuState.PROGRAM_COUNTER, address);
     }
 

@@ -28,6 +28,9 @@ public final class Memory {
     private byte[] bios;
     private final Keypad keypad = new Keypad();
     private final AudioUnit audio = new AudioUnit();
+    private final CycleScheduler clock = new CycleScheduler();
+    private final BusTiming bus = new BusTiming(clock);
+    private boolean cpuAccess;
 
     public Memory(Cartridge cartridge) {
         this.cartridge = cartridge;
@@ -54,7 +57,24 @@ public final class Memory {
         return audio;
     }
 
+    public CycleScheduler clock() { return clock; }
+
+    public BusTiming busTiming() { return bus; }
+
+    int fetch(int address, boolean thumb) {
+        bus.fetch(address, thumb ? 2 : 4);
+        cpuAccess = true;
+        return thumb ? rawRead16(address) : rawRead16(address) | (rawRead16(address + 2) << 16);
+    }
+
+    void finishInstruction() { cpuAccess = false; }
+
     public int read8(int address) {
+        if (cpuAccess) bus.data(address, 1, false);
+        return rawRead8(address);
+    }
+
+    private int rawRead8(int address) {
         return switch (address >>> 24) {
             case 0x00 -> readBios(address);
             case 0x02 -> externalRam[address & 0x3ffff] & 0xff;
@@ -69,14 +89,21 @@ public final class Memory {
     }
 
     public int read16(int address) {
-        return read8(address) | (read8(address + 1) << 8);
+        if (cpuAccess) bus.data(address, 2, false);
+        return rawRead16(address);
+    }
+
+    private int rawRead16(int address) {
+        return rawRead8(address) | (rawRead8(address + 1) << 8);
     }
 
     public int read32(int address) {
-        return read16(address) | (read16(address + 2) << 16);
+        if (cpuAccess) bus.data(address, 4, false);
+        return rawRead16(address) | (rawRead16(address + 2) << 16);
     }
 
     public void write8(int address, int value) {
+        if (cpuAccess) bus.data(address, 1, true);
         var region = address >>> 24;
         if (region == 0x05) {
             writeRepeatedByte(address, value);
@@ -89,15 +116,21 @@ public final class Memory {
     }
 
     public void write16(int address, int value) {
+        if (cpuAccess) bus.data(address, 2, true);
+        rawWrite16(address, value);
+    }
+
+    private void rawWrite16(int address, int value) {
         var alignedAddress = address & ~1;
         writeByteLane(alignedAddress, value);
         writeByteLane(alignedAddress + 1, value >>> 8);
     }
 
     public void write32(int address, int value) {
+        if (cpuAccess) bus.data(address, 4, true);
         var alignedAddress = address & ~3;
-        write16(alignedAddress, value);
-        write16(alignedAddress + 2, value >>> 16);
+        rawWrite16(alignedAddress, value);
+        rawWrite16(alignedAddress + 2, value >>> 16);
     }
 
     private int readBios(int address) {
@@ -119,6 +152,7 @@ public final class Memory {
     }
 
     private int readIo(int address) {
+        if ((address & ~1) == IO_BASE + 0x204) return (bus.waitControl() >>> ((address & 1) * 8)) & 0xff;
         if (address == KEY_INPUT) {
             return keypad.readInput() & 0xff;
         }
@@ -135,6 +169,11 @@ public final class Memory {
     }
 
     private void writeIo(int address, int value) {
+        if ((address & ~1) == IO_BASE + 0x204) {
+            var shift = (address & 1) * 8;
+            bus.setWaitControl((bus.waitControl() & ~(255 << shift)) | ((value & 255) << shift));
+            return;
+        }
         if (address == KEY_INPUT || address == KEY_INPUT + 1) {
             return; // KEYINPUT is read-only.
         }
@@ -150,7 +189,7 @@ public final class Memory {
 
     private void writeRepeatedByte(int address, int value) {
         // Palette and background VRAM repeat byte writes across both bus lanes.
-        write16(address & ~1, (value & 0xff) * 0x101);
+        rawWrite16(address & ~1, (value & 0xff) * 0x101);
     }
 
     private void writeVideoByte(int address, int value) {

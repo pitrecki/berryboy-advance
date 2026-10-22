@@ -18,6 +18,7 @@ final class CpuState {
 
     private int status = Cpu.SYSTEM;
     private int instructionAddress;
+    private boolean branched;
 
     int register(int index) {
         return registers[index];
@@ -26,6 +27,7 @@ final class CpuState {
     void writeRegister(int index, int value) {
         if (index == PROGRAM_COUNTER) {
             value &= isThumb() ? ~1 : ~3;
+            branched = true;
         }
         registers[index] = value;
     }
@@ -35,9 +37,12 @@ final class CpuState {
     }
 
     void beginInstruction(int width) {
+        branched = false;
         instructionAddress = programCounter();
         registers[PROGRAM_COUNTER] += width;
     }
+
+    boolean branched() { return branched; }
 
     int instructionAddress() {
         return instructionAddress;
@@ -62,7 +67,7 @@ final class CpuState {
 
         switchRegisterBank(mode(), nextMode);
         status = value & IMPLEMENTED_STATUS_BITS;
-        writeRegister(PROGRAM_COUNTER, programCounter());
+        registers[PROGRAM_COUNTER] &= isThumb() ? ~1 : ~3;
     }
 
     int mode() {
