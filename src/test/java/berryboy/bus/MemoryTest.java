@@ -80,7 +80,7 @@ class MemoryTest {
     @Test
     void exposesDisabledTimerAndStillRejectsUnsupportedIo() {
         assertThat(memory.read16(Memory.IO_BASE + 0x100)).isZero();
-        assertThatThrownBy(() -> memory.read16(Memory.IO_BASE + 0x120))
+        assertThatThrownBy(() -> memory.read16(Memory.IO_BASE + 0x412))
                 .isInstanceOf(EmulationException.class);
     }
 
@@ -92,7 +92,7 @@ class MemoryTest {
         memory.write8(0x04000410, 255);
         assertThat(memory.read16(0x04000200)).isEqualTo(0x1234);
         assertThat(memory.read16(0x04000204)).isEqualTo(0x18);
-        assertThatThrownBy(() -> memory.write16(0x04000120, 1)).isInstanceOf(EmulationException.class);
+        assertThatThrownBy(() -> memory.write16(0x04000128, 0x3080)).isInstanceOf(EmulationException.class);
     }
 
     @Test

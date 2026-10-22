@@ -113,9 +113,15 @@ items as separate, reviewable changes with their own tests.
    Reserved I/O writes and the undocumented BIOS write at `0x04000410` are
    handled; internal WRAM control/mirrors and wait settings are modeled.
    The supplied BIOS Div SWI returned quotient 726/remainder 3 for 12345/17.
-   Cold boot currently stops on unimplemented serial I/O (`0x04000120`);
-   this is distinct from a validated game boot. Validation: 992 host and
-   926 exported-core tests passed.
+   `serial.SerialUnit` now supplies reset/disconnected SIO and normal internal-
+   clock shifts; external-clock transfers wait for a peer, and multiplayer/UART
+   transfers report the missing link backend. The supplied BIOS reset ran for
+   180 frames and produced the GAME BOY animation, 98752 stereo samples, zero
+   missing guest frames and zero software audio-buffer failures. Eight cold
+   work deadlines were missed; this is not performance qualification. The
+   original demo lacks a BIOS-accepted cartridge logo, so full game boot remains
+   unverified. Latest regression validation: 1003 host and 929 exported-core
+   tests passed. BIOS data and captures remain outside Git.
 6. **Integrated timing regression (implemented):** run a small original test ROM combining
    LCD events, timers, DMA and IRQ, recording cycle-stamped checkpoints.
    Require identical guest results across repeated host and exported-core runs

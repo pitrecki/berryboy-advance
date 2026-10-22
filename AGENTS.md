@@ -24,7 +24,7 @@
 - Prefer small classes with one responsibility and named hardware constants.
   Explain register behavior and timing assumptions beside the relevant code.
 - Group core code and tests by feature (`cpu`, `bus`, `timing`, `video`, `audio`,
-  `cartridge`, `input`). Keep the root for composition and diagnostics. Preserve
+  `cartridge`, `input`, `serial`). Keep the root for composition and diagnostics. Preserve
   device ports/listeners rather than introducing dependencies on decoder internals.
 - Keep guest state on its deterministic emulation owner. Parallel host work must
   receive owned snapshots through bounded queues, propagate failures and apply

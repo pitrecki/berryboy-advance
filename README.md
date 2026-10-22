@@ -152,6 +152,7 @@ startup alone is not a passing integration test; inspect the MIDlet's result.
 | `berryboy.audio` | PSG channels, Direct Sound and bounded clocked PCM |
 | `berryboy.cartridge` | ROM headers, backup protocols, GPIO, RTC and sensors |
 | `berryboy.input` | Portable keypad state and button definitions |
+| `berryboy.serial` | Disconnected SIO, clocked normal shifts and GPIO/JOY registers |
 | `berryboy.desktop` | CLI, Swing integration, scenario capture and host persistence |
 | `berryboy.desktop.concurrent` | Bounded ordered host workers and failure propagation |
 | `berryboy.desktop.capture` | Snapshot ownership, report encoding and parallel recording IO |
@@ -165,7 +166,7 @@ preserves feature directories and excludes the desktop/build packages.
 
 ## Verification
 
-- `mvn verify`: **1000 passing tests** on Linux, JDK 21 and Maven 3.9.11 (2026-10-22).
+- `mvn verify`: **1003 passing tests** on Linux, JDK 21 and Maven 3.9.11 (2026-10-22).
 - **864 core tests** repeated against the exported classes through Jupiter.
 - Test counts include individual parameterized invocations, not assertion counts.
 - The exporter performs 248 syntax rewrites. Generated sources compile with

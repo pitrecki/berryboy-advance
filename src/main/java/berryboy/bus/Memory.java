@@ -7,6 +7,7 @@ import berryboy.cartridge.Cartridge;
 import berryboy.cartridge.CartridgeBackup;
 import berryboy.cartridge.CartridgeGpio;
 import berryboy.input.Keypad;
+import berryboy.serial.SerialUnit;
 import berryboy.timing.CycleScheduler;
 import berryboy.timing.InterruptController;
 import berryboy.timing.TimerOverflowListener;
@@ -47,6 +48,7 @@ public final class Memory implements VideoBus {
     private final CycleScheduler clock = new CycleScheduler();
     private final BusTiming bus = new BusTiming(clock);
     private final InterruptController interrupts = new InterruptController();
+    private final SerialUnit serial = new SerialUnit(clock, interrupts);
     private final LcdTiming lcd = new LcdTiming(clock, interrupts);
     private final TimerUnit timers = new TimerUnit(clock, interrupts);
     private final DmaController dma = new DmaController(this);
@@ -276,6 +278,7 @@ public final class Memory implements VideoBus {
     }
 
     private int readIo(int address) {
+        if (SerialUnit.handles(address)) return serial.read8(address);
         if ((address & 0xfffc) == 0x800) return (memoryControl >>> ((address & 3) * 8)) & 255;
         if (address >= IO_BASE + 0xb0 && address < IO_BASE + 0xe0) return dma.read8(address);
         if (address == IO_BASE + 0x300) return postFlag;
@@ -301,6 +304,7 @@ public final class Memory implements VideoBus {
     }
 
     private void writeIo(int address, int value) {
+        if (SerialUnit.handles(address)) { serial.write8(address, value); return; }
         if (address == IO_BASE + 0x410) return; // Documented BIOS write; purpose unknown.
         if ((address & 0xfffc) == 0x800) {
             var shift = (address & 3) * 8;
@@ -416,7 +420,8 @@ public final class Memory implements VideoBus {
     private static boolean unusedIo(int offset) {
         return (offset >= 0x56 && offset < 0x60) || (offset >= 0x8a && offset < 0x90)
                 || (offset >= 0xa8 && offset < 0xb0) || (offset >= 0xe0 && offset < 0x100)
-                || (offset >= 0x110 && offset < 0x120) || (offset >= 0x136 && offset < 0x140)
+                || (offset >= 0x110 && offset < 0x120) || (offset >= 0x12c && offset < 0x130)
+                || (offset >= 0x136 && offset < 0x140)
                 || (offset >= 0x142 && offset < 0x150) || (offset >= 0x15a && offset < 0x200)
                 || (offset >= 0x206 && offset < 0x208) || (offset >= 0x20a && offset < 0x300)
                 || (offset >= 0x302 && offset < 0x400);

@@ -3,7 +3,7 @@
 ## Responsibilities
 
 Production and test sources are grouped by feature: `cpu`, `bus`, `timing`,
-`video`, `audio`, `cartridge` and `input`. The `berryboy` root contains composition
+`video`, `audio`, `cartridge`, `input` and `serial`. The `berryboy` root contains composition
 and diagnostic entry points. Desktop and build tooling remain host-only.
 
 CPU execution depends on the bus; devices do not call into CPU internals.
