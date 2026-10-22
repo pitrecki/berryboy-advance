@@ -37,6 +37,76 @@ as emulator frame drops.
 6. **Performance qualification:** run the five-game suite below with all sound
    enabled, compare software and accelerated output, then repeat on the Bold.
 
+## Delivery milestones
+
+Roadmap updated on 2026-10-22. All implementation milestones below are planned;
+the completed baseline is the imported ARM/Thumb interpreter, bitmap diagnostic,
+channel-two audio, keypad controls, legacy exporter and Linux verification.
+Local validation passed 926 host tests and 864 exported-core tests, plus headless
+video/audio demos and documentation capture. These results do not establish
+commercial-game compatibility or BlackBerry device readiness.
+
+| Milestone | Deliverables | Completion evidence |
+| --- | --- | --- |
+| M1: Shared timing | Guest cycle clock, deterministic scheduler, CPU/bus costs, LCD timing, timers, DMA, IRQ and BIOS integration | Focused timing ROMs and tests verify event boundaries, ordering, interrupt entry/return and repeatable guest state |
+| M2: Software graphics | Complete PPU features listed above, driven by scanline timing | Pixel comparisons for each feature and combined scenes, including register writes during display |
+| M3: Synchronized audio | All PSG channels, Direct Sound, timer/DMA refill and bounded output queues | Reference PCM comparisons, sample-count checks and measured A/V drift with no buffer failures |
+| M4: Cartridge compatibility | Persistent save types, RTC and required cartridge peripherals | Save/reload round trips, command-sequence tests and deterministic sensor playback |
+| M5: Reproducible game runner | Local ROM/BIOS mapping, recorded input, frame/audio checkpoints and machine-readable reports | The same inputs reproduce guest checkpoints; missing assets fail explicitly rather than skip a game |
+| M6: Platform validation and optimization | Profile-guided improvements, BlackBerry build/playback/input checks and optional supported acceleration | Output matches the software reference; Linux and Bold 9900 reports identify their own hardware and runtime |
+| M7: Sustained playback qualification | Execute the complete five-game protocol on each target | All correctness, frame deadline, audio and drift gates below pass for every recorded run |
+
+Develop M1 through M4 in dependency order. Build M5 as deterministic timing and
+capture interfaces become available, before performance qualification. Validate
+the BlackBerry export/build incrementally during earlier milestones; do not
+defer platform compatibility until optimization. M7 depends on all earlier
+milestones and on the external assets and device access listed below.
+
+### Immediate queue: timing foundation
+
+The next implementation commit should cover the first item only. Keep later
+items as separate, reviewable changes with their own tests.
+
+1. **Cycle clock and scheduler:** introduce a portable guest clock and event
+   queue, with explicit ordering for events at the same cycle. Test exact
+   deadlines, advancement across multiple events, reset, large cycle counts and
+   deterministic replay. Keep instruction counts as a separate diagnostic;
+   this initial infrastructure does not claim accurate instruction timing.
+2. **CPU and bus timing:** account for ARM/Thumb execution, conditional paths,
+   branch/pipeline effects, memory regions, sequential accesses and WAITCNT.
+   Test representative cycle traces against documented ARM7TDMI/GBA behavior.
+3. **LCD events:** schedule 1232 cycles per scanline and 228 lines per frame
+   (280896 cycles), with HBlank/VBlank, VCOUNT and DISPSTAT transitions and IRQ
+   requests. Test boundaries and several consecutive frames without drift.
+4. **Timers and DMA:** implement prescalers, overflow/reload, timer cascading,
+   DMA triggers, transfer widths, repeat behavior and CPU/bus interaction.
+   Cover simultaneous events and transfer completion IRQs.
+5. **Interrupts and BIOS:** implement IE/IF/IME behavior, CPU IRQ masking and
+   exception return, HALT/wakeup and an explicit BIOS boot/service strategy.
+   Keep the diagnostic cartridge entry distinct from verified BIOS boot.
+6. **Integrated timing regression:** run a small original test ROM combining
+   LCD events, timers, DMA and IRQ, recording cycle-stamped checkpoints.
+   Require identical guest results across repeated host and exported-core runs
+   before moving to the complete PPU.
+
+### Prerequisites and delivery rules
+
+- Early timing and hardware regression tests should use original project ROMs
+  and require no commercial games or external BIOS files.
+- Before M5 game validation, provide local game dumps, BIOS where required,
+  region/revision and hashes, saves, reference captures and deterministic
+  input/sensor traces. Keep these assets outside Git as described below.
+- BlackBerry validation requires the SDK, compatible JDK/tooling, simulator
+  access and a physical Bold 9900 for final audio, input and performance checks.
+  Host export tests cannot satisfy the device gate.
+- Every implementation change must pass `mvn verify`; changes to the portable
+  core or exporter must also pass `tools/test-with-console.sh`. Add focused
+  hardware tests for new behavior and record actual outcomes and limitations.
+- Deliver tested changes as small English-language commits and push them to
+  the configured repository. Use the configured author identity; preserve
+  published history. Mark milestones complete only with linked commit and
+  validation evidence, and keep planned, failed, blocked and passed runs distinct.
+
 ## Five-game candidate suite
 
 [suite.json](../benchmarks/suite.json) records the proposed tests and their

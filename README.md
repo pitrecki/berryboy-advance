@@ -194,7 +194,12 @@ demos after publication. A local pass does not establish a remote CI pass.
 
 ## Next steps
 
-The next milestone is full GBA graphics, platform-appropriate acceleration,
+Start with the shared guest cycle clock and deterministic event scheduler, then
+add CPU/bus timing, LCD events, timers, DMA, IRQ and BIOS integration. The
+[delivery milestones and immediate queue](docs/BENCHMARKS.md#delivery-milestones)
+define the implementation sequence and completion evidence for each stage.
+
+The long-term goal is full GBA graphics, platform-appropriate acceleration,
 unusual cartridge hardware and synchronized sound, validated by five demanding
 games at native refresh without emulator frame skips or audio underruns.
 [The benchmark plan](docs/BENCHMARKS.md) defines the candidate games, missing
