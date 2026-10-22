@@ -74,8 +74,9 @@ class MemoryTest {
     }
 
     @Test
-    void rejectsUnimplementedTimerRegisters() {
-        assertThatThrownBy(() -> memory.read16(Memory.IO_BASE + 0x100))
+    void exposesDisabledTimerAndStillRejectsUnsupportedIo() {
+        assertThat(memory.read16(Memory.IO_BASE + 0x100)).isZero();
+        assertThatThrownBy(() -> memory.read16(Memory.IO_BASE + 0x120))
                 .isInstanceOf(EmulationException.class);
     }
 }

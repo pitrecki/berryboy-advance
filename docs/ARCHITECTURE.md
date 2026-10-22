@@ -87,8 +87,10 @@ instructions do not yet advance an emulated clock, so audio register writes are
 not synchronized to CPU cycles. Channel 1, wave/noise channels, Direct Sound,
 timer/DMA refill, PWM/BIAS effects and hardware sequencer edge cases remain open.
 
-The shared timing scheduler now exists; LCD, timer, DMA and IRQ integration
-must follow before extending graphics and synchronized audio.
+The shared scheduler drives LCD HBlank/VBlank/VCOUNT and four reloadable,
+prescaled/cascaded timers. IE/IF/IME expose interrupt requests with write-one-to-
+clear acknowledgement. DMA and CPU exception delivery must follow before
+extending graphics and synchronized audio.
 See [BENCHMARKS.md](BENCHMARKS.md) for the implementation order and measurement gate.
 
 ## Java and performance

@@ -30,6 +30,9 @@ public final class Memory {
     private final AudioUnit audio = new AudioUnit();
     private final CycleScheduler clock = new CycleScheduler();
     private final BusTiming bus = new BusTiming(clock);
+    private final InterruptController interrupts = new InterruptController();
+    private final LcdTiming lcd = new LcdTiming(clock, interrupts);
+    private final TimerUnit timers = new TimerUnit(clock, interrupts);
     private boolean cpuAccess;
 
     public Memory(Cartridge cartridge) {
@@ -60,6 +63,10 @@ public final class Memory {
     public CycleScheduler clock() { return clock; }
 
     public BusTiming busTiming() { return bus; }
+
+    public InterruptController interrupts() { return interrupts; }
+
+    public LcdTiming lcd() { return lcd; }
 
     int fetch(int address, boolean thumb) {
         bus.fetch(address, thumb ? 2 : 4);
@@ -152,6 +159,9 @@ public final class Memory {
     }
 
     private int readIo(int address) {
+        if (InterruptController.handles(address)) return interrupts.read8(address);
+        if (address >= IO_BASE + 4 && address <= IO_BASE + 7) return lcd.read8(address);
+        if (address >= IO_BASE + 0x100 && address < IO_BASE + 0x110) return timers.read8(address);
         if ((address & ~1) == IO_BASE + 0x204) return (bus.waitControl() >>> ((address & 1) * 8)) & 0xff;
         if (address == KEY_INPUT) {
             return keypad.readInput() & 0xff;
@@ -169,6 +179,9 @@ public final class Memory {
     }
 
     private void writeIo(int address, int value) {
+        if (InterruptController.handles(address)) { interrupts.write8(address, value); return; }
+        if (address >= IO_BASE + 4 && address <= IO_BASE + 7) { lcd.write8(address, value); return; }
+        if (address >= IO_BASE + 0x100 && address < IO_BASE + 0x110) { timers.write8(address, value); return; }
         if ((address & ~1) == IO_BASE + 0x204) {
             var shift = (address & 1) * 8;
             bus.setWaitControl((bus.waitControl() & ~(255 << shift)) | ((value & 255) << shift));

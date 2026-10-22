@@ -39,7 +39,7 @@ as emulator frame drops.
 
 ## Delivery milestones
 
-Roadmap updated on 2026-10-22. All implementation milestones below are planned;
+Roadmap updated on 2026-10-22. M1 is in progress; later milestones are planned.
 the completed baseline is the imported ARM/Thumb interpreter, bitmap diagnostic,
 channel-two audio, keypad controls, legacy exporter and Linux verification.
 Local validation passed 926 host tests and 864 exported-core tests, plus headless
@@ -83,12 +83,16 @@ items as separate, reviewable changes with their own tests.
    execution, register shifts, branch refill and device deadlines during a
    load. Game Pak prefetch is rejected; contention, prefetch and pipeline
    overlap need hardware/reference qualification before this step is complete.
-3. **LCD events:** schedule 1232 cycles per scanline and 228 lines per frame
+3. **LCD events (implemented):** schedule 1232 cycles per scanline and 228 lines per frame
    (280896 cycles), with HBlank/VBlank, VCOUNT and DISPSTAT transitions and IRQ
    requests. Test boundaries and several consecutive frames without drift.
+   `HardwareTimingTest` verifies HBlank at cycle 960, line transitions at 1232,
+   VBlank entry at line 160, status clearing at line 227 and 100-frame stability.
 4. **Timers and DMA:** implement prescalers, overflow/reload, timer cascading,
    DMA triggers, transfer widths, repeat behavior and CPU/bus interaction.
    Cover simultaneous events and transfer completion IRQs.
+   Timer prescalers, reload, cascading, enable/disable and timer IRQ requests
+   are implemented and tested. DMA is the next integration step.
 5. **Interrupts and BIOS:** implement IE/IF/IME behavior, CPU IRQ masking and
    exception return, HALT/wakeup and an explicit BIOS boot/service strategy.
    Keep the diagnostic cartridge entry distinct from verified BIOS boot.
