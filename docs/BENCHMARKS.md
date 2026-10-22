@@ -102,10 +102,14 @@ items as separate, reviewable changes with their own tests.
    IRQ entry/return, interrupt masking, keypad requests, HALT wakeup and a
    supplied-BIOS reset path are implemented. Synthetic BIOS tests cover ARM IRQ
    entry and return to Thumb; real BIOS boot and STOP remain unverified.
-6. **Integrated timing regression:** run a small original test ROM combining
+6. **Integrated timing regression (implemented):** run a small original test ROM combining
    LCD events, timers, DMA and IRQ, recording cycle-stamped checkpoints.
    Require identical guest results across repeated host and exported-core runs
    before moving to the complete PPU.
+   `TimingRomTest` runs an original ARM program that enables a timer and HBlank
+   DMA, polls interrupt flags and writes a completion signature. Repeated
+   cycle/PC/IF traces match; both host and isolated exported-core suites run it.
+   Validation after DMA integration: 951 host and 889 exported-core tests pass.
 
 ### Prerequisites and delivery rules
 
