@@ -41,6 +41,7 @@ public final class Memory {
     private long displayVersion;
     private CartridgeBackup backup;
     private boolean automaticEeprom;
+    private int memoryControl = 0x0d000020;
     private boolean cpuAccess;
     private boolean halted;
     private int postFlag;
@@ -140,7 +141,7 @@ public final class Memory {
     private int rawRead8(int address) {
         return switch (address >>> 24) {
             case 0x00 -> readBios(address);
-            case 0x02 -> externalRam[address & 0x3ffff] & 0xff;
+            case 0x02 -> (memoryControl & 0x20) != 0 ? externalRam[address & 0x3ffff] & 0xff : internalRam[address & 0x7fff] & 0xff;
             case 0x03 -> internalRam[address & 0x7fff] & 0xff;
             case 0x04 -> readIo(address);
             case 0x05 -> palette[address & 0x3ff] & 0xff;
@@ -162,7 +163,7 @@ public final class Memory {
     private int rawRead16(int address) {
         if ((address & 1) == 0) {
             var region = address >>> 24;
-            if (region == 2) return halfword(externalRam, address & 0x3ffff);
+            if (region == 2) return (memoryControl & 0x20) != 0 ? halfword(externalRam, address & 0x3ffff) : halfword(internalRam, address & 0x7fff);
             if (region == 3) return halfword(internalRam, address & 0x7fff);
             if (region == 5) return halfword(palette, address & 0x3ff);
             if (region == 6) return halfword(videoRam, videoRamOffset(address));
@@ -248,6 +249,7 @@ public final class Memory {
     }
 
     private int readIo(int address) {
+        if ((address & 0xfffc) == 0x800) return (memoryControl >>> ((address & 3) * 8)) & 255;
         if (address >= IO_BASE + 0xb0 && address < IO_BASE + 0xe0) return dma.read8(address);
         if (address == IO_BASE + 0x300) return postFlag;
         if (address == IO_BASE + 0x301) return 0;
@@ -272,6 +274,16 @@ public final class Memory {
     }
 
     private void writeIo(int address, int value) {
+        if (address == IO_BASE + 0x410) return; // Documented BIOS write; purpose unknown.
+        if ((address & 0xfffc) == 0x800) {
+            var shift = (address & 3) * 8;
+            var updated = ((memoryControl & ~(255 << shift)) | ((value & 255) << shift)) & 0xff00002f;
+            if ((updated & 1) != 0) throw new EmulationException("WRAM/BIOS swapping is not implemented");
+            bus.setMemoryControl(updated);
+            memoryControl = updated;
+            return;
+        }
+        if (unusedIo(address - IO_BASE)) return;
         if (address >= IO_BASE + 0xb0 && address < IO_BASE + 0xe0) { dma.write8(address, value); return; }
         if (address == IO_BASE + 0x300) { postFlag |= value & 1; return; }
         if (address == IO_BASE + 0x301) {
@@ -331,7 +343,8 @@ public final class Memory {
                 }
                 break;
             case 0x02:
-                externalRam[address & 0x3ffff] = (byte) value;
+                if ((memoryControl & 0x20) != 0) externalRam[address & 0x3ffff] = (byte) value;
+                else internalRam[address & 0x7fff] = (byte) value;
                 break;
             case 0x03:
                 internalRam[address & 0x7fff] = (byte) value;
@@ -370,6 +383,16 @@ public final class Memory {
 
     private static boolean isDisplayRegister(int address) {
         return address >= IO_BASE && address < IO_BASE + 0x56;
+    }
+
+    /** Unmapped holes ignore writes; unsupported real peripherals still diagnose. */
+    private static boolean unusedIo(int offset) {
+        return (offset >= 0x56 && offset < 0x60) || (offset >= 0x8a && offset < 0x90)
+                || (offset >= 0xa8 && offset < 0xb0) || (offset >= 0xe0 && offset < 0x100)
+                || (offset >= 0x110 && offset < 0x120) || (offset >= 0x136 && offset < 0x140)
+                || (offset >= 0x142 && offset < 0x150) || (offset >= 0x15a && offset < 0x200)
+                || (offset >= 0x206 && offset < 0x208) || (offset >= 0x20a && offset < 0x300)
+                || (offset >= 0x302 && offset < 0x400);
     }
 
     private void updateKeyInterrupt() {

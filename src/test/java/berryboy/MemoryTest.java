@@ -79,4 +79,27 @@ class MemoryTest {
         assertThatThrownBy(() -> memory.read16(Memory.IO_BASE + 0x120))
                 .isInstanceOf(EmulationException.class);
     }
+
+    @Test
+    void reservedIoWritesDoNotCorruptNeighborRegistersOrHideUnsupportedDevices() {
+        memory.write16(0x04000200, 0x1234);
+        memory.write32(0x04000204, 0xdead0018); // Upper halfword is reserved.
+        memory.write32(0x040000e0, 0xffffffff);
+        memory.write8(0x04000410, 255);
+        assertThat(memory.read16(0x04000200)).isEqualTo(0x1234);
+        assertThat(memory.read16(0x04000204)).isEqualTo(0x18);
+        assertThatThrownBy(() -> memory.write16(0x04000120, 1)).isInstanceOf(EmulationException.class);
+    }
+
+    @Test
+    void internalMemoryControlMirrorsAndDisabledEwramUsesInternalRam() {
+        assertThat(memory.read32(0x04000800)).isEqualTo(0x0d000020);
+        memory.write32(0x04010800, 0x0e000020);
+        assertThat(memory.busTiming().accessCycles(0x02000000, 4, false)).isEqualTo(4);
+        memory.write32(0x04000800, 0x0d000000);
+        memory.write32(0x02000010, 42);
+        assertThat(memory.read32(0x03000010)).isEqualTo(42);
+        assertThat(memory.busTiming().accessCycles(0x02000000, 4, false)).isEqualTo(1);
+        assertThatThrownBy(() -> memory.write32(0x04000800, 0x0f000020)).isInstanceOf(EmulationException.class);
+    }
 }

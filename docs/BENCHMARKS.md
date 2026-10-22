@@ -110,6 +110,12 @@ items as separate, reviewable changes with their own tests.
    exposed and fixed overly strict validation of temporary SPSR mode bits;
    invalid modes are rejected when restored into CPSR, not when stored.
    Full BIOS/game boot remains under investigation.
+   Reserved I/O writes and the undocumented BIOS write at `0x04000410` are
+   handled; internal WRAM control/mirrors and wait settings are modeled.
+   The supplied BIOS Div SWI returned quotient 726/remainder 3 for 12345/17.
+   Cold boot currently stops on unimplemented serial I/O (`0x04000120`);
+   this is distinct from a validated game boot. Validation: 992 host and
+   926 exported-core tests passed.
 6. **Integrated timing regression (implemented):** run a small original test ROM combining
    LCD events, timers, DMA and IRQ, recording cycle-stamped checkpoints.
    Require identical guest results across repeated host and exported-core runs

@@ -12,6 +12,8 @@ public final class BusTiming {
     private boolean dataWrite;
     private int prefetched;
     private int prefetchCredit;
+    private int ewramCycles = 3;
+    private boolean externalRam = true;
 
     public BusTiming(CycleScheduler clock) {
         this.clock = clock;
@@ -37,10 +39,16 @@ public final class BusTiming {
             if ((address & 0x1ffff) == 0) sequential = false;
             return (sequential ? second : first) + (width == 4 ? second : 0);
         }
-        if (region == 2) return width == 4 ? 6 : 3;
+        if (region == 2) return externalRam ? ewramCycles * (width == 4 ? 2 : 1) : 1;
         if (region == 5 || region == 6) return width == 4 ? 2 : 1;
         if (region == 14 || region == 15) return FIRST_WAIT[waitControl & 3];
         return 1; // BIOS, IWRAM, IO and OAM use a 32-bit bus.
+    }
+
+    void setMemoryControl(int value) {
+        if (((value >>> 24) & 15) == 15) throw new EmulationException("WRAM wait setting locks up hardware");
+        externalRam = (value & 0x20) != 0;
+        ewramCycles = 16 - ((value >>> 24) & 15);
     }
 
     void fetch(int address, int width) {

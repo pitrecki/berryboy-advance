@@ -150,9 +150,9 @@ class AudioUnitTest {
         assertSoftly(softly -> {
             softly.assertThatThrownBy(() -> machine.memory.write16(AudioUnit.MIX_CONTROL, 3))
                     .isInstanceOf(EmulationException.class).hasMessageContaining("ratio");
-            softly.assertThatThrownBy(() -> machine.memory.write32(Memory.IO_BASE + 0xac, 1))
+            softly.assertThatThrownBy(() -> machine.memory.write32(Memory.IO_BASE + 0x120, 1))
                     .isInstanceOf(EmulationException.class);
-            softly.assertThatThrownBy(() -> machine.memory.write16(Memory.IO_BASE + 0x8c, 1))
+            softly.assertThatThrownBy(() -> machine.memory.write16(Memory.IO_BASE + 0x134, 1))
                     .isInstanceOf(EmulationException.class);
         });
         assertThatThrownBy(() -> machine.audio.render(new short[3]))
