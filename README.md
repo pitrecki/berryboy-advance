@@ -126,6 +126,17 @@ Java files and symlinked output files are rejected, while non-Java files remain.
 
 ## BlackBerry Simulator from Linux
 
+Build a COD on Linux with JDE 7.1 and ECJ 4.6.1, without Wine:
+
+```bash
+export BB_JDE_HOME=/path/to/BlackBerry-JDE-7.1.0
+export BB_ECJ_JAR=/path/to/ecj-4.6.1.jar
+mvn -Pbb-sim verify -Dbb.compiler=ecj -Dbb.ecj="$BB_ECJ_JAR" -Dbb.launch=false
+```
+
+This SDK/API/RAPC build is verified. Simulator execution remains a separate
+Wine/runtime check. The alternative Windows compiler route uses:
+
 ```bash
 export BB_JDE_HOME='/path/to/wine/drive_c/BlackBerry JDE 7.1.0'
 export BB_JDK6_HOME='/path/to/wine/drive_c/Java/jdk1.6.0_45'
@@ -133,8 +144,8 @@ export BB_SIMULATOR_HOME='/path/to/wine/drive_c/BlackBerry Simulators/9900'
 mvn -Pbb-sim verify
 ```
 
-The profile uses existing Windows SDK, JDK 6 and simulator installations through
-Wine. It does not download them. Once the `.cod` is loaded, open **BerryBoy Advance**
+The default compiler route uses existing Windows SDK, JDK 6 and simulator
+installations through Wine. It does not download them. Once the `.cod` is loaded, open **BerryBoy Advance**
 in the simulator. The MIDlet runs eight checks inside the device runtime and
 shows `PASS` or `FAILED`, the demo image and keypad state. Device audio playback
 still needs a BlackBerry-specific adapter and verification.
@@ -177,7 +188,9 @@ preserves feature directories and excludes the desktop/build packages.
 - JUnit and AssertJ are excluded from the application JAR and BlackBerry export.
 - Headless demo, WAV encoding, Swing key actions and documentation captures pass.
 - Physical audio output, native window interaction and sustained frame/audio timing remain unverified.
-- **Legacy SDK/RAPC compilation, Wine, the simulator and a physical Bold remain unverified.**
+- Native ECJ/CLDC compilation against JDE 7.1 and vendor RAPC conversion pass;
+  957 tests also pass on the actual CLDC classes.
+- Windows JDK 6, simulator application execution and a physical Bold remain unqualified.
 - These are project regression tests, not ARM certification or external test-ROM results.
 
 The detailed validation record is [docs/TEST-RESULTS.txt](docs/TEST-RESULTS.txt).

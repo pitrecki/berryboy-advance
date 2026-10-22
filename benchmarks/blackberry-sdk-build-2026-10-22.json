@@ -1,0 +1,169 @@
+{
+  "date": "2026-10-22",
+  "base_commit": "94f86f391e74891170d3a63498708ae6108d4812",
+  "source_dirty": true,
+  "workflow": "Native Linux SDK build; Windows preverification checked separately under Wine/QEMU",
+  "java": "Temurin 21.0.8+9",
+  "maven": "3.9.11",
+  "sdk": "BlackBerry JDE 7.1.0",
+  "sdk_installer_sha256": "2bf7117ad26e3e65d8c12032e0a1f90eb7487339169881ac084737e48d30b925",
+  "api_jar": {
+    "path": "/workspace/toolchains/blackberry/jde-7.1.0/sdk/lib/net_rim_api.jar",
+    "bytes": 12942839,
+    "sha256": "b36d23121983e1115bbfa638eaf969c208d673ffb217b5ffc8e3cc90c045bb49"
+  },
+  "rapc_jar": {
+    "path": "/workspace/toolchains/blackberry/jde-7.1.0/sdk/bin/rapc.jar",
+    "bytes": 511588,
+    "sha256": "617107f0ca2b3710544fc12bd63f6da147abfd33d77e87cef1f473bdbf279d0a"
+  },
+  "compiler": {
+    "name": "ECJ",
+    "version": "4.6.1",
+    "coordinate": "org.eclipse.jdt.core.compiler:ecj:4.6.1",
+    "jar_sha256": "9cddda75f4a1b4469e73f44e7b61a3e897d0f657df4797f9106ffe88c4eeade0",
+    "publisher_sha1_verified": true,
+    "source": "1.3",
+    "target": "cldc1.1",
+    "bootclasspath": "vendor net_rim_api.jar only",
+    "classfiles": 45,
+    "classfile_formats": [
+      {
+        "minor": 3,
+        "major": 45
+      }
+    ]
+  },
+  "checks": {
+    "maven_bb_sim_ecj_launch_false": {
+      "status": "passed",
+      "tests": 1040,
+      "failures": 0,
+      "skipped": 0
+    },
+    "console_host": {
+      "status": "passed",
+      "tests": 1040
+    },
+    "console_exported_core": {
+      "status": "passed",
+      "tests": 957
+    },
+    "actual_cldc_class_core": {
+      "status": "passed",
+      "tests": 957,
+      "failures": 0,
+      "skipped": 0,
+      "host_production_classes_on_classpath": false
+    },
+    "rapc": {
+      "status": "passed",
+      "message": "No errors.",
+      "unused_method_warnings": true
+    },
+    "maven_relative_sdk_path": {
+      "status": "passed",
+      "tests": 1040,
+      "log": "/tmp/berryboy-native-relative-sdk-verify.log"
+    },
+    "vendor_preverified_core": {
+      "status": "passed",
+      "tests": 957,
+      "failures": 0,
+      "skipped": 0,
+      "host_production_classes_on_classpath": false
+    }
+  },
+  "artifacts": {
+    "BerryBoyAdvance.cod": {
+      "path": "target/blackberry/output/BerryBoyAdvance.cod",
+      "bytes": 46536,
+      "sha256": "f3825a360f4e90ebd19222b4c0c4d91ccc4d7ef22b055800bb2849a4ad261b8b"
+    },
+    "BerryBoyAdvance.jad": {
+      "path": "target/blackberry/output/BerryBoyAdvance.jad",
+      "bytes": 257,
+      "sha256": "c81fbce6d4b08aeed20bc86f8ae862ce4d40ea93c3e06c05ecd5174c2cf2103b"
+    },
+    "BerryBoyAdvance.jar": {
+      "path": "target/blackberry/output/BerryBoyAdvance.jar",
+      "bytes": 78277,
+      "sha256": "3ee9655cf8bc2023ed6cfd9f2347980b7d5d96b1de3d5e4394a5a995def91c4a"
+    }
+  },
+  "negative_control": {
+    "compiler_target": "1.4",
+    "rapc_exit": 97,
+    "error": "Missing stack map in berryboy.BlackBerryMidlet.commandAction(Command,Displayable) at label 22"
+  },
+  "vendor_preverify": {
+    "executable": {
+      "path": "/workspace/toolchains/blackberry/jde-7.1.0/sdk/bin/preverify.exe",
+      "bytes": 212480,
+      "sha256": "35f19a3bdf7ac038f5127ed535e9a194fa3e0e02ddfca69317fcdbfc329c7b4c"
+    },
+    "status": "passed",
+    "execution": "Wine 10.0 32-bit through QEMU i386 and official Wine preloader",
+    "input_target": "ECJ source/target 1.4",
+    "input_classfiles": 45,
+    "output_classfiles": 45,
+    "changed_classfiles": 38,
+    "rapc_after_preverify": "No errors.",
+    "cod": {
+      "path": "target/blackberry/vendor-preverified-output/BerryBoyAdvance.cod",
+      "bytes": 46708,
+      "sha256": "e01d845913d56d857f26896cf3dfd1cac91f3685a010dc6a07641e984cb445be"
+    },
+    "windows_jdk6_javac": "unrun"
+  },
+  "runtime": {
+    "host_native_i386_loader": "Exec format error",
+    "wine64_command": "cmd /c ver passed",
+    "wine32_qemu_command": "cmd /c ver passed; Wine service cleanup also produced asynchronous QEMU faults",
+    "app_loaded": null,
+    "on_simulator_runtime_checks": null,
+    "physical_bold": "unrun",
+    "initial_simulator_attempts_before_font_setup": {
+      "simulator_jde": {
+        "status": "failed-before-app-load",
+        "exception": "0xc000000d",
+        "address": "0x00b014b1"
+      },
+      "simulator_9900_7_1_0_318": {
+        "status": "failed-before-app-load",
+        "exception": "0xc000000d",
+        "address": "0x00b033d1"
+      }
+    },
+    "simulator_9900_7_1_0_318": {
+      "status": "window-startup-and-controller-connection-confirmed; MIDlet execution unverified",
+      "fixes": "Official Wine preloader under QEMU; private Wine/Liberation fonts and complete Wine initialization",
+      "controller": "Connected to session 9900; LoadCod command sent, application load/result not independently confirmed",
+      "observed_window_titles": [
+        "BlackBerry 9900 Simulator",
+        "BlackBerry Touch"
+      ],
+      "limitation": "Initial informational dialog remains visible after input/message attempts; no completed BBOS boot or MIDlet PASS observed. Initial setup has Xvfb without a window manager."
+    }
+  },
+  "scope": "Compiler/API/RAPC and host-JVM core results only. COD contains the existing original demo/eight portable checks; no commercial ROM frontend, device audio or real-time performance is established.",
+  "local_logs": [
+    "/tmp/berryboy-native-profile-verify.log",
+    "/tmp/berryboy-native-profile-console.log",
+    "/tmp/berryboy-real-cldc-core-tests.log",
+    "/tmp/berryboy-rapc-native-build.log",
+    "/tmp/berryboy-vendor-preverify-preloaded.log",
+    "/tmp/berryboy-rapc-vendor-preverified.log",
+    "/tmp/berryboy-fledge-qemu-fonts-win7.log",
+    "/tmp/berryboy-fledge318-qemu.log",
+    "/tmp/berryboy-fledge318-full-fonts.log",
+    "/tmp/berryboy-fledge-loadcod.log",
+    "/tmp/berryboy-fledge-dialog-controls.log",
+    "/tmp/berryboy-fledge318-lcd-software.log",
+    "/tmp/berryboy-vendor-preverified-core-tests.log"
+  ],
+  "source_files_sha256": {
+    "tools/blackberry.sh": "27bcce0eaf98a4815aa4327f3871d4610a3ee308aa7774f8621d218644634b8b",
+    "pom.xml": "fe66863d484b8781a1de5e4d8a63cdc4a5e4ce4d5a39e7b153fff608c27c47c5"
+  }
+}

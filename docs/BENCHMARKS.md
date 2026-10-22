@@ -85,7 +85,7 @@ See [REFERENCE-VALIDATION.md](REFERENCE-VALIDATION.md) and its linked JSON recor
 | R3 / P1: Audio correctness | Start with late Sonic Advance 3 and Wario Land 4 differences; compare timer/DMA FIFO events, PSG state and sample clocks; distinguish guest-state errors from output gain, filter and resampling differences | Repeatable event/sample checkpoints, justified comparison tolerances and listening review; no unexplained divergence in the selected routes and zero software buffer failures |
 | R4 / P1: Gameplay and player saves | Record fixed routes through actual levels, races, battles and menus; extend manual save/restart/load beyond LeafGreen | Named reference checkpoints for all eleven available titles; save-capable titles restore player progress in fresh BerryBoy and mGBA instances from isolated copies |
 | R5 / P2: Sustained Linux playback | After route correctness passes, profile bottlenecks, optimize one at a time, and run the warmup/measurement protocol below | Three 10-minute runs per qualified scenario after 30-second warmup, actual presentation/audio counters, bounded memory/queues and A/V drift; all acceptance gates below pass |
-| R6 / external prerequisite: BlackBerry qualification | Obtain compatible SDK/JDK and simulator access, build with RAPC, validate playback/input, then repeat on a physical Bold 9900 | Separate reproducible build, simulator and device reports; physical-device correctness and sustained-playback gates pass before a Bold compatibility claim |
+| R6 / SDK build passed; runtime qualification open | Native ECJ/CLDC build against JDE 7.1 and RAPC conversion pass; qualify simulator playback/input, then repeat on a physical Bold 9900 | Separate reproducible build, simulator and device reports; physical-device correctness and sustained-playback gates pass before a Bold compatibility claim |
 
 [R1 diagnosis](REFERENCE-VALIDATION.md#leafgreen-menu-color-precision-diagnosis)
 found a reference-precision difference, rather than a demonstrated guest-state
@@ -97,8 +97,8 @@ R4 input recording can proceed while individual defects are isolated, but a
 route remains failing until its reference differences are explained and fixed.
 R5 depends on correctness for the selected routes. The original five-game suite
 also needs its two missing assets; eleven uploaded titles do not silently replace
-that qualification suite. R6 is blocked on tooling and device access, not on
-additional host test counts.
+that qualification suite. R6 now has SDK compilation and COD evidence; simulator
+execution and physical-device access remain separate gates.
 
 ### Concrete next commits
 
@@ -386,9 +386,11 @@ warmup and repeated comparison. No physical deadline or audible output result
 is inferred. Work timings cover emulation, excluding file encoding/presentation.
 Reports/JFR files remain under ignored `target/profile-*`.
 
-BlackBerry verification is blocked: `tools/blackberry.sh --launch false` exits
-with `Missing wine`; vendor SDK/JDK6 bindings are absent. No physical Bold is
-available, and the user confirms that they do not have SDK/JDK6 tooling.
+BlackBerry SDK compilation is now verified: ECJ 4.6.1 emits CLDC stack maps
+against JDE 7.1 and the original RAPC produces a COD without errors. The native
+Linux path does not need Windows JDK 6. All 957 core tests pass again using the
+actual CLDC classes. See [BLACKBERRY.md](BLACKBERRY.md) and its evidence record
+for reproduction and Wine/simulator limitations. No physical Bold is available.
 GPU acceleration is not claimed without a supported target backend.
 
 ## Hardware references

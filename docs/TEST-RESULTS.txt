@@ -16,6 +16,15 @@ palette, VRAM and OAM at frame 1029. All 19632 RGB differences are explained by
 native 5-bit versus mGBA RGB888 darkening. Exact-menu qualification stays open.
 Checkpoint capture preserves previous full RGB/PCM/save hashes; room remains exact.
 
+Native BlackBerry SDK build: ECJ 4.6.1, source 1.3 / target CLDC 1.1,
+JDE 7.1 net_rim_api.jar bootclasspath and original RAPC jar on JDK 21.
+Full bb-sim Maven profile (ecj, launch=false): BUILD SUCCESS; 1040 tests pass.
+SDK compiler and RAPC: no errors; BerryBoyAdvance.cod produced.
+Actual CLDC-class core suite: 957 passed; 0 failed/skipped, no host core fallback.
+Plain Java 1.4 target previously failed RAPC with a missing StackMap; the CLDC
+compiler target fixes it. Default Windows javac builds now explicitly preverify.
+See docs/BLACKBERRY.md and benchmarks/blackberry-sdk-build-2026-10-22.json.
+
 Historical imported validation record follows unchanged:
 
 BerryBoy Advance 0.6 — isolated export, initial audio and controls

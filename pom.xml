@@ -13,6 +13,8 @@
     <bb.sdk>${env.BB_JDE_HOME}</bb.sdk>
     <bb.jdk6>${env.BB_JDK6_HOME}</bb.jdk6>
     <bb.simulator>${env.BB_SIMULATOR_HOME}</bb.simulator>
+    <bb.compiler>jdk6</bb.compiler>
+    <bb.ecj>${env.BB_ECJ_JAR}</bb.ecj>
     <bb.model>9900</bb.model>
     <bb.launch>true</bb.launch>
   </properties>
@@ -140,6 +142,10 @@
                     <argument>${bb.jdk6}</argument>
                     <argument>--simulator</argument>
                     <argument>${bb.simulator}</argument>
+                    <argument>--compiler</argument>
+                    <argument>${bb.compiler}</argument>
+                    <argument>--ecj</argument>
+                    <argument>${bb.ecj}</argument>
                     <argument>--model</argument>
                     <argument>${bb.model}</argument>
                     <argument>--launch</argument>
