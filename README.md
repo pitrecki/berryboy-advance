@@ -166,7 +166,7 @@ preserves feature directories and excludes the desktop/build packages.
 
 ## Verification
 
-- `mvn verify`: **1003 passing tests** on Linux, JDK 21 and Maven 3.9.11 (2026-10-22).
+- `mvn verify`: **1005 passing tests** on Linux, JDK 21 and Maven 3.9.11 (2026-10-22).
 - **864 core tests** repeated against the exported classes through Jupiter.
 - Test counts include individual parameterized invocations, not assertion counts.
 - The exporter performs 248 syntax rewrites. Generated sources compile with

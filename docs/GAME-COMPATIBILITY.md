@@ -10,7 +10,26 @@ Host: Linux x86_64, Java 21.0.8+9. Full per-game hashes, counters, runtime metad
 errors and replay evidence are in
 [the machine-readable record](../benchmarks/uploaded-games-smoke-2026-10-22.json).
 
-## Protocol and outcome
+## DMA deadline follow-up
+
+The whole-block DMA implementation advanced 458754 cycles in a single CPU step
+in Metroid's startup clear, crossing a capture deadline. Four other titles
+showed the same two-count anomaly. Devices kept running, but the host caller
+could not observe each completed frame and then captured the same frame again
+while catching up. DMA now yields after each transfer unit while retaining
+channel ownership and priority. CPU instructions stay blocked until DMA finishes.
+Original regressions cover a 65536-word transfer across a frame budget and
+higher-priority preemption followed by resumption. Total DMA cycles are unchanged.
+
+All eleven 1200-frame attempts were repeated with the original assets and input.
+Ten now report `captured`, zero missing guest frames and zero software audio
+buffer failures. Metroid Fusion retains the same exception; this separate defect
+is not resolved by the DMA change. Evidence is in
+[the follow-up record](../benchmarks/game-dma-resume-2026-10-22.json), tagged with
+its actual dirty source base (`101b3fe`). Validation: 1005 host and 931
+exported-core tests passed. Short host runs still do not qualify performance.
+
+## Protocol and outcome (baseline)
 
 All eleven games completed an initial 360-frame real-BIOS capture without an
 exception. Six reports had no frame/audio counter failures; Wario Land 4, GTA,
@@ -83,9 +102,8 @@ screenshots are committed.
 
 1. Isolate the reproducible Metroid Fusion invalid-address read and add a small
    original regression before fixing the CPU/bus behavior responsible.
-2. Investigate the two missing-frame counts in Wario Land 4, GTA Advance,
-   Zone of the Enders and Metroid Zero Mission. Distinguish runner accounting,
-   guest timing and actual missing raster output before changing code.
+2. The original missing-frame counts are resolved by incremental DMA service;
+   preserve the deadline and priority regressions during further timing work.
 3. Create per-game input routes and checkpoints, especially for black final
    frames, then obtain independent video/audio references.
 4. Exercise save/write/restart/load round trips for each detected backup type;

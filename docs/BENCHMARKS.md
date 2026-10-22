@@ -154,9 +154,9 @@ items as separate, reviewable changes with their own tests.
 [SCENARIOS.md](SCENARIOS.md) documents the implemented local capture runner,
 asset hashes, input/sensor recordings, references and report limitations. The
 original demo passes repeatability checks. Eleven uploaded games now have
-[initial compatibility captures](GAME-COMPATIBILITY.md): six completed long
-captures without counter failures, four reported missing guest frames, and
-Metroid Fusion raised a reproducible exception. This does not satisfy the
+[compatibility captures](GAME-COMPATIBILITY.md): after incremental DMA service,
+ten completed long captures without counter failures and Metroid Fusion raised
+a reproducible exception. This does not satisfy the
 five-game sustained qualification suite. The user has no physical target device.
 The supplied archive.org
 collection is currently blocked by the environment network proxy (HTTP 403).

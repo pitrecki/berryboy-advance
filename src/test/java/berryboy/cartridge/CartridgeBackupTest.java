@@ -97,13 +97,13 @@ class CartridgeBackupTest {
         m.memory.write32(0x040000d8, 0x0d000000);
         m.memory.write16(0x040000dc, 9);
         m.memory.write16(0x040000de, 0x8000);
-        m.cpu.step();
+        for (int i = 0; i < 9; i++) m.cpu.step();
         assertThat(m.memory.backup().type()).isEqualTo(CartridgeBackup.EEPROM_512);
         m.memory.write32(0x040000d4, 0x0d000000);
         m.memory.write32(0x040000d8, 0x03000100);
         m.memory.write16(0x040000dc, 68);
         m.memory.write16(0x040000de, 0x8100); // Fixed EEPROM source.
-        m.cpu.step();
+        for (int i = 0; i < 68; i++) m.cpu.step();
         for (int i = 0; i < 68; i++) {
             assertThat(m.memory.read16(0x03000100 + i * 2)).isEqualTo(i < 4 ? 0 : 1);
         }

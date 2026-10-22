@@ -4,7 +4,8 @@ import berryboy.EmulationException;
 import berryboy.bus.Memory;
 
 /**
- * ARM7TDMI execution loop. One step executes an instruction and advances guest cycles.
+ * ARM7TDMI execution loop. One step services a DMA unit, interrupt, HALT event
+ * or instruction and advances guest cycles.
  * The interpreters and register banks are created once and reused for every step.
  */
 public final class Cpu {

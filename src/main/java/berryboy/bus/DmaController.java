@@ -61,18 +61,19 @@ public final class DmaController {
         }
     }
 
-    /** Runs between instructions; callbacks never recursively advance the scheduler. */
+    /**
+     * Service one bus transfer before the CPU can execute another instruction.
+     * Yield between units so callers can observe frame/audio deadlines during a
+     * long DMA block; pending channels retain ownership and priority on resumption.
+     */
     public boolean runPending() {
-        var ran = false;
-        while (true) {
-            int selected = -1;
-            for (var i = 0; i < 4; i++) {
-                if (channels[i].pending) { selected = i; break; }
+        for (var i = 0; i < 4; i++) {
+            if (channels[i].pending) {
+                channels[i].transfer();
+                return true;
             }
-            if (selected < 0) return ran;
-            channels[selected].transfer();
-            ran = true;
         }
+        return false;
     }
 
     private static int replace(int current, int shift, int value) {

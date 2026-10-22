@@ -47,14 +47,14 @@ class DirectSoundTest {
         m.memory.write16(0x04000100, 0xfe00);
         m.memory.write16(0x04000102, 0x80);
         m.clock.advanceTo(512); // Empty FIFO requests DMA.
-        m.cpu.step();
+        m.runCycles(30); // Startup 2 + four words at EWRAM 6 + I/O 1 cycles.
         assertThat(m.cpu.instructions()).isZero();
         assertThat(m.memory.read16(0x040000c6) & 0x8000).isEqualTo(0x8000);
         m.clock.advanceTo(1024);
         var sample = new short[2];
         m.audio.render(sample);
         assertThat(sample).containsExactly((short) 256, (short) 256);
-        m.cpu.step(); // FIFO at 15 bytes requests another 16 bytes.
+        m.runCycles(30); // FIFO at 15 bytes requests another 16 bytes.
         m.clock.advanceTo(1536);
         m.audio.render(sample);
         assertThat(sample).containsExactly((short) 512, (short) 512);
