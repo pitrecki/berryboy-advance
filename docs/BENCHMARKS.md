@@ -51,7 +51,7 @@ commercial-game compatibility or BlackBerry device readiness.
 | M1: Shared timing | Guest cycle clock, deterministic scheduler, CPU/bus costs, LCD timing, timers, DMA, IRQ and BIOS integration | Focused timing ROMs and tests verify event boundaries, ordering, interrupt entry/return and repeatable guest state |
 | M2: Software graphics (in progress) | Complete PPU features listed above, driven by scanline timing | Pixel comparisons for each feature and combined scenes, including register writes during display |
 | M3: Synchronized audio (in progress) | All PSG channels, Direct Sound, timer/DMA refill and bounded output queues | Reference PCM comparisons, sample-count checks and measured A/V drift with no buffer failures |
-| M4: Cartridge compatibility | Persistent save types, RTC and required cartridge peripherals | Save/reload round trips, command-sequence tests and deterministic sensor playback |
+| M4: Cartridge compatibility (in progress) | Persistent save types, RTC and required cartridge peripherals | Save/reload round trips, command-sequence tests and deterministic sensor playback |
 | M5: Reproducible game runner | Local ROM/BIOS mapping, recorded input, frame/audio checkpoints and machine-readable reports | The same inputs reproduce guest checkpoints; missing assets fail explicitly rather than skip a game |
 | M6: Platform validation and optimization | Profile-guided improvements, BlackBerry build/playback/input checks and optional supported acceleration | Output matches the software reference; Linux and Bold 9900 reports identify their own hardware and runtime |
 | M7: Sustained playback qualification | Execute the complete five-game protocol on each target | All correctness, frame deadline, audio and drift gates below pass for every recorded run |
@@ -196,6 +196,10 @@ and bounded-buffer failure counters. Direct Sound A/B now consume signed FIFO
 samples on timer overflow, refill through DMA1/2 and mix with saturation.
 Validation: 968 host and 906 exported-core tests pass. Device playback and
 hardware sequencer/PWM edge cases remain open.
+SRAM, Flash 64/128 KiB and EEPROM 512-byte/8 KiB command protocols are implemented
+with portable snapshots and host file persistence. Tests cover unlock/ID,
+program/bank/erase isolation, serial bit order/dummy bits, size mismatch safety
+and save reload. Busy timing, RTC/GPIO and cartridge sensors remain open.
 A portable cycle scheduler and
 initial CPU/bus timing are implemented. There is no full PPU, complete mixer,
 cartridge peripheral support or commercial-game

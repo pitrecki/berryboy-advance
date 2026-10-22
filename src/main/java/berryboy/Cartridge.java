@@ -17,6 +17,22 @@ public final class Cartridge {
         return rom.length;
     }
 
+    public int backupType() {
+        if (contains("FLASH1M_V")) return CartridgeBackup.FLASH_128K;
+        if (contains("FLASH512_V") || contains("FLASH_V")) return CartridgeBackup.FLASH_64K;
+        if (contains("EEPROM_V")) return CartridgeBackup.EEPROM_8K;
+        return CartridgeBackup.SRAM;
+    }
+
+    private boolean contains(String marker) {
+        for (var offset = 0; offset <= rom.length - marker.length(); offset++) {
+            var i = 0;
+            while (i < marker.length() && (rom[offset + i] & 255) == marker.charAt(i)) i++;
+            if (i == marker.length()) return true;
+        }
+        return false;
+    }
+
     public int byteAt(int offset) {
         return offset >= 0 && offset < rom.length ? rom[offset] & 0xff : 0xff;
     }

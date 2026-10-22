@@ -37,6 +37,8 @@ public final class Memory {
     private final RasterPpu raster = new RasterPpu(this);
     private final ClockedAudio clockedAudio = new ClockedAudio(clock, audio);
     private long videoVersion;
+    private CartridgeBackup backup;
+    private boolean automaticEeprom;
     private boolean cpuAccess;
     private boolean halted;
     private int postFlag;
@@ -45,6 +47,8 @@ public final class Memory {
 
     public Memory(Cartridge cartridge) {
         this.cartridge = cartridge;
+        backup = new CartridgeBackup(cartridge.backupType());
+        automaticEeprom = backup.isEeprom();
         lcd.attachDma(dma);
         timers.attachSound(audio, dma);
     }
@@ -87,6 +91,29 @@ public final class Memory {
 
     long videoVersion() { return videoVersion; }
 
+    public CartridgeBackup backup() { return backup; }
+
+    public void setBackup(CartridgeBackup device) {
+        if (device == null) throw new IllegalArgumentException("Backup device required");
+        backup = device;
+        automaticEeprom = false;
+    }
+
+    void prepareEepromDma(int address, int count) {
+        if (!automaticEeprom || !eepromAddress(address)) return;
+        var type = count == 9 || count == 73 ? CartridgeBackup.EEPROM_512
+                : count == 17 || count == 81 ? CartridgeBackup.EEPROM_8K : backup.type();
+        if (type != backup.type()) {
+            if (backup.dirty()) throw new EmulationException("EEPROM address size changed after writes");
+            backup = new CartridgeBackup(type);
+        }
+    }
+
+    private boolean eepromAddress(int address) {
+        return backup.isEeprom() && (address >>> 24) == 0x0d
+                && (cartridge.size() <= 0x1000000 || (address & 0xffffff) >= 0xffff00);
+    }
+
     public boolean halted() { return halted; }
 
     void wake() { halted = false; }
@@ -114,12 +141,15 @@ public final class Memory {
             case 0x06 -> videoRam[videoRamOffset(address)] & 0xff;
             case 0x07 -> objectAttributes[address & 0x3ff] & 0xff;
             case 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d -> readCartridge(address);
+            case 0x0e, 0x0f -> backup.read8(address);
             default -> unavailable(address);
         };
     }
 
     public int read16(int address) {
         if (cpuAccess) bus.data(address, 2, false);
+        if ((address >>> 24) >= 0x0e && (address >>> 24) <= 0x0f) return backup.read8(address) * 0x101;
+        if (eepromAddress(address)) return backup.readSerial();
         return rawRead16(address);
     }
 
@@ -133,6 +163,7 @@ public final class Memory {
 
     public int read32(int address) {
         if (cpuAccess) bus.data(address, 4, false);
+        if ((address >>> 24) >= 0x0e && (address >>> 24) <= 0x0f) return backup.read8(address) * 0x01010101;
         return rawRead16(address) | (rawRead16(address + 2) << 16);
     }
 
@@ -151,6 +182,8 @@ public final class Memory {
 
     public void write16(int address, int value) {
         if (cpuAccess) bus.data(address, 2, true);
+        if ((address >>> 24) >= 0x0e && (address >>> 24) <= 0x0f) { backup.write8(address, value); return; }
+        if (eepromAddress(address)) { backup.writeSerial(value); return; }
         rawWrite16(address, value);
     }
 
@@ -162,6 +195,7 @@ public final class Memory {
 
     public void write32(int address, int value) {
         if (cpuAccess) bus.data(address, 4, true);
+        if ((address >>> 24) >= 0x0e && (address >>> 24) <= 0x0f) { backup.write8(address, value); return; }
         var alignedAddress = address & ~3;
         rawWrite16(alignedAddress, value);
         rawWrite16(alignedAddress + 2, value >>> 16);
@@ -295,6 +329,10 @@ public final class Memory {
             case 0x0c:
             case 0x0d:
                 break; // Cartridge ROM is read-only.
+            case 0x0e:
+            case 0x0f:
+                backup.write8(address, value);
+                break;
             default:
                 unavailable(address);
                 break;

@@ -108,6 +108,14 @@ See [BENCHMARKS.md](BENCHMARKS.md) for the implementation order and measurement 
 
 ## Java and performance
 
+`CartridgeBackup` models 32 KiB SRAM, 64/128 KiB Flash unlock/program/erase/ID/bank
+commands and 512-byte/8 KiB serial EEPROM. ROM SDK signatures select the initial
+type; EEPROM command DMA lengths resolve its address width. An explicit
+`Memory.setBackup` overrides detection. Flash/EEPROM busy timing is not yet
+modeled. Backup snapshots do not alias live storage. Desktop `SaveFile` validates
+loaded sizes and replaces saves through a temporary file; platform adapters own
+their persistence mechanism. RTC/GPIO and sensors remain pending.
+
 `SoftwarePpu` is the reference compositor behind the `BitmapRenderer` snapshot
 adapter. It supports text/affine/bitmap BGs, OBJ/affine OBJ, priority/transparency,
 windows/OBJ windows, mosaic and color effects. Device reads bypass CPU bus

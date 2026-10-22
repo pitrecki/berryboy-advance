@@ -39,7 +39,7 @@ public final class BusTiming {
         }
         if (region == 2) return width == 4 ? 6 : 3;
         if (region == 5 || region == 6) return width == 4 ? 2 : 1;
-        if (region == 14 || region == 15) return FIRST_WAIT[waitControl & 3] * width;
+        if (region == 14 || region == 15) return FIRST_WAIT[waitControl & 3];
         return 1; // BIOS, IWRAM, IO and OAM use a 32-bit bus.
     }
 

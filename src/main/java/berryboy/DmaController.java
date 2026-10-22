@@ -99,6 +99,7 @@ public final class DmaController {
             if (initialCount == 0) initialCount = index == 3 ? 0x10000 : 0x4000;
             if ((control & 0x3000) == 0x3000) initialCount = 4;
             remaining = initialCount;
+            memory.prepareEepromDma(currentDestination, initialCount);
             first = true;
             pending = ((control >>> 12) & 3) == 0;
         }
