@@ -117,6 +117,10 @@ public final class Memory {
         return rawRead8(address) | (rawRead8(address + 1) << 8);
     }
 
+    int peek8(int address) { return rawRead8(address); }
+
+    int peek16(int address) { return rawRead16(address); }
+
     public int read32(int address) {
         if (cpuAccess) bus.data(address, 4, false);
         return rawRead16(address) | (rawRead16(address + 2) << 16);
@@ -283,10 +287,7 @@ public final class Memory {
     }
 
     private static boolean isDisplayRegister(int address) {
-        // Only registers consumed by the current bitmap snapshot renderer.
-        return address == DISPLAY_CONTROL || address == DISPLAY_CONTROL + 1
-                || address == BACKGROUND_2_CONTROL || address == BACKGROUND_2_CONTROL + 1
-                || (address >= BACKGROUND_2_TRANSFORM && address < BACKGROUND_2_TRANSFORM + 16);
+        return address >= IO_BASE && address < IO_BASE + 0x56;
     }
 
     private void updateKeyInterrupt() {

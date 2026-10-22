@@ -104,6 +104,12 @@ See [BENCHMARKS.md](BENCHMARKS.md) for the implementation order and measurement 
 
 ## Java and performance
 
+`SoftwarePpu` is the reference compositor behind the `BitmapRenderer` snapshot
+adapter. It supports text/affine/bitmap BGs, OBJ/affine OBJ, priority/transparency,
+windows/OBJ windows, mosaic and color effects. Device reads bypass CPU bus
+accounting. Snapshot composition does not yet preserve mid-scanline register
+writes, internal affine latches or OBJ hardware fetch limits.
+
 The development project targets Java 21. The instruction execution path uses
 primitives and arrays. Local `var` changes source syntax only; the exporter
 resolves concrete types before generating the BlackBerry sources.

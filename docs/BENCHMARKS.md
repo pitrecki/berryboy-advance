@@ -49,7 +49,7 @@ commercial-game compatibility or BlackBerry device readiness.
 | Milestone | Deliverables | Completion evidence |
 | --- | --- | --- |
 | M1: Shared timing | Guest cycle clock, deterministic scheduler, CPU/bus costs, LCD timing, timers, DMA, IRQ and BIOS integration | Focused timing ROMs and tests verify event boundaries, ordering, interrupt entry/return and repeatable guest state |
-| M2: Software graphics | Complete PPU features listed above, driven by scanline timing | Pixel comparisons for each feature and combined scenes, including register writes during display |
+| M2: Software graphics (in progress) | Complete PPU features listed above, driven by scanline timing | Pixel comparisons for each feature and combined scenes, including register writes during display |
 | M3: Synchronized audio | All PSG channels, Direct Sound, timer/DMA refill and bounded output queues | Reference PCM comparisons, sample-count checks and measured A/V drift with no buffer failures |
 | M4: Cartridge compatibility | Persistent save types, RTC and required cartridge peripherals | Save/reload round trips, command-sequence tests and deterministic sensor playback |
 | M5: Reproducible game runner | Local ROM/BIOS mapping, recorded input, frame/audio checkpoints and machine-readable reports | The same inputs reproduce guest checkpoints; missing assets fail explicitly rather than skip a game |
@@ -181,7 +181,12 @@ alone cannot pass the gate.
 
 ## Current blockers and evidence
 
-The current PPU renders BG2 bitmap snapshots. A portable cycle scheduler and
+`SoftwarePpu` now composes snapshots for text/affine/bitmap backgrounds (modes
+0–5), normal/affine OBJ, priorities, windows/OBJ windows, alpha/brightness and
+mosaic. Seven focused pixel regressions supplement the existing bitmap tests.
+Scanline/pixel sampling and hardware limits still require integration and
+qualification; this is not a completed full-graphics milestone.
+A portable cycle scheduler and
 initial CPU/bus timing are implemented. There is no full PPU, complete mixer,
 cartridge peripheral support or commercial-game
 benchmark runner. The new desktop session is an interactive diagnostic.
