@@ -80,8 +80,8 @@ See [REFERENCE-VALIDATION.md](REFERENCE-VALIDATION.md) and its linked JSON recor
 
 | Stage / priority | Work | Exit evidence |
 | --- | --- | --- |
-| R1 / P0: LeafGreen menu (diagnosis complete; pixel qualification open) | Identical raw video state and all 19632 differing pixels explained by native 5-bit versus mGBA RGB888 darkening; preserve native arithmetic | Diagnosis and original regression verified; restored-room frame 1272 remains exact and saves unchanged. The original exact-menu RGB gate still fails and needs a reference with matching effect precision |
-| R2 / P0: Timing and bus accuracy (startup diagnostics delivered) | LeafGreen frame 10 is fully explained by native/RGB888 alpha rounding; use bounded event traces to qualify LCD phase, IRQ/SWI, BIOS protection and CPU/DMA bus ordering | A minimal original regression and documented expected event trace for each diagnosed defect; corrected boundaries match independent evidence without regressing DMA deadlines, open-bus handling or save routes |
+| R1 / P0: LeafGreen menu (RGB555 reference delivered; pixel qualification open) | RGB555 confirms all 12 BIOS startup RGB frames; menu state matches but unmodified mGBA's shifted-channel brightness still differs in 19632 pixels | Preserve native channel arithmetic and original regressions; obtain independently correct brightness rounding before passing the menu gate. Room frame 1272 remains exact and saves unchanged |
+| R2 / P0: Timing and bus accuracy (remaining divergence localized) | RGB555 continuation first differs at frame 930: 820 VRAM bytes and a roughly one-frame initialization offset; qualify CPU/bus/IRQ/BIOS ordering and LCD phase | A minimal original regression and documented expected event trace for each diagnosed defect; corrected boundaries match independent evidence without regressing DMA deadlines, open-bus handling or save routes |
 | R3 / P1: Audio correctness | Start with late Sonic Advance 3 and Wario Land 4 differences; compare timer/DMA FIFO events, PSG state and sample clocks; distinguish guest-state errors from output gain, filter and resampling differences | Repeatable event/sample checkpoints, justified comparison tolerances and listening review; no unexplained divergence in the selected routes and zero software buffer failures |
 | R4 / P1: Gameplay and player saves | Record fixed routes through actual levels, races, battles and menus; extend manual save/restart/load beyond LeafGreen | Named reference checkpoints for all eleven available titles; save-capable titles restore player progress in fresh BerryBoy and mGBA instances from isolated copies |
 | R5 / P2: Sustained Linux playback | After route correctness passes, profile bottlenecks, optimize one at a time, and run the warmup/measurement protocol below | Three 10-minute runs per qualified scenario after 30-second warmup, actual presentation/audio counters, bounded memory/queues and A/V drift; all acceptance gates below pass |
@@ -90,8 +90,9 @@ See [REFERENCE-VALIDATION.md](REFERENCE-VALIDATION.md) and its linked JSON recor
 [R1 diagnosis](REFERENCE-VALIDATION.md#leafgreen-menu-color-precision-diagnosis)
 found a reference-precision difference, rather than a demonstrated guest-state
 defect. Do not change native color arithmetic to force agreement with RGB888
-effects. The original all-pixel menu gate remains open; no comparison tolerance
-has changed. R2 must
+effects. The [RGB555 follow-up](REFERENCE-VALIDATION.md#rgb555-reference-qualification)
+confirms startup alpha blending and exposes upstream packed-channel brightness
+rounding; the all-pixel menu gate remains open. No comparison tolerance has changed. R2 must
 establish event ordering before any R3 fix that depends on timer/DMA timing.
 R4 input recording can proceed while individual defects are isolated, but a
 route remains failing until its reference differences are explained and fixed.
@@ -108,19 +109,25 @@ execution and physical-device access remain separate gates.
    pixels are explained by native 5-bit versus mGBA RGB888 darkening. Original
    asset-free host/export regressions preserve native arithmetic. Full video,
    PCM and save hashes are unchanged; room frame 1272 stays exact.
-2. **Qualify color-effect reference precision (open).** Obtain an independent
-   native-precision effect reference or hardware test before declaring the menu
-   pixel gate passed. The existing reference's RGB888 arithmetic is now recorded
-   explicitly. No renderer fix is justified by this diagnosis alone.
+2. **Qualify color-effect reference precision (RGB555 build delivered; brightness
+   open).** Build both independent library and adapter with the same pixel ABI.
+   The unmodified RGB555 reference matches 12/12 BIOS RGB frames and 1111/1272
+   continuation frames. Menu frame 1029 still has all 19632 differences explained
+   by upstream shifted-channel darkening. Obtain independent channel-correct
+   brightness or hardware evidence before passing that pixel gate. Preserve
+   native BerryBoy arithmetic; no renderer fix follows from this comparison.
 3. **Locate the first timing divergence (diagnostic tooling delivered).** Bounded
    LCD before/after traces preserve RGB, PCM and CPU/frame checkpoints in both
    emulators. The checked LeafGreen BIOS frame 10 has identical raw video state;
    all 682 pixel differences follow native/RGB888 alpha rounding, using the
    visible-line coefficients rather than the next frame's final register state.
    See [the startup diagnosis](REFERENCE-VALIDATION.md#bios-startup-event-diagnosis).
-   Next isolate CPU bus/IRQ/BIOS ordering and qualify HBlank at cycle 960 versus
-   the reference's 1008. Do not change a constant solely to improve screenshot
-   counts. Land each demonstrated defect with a regression and comparison report.
+   RGB555 now localizes the first remaining continuation difference to frame 930,
+   including 820 VRAM bytes and BLDY=7 reached about one frame later in BerryBoy.
+   Next isolate the CPU bus/IRQ/BIOS cause of this initialization offset and
+   qualify HBlank at cycle 960 versus the reference's 1008. Do not change a
+   constant solely to improve screenshot counts. Land each demonstrated defect
+   with a regression and comparison report.
 4. **Isolate the first audio divergence.** Record channel, timer and FIFO events
    for Sonic and Wario; compare selected active windows with the corrected,
    unmuted reference. Define acceptable filter/resampling differences before

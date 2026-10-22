@@ -16,6 +16,22 @@ HEADER = struct.Struct("<IQIII")
 RGB_BYTES = 240 * 160 * 3
 
 
+def stream_format(stream):
+    magic = read_exact(stream, 8)
+    if magic == b"BBREF001":
+        return dict(protocol="BBREF001", reference_pixel_format="RGB888", reference_bytes_per_pixel=4,
+                    frame_pixel_format="RGB888", video_color_effects="mGBA RGB888 software arithmetic")
+    if magic != b"BBREF002":
+        raise ValueError("Unknown reference stream format")
+    mode, size = struct.unpack("<II", read_exact(stream, 8))
+    if (mode, size) not in ((0, 4), (1, 2)):
+        raise ValueError("Unknown or inconsistent reference pixel format")
+    native = mode == 1
+    return dict(protocol="BBREF002", reference_pixel_format="RGB555" if native else "RGB888",
+                reference_bytes_per_pixel=size, frame_pixel_format="RGB888",
+                video_color_effects="mGBA RGB555 software arithmetic" if native else "mGBA RGB888 software arithmetic")
+
+
 def read_exact(stream, count):
     data = bytearray()
     while len(data) < count:
@@ -65,8 +81,7 @@ def capture(binary, properties, output, frames, initial_save=None, initial_save_
         process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=stderr,
                                    env={**os.environ, "TZ": "UTC"})
         try:
-            if read_exact(process.stdout, 8) != b"BBREF001":
-                raise ValueError("Unknown reference stream format")
+            pixel_format = stream_format(process.stdout)
             with (output / "frames.jsonl").open("w") as trace, wave.open(str(output / "audio.wav"), "wb") as audio:
                 audio.setnchannels(2)
                 audio.setsampwidth(2)
@@ -116,7 +131,7 @@ def capture(binary, properties, output, frames, initial_save=None, initial_save_
                   audio_frames=sample_count, sample_rate=32768, audio_filter="mGBA blip_buf",
                   audio_nonzero_samples=nonzero_samples, master_volume=256, muted=False,
                   binary_sha256=hashlib.sha256(binary.read_bytes()).hexdigest(),
-                  video_color_effects="mGBA RGB888 software arithmetic", video_checkpoints=list(state_frames),
+                  **pixel_format, video_checkpoints=list(state_frames),
                   initial_save_sha256=initial_save_sha256,
                   qualification="independent headless capture; physical playback unverified",
                   rtc_seed="2000-01-01T00:00:00", rtc_timezone="UTC", devices=int(settings.get("devices", "0")),

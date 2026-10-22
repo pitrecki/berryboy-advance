@@ -1,11 +1,13 @@
 /* mGBA 0.10.5 headless reference stream. Local ROM/BIOS assets are required.
- * stdout is BBREF001 followed by little-endian frame headers and RGB/PCM data.
+ * BBREF002 declares the reference's internal pixel format, then emits the same
+ * little-endian frame headers and RGB888/PCM payloads as BBREF001.
  */
 #include <mgba/core/core.h>
 #include <mgba/core/config.h>
 #include <mgba/core/log.h>
 #include <mgba/core/timing.h>
 #include <mgba/core/blip_buf.h>
+#include <mgba/core/version.h>
 #include <mgba/internal/arm/arm.h>
 #include <mgba/internal/gba/gba.h>
 #include <mgba/internal/gba/io.h>
@@ -18,6 +20,34 @@
 #define FRAME_CYCLES 280896U
 #define PIXELS (240 * 160)
 #define PCM_CAPACITY 8192
+
+#ifdef COLOR_5_6_5
+#error "RGB565 is not a native GBA color-effect reference; use RGB555 or RGB888"
+#endif
+#ifdef COLOR_16_BIT
+#define REFERENCE_FORMAT 1
+#define REFERENCE_FORMAT_NAME "RGB555"
+#define REFERENCE_EFFECTS "mGBA RGB555 software arithmetic"
+_Static_assert(sizeof(color_t) == 2, "RGB555 requires 16-bit color_t");
+#else
+#define REFERENCE_FORMAT 0
+#define REFERENCE_FORMAT_NAME "RGB888"
+#define REFERENCE_EFFECTS "mGBA RGB888 software arithmetic"
+_Static_assert(sizeof(color_t) == 4, "RGB888 requires 32-bit color_t");
+#endif
+
+static void pixelRgb(color_t color, unsigned char* rgb) {
+#ifdef COLOR_16_BIT
+    /* Expand after the independent renderer has completed native-channel
+     * blending/brightness. Never quantize an already blended RGB888 image. */
+    for (unsigned channel = 0; channel < 3; ++channel) {
+        unsigned value = (color >> (channel * 5)) & 31;
+        rgb[channel] = (value << 3) | (value >> 2);
+    }
+#else
+    rgb[0] = color; rgb[1] = color >> 8; rgb[2] = color >> 16;
+#endif
+}
 
 struct Input { unsigned long long cycle; unsigned keys; };
 struct LcdRecord {
@@ -148,9 +178,7 @@ static void frameEvent(struct mTiming* timing, void* context, uint32_t late) {
     if (blip_read_samples(left, pcm, samples, 1) != samples
             || blip_read_samples(right, pcm + 1, samples, 1) != samples) exit(11);
     for (int i = 0; i < PIXELS; i++) {
-        rgb[i * 3] = c->pixels[i];
-        rgb[i * 3 + 1] = c->pixels[i] >> 8;
-        rgb[i * 3 + 2] = c->pixels[i] >> 16;
+        pixelRgb(c->pixels[i], rgb + i * 3);
     }
     for (int i = 0; i < samples * 2; i++) {
         pcmBytes[i * 2] = pcm[i];
@@ -171,6 +199,17 @@ static void frameEvent(struct mTiming* timing, void* context, uint32_t late) {
 }
 
 int main(int argc, char** argv) {
+    if (argc == 2 && !strcmp(argv[1], "--describe")) {
+        printf("{\"protocol\":\"BBREF002\",\"reference_pixel_format\":\"%s\","
+            "\"reference_bytes_per_pixel\":%zu,\"frame_pixel_format\":\"RGB888\","
+            "\"video_color_effects\":\"%s\",\"emulator_version\":\"%s\"}\n",
+            REFERENCE_FORMAT_NAME, sizeof(color_t), REFERENCE_EFFECTS, projectVersion);
+        return 0;
+    }
+    if (strcmp(projectVersion, "0.10.5")) {
+        fprintf(stderr, "This adapter requires mGBA 0.10.5, got %s\n", projectVersion);
+        return 2;
+    }
     if (argc < 7 || (argc > 9 && argc != 13)) {
         fprintf(stderr, "Usage: mgba-capture <rom> <bios> <input.tsv> <frames> <save-output> <devices:0|1> [initial-save|- [checkpoint-frames|- [event-trace.tsv start-cycle end-cycle capacity]]]\n");
         return 2;
@@ -245,7 +284,7 @@ int main(int argc, char** argv) {
     core->rtc.override = RTC_FAKE_EPOCH;
     core->rtc.value = 946684800000LL; /* Milliseconds: 2000-01-01T00:00:00Z. */
     color_t* pixels = calloc(PIXELS, sizeof(*pixels));
-    if (!pixels || sizeof(color_t) != 4) return 5;
+    if (!pixels) return 5;
     core->setVideoBuffer(core, pixels, 240);
     core->setAudioBufferSize(core, PCM_CAPACITY);
     if (!mCoreLoadFile(core, argv[1])) return 6;
@@ -275,7 +314,8 @@ int main(int argc, char** argv) {
     }
     capture.inputEvent = (struct mTimingEvent){.context = &capture, .callback = inputEvent, .name = "recorded input", .priority = 0};
     capture.frameEvent = (struct mTimingEvent){.context = &capture, .callback = frameEvent, .name = "reference frame", .priority = 0xffff};
-    if (fwrite("BBREF001", 1, 8, stdout) != 8) return 10;
+    if (fwrite("BBREF002", 1, 8, stdout) != 8) return 10;
+    put32(REFERENCE_FORMAT); put32(sizeof(color_t));
     mTimingScheduleAbsolute(core->timing, &capture.frameEvent, FRAME_CYCLES);
     if (count && events[0].cycle <= (unsigned long long)frames * FRAME_CYCLES)
         mTimingScheduleAbsolute(core->timing, &capture.inputEvent, events[0].cycle);

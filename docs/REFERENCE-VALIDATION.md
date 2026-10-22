@@ -1,6 +1,66 @@
 # Independent reference validation, 2026-10-22
 
+## RGB555 reference qualification
+
+The independent mGBA 0.10.5 source was built in two separate directories: an
+unmodified RGB888 control and an unmodified RGB555 build. The library and adapter
+use the same pixel ABI in each build. Only the compiler color define changes;
+no upstream effects, CPU, timing or game state code is patched. The adapter
+expands the RGB555 renderer's finished pixels to RGB888 and declares precision
+in its stream. It does not quantize the previous RGB888 output.
+
+| Capture | RGB888 exact frames | RGB555 exact frames | First RGB555 mismatch |
+| --- | --- | --- | --- |
+| 12-frame real-BIOS cold start | 9/12 | **12/12** | None |
+| 1272-frame copied-save continuation | 991/1272 | **1111/1272** | Frame **930** |
+
+The startup result confirms the earlier alpha-precision diagnosis for this
+capture. The continuation's menu frame 1029 still differs in **19632 pixels**.
+Its raw video state matches in both modes, and all RGB555 differences follow
+mGBA's upstream packed-channel `_darken` arithmetic. For backdrop `0x7e51`
+and BLDY=7, BerryBoy retains native `(10,11,18)` and expands to `(82,90,148)`;
+mGBA RGB555 produces `(10,10,17)`, expanded to `(82,82,140)`. The shifted green
+and blue fields are divided before masking, producing different rounding.
+The [GBATEK channel equation](https://mgba-emu.github.io/gbatek/#lcd-color-special-effects)
+and the existing original regression operate on unshifted 5-bit intensities.
+BerryBoy's arithmetic and the upstream reference remain unchanged. **The menu
+pixel gate is still open.** The RGB555 build alone does not qualify brightness.
+
+Room frame 1272 still matches all 38400 pixels in both modes. The original save,
+isolated BerryBoy save and both reference backup snapshots retain the same
+128 KiB SHA-256. The two mGBA modes have byte-identical PCM, CPU/cycle/frame
+coordinates, checkpoint state and startup LCD traces. The fresh RGB888 build
+also preserves the prior reference streams. These controls distinguish the
+pixel format change from changes in emulated execution.
+
+The remaining first RGB555 difference at frame 930 is more than color rounding:
+BerryBoy's completed image is white, the reference's is darkened, and their
+VRAM snapshots differ in 820 bytes. Bounded LCD traces over guest frames
+929–932 contain 3650 rows each with no truncation. BLDY=7 is first observed
+in mGBA at cycle **260920128** (VCOUNT=201), while BerryBoy first shows it at
+**261200976** (VCOUNT=201). These are sampling boundaries, not exact write times.
+The game reaches this initialization step about one frame later in BerryBoy.
+CPU/bus/IRQ ordering must be isolated before changing guest timing. No frame
+offset or pixel tolerance was applied.
+
+PCM remains unmatched: startup has 6583 BerryBoy versus 6584 reference stereo
+samples, and continuation 697851 versus 697852. Headless RGB checkpoint matches
+do not establish complete gameplay, audio correctness or physical playback.
+
+Validation: `mvn verify` passes **1054 tests** without skips; both reference
+adapters compile with `-Wall -Wextra -Werror`. Asset-free stream checks preserve
+RGB/PCM payloads for legacy RGB888 and both declared formats, and reject unknown,
+inconsistent and truncated headers. Invalid build modes leave outputs untouched;
+RGB565 compilation is rejected. Reproduce the builds and stream protocol using
+[SCENARIOS.md](SCENARIOS.md#reference-pixel-precision).
+Evidence and asset/build identities:
+[rgb555-reference-2026-10-22.json](../benchmarks/rgb555-reference-2026-10-22.json).
+Raw outputs remain in `target/native-color-reference-2026-10-22/final/`, outside Git.
+
 ## BIOS startup event diagnosis
+
+This section retains the RGB888 baseline. The RGB555 follow-up above explains
+why its first 12 RGB frames now match while PCM and broader timing remain open.
 
 LeafGreen USA Rev-A was cold-booted with the real BIOS for 12 frames, empty
 input, no initial save and the default stationary peripherals/RTC. Both
@@ -46,6 +106,9 @@ Asset identities, hashes, observed boundaries and arithmetic evidence:
 Raw output remains outside Git in `target/timing-startup-2026-10-22/`.
 
 ## LeafGreen menu color-precision diagnosis
+
+This section records the earlier RGB888 comparison. The follow-up above also
+measures unmodified RGB555 and its remaining packed-channel brightness rounding.
 
 The recorded 1272-frame continuation was replayed with selected video checkpoints
 at frames 1029 and 1272. Host validation passed **1040 tests**, with **957** passing

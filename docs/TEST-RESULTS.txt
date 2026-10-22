@@ -25,6 +25,16 @@ while the end-of-capture state already contains 3/13. Native rounding regression
 passes; HBlank phase, CPU/bus/IRQ and broader correctness qualification stay open.
 See benchmarks/bios-startup-diagnosis-2026-10-22.json.
 
+Unmodified mGBA RGB555 reference: 12/12 startup RGB frames match, compared to
+9/12 for RGB888. Continuation matches 1111/1272 frames, compared to 991/1272;
+first remaining mismatch is frame 930 (820 differing VRAM bytes and a roughly
+one-frame initialization offset). Menu frame 1029 retains 19632 differences,
+all explained by upstream shifted-channel brightness rounding. Its pixel gate
+remains open; room frame 1272 is exact in both modes. Saves remain byte-identical.
+Reference modes preserve identical PCM and CPU/cycle/checkpoint state. Audio
+and hardware correctness remain unqualified. Current mvn verify: 1054 passed.
+See benchmarks/rgb555-reference-2026-10-22.json and docs/REFERENCE-VALIDATION.md.
+
 Native BlackBerry SDK build: ECJ 4.6.1, source 1.3 / target CLDC 1.1,
 JDE 7.1 net_rim_api.jar bootclasspath and original RAPC jar on JDK 21.
 Full bb-sim Maven profile (ecj, launch=false): BUILD SUCCESS; 1054 tests pass.

@@ -1,0 +1,344 @@
+{
+  "date": "2026-10-22",
+  "base_commit": "d248aedfc9542db5c17d3e1bcaf9dee8fd58008c",
+  "source_dirty": true,
+  "scope": "Independent unmodified mGBA RGB555/RGB888 comparison; no guest emulator or upstream source fix; no hardware qualification",
+  "hardware": "Linux x86_64 cloud host; headless; no physical Bold test",
+  "reference_version": "mGBA 0.10.5",
+  "formats": {
+    "rgb555": {
+      "protocol": "BBREF002",
+      "reference_pixel_format": "RGB555",
+      "reference_bytes_per_pixel": 2,
+      "frame_pixel_format": "RGB888",
+      "video_color_effects": "mGBA RGB555 software arithmetic",
+      "library_and_adapter_defines": [
+        "COLOR_16_BIT"
+      ],
+      "library_sha256": "8a2eb439e339c6f2672fc5083f671c6c1da21354fe470e51b4d0e2ed69c2221e",
+      "binary_sha256": "e89cd6e4505e0f9f366834dc19a7328f2482fc416d72899ec15c547bd546b948",
+      "upstream_files_sha256": {
+        "include/mgba/core/interface.h": "632e412342603190d303b57268231879291972e3f8f4da35069eced6b3c2c22e",
+        "src/gba/renderers/software-private.h": "388d68b65e80d18a7300be1ffb00dba0a907ed49b88b35b32c0dcb2817863f64",
+        "src/gba/video.c": "c99391529cce6729400ae199ca9ddb65fec7c0d7f1945d214b8941c61e1e694c"
+      }
+    },
+    "rgb888": {
+      "protocol": "BBREF002",
+      "reference_pixel_format": "RGB888",
+      "reference_bytes_per_pixel": 4,
+      "frame_pixel_format": "RGB888",
+      "video_color_effects": "mGBA RGB888 software arithmetic",
+      "library_and_adapter_defines": [],
+      "library_sha256": "b47af07b62f97b0dacb9e48f0feeed90d7038e45c14564437c1d38bafdee7bb3",
+      "binary_sha256": "eed6a39e2fe6e399136f39551001deba3839b6dc1cb94467d060dc0c35994f8f",
+      "upstream_files_sha256": {
+        "include/mgba/core/interface.h": "632e412342603190d303b57268231879291972e3f8f4da35069eced6b3c2c22e",
+        "src/gba/renderers/software-private.h": "388d68b65e80d18a7300be1ffb00dba0a907ed49b88b35b32c0dcb2817863f64",
+        "src/gba/video.c": "c99391529cce6729400ae199ca9ddb65fec7c0d7f1945d214b8941c61e1e694c"
+      }
+    }
+  },
+  "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+  "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+  "menu_input_sha256": "83fbaacb4b6c7707e367959540da80dc4494abef89265bff4d345f0981b0e96d",
+  "startup_input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "initial_save_sha256": "fd44f0a2d5348f7ea91c1e3c50a9b2b794023be9bb86787a32bcb9d90c9aa8a9",
+  "all_original_and_isolated_saves_preserved": true,
+  "rtc_seed": "2000-01-01T00:00:00",
+  "devices": 0,
+  "comparisons": {
+    "startup-rgb555": {
+      "status": "mismatch",
+      "exact_video_frames": 12,
+      "total_video_frames": 12,
+      "first_video_mismatch": null,
+      "whole_video_hash_match": true,
+      "whole_audio_hash_match": false,
+      "reference_audio_frames": 6584,
+      "berryboy_audio_frames": 6583,
+      "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+    },
+    "startup-rgb888": {
+      "status": "mismatch",
+      "exact_video_frames": 9,
+      "total_video_frames": 12,
+      "first_video_mismatch": 10,
+      "whole_video_hash_match": false,
+      "whole_audio_hash_match": false,
+      "reference_audio_frames": 6584,
+      "berryboy_audio_frames": 6583,
+      "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+    },
+    "menu-rgb555": {
+      "status": "mismatch",
+      "exact_video_frames": 1111,
+      "total_video_frames": 1272,
+      "first_video_mismatch": 930,
+      "whole_video_hash_match": false,
+      "whole_audio_hash_match": false,
+      "reference_audio_frames": 697852,
+      "berryboy_audio_frames": 697851,
+      "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+    },
+    "menu-rgb888": {
+      "status": "mismatch",
+      "exact_video_frames": 991,
+      "total_video_frames": 1272,
+      "first_video_mismatch": 10,
+      "whole_video_hash_match": false,
+      "whole_audio_hash_match": false,
+      "reference_audio_frames": 697852,
+      "berryboy_audio_frames": 697851,
+      "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+    }
+  },
+  "checkpoints": {
+    "930": {
+      "rgb555": {
+        "different_pixels": 38400,
+        "identical_pixels": 0,
+        "different_raw_bytes": {
+          "registers": 0,
+          "palette": 0,
+          "vram": 820,
+          "oam": 0
+        },
+        "first_different_raw_address": {
+          "vram": "0x6003625"
+        },
+        "actual_state_sha256": "447a04c96ee7f6fce46ddf6ef852e5f3766bbfa6e5a3e30f344151658785e070",
+        "reference_state_sha256": "fec9d611d8bd7827d62be95fc15a3b30bb8df9fb996eb3de064c332d27190cef"
+      },
+      "rgb888": {
+        "different_pixels": 38400,
+        "identical_pixels": 0,
+        "different_raw_bytes": {
+          "registers": 0,
+          "palette": 0,
+          "vram": 820,
+          "oam": 0
+        },
+        "first_different_raw_address": {
+          "vram": "0x6003625"
+        },
+        "actual_state_sha256": "447a04c96ee7f6fce46ddf6ef852e5f3766bbfa6e5a3e30f344151658785e070",
+        "reference_state_sha256": "fec9d611d8bd7827d62be95fc15a3b30bb8df9fb996eb3de064c332d27190cef"
+      }
+    },
+    "1029": {
+      "rgb555": {
+        "different_pixels": 19632,
+        "identical_pixels": 18768,
+        "different_raw_bytes": {
+          "registers": 0,
+          "palette": 0,
+          "vram": 0,
+          "oam": 0
+        },
+        "first_different_raw_address": {},
+        "actual_state_sha256": "aa25e236b718c70345899a48b2fb12311d725df77a6017254904c81fef819c12",
+        "reference_state_sha256": "aa25e236b718c70345899a48b2fb12311d725df77a6017254904c81fef819c12"
+      },
+      "rgb888": {
+        "different_pixels": 19632,
+        "identical_pixels": 18768,
+        "different_raw_bytes": {
+          "registers": 0,
+          "palette": 0,
+          "vram": 0,
+          "oam": 0
+        },
+        "first_different_raw_address": {},
+        "actual_state_sha256": "aa25e236b718c70345899a48b2fb12311d725df77a6017254904c81fef819c12",
+        "reference_state_sha256": "aa25e236b718c70345899a48b2fb12311d725df77a6017254904c81fef819c12"
+      }
+    },
+    "1272": {
+      "rgb555": {
+        "different_pixels": 0,
+        "identical_pixels": 38400,
+        "different_raw_bytes": {
+          "registers": 2,
+          "palette": 0,
+          "vram": 0,
+          "oam": 0
+        },
+        "first_different_raw_address": {
+          "registers": "0x4000004"
+        },
+        "actual_state_sha256": "5ca10dbb41d50800102a5046eaa83cfbe83051594da058bca11e67a4034e6883",
+        "reference_state_sha256": "69359934bdae047f962cca2ec2372830c1f09e5871678dc238597a5669fc76d4"
+      },
+      "rgb888": {
+        "different_pixels": 0,
+        "identical_pixels": 38400,
+        "different_raw_bytes": {
+          "registers": 2,
+          "palette": 0,
+          "vram": 0,
+          "oam": 0
+        },
+        "first_different_raw_address": {
+          "registers": "0x4000004"
+        },
+        "actual_state_sha256": "5ca10dbb41d50800102a5046eaa83cfbe83051594da058bca11e67a4034e6883",
+        "reference_state_sha256": "69359934bdae047f962cca2ec2372830c1f09e5871678dc238597a5669fc76d4"
+      }
+    }
+  },
+  "capture_hashes": {
+    "startup-berryboy": {
+      "frames": 12,
+      "video_sha256": "92cdadfa2c12ac8e82c2db7f44e73a8e05d53e3c6dfeaded8a2109e36244289c",
+      "audio_sha256": "848f5c00162c2e55c50df5151726594be83306fc0f4da97e92e95c77d41ecb3f",
+      "audio_frames": 6583
+    },
+    "startup-rgb555": {
+      "frames": 12,
+      "video_sha256": "92cdadfa2c12ac8e82c2db7f44e73a8e05d53e3c6dfeaded8a2109e36244289c",
+      "audio_sha256": "a76cb72b195fc60aa5838f40ab16c552a39b8b99be6b18979f294faf7688e158",
+      "audio_frames": 6584
+    },
+    "startup-rgb888": {
+      "frames": 12,
+      "video_sha256": "bd9cf3ff739ac3764158ce4e9d90de85eafee7c95eac0d20ffc638dc2afa35a5",
+      "audio_sha256": "a76cb72b195fc60aa5838f40ab16c552a39b8b99be6b18979f294faf7688e158",
+      "audio_frames": 6584
+    },
+    "menu-berryboy": {
+      "frames": 1272,
+      "video_sha256": "3e68811368e5316113a752e2543ac7e2429ef1b132091b1d072729cf449023a0",
+      "audio_sha256": "b6f81e57a4555265875afcaf35cd4788e39b8fb40d274fa0498b6ef38bc9ed7c",
+      "audio_frames": 697851
+    },
+    "menu-rgb555": {
+      "frames": 1272,
+      "video_sha256": "401e017f63353eda725ad2322c3fc054e0bb8db0a4c6289f08a3aa1626a99a71",
+      "audio_sha256": "2f94bd594105d83da71e076bc84d4ea76f6cd91d3708ff1899c230c8c5de053f",
+      "audio_frames": 697852
+    },
+    "menu-rgb888": {
+      "frames": 1272,
+      "video_sha256": "549864dcc12dff21fbf62dff5fee929d03074a20f46f4eb11f8ce69fb8a3e689",
+      "audio_sha256": "2f94bd594105d83da71e076bc84d4ea76f6cd91d3708ff1899c230c8c5de053f",
+      "audio_frames": 697852
+    }
+  },
+  "controls": {
+    "reference_cpu_cycle_frame_checkpoints_identical_between_modes": true,
+    "reference_raw_checkpoint_states_identical_between_modes": true,
+    "reference_pcm_identical_between_modes": true,
+    "reference_startup_lcd_trace_identical_between_modes": true,
+    "rgb888_streams_match_prior_committed_reference_hashes": true,
+    "pixel_quantization_or_comparator_tolerance_added": false
+  },
+  "brightness_diagnosis": {
+    "frame": 1029,
+    "bldcnt": "0x00ff",
+    "bldy": 7,
+    "different_pixels": 19632,
+    "explained_by_upstream_shifted_channel_rounding": 19632,
+    "source": "src/gba/renderers/software-private.h:_darken COLOR_16_BIT / RGB555 branch",
+    "backdrop": "0x7e51",
+    "native_channels": [
+      17,
+      18,
+      31
+    ],
+    "berryboy_result_native": [
+      10,
+      11,
+      18
+    ],
+    "reference_result_native": [
+      10,
+      10,
+      17
+    ],
+    "berryboy_rgb": [
+      82,
+      90,
+      148
+    ],
+    "reference_rgb555": [
+      82,
+      82,
+      140
+    ],
+    "native_equation": "I - floor(I*EVY/16), applied to each unshifted 5-bit channel",
+    "reference_equation": "((C & mask) - floor((C & mask)*EVY/16)) & mask; mask is 0x1f, 0x3e0 or 0x7c00",
+    "gate": "exact menu RGB remains open; independent channel-correct brightness or hardware evidence required"
+  },
+  "first_remaining_divergence": {
+    "frame": 930,
+    "actual_image": "all white",
+    "reference_image": "all darkened backdrop",
+    "vram_different_bytes": 820,
+    "trace_window": [
+      260671488,
+      261795073
+    ],
+    "observations": {
+      "divergence-berryboy": {
+        "rows": 3650,
+        "dropped_rows": 0,
+        "trace_sha256": "8a5f666c07a4714d1683b22d49ea907709f3161a01ef48d6c52fb006d9200a6f",
+        "first_bldy_7_sample": {
+          "cycle": "261200976",
+          "dispatch_cycle": "261200976",
+          "phase": "before",
+          "vcount": "201",
+          "pc": "134224004",
+          "dispcnt": "12352",
+          "bldcnt": "255",
+          "bldalpha": "0",
+          "bldy": "7"
+        }
+      },
+      "divergence-rgb555": {
+        "rows": 3650,
+        "dropped_rows": 0,
+        "trace_sha256": "3c75b64121ca9e6ff53f00c6805961d54f4a1f4458c41e641d910138fd45f72b",
+        "first_bldy_7_sample": {
+          "cycle": "260920128",
+          "dispatch_cycle": "260920132",
+          "phase": "before",
+          "vcount": "201",
+          "pc": "134222540",
+          "dispcnt": "12352",
+          "bldcnt": "255",
+          "bldalpha": "0",
+          "bldy": "7"
+        }
+      }
+    },
+    "interpretation": "Game initialization reaches BLDY=7 roughly one frame later in BerryBoy; sampled boundaries are not exact register-write times; isolate CPU/bus/IRQ cause before a fix"
+  },
+  "validation": {
+    "maven_verify_tests": 1054,
+    "maven_failures": 0,
+    "maven_skipped": 0,
+    "protocol_fixture_checks": 2,
+    "bad_format_and_size_headers": "rejected",
+    "truncated_headers": "rejected",
+    "invalid_build_mode": "exit 2 before output creation; retained binary unchanged",
+    "rgb565_adapter": "compile-time rejection verified",
+    "adapters_compiled_with": "-std=c11 -Wall -Wextra -Werror",
+    "audio_qualification": "open",
+    "bbos_runtime": "unverified",
+    "physical_bold": "unrun"
+  },
+  "source_files_sha256": {
+    "tools/build-mgba-reference.sh": "8e69f95dfb9508c7083f38cc6597c9a086fa081e448a62e4472900470fed6f05",
+    "tools/mgba-capture.c": "6f92759f8daba71a9031812f704c5f7644b4dce74e20f865d6c62df8f37915b9",
+    "tools/reference_capture.py": "d54b526ff54d3104abc8a79eb0c9876869f9faaa4cbfffeb0de6d21c2799c4c7"
+  },
+  "local_output": "target/native-color-reference-2026-10-22/final",
+  "local_logs": [
+    "/workspace/scratch/berryboy-reference-rgb555-build.log",
+    "/workspace/scratch/berryboy-reference-rgb888-build.log",
+    "/workspace/scratch/berryboy-reference-protocol-checks.log",
+    "/workspace/scratch/berryboy-native-color-verify.log"
+  ]
+}

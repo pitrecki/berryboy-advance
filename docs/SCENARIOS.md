@@ -136,6 +136,46 @@ equal mid-frame register history; LCD status can differ near a boundary even
 when completed images match. ROM/BIOS/backup bytes are excluded, but video memory
 and generated PNGs can contain game assets and remain outside Git.
 
+## Reference pixel precision
+
+Build the unmodified mGBA 0.10.5 library and capture adapter with matching
+pixel types. The helper requires a C11 compiler, CMake, make and Python 3;
+capture also requires Pillow. Source and dependency builds stay outside Git.
+
+```bash
+bash tools/build-mgba-reference.sh \
+  --source /path/to/mgba-0.10.5 \
+  --output /path/to/reference-rgb555 \
+  --color-mode rgb555 --jobs 4
+/path/to/reference-rgb555/mgba-capture --describe
+```
+
+Use `--color-mode rgb888` and a separate output directory for the control build.
+The default output is `target/mgba-reference/<mode>`. The helper compiles both
+the library and adapter with `COLOR_16_BIT` for RGB555, and neither with that
+define for RGB888. It verifies the linked mGBA version and records format,
+defines and source/library/binary hashes in `reference-build.json`. When using
+the retained cloud tools, prepend
+`/workspace/toolchains/cmake-python/cmake/data/bin` to PATH for CMake.
+
+Use either binary with `tools/reference_capture.py`; the reader obtains pixel
+precision from the stream rather than a caller-supplied label. `BBREF002`
+contains two little-endian uint32 values after its eight-byte magic: format and
+internal bytes per pixel, either `(0,4)` for RGB888 or `(1,2)` for RGB555.
+Frame headers and payloads remain unchanged: RGB888 pixels and stereo PCM16.
+RGB555 output expands each finished 5-bit channel using `(v<<3)|(v>>2)`.
+There is no quantization of an RGB888 reference or replacement of captured
+pixels. Legacy `BBREF001` streams retain their previous RGB888 interpretation.
+Unknown/inconsistent format declarations fail; RGB565 adapter builds are
+rejected because their channel widths differ from the GBA's.
+
+RGB555 describes storage and arithmetic precision, not a hardware-correctness
+claim. In unmodified mGBA 0.10.5, `_darken` divides shifted green/blue fields
+before masking them. This rounds differently from applying the operation to
+each unshifted 5-bit channel. The observed menu difference therefore remains
+open even though BIOS alpha blending now matches. See
+[the measured comparison](REFERENCE-VALIDATION.md#rgb555-reference-qualification).
+
 ## Bounded guest-event diagnostics
 
 For a direct `ScenarioRunner` configuration, enable LCD callback snapshots with:
