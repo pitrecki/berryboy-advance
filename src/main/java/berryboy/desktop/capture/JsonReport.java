@@ -1,13 +1,13 @@
-package berryboy.desktop;
+package berryboy.desktop.capture;
 
 import java.util.Map;
 
 /** Small report encoder; scenario configuration uses standard Java Properties. */
-final class JsonReport {
+public final class JsonReport {
     private JsonReport() {
     }
 
-    static String encode(Object value) {
+    public static String encode(Object value) {
         if (value == null) return "null";
         if (value instanceof Number || value instanceof Boolean) return value.toString();
         if (value instanceof Map<?, ?> map) {

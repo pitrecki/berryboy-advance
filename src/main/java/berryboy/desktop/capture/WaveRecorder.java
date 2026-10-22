@@ -1,4 +1,4 @@
-package berryboy.desktop;
+package berryboy.desktop.capture;
 
 import berryboy.audio.AudioUnit;
 import java.io.IOException;

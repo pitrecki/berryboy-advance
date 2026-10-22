@@ -1,9 +1,11 @@
 package berryboy.desktop;
 
+import berryboy.desktop.capture.JsonReport;
+import berryboy.desktop.capture.ScenarioCapture;
+
 import berryboy.cartridge.CartridgeBackup;
 import berryboy.video.LcdTiming;
 import berryboy.Machine;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -18,7 +20,6 @@ import java.util.HexFormat;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
-import javax.imageio.ImageIO;
 
 /** Deterministic headless capture runner. Physical presentation is never inferred. */
 public final class ScenarioRunner {
@@ -33,7 +34,7 @@ public final class ScenarioRunner {
         System.out.println(JsonReport.encode(run(config, configPath.getParent())));
     }
 
-    static Map<String, Object> run(Properties config, Path base) throws IOException {
+    static Map<String, Object> run(Properties config, Path base) throws IOException, InterruptedException {
         var romPath = resolve(base, required(config, "rom"));
         var rom = verified(romPath, required(config, "rom_sha256"));
         byte[] bios = config.containsKey("bios") ? verified(resolve(base, config.getProperty("bios")), required(config, "bios_sha256")) : null;
@@ -62,18 +63,15 @@ public final class ScenarioRunner {
         Files.createDirectories(output);
         var stream = machine.memory.clockedAudio();
         stream.setCapture(true);
-        var audioDigest = digest();
-        var videoDigest = digest();
         var samples = new short[16384];
         var pcm = ByteBuffer.allocate(32768).order(ByteOrder.LITTLE_ENDIAN);
-        var rgb = new byte[240 * 160 * 3];
         var durations = new long[frames];
         long dropped = 0;
         long audioFrames = 0;
         long previous = 0;
         var report = new LinkedHashMap<String, Object>();
-        try (var trace = Files.newBufferedWriter(output.resolve("frames.jsonl"));
-                var wave = new WaveRecorder(output.resolve("audio.wav"))) {
+        var capture = new ScenarioCapture(output);
+        try (capture) {
             for (int frame = 0; frame < warmup + frames; frame++) {
                 var target = (frame + 1L) * LcdTiming.FRAME_CYCLES;
                 var started = System.nanoTime();
@@ -88,32 +86,15 @@ public final class ScenarioRunner {
                 for (int i = 0; i < count * 2; i++) pcm.putShort(samples[i]);
                 if (frame < warmup) continue;
                 durations[frame - warmup] = elapsed;
-                audioDigest.update(pcm.array(), 0, count * 4);
-                wave.write(pcm.array(), count * 4);
                 audioFrames += count;
-                var pixels = machine.memory.raster().completedFrame();
-                for (int i = 0; i < pixels.length; i++) {
-                    rgb[i * 3] = (byte) (pixels[i] >>> 16); rgb[i * 3 + 1] = (byte) (pixels[i] >>> 8); rgb[i * 3 + 2] = (byte) pixels[i];
-                }
-                videoDigest.update(rgb);
-                var checkpoint = new LinkedHashMap<String, Object>();
-                checkpoint.put("frame", frame + 1); checkpoint.put("cycle", machine.clock.now());
-                checkpoint.put("pc", machine.cpu.pc()); checkpoint.put("cpsr", machine.cpu.cpsr());
-                checkpoint.put("rgb_sha256", hash(rgb)); checkpoint.put("audio_frames", count);
-                trace.write(JsonReport.encode(checkpoint)); trace.newLine();
-                if (frame == warmup || frame == warmup + frames - 1) {
-                    var image = new BufferedImage(240, 160, BufferedImage.TYPE_INT_RGB);
-                    image.setRGB(0, 0, 240, 160, pixels, 0, 240);
-                    if (!ImageIO.write(image, "png", output.resolve(frame == warmup ? "first.png" : "last.png").toFile())) {
-                        throw new IOException("PNG encoder unavailable");
-                    }
-                    if (frames == 1) ImageIO.write(image, "png", output.resolve("last.png").toFile());
-                }
+                capture.submit(frame + 1, machine.clock.now(), machine.cpu.pc(), machine.cpu.cpsr(),
+                        machine.memory.raster().completedFrame(), pcm.array(), count * 4,
+                        frame == warmup, frame == warmup + frames - 1);
             }
         }
         if (save != null) SaveFile.save(save, machine.memory.backup());
-        var videoHash = HexFormat.of().formatHex(videoDigest.digest());
-        var audioHash = HexFormat.of().formatHex(audioDigest.digest());
+        var videoHash = capture.result().videoSha256();
+        var audioHash = capture.result().audioSha256();
         var compared = config.containsKey("reference_video_sha256") && config.containsKey("reference_audio_sha256");
         if (compared && (!videoHash.equals(config.getProperty("reference_video_sha256"))
                 || !audioHash.equals(config.getProperty("reference_audio_sha256")))) throw new IllegalArgumentException("Reference capture mismatch");

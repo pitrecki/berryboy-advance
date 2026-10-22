@@ -75,6 +75,13 @@ Each repetition produces:
 - `first.png`, `last.png` and streamed stereo PCM16 `audio.wav` at 32768 Hz.
 - Separate stdout/stderr logs and the exact scenario properties.
 
+Capture hashing/PNG/WAV/trace IO runs on a dedicated host worker with a two-frame
+queue. Submitted pixels and PCM are copied before emulation reuses the buffers.
+Backpressure preserves order, and worker failures fail the run. Final reports
+are written only after capture drains and joins. A 30-frame comparison against
+the sequential capture path produced byte-identical traces, WAV and checkpoint
+PNGs; this demonstrates output stability, not physical playback performance.
+
 Video reference hashing concatenates each measured frame's pixels in row-major
 RGB888 order. Audio reference hashing uses the measured interleaved signed
 PCM16 stream in little-endian byte order, without the WAV header. References

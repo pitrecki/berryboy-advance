@@ -17,6 +17,36 @@ paths (including identical filenames in different packages), and excludes host
 packages. Generated nested directories receive the same ownership, stale-file
 and symlink checks as root files.
 
+## Thread ownership and host pipelines
+
+Guest CPU, DMA, timers, LCD and synthesis retain a single deterministic owner.
+Device event order must not depend on host thread scheduling. Host operations
+run concurrently through `desktop.concurrent.BoundedWorker`:
+
+```mermaid
+flowchart LR
+    Input[Keyboard / EDT] -->|atomic button mask| Core[Emulation owner]
+    Core --> Clock[Guest cycle scheduler and devices]
+    Core -->|owned PCM blocks, queue 2| Audio[Audio playback worker]
+    Core -->|completed frame snapshot| UI[Swing EDT]
+    Core -->|owned frame and PCM, queue 2| Capture[Capture worker]
+    Capture --> Files[Hashes, trace, PNG and WAV]
+```
+
+The desktop playback worker owns blocking Java Sound writes. Scenario captures
+use a separate worker for hashing, encoding and disk IO, while emulation can
+prepare subsequent frames. Workers receive deep copies, never a `Machine` or
+live framebuffer. Queue capacity applies backpressure instead of dropping jobs.
+Capture closure drains accepted work and joins before final hashes/reports are
+read. Consumer errors wake blocked producers and fail the run; interrupts are
+preserved during joining. Stopping the desktop closes the sound device before
+joining playback so a blocked native write can finish.
+
+Physical audio latency and Swing repaint coalescing still need measurement.
+Parallel host output does not establish multicore CPU emulation or physical
+A/V synchronization. Device APIs and all host concurrency stay out of the
+portable BlackBerry export.
+
 | Class | Responsibility |
 | --- | --- |
 | `Cpu` | Fetches instructions, chooses ARM/Thumb and adds failure diagnostics |

@@ -153,6 +153,8 @@ startup alone is not a passing integration test; inspect the MIDlet's result.
 | `berryboy.cartridge` | ROM headers, backup protocols, GPIO, RTC and sensors |
 | `berryboy.input` | Portable keypad state and button definitions |
 | `berryboy.desktop` | CLI, Swing integration, scenario capture and host persistence |
+| `berryboy.desktop.concurrent` | Bounded ordered host workers and failure propagation |
+| `berryboy.desktop.capture` | Snapshot ownership, report encoding and parallel recording IO |
 | `berryboy.build` | Recursive legacy source export, syntax/API and ownership checks |
 | `platform/midp/berryboy/BlackBerryMidlet.java` | MIDP adapter for the simulator or device |
 | `src/test/java/berryboy/` | Feature-aligned host/core tests and shared fixtures |
@@ -163,7 +165,7 @@ preserves feature directories and excludes the desktop/build packages.
 
 ## Verification
 
-- `mvn verify`: **994 passing tests** on Linux, JDK 21 and Maven 3.9.11 (2026-10-22).
+- `mvn verify`: **1000 passing tests** on Linux, JDK 21 and Maven 3.9.11 (2026-10-22).
 - **864 core tests** repeated against the exported classes through Jupiter.
 - Test counts include individual parameterized invocations, not assertion counts.
 - The exporter performs 248 syntax rewrites. Generated sources compile with

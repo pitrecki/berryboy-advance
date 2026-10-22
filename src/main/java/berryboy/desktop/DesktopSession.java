@@ -3,6 +3,7 @@ package berryboy.desktop;
 import berryboy.audio.AudioUnit;
 import berryboy.Machine;
 import berryboy.bus.Memory;
+import berryboy.desktop.concurrent.BoundedWorker;
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.LockSupport;
@@ -36,6 +37,8 @@ final class DesktopSession implements AutoCloseable {
     private void run() {
         var samples = new short[AUDIO_FRAMES_PER_BATCH * 2];
         var audioStatus = openAudio();
+        var sink = audio;
+        var playback = sink == null ? null : new BoundedWorker<short[]>("berryboy-audio", 2, sink::write);
         var stream = machine.memory.clockedAudio();
         stream.setCapture(true);
         var target = (machine.clock.now() / 512 + AUDIO_FRAMES_PER_BATCH) * 512;
@@ -49,7 +52,7 @@ final class DesktopSession implements AutoCloseable {
                     throw new IllegalStateException("Clocked audio buffer underrun/overrun");
                 }
                 if (audio != null) {
-                    audio.write(samples);
+                    playback.submit(samples.clone());
                 }
                 var completed = machine.memory.raster().completedFrames();
                 if (completed != presented) {
@@ -77,6 +80,9 @@ final class DesktopSession implements AutoCloseable {
             machine.memory.setPressedKeys(0);
             if (audio != null) {
                 audio.close();
+            }
+            if (playback != null) {
+                try { playback.close(); } catch (RuntimeException failure) { reportFailure(failure); }
             }
         }
     }
