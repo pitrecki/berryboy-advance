@@ -11,6 +11,8 @@
 | `ArithmeticLogicUnit` | Calculates results and NZCV flags |
 | `BarrelShifter` | Calculates shifts, rotations and carry-out |
 | `InstructionInterpreter` | Shares unaligned-read, BX and SWI rules |
+| `Keypad` | Stores the ten pressed-button bits and exposes active-low input |
+| `AudioUnit`, `PulseChannel` | Decode sound registers, synthesize channel 2 and mix stereo samples |
 
 The decoders share one `CpuState` and one `Memory` bus. Their ALUs and shifters are
 created during construction, with no per-instruction allocation on successful
@@ -67,6 +69,22 @@ bitmap wrapping are not implemented. Enabled unsupported effects report errors.
 The demo writes the transform registers explicitly; the renderer does not supply
 hidden defaults.
 
+## Audio and input
+
+`Memory` owns the keypad and audio unit. `Machine.audio` exposes the same audio
+unit for platform adapters. Guest loads observe keypad updates through read-only
+`KEYINPUT`; keypad IRQs are not implemented.
+
+Channel 2 produces interleaved signed PCM16 at 32768 Hz, with duty selection,
+length, envelope and stereo routing. Synthesis uses integers and caller-owned
+buffers, without desktop APIs. Output sample counts advance audio time. CPU
+instructions do not yet advance an emulated clock, so audio register writes are
+not synchronized to CPU cycles. Channel 1, wave/noise channels, Direct Sound,
+timer/DMA refill, PWM/BIAS effects and hardware sequencer edge cases remain open.
+
+The next step is a shared timing scheduler before extending graphics and audio.
+See [BENCHMARKS.md](BENCHMARKS.md) for the implementation order and measurement gate.
+
 ## Java and performance
 
 The development project targets Java 21. The instruction execution path uses
@@ -79,13 +97,26 @@ frame rate or performance on a Bold device.
 
 ## Desktop layer
 
-`LaunchCommand` parses arguments into `Demo`, `Header` or `Run` records. A sealed
+`LaunchCommand` parses arguments into `Demo`, `Header`, `Run` or `AudioDemo` records. A sealed
 interface closes the command hierarchy, allowing `Main` to handle every variant
 with Java 21 record patterns in a switch, without preview features.
 
 The parser performs no file I/O or emulation. `Main` separates program execution,
 PNG export, result presentation and Swing startup. `ExecutionResult` describes
-the completed run. The whole desktop package is excluded from BlackBerry export.
+the completed diagnostic run and its machine. The whole desktop package is
+excluded from BlackBerry export.
+
+`DesktopSession` owns that machine on one worker thread. `KeyboardInput` receives
+Swing actions and publishes an atomic button mask; focus loss clears held keys.
+The worker applies input, runs an instruction batch, produces PCM and passes a
+frame snapshot to the event dispatch thread. Presentation applies backpressure
+instead of accumulating frames in an unbounded queue. Swing can still coalesce
+repaints; this is not a verified no-drop video pipeline or a GBA frame scheduler.
+
+`PcmAudio` owns Java Sound playback and WAV encoding. A missing audio device is
+reported in the window and leaves the diagnostic session running silently.
+`AudioDemo` configures the emulated registers to produce a reproducible tone.
+`DesktopPanel` is shared by the real window and the headless documentation capture.
 
 ## Tests and diagnostics
 
@@ -96,8 +127,9 @@ and flag combination separately. `assertSoftly` groups related state checks.
 
 `LegacyCoreTest` loads the generated core through a `URLClassLoader` with a
 platform parent, preventing host core classes from replacing the generated
-ones. The console script also repeats all tests tagged `core`, with generated
-classes first on its classpath.
+ones. The console script also repeats all tests tagged `core`, with only generated
+production classes on its classpath. Host build and desktop tests are excluded
+from that discovery pass, so the host core cannot conceal a missing exported class.
 
 `RuntimeChecks` is portable application diagnostics for MIDP, independent of
 JUnit and AssertJ. The old BlackBerry runtime cannot execute Jupiter.

@@ -2,3 +2,5 @@
 /build/
 *.class
 /blackberry-local.properties
+/benchmarks/roms/
+/benchmarks/*.local.json

@@ -21,3 +21,12 @@
   succeeded without verifying it.
 - Keep generated build output, downloaded dependencies, SDK installations and
   credentials out of Git.
+- Prefer small classes with one responsibility and named hardware constants.
+  Explain register behavior and timing assumptions beside the relevant code.
+- Keep the full-graphics/performance roadmap in `docs/BENCHMARKS.md`. Every future
+  performance result must identify the ROM hash, scenario, target hardware and
+  actual video/audio timing. Never report instruction throughput as game FPS.
+- The performance goal is native GBA refresh with no emulator frame skips or
+  audio underruns. Validate on the Bold 9900 separately from the Linux host.
+- Documentation captures must come from the application. Label headless component
+  captures and keep capture tooling reproducible.

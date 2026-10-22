@@ -1,0 +1,28 @@
+name: Verify Java 21 and exported core
+
+on: [push, pull_request, workflow_dispatch]
+
+permissions:
+  contents: read
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Build and test
+        run: mvn -B -ntp verify
+      - name: Repeat tests on the isolated exported core
+        run: tools/test-with-console.sh
+      - name: Exercise headless video, PCM output and documentation capture
+        run: |
+          java -Djava.awt.headless=true -jar target/berryboy-advance-0.6.0-SNAPSHOT.jar demo --headless
+          java -Djava.awt.headless=true -jar target/berryboy-advance-0.6.0-SNAPSHOT.jar audio-demo --headless
+          tools/capture-docs.sh target/documentation-captures

@@ -1,13 +1,14 @@
-BerryBoy Advance 0.5 — AssertJ migration and English documentation
-Validation date: 2026-09-29
+BerryBoy Advance 0.6 — isolated export, initial audio and controls
+Validation date: 2026-09-29 UTC
 
 Host: Eclipse Adoptium 21.0.12.1, Linux
 Build: Apache Maven 3.9.9; Java release 21; no preview features
 Tests: JUnit Jupiter 5.13.4; AssertJ Core 3.27.7; Maven Surefire 3.5.2
-All 16 host test classes use AssertJ; no JUnit assertion imports remain.
+All 21 host test classes use AssertJ; no JUnit assertion imports remain.
 
 mvn verify: BUILD SUCCESS
-Tests run: 860, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 926, Failures: 0, Errors: 0, Skipped: 0
+Repeated from an empty target directory; the fresh XML reports total 926.
 
 Suites (parameterized invocations count separately):
 - berryboy.ArmArithmeticTest: 515
@@ -15,43 +16,71 @@ Suites (parameterized invocations count separately):
 - berryboy.ArmMultiplyTest: 2
 - berryboy.ArmShiftTest: 19
 - berryboy.ArmTransferTest: 11
+- berryboy.AudioUnitTest: 18
 - berryboy.BitmapRendererTest: 3
 - berryboy.CartridgeTest: 2
 - berryboy.CpuExecutionTest: 2
 - berryboy.CpuFaultTest: 3
 - berryboy.CpuStatusTest: 3
 - berryboy.DemoRomTest: 2
-- berryboy.LegacyCoreTest: 1
-- berryboy.LegacyExportTest: 6
+- berryboy.KeypadTest: 12
 - berryboy.MemoryTest: 10
 - berryboy.ThumbInstructionTest: 6
-- berryboy.desktop.LaunchCommandTest: 19
+- berryboy.build.LegacyCoreTest: 1
+- berryboy.build.LegacyExportOutputTest: 11
+- berryboy.build.LegacyExportTest: 11
+- berryboy.desktop.KeyboardInputTest: 13
+- berryboy.desktop.LaunchCommandTest: 23
+- berryboy.desktop.PcmAudioTest: 3
 
 tools/test-with-console.sh: successful exit
 JUnit Platform Console 1.13.4, JDK 21; classpath resolved by Maven:
-- Complete host suite: 860 passed, none skipped.
-- Exported core: 834 tests tagged core passed, none skipped.
-- LegacyExport: 237 supported syntax rewrites.
-- Generated sources compiled with --release 8.
+- Complete host suite: 926 passed, none skipped.
+- Exported core: 864 tests tagged core passed, none skipped.
+- LegacyExport: 248 supported syntax rewrites.
+- Generated sources compiled with --release 8 and empty application/source paths.
+- Repeated core tests have no target/classes on their runtime classpath.
 - LegacyCoreTest also loads generated classes with a platform-parent classloader.
+- Eight portable RuntimeChecks pass through DemoRomTest and LegacyCoreTest.
 
-Desktop validation:
-- java -jar target/berryboy-advance-0.5.0-SNAPSHOT.jar demo --headless: successful exit.
+Export regression evidence:
+- Eight of the 11 new output tests failed against the previous exporter.
+- The updated exporter passes all 11, including stale-file removal, source/output
+  overlap, handwritten-file and symlink protection, and preservation on invalid input.
+- Host-only classes cannot be resolved as missing source inputs.
+- The exported-core compiler cannot silently depend on the host core.
+
+Desktop and artifact validation:
+- java -jar target/berryboy-advance-0.6.0-SNAPSHOT.jar demo --headless: successful exit.
 - 200,000 guest instructions, final PC=0x080000fa, Thumb.
-- Demo ROM and PNG remain byte-identical to version 0.3.
-- Runnable JAR contains Java 21 class files and excludes tests, JUnit, AssertJ and Byte Buddy.
-
-Source viewer validation:
-- All 48 embedded files and rendered lines match the current source files.
-- JavaScript syntax and method navigation checks pass.
-- Shell scripts pass bash -n.
-- All project Markdown documentation is in English.
+- Demo ROM and PNG remain byte-identical to the pre-update baseline:
+  ROM SHA-256: 9d0b290b28f9bbd105ee48133f660bb8916fdfb3b018d9204d64aec73af25229
+  PNG SHA-256: 0f7910d682eea5e43281d832fb4a69a0ff93e88ec3155cbaa942b0690c1b64a7
+- audio-demo --headless: successful exit; WAV is 32768 stereo frames at 32768 Hz,
+  signed PCM16. Tests check sample byte order, duration and envelope fade.
+  WAV SHA-256: 17ff2c724e4af18cdb7f5efc33a143ee8b2b31ba0c7493379fced69b8a7ac25a
+- Swing action tests cover all ten mappings, simultaneous presses, repeat and reset.
+- tools/capture-docs.sh target/documentation-captures: successful exit; both PNGs
+  match the tracked captures byte-for-byte. Images were visually inspected.
+- Captures paint the actual DesktopPanel headlessly. The controls capture dispatches
+  Right and Z through Swing bindings and shows KEYINPUT=0x3ee.
+- Runnable JAR uses class version 65 and excludes tests, JUnit, AssertJ and Byte Buddy.
+- Shell syntax, documentation local links, benchmark JSON and workflow YAML pass checks.
 - git diff --check passes.
+
+Environment note:
+The validation commands used Maven offline with an existing dependency cache.
+mvn clean verify could not resolve the uncached maven-clean-plugin 3.2.0 offline.
+The previous target directory was moved aside, then mvn verify and the console
+script both passed from fresh output. The clean goal itself was not validated.
 
 Not verified:
 - Legacy JDK 6 + BlackBerry SDK compilation and RAPC conversion.
-- Wine/BlackBerry Simulator or a physical Bold 9900.
-- External ARM/GBA conformance ROMs, timing and commercial game compatibility.
-- Interactive source viewer on a real mobile browser.
+- Wine/BlackBerry Simulator, physical Bold controls or phone audio playback.
+- Native-window keyboard delivery, physical audio output and device latency.
+- Full GBA graphics, acceleration, cycle timing, A/V synchronization and cartridge sensors.
+- External ARM/GBA conformance ROMs and commercial-game compatibility.
+- The five-game benchmark suite, sustained native FPS, zero drops and zero underruns.
+- Remote GitHub Actions execution; local validation is not a remote CI result.
 
 These are project regression tests, not ARM or BlackBerry certification.

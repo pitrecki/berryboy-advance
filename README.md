@@ -1,11 +1,26 @@
-# BerryBoy Advance — 0.5
+# BerryBoy Advance — 0.6
 
 An experimental GBA emulator for classic BlackBerry devices, targeting the Bold
 9900 and BBOS 7.1. Development runs on **Linux, Java 21 and Maven**. The core
 executes ARM/Thumb instructions and renders the project's original demo program.
 Commercial games are not supported yet.
 
-## Changes in 0.5
+## Changes in 0.6
+
+The desktop session now forwards all ten GBA buttons, including simultaneous
+presses and focus-loss release. The portable core provides initial channel 2
+audio: pulse duty, envelope, length and stereo PCM. A separate audio demo exports
+a WAV file or plays it through Java Sound. This is partial audio support, without
+CPU-cycle synchronization or the other GBA sound channels.
+
+![Actual desktop component showing the original demo](docs/images/desktop-demo.png)
+
+This is a headless capture of the application's Swing component, not a BlackBerry
+simulator screenshot. See [audio, controls and captures](docs/AUDIO-INPUT.md).
+
+The legacy exporter now resolves only explicitly supplied sources and protects
+handwritten files in its output directory. Export tests live in the build package;
+the repeated core suite cannot fall back to the host's compiled core classes.
 
 All host test assertions now use **AssertJ Core 3.27.7**. JUnit Jupiter 5.13.4
 still discovers and runs the tests through Maven Surefire. Fluent assertions
@@ -17,12 +32,13 @@ conventions and the requested commit-and-push workflow for future updates.
 
 The Java 21 CLI uses a sealed command interface, records and record patterns.
 The core separates CPU state, ARM/Thumb decoders, arithmetic and shifting.
-Open **BerryBoy-Source.html** to browse the actual sources on a phone: it includes
-class shortcuts, method navigation, search, text sizing and offline access.
+Review the source changes through Git history.
 
 ## Getting started on Linux
 
-Install JDK 21 and Maven 3.9.x. Maven must run on JDK 21; check `mvn -v`.
+Install JDK 21 and Maven 3.9.x. Maven must run on JDK 21; check `mvn -v` and set
+`JAVA_HOME` to your JDK 21 installation if needed. Maven is the maintained build
+entry point on Linux; there is no second Gradle build to keep in sync.
 
 ```bash
 mvn test                       # JUnit 5 tests with AssertJ assertions
@@ -45,9 +61,14 @@ logo. It tests direct cartridge entry, rather than booting through the original 
 ```bash
 mvn compile exec:java -Dexec.args="header /path/to/file.gba"
 mvn compile exec:java -Dexec.args="run /path/to/homebrew.gba 200000 --headless"
+mvn compile exec:java -Dexec.args="audio-demo --headless"
 ```
 
 `run` is a diagnostic tool. Unsupported hardware or opcodes stop execution.
+Without `--headless`, the desktop window continues execution and shows live
+`KEYINPUT`. Use arrows, Z/X for A/B, A/S for L/R, Enter for Start and Backspace for
+Select. The original visual demo remains static and silent; `audio-demo` tests
+the sound path independently. Omit its `--headless` option to request playback.
 
 ## Tests
 
@@ -71,6 +92,7 @@ tools/test-with-console.sh
 ```
 
 Maven resolves the console launcher, AssertJ and their transitive dependencies.
+The repeated core run excludes `target/classes` from its runtime classpath.
 See [docs/TESTING.md](docs/TESTING.md) for coverage and test conventions.
 
 ## Java 21 sources and the old BlackBerry runtime
@@ -94,6 +116,9 @@ Lambdas, records, generics, pattern matching, collections and modern JDK APIs ar
 not automatically portable to the shared core. The exporter rejects many such
 constructs; compilation against `net_rim_api.jar` remains the final API check.
 Desktop and build packages are excluded from export and can use modern Java APIs.
+Source and output directories must be separate. Export validation finishes before
+generated files are replaced. Stale owned Java files are removed; handwritten
+Java files and symlinked output files are rejected, while non-Java files remain.
 
 ## BlackBerry Simulator from Linux
 
@@ -107,7 +132,8 @@ mvn -Pbb-sim verify
 The profile uses existing Windows SDK, JDK 6 and simulator installations through
 Wine. It does not download them. Once the `.cod` is loaded, open **BerryBoy Advance**
 in the simulator. The MIDlet runs eight checks inside the device runtime and
-shows `PASS` or `FAILED`, elapsed time and the demo image.
+shows `PASS` or `FAILED`, the demo image and keypad state. Device audio playback
+still needs a BlackBerry-specific adapter and verification.
 
 See [docs/BLACKBERRY.md](docs/BLACKBERRY.md) for setup and limitations. Simulator
 startup alone is not a passing integration test; inspect the MIDlet's result.
@@ -122,26 +148,34 @@ startup alone is not a passing integration test; inspect the MIDlet's result.
 | `ArithmeticLogicUnit`, `BarrelShifter` | Arithmetic, logic, NZCV flags and shifts |
 | `InstructionInterpreter` | Shared decoder operations |
 | `Memory` | RAM, ROM, mirroring, bus access and selected registers |
+| `Keypad` | Ten named buttons and active-low input |
+| `AudioUnit`, `PulseChannel` | Initial channel 2 synthesis and stereo mixing |
 | `BitmapRenderer` | BG2 snapshots in bitmap modes 3, 4 and 5 |
 | `DemoRom`, `RuntimeChecks` | Original demo and portable runtime diagnostics |
-| `desktop/LaunchCommand`, `desktop/Main` | Typed CLI commands, execution, Swing and PNG export |
+| `desktop/LaunchCommand`, `desktop/Main` | Typed CLI commands, execution and PNG export |
+| `desktop/DesktopSession`, `DesktopWindow`, `DesktopPanel` | Worker lifecycle and Swing presentation |
+| `desktop/KeyboardInput`, `PcmAudio`, `AudioDemo` | Key bindings, host playback and deterministic WAV demo |
 | `build/LegacyExport`, `LegacySyntaxScanner`, `LegacyApiScanner` | Source export, syntax checks and API checks |
+| `build/GeneratedSources` | Output ownership checks and stale-source removal |
 | `platform/midp/berryboy/BlackBerryMidlet.java` | MIDP adapter for the simulator or device |
 | `src/test/java/berryboy/` | JUnit 5 tests, AssertJ assertions and fixtures |
 | `tools/blackberry.sh` | Linux → Wine → legacy compiler → RAPC → simulator |
 | `tools/test-with-console.sh` | Jupiter tests on host and exported core classes |
+| `tools/capture-docs.sh` | Reproducible captures of the application's Swing component |
 
 Production classes are under `src/main/java/berryboy/` unless a full path is shown.
 
 ## Verification
 
-- `mvn verify`: **860 passing tests** on Linux, JDK 21 and Maven 3.9.9.
-- **834 core tests** repeated against the exported classes through Jupiter.
+- `mvn verify`: **926 passing tests** on Linux, JDK 21 and Maven 3.9.9.
+- **864 core tests** repeated against the exported classes through Jupiter.
 - Test counts include individual parameterized invocations, not assertion counts.
-- The exporter performs 237 syntax rewrites. Generated sources compile with
+- The exporter performs 248 syntax rewrites. Generated sources compile with
   `--release 8` and run on the host JVM.
 - The CLI uses Java 21 without preview features. JDK 17 is not a supported build target.
 - JUnit and AssertJ are excluded from the application JAR and BlackBerry export.
+- Headless demo, WAV encoding, Swing key actions and documentation captures pass.
+- Physical audio output, native window interaction and sustained frame/audio timing remain unverified.
 - **Legacy SDK/RAPC compilation, Wine, the simulator and a physical Bold remain unverified.**
 - These are project regression tests, not ARM certification or external test-ROM results.
 
@@ -155,21 +189,18 @@ Git history; HTML viewers and ZIP archives are generated only when requested.
 See [AGENTS.md](AGENTS.md).
 A missing remote or unavailable write access must be reported explicitly.
 
-The downloadable source archive also includes `BerryBoy-Advance.bundle`, which
-preserves the local Git history. From the extracted archive directory, restore it
-into a separate checkout with:
-
-```bash
-git clone BerryBoy-Advance.bundle berryboy-advance-git
-```
-
-A Git bundle is a local history backup; it does not publish changes to a remote.
+The GitHub Actions workflow repeats the Linux build, both test runs and headless
+demos after publication. A local pass does not establish a remote CI pass.
 
 ## Next steps
 
-1. Run the eight portable checks in the actual BB runtime through SDK/RAPC and the simulator.
-2. Run external ARM7TDMI test ROMs and fix any discrepancies.
-3. Add scheduling, interrupts, timers and DMA.
-4. Extend the PPU with tiled backgrounds and sprites, then BIOS/HLE, save hardware and audio.
+The next milestone is full GBA graphics, platform-appropriate acceleration,
+unusual cartridge hardware and synchronized sound, validated by five demanding
+games at native refresh without emulator frame skips or audio underruns.
+[The benchmark plan](docs/BENCHMARKS.md) defines the candidate games, missing
+prerequisites and acceptance criteria. No commercial-game FPS result is claimed.
+
+Running the eight portable checks through the real BlackBerry SDK/runtime and
+external ARM7TDMI test ROMs remains necessary before claiming device compatibility.
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the current emulation boundaries.

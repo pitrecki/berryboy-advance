@@ -38,12 +38,17 @@ mvn -Dgroups=desktop test
 | `CpuExecutionTest` | Mixed ARM/Thumb program and branching after underflow |
 | `ThumbInstructionTest` | Arithmetic, stack, BL, high registers and transfers |
 | `MemoryTest` | Endianness, mirroring, byte stores and KEYINPUT |
+| `KeypadTest` | All ten active-low buttons, guest polling, chords and releases |
+| `AudioUnitTest` | Channel 2 frequency, duty, envelope, length, stereo and register behavior |
 | `CartridgeTest` | Header fields and checksum |
 | `BitmapRendererTest` | Frame selection, palette, mode 5 boundaries and forced blank |
 | `DemoRomTest` | Complete demo and portable runtime checks |
-| `LegacyExportTest` | Local `var`, returned switches and rejected syntax/APIs |
-| `LegacyCoreTest` | Whole-core export, compilation and isolated execution |
+| `build/LegacyExportTest` | Local `var`, returned switches, rejected APIs and host-class isolation |
+| `build/LegacyExportOutputTest` | Stale files, validation failures, ownership, overlaps and symlinks |
+| `build/LegacyCoreTest` | Whole-core export, compilation and isolated execution |
 | `desktop/LaunchCommandTest` | Typed CLI commands and invalid argument rejection |
+| `desktop/KeyboardInputTest` | Actual Swing key actions, simultaneous keys, repeat and release |
+| `desktop/PcmAudioTest` | WAV format, sample bytes and deterministic tone, without a sound device |
 
 `EmulatorFixtures` only prepares ROMs and hardware state. `CompilerFixture`
 invokes the real javac compiler for generated sources. Each test gets fresh
@@ -89,12 +94,31 @@ Maven options, for example `tools/test-with-console.sh -o` when all dependencies
 and plugins are already cached. No manually downloaded standalone JAR is needed.
 
 It runs the full host suite, exports the core, compiles generated sources with
-`--release 8`, then repeats tests tagged `core` with generated classes first on
-the classpath. Reports are written to `target/junit-console/reports/host` and
+`--release 8`, then repeats tests tagged `core` with the generated core as the
+only production classes on the classpath. `target/classes` is absent; build and
+desktop test packages are excluded from discovery. Reports are written to `target/junit-console/reports/host` and
 `target/junit-console/reports/legacy`.
 
 This checks semantics on the host JVM. It does not replace compilation against
 the CLDC SDK, RAPC conversion or execution in the actual BlackBerry runtime.
+
+Both javac fixtures and the exporter clear the implicit application classpath
+and source path. Tests verify that a missing source cannot resolve to a compiled
+host class with the same package name. Output regressions also verify that an
+invalid source leaves the previous generated sources intact, handwritten files
+are protected and stale generated sources disappear after a successful export.
+
+## Audio, input and documentation captures
+
+Host tests exercise Swing actions on the event dispatch thread and inspect PCM
+and WAV samples directly. They require neither a graphical display nor a sound
+device. They do not establish successful physical playback or native keyboard
+delivery. See [AUDIO-INPUT.md](AUDIO-INPUT.md) for interactive checks and capture
+commands. The original demo ROM and framebuffer remain regression references.
+
+The [five-game benchmark plan](BENCHMARKS.md) is a separate future acceptance
+gate. Unit test counts and instruction throughput must not be reported as game
+compatibility, sustained FPS or absence of audio underruns.
 
 ## BlackBerry Simulator
 

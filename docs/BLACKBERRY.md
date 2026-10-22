@@ -53,8 +53,9 @@ mvn -Pbb-sim verify -Dbb.launch=false
 6. Open BerryBoy Advance in the simulator. The MIDlet runs eight local checks
    and the demo. The `Run checks` command repeats them.
 
-Outputs are under `target/blackberry/output/`, including `simulator.log` and
-`controller.log`. The script removes only its own generated classes and output
+Application outputs are under `target/blackberry/output/`; `simulator.log` and
+`controller.log` are directly under `target/blackberry/`.
+The script removes only its own generated classes and output
 directory. It does not close an existing session, reset simulator flash or
 install anything on a physical phone. Close an old 9900 session before starting.
 
@@ -62,6 +63,17 @@ install anything on a physical phone. Close an old 9900 session before starting.
 A particular SDK may require RAPC path adjustments, preverification or different
 COD submodule loading. Controller exit status alone does not establish success;
 the MIDlet must display the result.
+
+The MIDP canvas now continues the demo in a worker loop and forwards directional
+game actions plus Z/X, A/S, Enter and Backspace to the shared keypad. Hiding or
+pausing it releases held buttons. The screen exposes `KEYINPUT` for diagnosis.
+These mappings and the worker lifecycle still need testing on the actual Bold
+keyboard and simulator. The loop's sleep is diagnostic pacing, not GBA timing.
+
+The portable channel 2 synthesizer is exported with the core, but the MIDlet has
+no device audio playback adapter yet. Java Sound belongs only to the desktop
+package. MMAPI/BlackBerry audio format, buffering and device performance need
+separate implementation and verification; a desktop WAV does not validate them.
 
 ## Source export boundaries
 

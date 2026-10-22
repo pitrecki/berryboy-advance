@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "status": "planned-not-run",
+  "target_hardware": ["Linux / Java 21", "BlackBerry Bold 9900 / BBOS 7.1"],
+  "gba_clock_hz": 16777216,
+  "cycles_per_frame": 280896,
+  "warmup_seconds": 30,
+  "measurement_seconds": 600,
+  "repetitions": 3,
+  "requirements": {
+    "frame_skip_enabled": false,
+    "dropped_guest_frames": 0,
+    "missed_presentation_deadlines": 0,
+    "audio_underruns": 0,
+    "audio_overruns": 0,
+    "reference_video_required": true,
+    "reference_audio_required": true
+  },
+  "games": [
+    {
+      "id": "golden-sun",
+      "title": "Golden Sun",
+      "focus": "OBJ priority and transparency interactions; effects-heavy battle scenes",
+      "proposed_scene": "Interior with overlapping character/carpet layers, followed by a battle",
+      "evidence": "https://github.com/jsmolka/eggvance/issues/3",
+      "rom_sha256": null,
+      "scenario_recording": null
+    },
+    {
+      "id": "v-rally-3",
+      "title": "V-Rally 3",
+      "focus": "Bitmap output, sprite overlays and backdrop blending during racing",
+      "proposed_scene": "A reproducible race segment including sky and overlay transitions",
+      "evidence": "https://github.com/DaveTCode/GBADotnet/issues/74",
+      "rom_sha256": null,
+      "scenario_recording": null
+    },
+    {
+      "id": "mario-luigi-superstar-saga",
+      "title": "Mario & Luigi: Superstar Saga",
+      "focus": "Audio regressions across boot, intro and gameplay transitions",
+      "proposed_scene": "Boot and intro, then a recorded gameplay segment with sound effects",
+      "evidence": "https://github.com/jsmolka/eggvance/issues/19",
+      "rom_sha256": null,
+      "scenario_recording": null
+    },
+    {
+      "id": "wario-land-4",
+      "title": "Wario Land 4",
+      "focus": "Timer/IRQ-sensitive audio and long-running audio stability",
+      "proposed_scene": "Intro followed by a fixed level route with continuous audio",
+      "evidence": "https://github.com/skylersaleh/SkyEmu/issues/11",
+      "rom_sha256": null,
+      "scenario_recording": null
+    },
+    {
+      "id": "warioware-twisted",
+      "title": "WarioWare: Twisted!",
+      "focus": "Gyro input, cartridge peripherals and rapid scene/audio changes",
+      "proposed_scene": "A recorded minigame sequence with calibrated sensor input",
+      "evidence": "https://github.com/mgba-emu/mgba/issues/2531",
+      "rom_sha256": null,
+      "scenario_recording": null
+    }
+  ]
+}
