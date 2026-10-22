@@ -28,13 +28,35 @@ struct Capture {
     unsigned frame, frames;
     void* save;
     size_t saveSize;
+    const char* savePath;
+    unsigned char* videoFrames;
 };
 static void quiet(struct mLogger* l, int c, enum mLogLevel v, const char* f, va_list a) {
     (void)l; (void)c; (void)v; (void)f; (void)a;
 }
-static void put32(uint32_t value) {
+static void write32(FILE* output, uint32_t value) {
     unsigned char bytes[4] = {value, value >> 8, value >> 16, value >> 24};
-    if (fwrite(bytes, 1, 4, stdout) != 4) exit(10);
+    if (fwrite(bytes, 1, 4, output) != 4) exit(10);
+}
+static void put32(uint32_t value) { write32(stdout, value); }
+
+static void videoState(struct Capture* c, unsigned frame) {
+    const unsigned starts[] = {0x04000000, 0x05000000, 0x06000000, 0x07000000};
+    const unsigned lengths[] = {0x56, 0x400, 0x18000, 0x400};
+    size_t size = strlen(c->savePath) + 40;
+    char* path = malloc(size);
+    if (!path) exit(14);
+    snprintf(path, size, "%s.video-state-%u.bin", c->savePath, frame);
+    FILE* output = fopen(path, "wb");
+    free(path);
+    if (!output || fwrite("BBVID001", 1, 8, output) != 8) exit(14);
+    for (unsigned region = 0; region < 4; region++) {
+        write32(output, starts[region]); write32(output, lengths[region]);
+        for (unsigned offset = 0; offset < lengths[region]; offset++) {
+            if (fputc(c->core->rawRead8(c->core, starts[region] + offset, -1), output) == EOF) exit(14);
+        }
+    }
+    if (fclose(output)) exit(14);
 }
 
 static void inputEvent(struct mTiming* timing, void* context, uint32_t late) {
@@ -70,6 +92,7 @@ static void frameEvent(struct mTiming* timing, void* context, uint32_t late) {
         pcmBytes[i * 2] = pcm[i];
         pcmBytes[i * 2 + 1] = (unsigned short)pcm[i] >> 8;
     }
+    if (c->videoFrames[c->frame + 1]) videoState(c, c->frame + 1);
     put32(++c->frame);
     put32(mTimingCurrentTime(timing)); put32(0);
     put32(cpu->gprs[15] - (cpu->executionMode == MODE_THUMB ? 2 : 4));
@@ -84,8 +107,8 @@ static void frameEvent(struct mTiming* timing, void* context, uint32_t late) {
 }
 
 int main(int argc, char** argv) {
-    if (argc != 7 && argc != 8) {
-        fprintf(stderr, "Usage: mgba-capture <rom> <bios> <input.tsv> <frames> <save-output> <devices:0|1> [initial-save]\n");
+    if (argc < 7 || argc > 9) {
+        fprintf(stderr, "Usage: mgba-capture <rom> <bios> <input.tsv> <frames> <save-output> <devices:0|1> [initial-save|- [checkpoint-frames]]\n");
         return 2;
     }
     char* end;
@@ -93,6 +116,20 @@ int main(int argc, char** argv) {
     if (*end || frames < 1 || frames > 7000) return 2; /* Bound 32-bit guest time. */
     long devices = strtol(argv[6], &end, 10);
     if (*end || devices < 0 || devices > 1) return 2;
+    unsigned char* videoFrames = calloc(frames + 1, 1);
+    if (!videoFrames) return 4;
+    if (argc == 9) {
+        const char* next = argv[8];
+        do {
+            if (*next < '0' || *next > '9') return 2;
+            long frame = strtol(next, &end, 10);
+            if (frame < 1 || frame > frames || videoFrames[frame]) return 2;
+            videoFrames[frame] = 1;
+            if (!*end) break;
+            if (*end != ',') return 2;
+            next = end + 1;
+        } while (1);
+    }
     FILE* input = fopen(argv[3], "r");
     if (!input) return 3;
     struct Input* events = NULL;
@@ -138,7 +175,7 @@ int main(int argc, char** argv) {
     if (!mCoreLoadFile(core, argv[1])) return 6;
     struct VFile* bios = VFileOpen(argv[2], O_RDONLY);
     if (!bios || !core->loadBIOS(core, bios, 0)) return 7;
-    if (argc == 8 && !mCoreLoadSaveFile(core, argv[7], true)) return 8;
+    if (argc >= 8 && strcmp(argv[7], "-") && !mCoreLoadSaveFile(core, argv[7], true)) return 8;
     core->reset(core);
     if (((struct GBA*)core->board)->audio.masterVolume != 0x100) return 13;
     struct GBACartridgeHardware* hardware = &((struct GBA*)core->board)->memory.hw;
@@ -149,7 +186,8 @@ int main(int argc, char** argv) {
     blip_t* right = core->getAudioChannel(core, 1);
     blip_set_rates(left, core->frequency(core), 32768);
     blip_set_rates(right, core->frequency(core), 32768);
-    struct Capture capture = {.core = core, .pixels = pixels, .inputs = events, .inputCount = count, .frames = frames};
+    struct Capture capture = {.core = core, .pixels = pixels, .inputs = events, .inputCount = count, .frames = frames,
+        .savePath = argv[5], .videoFrames = videoFrames};
     capture.inputEvent = (struct mTimingEvent){.context = &capture, .callback = inputEvent, .name = "recorded input", .priority = 0};
     capture.frameEvent = (struct mTimingEvent){.context = &capture, .callback = frameEvent, .name = "reference frame", .priority = 0xffff};
     if (fwrite("BBREF001", 1, 8, stdout) != 8) return 10;
@@ -161,7 +199,7 @@ int main(int argc, char** argv) {
         FILE* output = fopen(argv[5], "wb");
         if (!output || fwrite(capture.save, 1, capture.saveSize, output) != capture.saveSize || fclose(output)) return 12;
     }
-    free(capture.save); free(pixels); free(events);
+    free(capture.save); free(pixels); free(events); free(videoFrames);
     mCoreConfigDeinit(&core->config); core->deinit(core);
     if (fflush(stdout)) return 10;
     return 0;

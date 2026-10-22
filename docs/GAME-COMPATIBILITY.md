@@ -163,9 +163,9 @@ screenshots are committed.
 
 The canonical [next roadmap and concrete commits](BENCHMARKS.md#next-roadmap-correctness-gameplay-then-sustained-playback)
 uses the eleven independent longer-run comparisons and LeafGreen player-save
-evidence. Priorities are the known Continue-menu pixel mismatch, BIOS/LCD and bus
-timing, Sonic/Wario audio differences, then real gameplay and repeated player
-saves. Independent references and four initialization-save reloads already
+evidence. The Continue-menu difference is diagnosed as reference color-effect
+precision; its exact RGB gate stays open. Next are BIOS/LCD and bus timing,
+Sonic/Wario audio differences, then real gameplay and repeated player saves. Independent references and four initialization-save reloads already
 exist; they are not pending asset collection.
 
 Preserve the Metroid Fusion BIOS/open-bus and incremental DMA deadline/priority

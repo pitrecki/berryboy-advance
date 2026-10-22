@@ -26,7 +26,7 @@ def read_exact(stream, count):
     return bytes(data)
 
 
-def capture(binary, properties, output, frames, initial_save=None, initial_save_sha256=None):
+def capture(binary, properties, output, frames, initial_save=None, initial_save_sha256=None, state_frames=()):
     settings = dict(line.split("=", 1) for line in properties.read_text().splitlines()
                     if "=" in line and not line.startswith("#"))
     if int(settings.get("devices", "0")) not in (0, 1) or settings.get("rtc", "2000-01-01T00:00:00") != "2000-01-01T00:00:00":
@@ -50,6 +50,10 @@ def capture(binary, properties, output, frames, initial_save=None, initial_save_
         local_save = output / "initial.sav"
         shutil.copyfile(initial_save, local_save)
         args.append(str(local_save))
+    if state_frames:
+        if not initial_save:
+            args.append("-")
+        args.append(",".join(map(str, state_frames)))
     reference_video = hashlib.sha256()
     reference_audio = hashlib.sha256()
     checkpoints = []
@@ -78,9 +82,16 @@ def capture(binary, properties, output, frames, initial_save=None, initial_save_
                     audio.writeframesraw(pcm)
                     checkpoint = dict(frame=frame, cycle=cycle, pc=pc, cpsr=cpsr,
                                       rgb_sha256=hashlib.sha256(pixels).hexdigest(), audio_frames=samples)
+                    if frame in state_frames:
+                        state_path = output / f"video-state-{frame}.bin"
+                        (output / f"reference.sav.video-state-{frame}.bin").rename(state_path)
+                        state = state_path.read_bytes()
+                        if len(state) != 100478 or state[:8] != b"BBVID001":
+                            raise ValueError("Invalid video-state snapshot")
+                        checkpoint["video_state_sha256"] = hashlib.sha256(state).hexdigest()
                     checkpoints.append(checkpoint)
                     trace.write(json.dumps(checkpoint) + "\n")
-                    if frame == 1 or frame % 300 == 0 or frame == frames:
+                    if frame == 1 or frame % 300 == 0 or frame == frames or frame in state_frames:
                         image = Image.frombytes("RGB", (240, 160), pixels)
                         image.save(output / f"frame-{frame}.png")
                         if frame == 1:
@@ -103,6 +114,7 @@ def capture(binary, properties, output, frames, initial_save=None, initial_save_
                   audio_frames=sample_count, sample_rate=32768, audio_filter="mGBA blip_buf",
                   audio_nonzero_samples=nonzero_samples, master_volume=256, muted=False,
                   binary_sha256=hashlib.sha256(binary.read_bytes()).hexdigest(),
+                  video_color_effects="mGBA RGB888 software arithmetic", video_checkpoints=list(state_frames),
                   initial_save_sha256=initial_save_sha256,
                   qualification="independent headless capture; physical playback unverified",
                   rtc_seed="2000-01-01T00:00:00", rtc_timezone="UTC", devices=int(settings.get("devices", "0")),
@@ -142,13 +154,21 @@ def main():
     parser.add_argument("--compare", type=Path)
     parser.add_argument("--initial-save", type=Path)
     parser.add_argument("--initial-save-sha256")
+    parser.add_argument("--checkpoints", default="", help="Comma-separated guest-frame IDs for PNG/raw video state")
     args = parser.parse_args()
     if not 1 <= args.frames <= 7000:
         parser.error("frames must be 1..7000")
     if bool(args.initial_save) != bool(args.initial_save_sha256):
         parser.error("initial-save and initial-save-sha256 must be supplied together")
+    try:
+        state_frames = tuple(int(value) for value in args.checkpoints.split(",")) if args.checkpoints else ()
+    except ValueError:
+        parser.error("checkpoints must be comma-separated frame IDs")
+    if len(set(state_frames)) != len(state_frames) or any(frame < 1 or frame > args.frames for frame in state_frames):
+        parser.error("checkpoints must be unique and inside captured frames")
     report, checkpoints = capture(args.binary.resolve(), args.scenario.resolve(), args.output.resolve(), args.frames,
-                                  args.initial_save.resolve() if args.initial_save else None, args.initial_save_sha256)
+                                  args.initial_save.resolve() if args.initial_save else None, args.initial_save_sha256,
+                                  state_frames)
     if args.compare:
         result = compare(report, checkpoints, args.compare.resolve())
         (args.output / "comparison.json").write_text(json.dumps(result, indent=2) + "\n")

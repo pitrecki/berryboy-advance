@@ -1,7 +1,7 @@
 Latest compatibility validation: 2026-10-22 UTC
 Host: Eclipse Temurin 21.0.8+9, Maven 3.9.11, Linux x86_64
-mvn verify: 1031 passed; 0 failed/errors/skipped.
-Exported core console suite: 956 passed; 0 failed/skipped.
+mvn verify: 1040 passed; 0 failed/errors/skipped.
+Exported core console suite: 957 passed; 0 failed/skipped.
 Eleven real-BIOS scripted captures: 3600 frames each, no missing guest frames
 or software audio-buffer failures. These are headless compatibility smoke runs;
 independent full-frame/audio and physical BlackBerry qualification remain open.
@@ -10,6 +10,11 @@ reboot updates match mGBA; native playback remains unqualified.
 LeafGreen manual save: 6950-frame replay yields identical 128 KiB Flash.
 Fresh BerryBoy/mGBA instances load the player and match every restored-room pixel.
 See docs/REFERENCE-VALIDATION.md and benchmarks/validated-game-runs-2026-10-22.json.
+
+LeafGreen menu diagnosis: selected-frame state snapshots match all registers,
+palette, VRAM and OAM at frame 1029. All 19632 RGB differences are explained by
+native 5-bit versus mGBA RGB888 darkening. Exact-menu qualification stays open.
+Checkpoint capture preserves previous full RGB/PCM/save hashes; room remains exact.
 
 Historical imported validation record follows unchanged:
 

@@ -1,0 +1,326 @@
+{
+  "date": "2026-10-22",
+  "base_commit": "807547e3f3a179812b6816cc8d0436d583bd7f21",
+  "source_dirty": true,
+  "host_tests": 1040,
+  "exported_core_tests": 957,
+  "game": "Pokemon LeafGreen USA Rev-A",
+  "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+  "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+  "input_sha256": "83fbaacb4b6c7707e367959540da80dc4494abef89265bff4d345f0981b0e96d",
+  "initial_save_sha256": "fd44f0a2d5348f7ea91c1e3c50a9b2b794023be9bb86787a32bcb9d90c9aa8a9",
+  "rtc_seed": "2000-01-01T00:00:00",
+  "devices": 0,
+  "frames": 1272,
+  "actual": {
+    "status": "captured",
+    "correctness": "unverified",
+    "qualification": "headless-only; physical presentation and playback unverified",
+    "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+    "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+    "input_sha256": "83fbaacb4b6c7707e367959540da80dc4494abef89265bff4d345f0981b0e96d",
+    "rtc_seed": "2000-01-01T00:00:00",
+    "initial_save_sha256": "fd44f0a2d5348f7ea91c1e3c50a9b2b794023be9bb86787a32bcb9d90c9aa8a9",
+    "backup_sha256": "fd44f0a2d5348f7ea91c1e3c50a9b2b794023be9bb86787a32bcb9d90c9aa8a9",
+    "backup_type": 2,
+    "backup_bytes": 131072,
+    "save_written": false,
+    "devices": 0,
+    "rumble_active": false,
+    "commit": "807547e3f3a179812b6816cc8d0436d583bd7f21",
+    "source_dirty": "true",
+    "frames": 1272,
+    "warmup_frames": 0,
+    "guest_cycles": 357299712,
+    "audio_frames": 697851,
+    "audio_overruns": 0,
+    "audio_underruns": 0,
+    "produced_audio_frames": 697851,
+    "consumed_audio_frames": 697851,
+    "dropped_guest_frames": 0,
+    "video_sha256": "3e68811368e5316113a752e2543ac7e2429ef1b132091b1d072729cf449023a0",
+    "audio_sha256": "b6f81e57a4555265875afcaf35cd4788e39b8fb40d274fa0498b6ef38bc9ed7c",
+    "work_p50_ns": 8440124,
+    "work_p95_ns": 16530336,
+    "work_p99_ns": 30404082,
+    "work_max_ns": 119143087,
+    "work_deadline_misses": 64,
+    "physically_presented_frames": null,
+    "physical_audio_underruns": null,
+    "java": "21.0.8+9-LTS",
+    "os": "Linux",
+    "architecture": "amd64",
+    "hardware": "x86_64 Linux cloud host; headless smoke only",
+    "os_version": "6.18.55"
+  },
+  "reference": {
+    "emulator": "mGBA 0.10.5",
+    "frames": 1272,
+    "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+    "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+    "input_sha256": "83fbaacb4b6c7707e367959540da80dc4494abef89265bff4d345f0981b0e96d",
+    "video_sha256": "549864dcc12dff21fbf62dff5fee929d03074a20f46f4eb11f8ce69fb8a3e689",
+    "audio_sha256": "2f94bd594105d83da71e076bc84d4ea76f6cd91d3708ff1899c230c8c5de053f",
+    "audio_frames": 697852,
+    "sample_rate": 32768,
+    "audio_filter": "mGBA blip_buf",
+    "audio_nonzero_samples": 946817,
+    "master_volume": 256,
+    "muted": false,
+    "binary_sha256": "630316c4eee13cbfbe5fd07f2cca31c051630d2086f23225bf5d25b11a717ac8",
+    "video_color_effects": "mGBA RGB888 software arithmetic",
+    "video_checkpoints": [
+      1029,
+      1272
+    ],
+    "initial_save_sha256": "fd44f0a2d5348f7ea91c1e3c50a9b2b794023be9bb86787a32bcb9d90c9aa8a9",
+    "qualification": "independent headless capture; physical playback unverified",
+    "rtc_seed": "2000-01-01T00:00:00",
+    "rtc_timezone": "UTC",
+    "devices": 0,
+    "sensors": "stationary; no recorded peripheral motion"
+  },
+  "checkpoint_menu": {
+    "frame": 1029,
+    "pixel_count": 38400,
+    "matching_pixels": 18768,
+    "different_pixels": 19632,
+    "explained_by_native_5bit_vs_reference_rgb888_darkening": 19632,
+    "unexplained_pixels": 0,
+    "display_registers": {
+      "DISPCNT": "0x3140",
+      "WIN0H": "0x12de",
+      "WIN0V": "0x25e",
+      "WININ": "0x1",
+      "WINOUT": "0x21",
+      "BLDCNT": "0xff",
+      "BLDY": "0x7"
+    },
+    "actual_rgb_sha256": "cab48c398267f59f10238373d5a88189e2342b229985a7111b5a0e222216e092",
+    "reference_rgb_sha256": "4094435a96921940d1665621224ae34948668ffc63f06154cc2533cd1f25861e",
+    "color_pairs": [
+      {
+        "actual": [
+          82,
+          90,
+          148
+        ],
+        "reference": [
+          79,
+          83,
+          143
+        ],
+        "pixels": 12864
+      },
+      {
+        "actual": [
+          148,
+          148,
+          148
+        ],
+        "reference": [
+          144,
+          143,
+          143
+        ],
+        "pixels": 3620
+      },
+      {
+        "actual": [
+          24,
+          33,
+          33
+        ],
+        "reference": [
+          24,
+          27,
+          27
+        ],
+        "pixels": 1058
+      },
+      {
+        "actual": [
+          66,
+          66,
+          74
+        ],
+        "reference": [
+          65,
+          60,
+          74
+        ],
+        "pixels": 902
+      },
+      {
+        "actual": [
+          132,
+          123,
+          132
+        ],
+        "reference": [
+          125,
+          120,
+          124
+        ],
+        "pixels": 424
+      },
+      {
+        "actual": [
+          49,
+          49,
+          66
+        ],
+        "reference": [
+          42,
+          41,
+          60
+        ],
+        "pixels": 229
+      },
+      {
+        "actual": [
+          82,
+          82,
+          123
+        ],
+        "reference": [
+          79,
+          78,
+          115
+        ],
+        "pixels": 227
+      },
+      {
+        "actual": [
+          123,
+          123,
+          123
+        ],
+        "reference": [
+          121,
+          120,
+          115
+        ],
+        "pixels": 158
+      },
+      {
+        "actual": [
+          57,
+          57,
+          57
+        ],
+        "reference": [
+          56,
+          55,
+          55
+        ],
+        "pixels": 142
+      },
+      {
+        "actual": [
+          99,
+          107,
+          99
+        ],
+        "reference": [
+          98,
+          106,
+          97
+        ],
+        "pixels": 8
+      }
+    ],
+    "classification": "Each mismatching RGB pair is reproduced by a loaded BG palette entry: native per-channel I - ((I * 7) >> 4), then bit expansion, versus mGBA software-private.h RGB888 packed-channel darkening. No pixels are replaced or accepted by the comparator.",
+    "state_comparison": {
+      "status": "identical",
+      "actual_sha256": "aa25e236b718c70345899a48b2fb12311d725df77a6017254904c81fef819c12",
+      "reference_sha256": "aa25e236b718c70345899a48b2fb12311d725df77a6017254904c81fef819c12",
+      "regions": [
+        {
+          "region": "registers",
+          "bytes": 86,
+          "different_bytes": 0,
+          "first_different_address": null,
+          "actual_sha256": "64e060a03a18166bb53924d797fc8e1864daf35e8b10a3f1b839cea80caf1ed7",
+          "reference_sha256": "64e060a03a18166bb53924d797fc8e1864daf35e8b10a3f1b839cea80caf1ed7"
+        },
+        {
+          "region": "palette",
+          "bytes": 1024,
+          "different_bytes": 0,
+          "first_different_address": null,
+          "actual_sha256": "d61dd4e3f02a5d8748220ab2a2c4eafe6b2823153ae62fcbacbe3bf86a3acbd6",
+          "reference_sha256": "d61dd4e3f02a5d8748220ab2a2c4eafe6b2823153ae62fcbacbe3bf86a3acbd6"
+        },
+        {
+          "region": "vram",
+          "bytes": 98304,
+          "different_bytes": 0,
+          "first_different_address": null,
+          "actual_sha256": "8cdb8f77b21506a6ece74aa314bc8f619d7e32d7e8a27c0facbe152c29e2ccb1",
+          "reference_sha256": "8cdb8f77b21506a6ece74aa314bc8f619d7e32d7e8a27c0facbe152c29e2ccb1"
+        },
+        {
+          "region": "oam",
+          "bytes": 1024,
+          "different_bytes": 0,
+          "first_different_address": null,
+          "actual_sha256": "1c07e9c6d9d1fb5fc7b153e746737736d3278d04306c48b23e074cc6a481a791",
+          "reference_sha256": "1c07e9c6d9d1fb5fc7b153e746737736d3278d04306c48b23e074cc6a481a791"
+        }
+      ],
+      "scope": "End-of-capture state only; register history, CPU state and raster timing are not compared"
+    }
+  },
+  "checkpoint_room": {
+    "frame": 1272,
+    "matching_pixels": 38400,
+    "exact_rgb": true,
+    "rgb_sha256": "74e77aa5cdc3a445d3c207278d70e039c9910ce4c3a776b74a95fd28f8426234",
+    "state_comparison": {
+      "status": "different",
+      "actual_sha256": "5ca10dbb41d50800102a5046eaa83cfbe83051594da058bca11e67a4034e6883",
+      "reference_sha256": "69359934bdae047f962cca2ec2372830c1f09e5871678dc238597a5669fc76d4",
+      "regions": [
+        {
+          "region": "registers",
+          "bytes": 86,
+          "different_bytes": 2,
+          "first_different_address": "0x4000004",
+          "actual_sha256": "5f490fad1b7ecbe0b5d53878350699fd70b51560d1fd66b9f97692cea6d23f06",
+          "reference_sha256": "212b05f70e2d322c6e3b827635e86bc0cec639d52598f4fb154afe28be1da816"
+        },
+        {
+          "region": "palette",
+          "bytes": 1024,
+          "different_bytes": 0,
+          "first_different_address": null,
+          "actual_sha256": "133084d383b2fb6a17118fd35ef8e6c9fe1f35db82650363d9574adca9897b7c",
+          "reference_sha256": "133084d383b2fb6a17118fd35ef8e6c9fe1f35db82650363d9574adca9897b7c"
+        },
+        {
+          "region": "vram",
+          "bytes": 98304,
+          "different_bytes": 0,
+          "first_different_address": null,
+          "actual_sha256": "ff36befedb20e5af65e762cf716aeb05792b315be960b2ca8c65a7461da933ab",
+          "reference_sha256": "ff36befedb20e5af65e762cf716aeb05792b315be960b2ca8c65a7461da933ab"
+        },
+        {
+          "region": "oam",
+          "bytes": 1024,
+          "different_bytes": 0,
+          "first_different_address": null,
+          "actual_sha256": "d6037e1a70b274e74e17ba276a720387e131a1bffaa5ba76e2e6eee5477b38e8",
+          "reference_sha256": "d6037e1a70b274e74e17ba276a720387e131a1bffaa5ba76e2e6eee5477b38e8"
+        }
+      ],
+      "scope": "End-of-capture state only; register history, CPU state and raster timing are not compared"
+    },
+    "note": "Two LCD status bytes differ (DISPSTAT/VCOUNT) despite identical rendered pixels and palette/VRAM/OAM; cycle-boundary/event ordering remains under investigation."
+  },
+  "whole_video_and_pcm_unchanged_from_prior_capture": true,
+  "initial_save_preserved": true,
+  "outcome": "R1 diagnosis complete: menu mismatch is explained by reference color arithmetic; native 5-bit behavior is preserved and full RGB/PCM qualification remains open.",
+  "local_artifacts": "/workspace/berryboy-advance/target/leafgreen-menu-diagnosis"
+}

@@ -97,6 +97,45 @@ A/V drift. Physical counters are `null`, and Bold results remain `unrun`.
 Average instruction throughput or a short successful capture cannot pass the
 full acceptance gate in [BENCHMARKS.md](BENCHMARKS.md).
 
+## Selected video checkpoints
+
+For direct `ScenarioRunner` properties, set `checkpoints=1029,1272` to capture
+named PNGs and raw video state in addition to the normal stream. IDs are absolute
+one-based guest-frame IDs, must be unique and inside the measured interval, and
+cannot select warmup frames. Invalid selections fail before creating output.
+The owner copies state through read-only peeks, then the existing bounded worker
+writes the independently owned snapshot. Normal RGB/PCM hashes do not change.
+The diagnostic copy is outside the reported CPU execution-work interval; these
+headless work timings still do not measure physical presentation.
+
+For the matching mGBA capture, add `--checkpoints 1029,1272` to
+`tools/reference_capture.py` using a newly compiled `tools/mgba-capture.c` binary.
+The adapter uses raw reads without charging guest cycles. Checkpoint frame records
+include `video_state_sha256`, and the reference report identifies RGB888 software
+color-effect arithmetic. Example comparison:
+
+```bash
+python3 tools/compare_video_state.py \
+  target/local-run/video-state-1029.bin \
+  target/local-reference/video-state-1029.bin \
+  --output target/local-video-state-comparison.json
+```
+
+Exit 0 means identical raw state; exit 1 means different state. The comparison
+records differing byte counts and first addresses per region. It rejects
+truncated, unexpected or trailing binary data and refuses to overwrite a report.
+`BBVID001` contains the eight ASCII magic bytes, then four regions, each with
+little-endian uint32 base/length followed by raw bytes: video I/O at `0x04000000`
+(length `0x56`), palette at `0x05000000` (`0x400`), VRAM at `0x06000000`
+(`0x18000`) and OAM at `0x07000000` (`0x400`). Total size is 100478 bytes.
+
+These are end-of-capture snapshots, not per-scanline state or a save state. A
+whole CPU instruction can cross the nominal capture deadline; use the recorded
+cycle, PC and CPSR when investigating differences. Equal raw state does not prove
+equal mid-frame register history; LCD status can differ near a boundary even
+when completed images match. ROM/BIOS/backup bytes are excluded, but video memory
+and generated PNGs can contain game assets and remain outside Git.
+
 ## Current validation
 
 Two three-frame captures of the original demo produced identical video/PCM

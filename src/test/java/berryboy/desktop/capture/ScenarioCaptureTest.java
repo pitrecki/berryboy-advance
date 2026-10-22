@@ -24,6 +24,20 @@ class ScenarioCaptureTest {
     }
 
     @Test
+    void videoCheckpointOwnsStateBeforeProducerReusesTheBuffer() throws Exception {
+        var state = new byte[]{1, 2, 3};
+        var frame = new ScenarioCapture.Frame(1, 0, 0, 0, new int[240 * 160], new byte[0], 0, false, false, state);
+        state[0] = 9;
+        assertThat(frame.videoState()).containsExactly(1, 2, 3);
+        var capture = new ScenarioCapture(directory);
+        capture.submit(1, 0, 0, 0, frame.pixels(), frame.pcm(), 0, false, false, frame.videoState());
+        frame.videoState()[1] = 9;
+        capture.close();
+        assertThat(Files.readAllBytes(directory.resolve("video-state-1.bin"))).containsExactly(1, 2, 3);
+        assertThat(directory.resolve("frame-1.png")).exists();
+    }
+
+    @Test
     void closeJoinsCaptureAndFinalizesWaveAndBothSingleFrameCheckpoints() throws Exception {
         var pixels = new int[240 * 160]; pixels[0] = 0xff0000;
         var capture = new ScenarioCapture(directory);

@@ -2,6 +2,7 @@ package berryboy.desktop;
 
 import berryboy.desktop.capture.JsonReport;
 import berryboy.desktop.capture.ScenarioCapture;
+import berryboy.desktop.capture.VideoState;
 
 import berryboy.cartridge.CartridgeBackup;
 import berryboy.video.LcdTiming;
@@ -41,6 +42,7 @@ public final class ScenarioRunner {
         var frames = Integer.parseInt(config.getProperty("frames", "1"));
         var warmup = Integer.parseInt(config.getProperty("warmup_frames", "0"));
         if (frames < 1 || frames > 1000000 || warmup < 0 || warmup > 1000000) throw new IllegalArgumentException("Invalid frame budget");
+        var checkpoints = checkpoints(config.getProperty("checkpoints", ""), warmup, frames);
         if (config.containsKey("reference_video_sha256") != config.containsKey("reference_audio_sha256")) {
             throw new IllegalArgumentException("Both video and audio references are required for comparison");
         }
@@ -91,7 +93,8 @@ public final class ScenarioRunner {
                 audioFrames += count;
                 capture.submit(frame + 1, machine.clock.now(), machine.cpu.pc(), machine.cpu.cpsr(),
                         machine.memory.raster().completedFrame(), pcm.array(), count * 4,
-                        frame == warmup, frame == warmup + frames - 1);
+                        frame == warmup, frame == warmup + frames - 1,
+                        checkpoints[frame + 1] ? VideoState.snapshot(machine.memory) : null);
             }
         }
         var saveWritten = save != null && machine.memory.backup().dirty();
@@ -151,6 +154,19 @@ public final class ScenarioRunner {
             machine.clock.schedule(() -> { machine.memory.setPressedKeys(keys); machine.memory.gpio().setSensors(x, y, z, solar); }, cycle);
         }
         return hash(input);
+    }
+
+    private static boolean[] checkpoints(String setting, int warmup, int frames) {
+        var selected = new boolean[warmup + frames + 1];
+        if (setting.isBlank()) return selected;
+        for (var value : setting.split(",", -1)) {
+            var frame = Integer.parseInt(value.strip());
+            if (frame <= warmup || frame > warmup + frames || selected[frame]) {
+                throw new IllegalArgumentException("Checkpoint must be unique and inside measured frames");
+            }
+            selected[frame] = true;
+        }
+        return selected;
     }
 
     static String hash(byte[] data) { return HexFormat.of().formatHex(digest().digest(data)); }

@@ -1,5 +1,48 @@
 # Independent reference validation, 2026-10-22
 
+## LeafGreen menu color-precision diagnosis
+
+The recorded 1272-frame continuation was replayed with selected video checkpoints
+at frames 1029 and 1272. Host validation passed **1040 tests**, with **957** passing
+again against the isolated exported core. The mGBA adapter also compiles with
+`-Wall -Wextra -Werror`. Capture of the extra state preserves the previous entire
+RGB and PCM stream hashes in both emulators and leaves the player save unchanged.
+
+At menu frame 1029, **all raw video I/O, palette, VRAM and OAM bytes match**.
+The menu's darkening is configured by `BLDCNT=0x00ff`, `BLDY=7`, with effects
+disabled inside WIN0 and enabled outside. All **19632 differing pixels** can be
+reproduced by the loaded BG palette and the two implementations' color arithmetic:
+
+- BerryBoy applies `I - ((I * 7) >> 4)` to each native 5-bit channel, then expands
+  to RGB888. Backdrop `0x7e51`, native `(17,18,31)`, becomes `(10,11,18)`, or
+  RGB888 **(82,90,148)**.
+- The mGBA 0.10.5 RGB888 software build expands first. Its `_darken` in
+  `src/gba/renderers/software-private.h` computes with packed 8-bit lanes, giving
+  **(79,83,143)** for the same backdrop. Other palette pairs explain every
+  remaining difference. This also exposes lane-dependent rounding in that path.
+
+An original asset-free regression locks down native-channel darkening through
+both `SoftwarePpu` and `RasterPpu`. The renderer's arithmetic has not been changed
+for this diagnosis, and no tolerance, pixel replacement or alignment was added to
+the comparator. **The exact-menu RGB gate still fails**: native-precision
+independent references or hardware evidence are needed before qualifying effects.
+Whole-stream PCM and other video mismatches remain open.
+
+Room frame 1272 still matches all 38400 pixels. Its palette/VRAM/OAM also match,
+but DISPSTAT/VCOUNT differ at the nominal boundary (BerryBoy `0x9628`/0, mGBA
+`0x962a`/227). Both report cycle 357299712 with different PC/CPSR. This is evidence
+for the next timing/capture-phase investigation, not a demonstrated PPU defect
+or permission to ignore status bits. Snapshots describe final state only.
+
+Metadata, color pairs and per-region hashes:
+[leafgreen-menu-diagnosis-2026-10-22.json](../benchmarks/leafgreen-menu-diagnosis-2026-10-22.json).
+Local output/configuration is under `target/leafgreen-menu-diagnosis/`; raw game
+images/state/save data remain outside Git. Reproduce using the asset identities
+and recorded continuation in the player-save section below, fresh output paths,
+`checkpoints=1029,1272` in the runner, and `--checkpoints 1029,1272` in the
+reference capture. Compare the paired states with `tools/compare_video_state.py`;
+see [SCENARIOS.md](SCENARIOS.md#selected-video-checkpoints) for the format and scope.
+
 ## Verified player save and cross-emulator continuation
 
 LeafGreen USA Rev-A has a recorded route from a fresh game to a manual player

@@ -16,6 +16,37 @@ class ScenarioRunnerTest {
     @TempDir Path directory;
 
     @Test
+    void selectedCheckpointsPreserveCaptureHashesAndIncludeOwnedVideoState() throws Exception {
+        var config = config("baseline");
+        var baseline = ScenarioRunner.run(config, directory);
+        config.setProperty("output", "checkpoints"); config.setProperty("checkpoints", "2,3");
+        var captured = ScenarioRunner.run(config, directory);
+        assertThat(captured.get("video_sha256")).isEqualTo(baseline.get("video_sha256"));
+        assertThat(captured.get("audio_sha256")).isEqualTo(baseline.get("audio_sha256"));
+        assertThat(directory.resolve("checkpoints/frame-1.png")).doesNotExist();
+        assertThat(directory.resolve("checkpoints/frame-2.png")).exists();
+        assertThat(Files.readAllBytes(directory.resolve("checkpoints/frame-3.png")))
+                .isEqualTo(Files.readAllBytes(directory.resolve("checkpoints/last.png")));
+        var bytes = Files.readAllBytes(directory.resolve("checkpoints/video-state-2.bin"));
+        assertThat(bytes).hasSize(100478);
+        assertThat(new String(bytes, 0, 8, java.nio.charset.StandardCharsets.US_ASCII)).isEqualTo("BBVID001");
+        var regions = java.nio.ByteBuffer.wrap(bytes).order(java.nio.ByteOrder.LITTLE_ENDIAN);
+        regions.position(8);
+        assertThat(regions.getInt()).isEqualTo(0x04000000);
+        assertThat(regions.getInt()).isEqualTo(0x56);
+        assertThat(Files.readAllLines(directory.resolve("checkpoints/frames.jsonl")).get(1))
+                .contains("\"video_state_sha256\":\"" + ScenarioRunner.hash(bytes) + "\"");
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings = {"0", "4", "2,2", "2,", "-1", "x"})
+    void invalidCheckpointsFailBeforeCreatingOutputs(String checkpoints) throws Exception {
+        var config = config("bad-checkpoints"); config.setProperty("checkpoints", checkpoints);
+        assertThatThrownBy(() -> ScenarioRunner.run(config, directory)).isInstanceOf(IllegalArgumentException.class);
+        assertThat(directory.resolve("bad-checkpoints")).doesNotExist();
+    }
+
+    @Test
     void gameWrittenBackupPersistsAndNextMachineReportsTheExactLoadedImage() throws Exception {
         var config = config("write");
         var rom = EmulatorFixtures.blankRom();

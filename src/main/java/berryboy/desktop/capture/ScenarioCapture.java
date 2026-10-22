@@ -19,13 +19,19 @@ public final class ScenarioCapture implements AutoCloseable {
     }
 
     record Frame(int number, long cycle, int pc, int cpsr, int[] pixels, byte[] pcm, int bytes,
-                 boolean first, boolean last) {
+                 boolean first, boolean last, byte[] videoState) {
         Frame {
             if (pixels.length != 240 * 160 || bytes < 0 || bytes > pcm.length || bytes % 4 != 0) {
                 throw new IllegalArgumentException("Invalid capture snapshot");
             }
             pixels = pixels.clone();
             pcm = Arrays.copyOf(pcm, bytes);
+            videoState = videoState == null ? null : videoState.clone();
+        }
+
+        Frame(int number, long cycle, int pc, int cpsr, int[] pixels, byte[] pcm, int bytes,
+              boolean first, boolean last) {
+            this(number, cycle, pc, cpsr, pixels, pcm, bytes, first, last, null);
         }
     }
 
@@ -52,6 +58,11 @@ public final class ScenarioCapture implements AutoCloseable {
         worker.submit(new Frame(frame, cycle, pc, cpsr, pixels, pcm, bytes, first, last));
     }
 
+    public void submit(int frame, long cycle, int pc, int cpsr, int[] pixels, byte[] pcm, int bytes,
+                       boolean first, boolean last, byte[] videoState) throws InterruptedException {
+        worker.submit(new Frame(frame, cycle, pc, cpsr, pixels, pcm, bytes, first, last, videoState));
+    }
+
     private void write(Frame frame) throws IOException {
         audio.update(frame.pcm()); wave.write(frame.pcm(), frame.pcm().length);
         for (int i = 0; i < frame.pixels().length; i++) {
@@ -64,12 +75,17 @@ public final class ScenarioCapture implements AutoCloseable {
         checkpoint.put("pc", frame.pc()); checkpoint.put("cpsr", frame.cpsr());
         checkpoint.put("rgb_sha256", HexFormat.of().formatHex(digest().digest(rgb)));
         checkpoint.put("audio_frames", frame.pcm().length / 4);
+        if (frame.videoState() != null) {
+            Files.write(output.resolve("video-state-" + frame.number() + ".bin"), frame.videoState());
+            checkpoint.put("video_state_sha256", HexFormat.of().formatHex(digest().digest(frame.videoState())));
+        }
         trace.write(JsonReport.encode(checkpoint)); trace.newLine();
-        if (frame.first() || frame.last()) {
+        if (frame.first() || frame.last() || frame.videoState() != null) {
             var image = new BufferedImage(240, 160, BufferedImage.TYPE_INT_RGB);
             image.setRGB(0, 0, 240, 160, frame.pixels(), 0, 240);
             if (frame.first()) save(image, "first.png");
             if (frame.last()) save(image, "last.png");
+            if (frame.videoState() != null) save(image, "frame-" + frame.number() + ".png");
         }
     }
 

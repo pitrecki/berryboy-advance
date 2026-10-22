@@ -166,10 +166,10 @@ preserves feature directories and excludes the desktop/build packages.
 
 ## Verification
 
-- `mvn verify`: **1031 passing tests** on Linux, JDK 21 and Maven 3.9.11 (2026-10-22).
-- **956 core tests** repeated against the exported classes through Jupiter.
+- `mvn verify`: **1040 passing tests** on Linux, JDK 21 and Maven 3.9.11 (2026-10-22).
+- **957 core tests** repeated against the exported classes through Jupiter.
 - Test counts include individual parameterized invocations, not assertion counts.
-- The exporter performs 248 syntax rewrites. Generated sources compile with
+- The exporter performs 471 syntax rewrites. Generated sources compile with
   `--release 8` and run on the host JVM.
 - The CLI uses Java 21 without preview features. JDK 17 is not a supported build target.
 - JUnit and AssertJ are excluded from the application JAR and BlackBerry export.
@@ -193,7 +193,8 @@ demos after publication. A local pass does not establish a remote CI pass.
 
 ## Next steps
 
-The next deliveries isolate LeafGreen's Continue-menu pixel mismatch, qualify
+LeafGreen's Continue-menu difference is traced to reference RGB888 color-effect
+arithmetic; native 5-bit behavior is preserved. The next deliveries qualify
 BIOS/LCD and bus timing, then address Sonic/Wario audio differences. Extend the
 recorded save/continue route into real gameplay scenarios before sustained
 performance qualification. The [next roadmap and concrete commits](docs/BENCHMARKS.md#next-roadmap-correctness-gameplay-then-sustained-playback)

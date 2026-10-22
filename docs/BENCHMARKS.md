@@ -45,7 +45,7 @@ Roadmap updated on **2026-10-22**, after the eleven-game mGBA comparisons and
 LeafGreen player-save validation at `f96dc5d`. The shared clock, scheduler,
 CPU/bus timing, software renderer, mixer, cartridge devices and capture runner
 are implemented. Their accuracy is still being qualified; implementation does
-not close M1–M4. Latest local validation passed **1031 host tests and 956
+not close M1–M4. Latest local validation passed **1040 host tests and 957
 exported-core tests**. Neither test count establishes BlackBerry readiness.
 
 | Milestone | Deliverables | Completion evidence |
@@ -80,14 +80,18 @@ See [REFERENCE-VALIDATION.md](REFERENCE-VALIDATION.md) and its linked JSON recor
 
 | Stage / priority | Work | Exit evidence |
 | --- | --- | --- |
-| R1 / P0: LeafGreen menu regression | Reproduce Continue-menu frame 1029 from the recorded save/input; find the first differing register, palette, window, priority or blending state before selecting a fix | All 38400 menu pixels match the independent reference; restored-room frame 1272 remains exact; player/save data remain valid |
+| R1 / P0: LeafGreen menu (diagnosis complete; pixel qualification open) | Identical raw video state and all 19632 differing pixels explained by native 5-bit versus mGBA RGB888 darkening; preserve native arithmetic | Diagnosis and original regression verified; restored-room frame 1272 remains exact and saves unchanged. The original exact-menu RGB gate still fails and needs a reference with matching effect precision |
 | R2 / P0: Timing and bus accuracy | Explain the common first RGB divergence at frame 10; compare guest-cycle capture boundaries, LCD events/fetch phase, IRQ/SWI, BIOS protection and CPU/DMA bus ordering | A minimal original regression and documented expected event trace for each diagnosed defect; corrected boundaries match independent evidence without regressing DMA deadlines, open-bus handling or save routes |
 | R3 / P1: Audio correctness | Start with late Sonic Advance 3 and Wario Land 4 differences; compare timer/DMA FIFO events, PSG state and sample clocks; distinguish guest-state errors from output gain, filter and resampling differences | Repeatable event/sample checkpoints, justified comparison tolerances and listening review; no unexplained divergence in the selected routes and zero software buffer failures |
 | R4 / P1: Gameplay and player saves | Record fixed routes through actual levels, races, battles and menus; extend manual save/restart/load beyond LeafGreen | Named reference checkpoints for all eleven available titles; save-capable titles restore player progress in fresh BerryBoy and mGBA instances from isolated copies |
 | R5 / P2: Sustained Linux playback | After route correctness passes, profile bottlenecks, optimize one at a time, and run the warmup/measurement protocol below | Three 10-minute runs per qualified scenario after 30-second warmup, actual presentation/audio counters, bounded memory/queues and A/V drift; all acceptance gates below pass |
 | R6 / external prerequisite: BlackBerry qualification | Obtain compatible SDK/JDK and simulator access, build with RAPC, validate playback/input, then repeat on a physical Bold 9900 | Separate reproducible build, simulator and device reports; physical-device correctness and sustained-playback gates pass before a Bold compatibility claim |
 
-R1 provides a small, known failing image before broader timing changes. R2 must
+[R1 diagnosis](REFERENCE-VALIDATION.md#leafgreen-menu-color-precision-diagnosis)
+found a reference-precision difference, rather than a demonstrated guest-state
+defect. Do not change native color arithmetic to force agreement with RGB888
+effects. The original all-pixel menu gate remains open; no comparison tolerance
+has changed. R2 must
 establish event ordering before any R3 fix that depends on timer/DMA timing.
 R4 input recording can proceed while individual defects are isolated, but a
 route remains failing until its reference differences are explained and fixed.
@@ -98,16 +102,16 @@ additional host test counts.
 
 ### Concrete next commits
 
-1. **Isolate the LeafGreen Continue mismatch.** Reuse the committed
-   [continuation input](../benchmarks/inputs/leafgreen-continue.tsv) and recorded
-   initial-save hash. Capture frame 1029 and its relevant rendering state on
-   both implementations. Currently 19632 of 38400 pixels differ; frame 1272
-   already matches all pixels. Reduce the cause to an original, asset-free test
-   and preserve both checkpoint results in the diagnosis.
-2. **Fix the proven menu defect.** Change the responsible feature only after
-   step 1 identifies it, add the focused regression, and replay creation/load
-   plus the eleven-game baseline. If the cause is timing rather than composition,
-   resolve that R2 dependency first. Keep unexpected differences visible.
+1. **Isolate the LeafGreen Continue mismatch (completed).** The committed
+   [continuation input](../benchmarks/inputs/leafgreen-continue.tsv) reproduces
+   identical registers, palette, VRAM and OAM at frame 1029. All 19632 differing
+   pixels are explained by native 5-bit versus mGBA RGB888 darkening. Original
+   asset-free host/export regressions preserve native arithmetic. Full video,
+   PCM and save hashes are unchanged; room frame 1272 stays exact.
+2. **Qualify color-effect reference precision (open).** Obtain an independent
+   native-precision effect reference or hardware test before declaring the menu
+   pixel gate passed. The existing reference's RGB888 arithmetic is now recorded
+   explicitly. No renderer fix is justified by this diagnosis alone.
 3. **Locate the first timing divergence.** Add bounded, cycle-stamped diagnostics
    around BIOS/LCD startup and the first differing frame. Check reference capture
    phase as well as emulated state. The current HBlank transition at cycle 960
