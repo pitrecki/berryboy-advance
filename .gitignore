@@ -4,3 +4,4 @@
 /blackberry-local.properties
 /benchmarks/roms/
 /benchmarks/*.local.json
+__pycache__/

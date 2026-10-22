@@ -108,8 +108,10 @@ DISPCNT, BG2CNT and the BG2 affine registers drive the renderer.
 
 Unimplemented regions and I/O stop execution. SRAM/Flash/EEPROM and configurable
 RTC/GPIO devices are implemented. BIOS data reads from outside BIOS retain the
-last BIOS prefetch word. Unmapped data reads at `0x00004000..0x00ffffff` expose
-ARM prefetch byte lanes or Thumb instruction-bus layouts. DMA open-bus latches,
+last BIOS prefetch word. Unmapped CPU data reads expose ARM prefetch byte lanes
+or Thumb instruction-bus layouts; unmapped CPU stores have no responding device.
+Instruction fetches in unmapped regions still diagnose unsupported execution.
+DMA open-bus latches,
 self-modifying prefetch behavior and some cartridge timing details still need
 qualification. ROM reads beyond the cartridge size return an address-derived pattern.
 

@@ -124,8 +124,10 @@ items as separate, reviewable changes with their own tests.
    games subsequently completed 1200-frame real-BIOS smoke captures, after fixing
    DMA capture deadlines and BIOS-protected/open-bus reads. Metroid Fusion's
    former 428-frame exception is resolved. ARM bus spot checks agree with mGBA;
-   full IRQ/SWI timing, independent video/audio references and longer gameplay
-   remain open. Latest validation: 1017 host and 943 exported-core tests passed.
+   full IRQ/SWI timing, reference correctness and longer gameplay remain open.
+   Independent references now expose differences over eleven 3600-frame runs;
+   four save/reload images match mGBA. See REFERENCE-VALIDATION.md.
+   Latest validation: 1028 host and 953 exported-core tests passed.
    BIOS data and captures remain outside Git.
 6. **Integrated timing regression (implemented):** run a small original test ROM combining
    LCD events, timers, DMA and IRQ, recording cycle-stamped checkpoints.
@@ -160,8 +162,10 @@ items as separate, reviewable changes with their own tests.
 asset hashes, input/sensor recordings, references and report limitations. The
 original demo passes repeatability checks. Eleven uploaded games now have
 [compatibility captures](GAME-COMPATIBILITY.md): after incremental DMA service
-and BIOS/open-bus fixes, all eleven completed 1200-frame captures without counter
-failures. This does not satisfy the
+and BIOS/open-bus fixes, all eleven completed 3600-frame captures without counter
+failures. Independent RGB/PCM comparisons still differ; four initialization saves
+and their reload updates match mGBA byte for byte. See
+[REFERENCE-VALIDATION.md](REFERENCE-VALIDATION.md). This does not satisfy the
 five-game sustained qualification suite. The user has no physical target device.
 The supplied archive.org
 collection is currently blocked by the environment network proxy (HTTP 403).
@@ -245,7 +249,8 @@ require implementation/qualification; M4 remains in progress.
 The portable scheduler, initial CPU/bus timing, software PPU, mixer, cartridge
 devices and headless game capture runner are implemented, with accuracy and
 qualification gaps listed above. Eleven uploaded ROMs enabled initial game
-captures; independent references and game-specific routes remain missing.
+captures; independent references now exist for all eleven uploaded games, with
+remaining RGB/PCM differences. Game-specific gameplay routes remain incomplete.
 The qualification suite also still lacks Mario & Luigi and WarioWare: Twisted!
 assets. All five sustained qualification entries remain unrun, and native-rate
 playback on either target is an unverified goal. The next compatibility queue

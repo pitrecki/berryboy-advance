@@ -125,6 +125,9 @@ int main(int argc, char** argv) {
     mCoreConfigSetDefaultIntValue(&core->config, "useBios", 1);
     mCoreConfigSetDefaultIntValue(&core->config, "skipBios", 0);
     mCoreConfigSetDefaultIntValue(&core->config, "gba.audioHle", 0);
+    mCoreConfigSetDefaultIntValue(&core->config, "volume", 0x100);
+    mCoreConfigSetDefaultIntValue(&core->config, "mute", 0);
+    mCoreConfigSetDefaultIntValue(&core->config, "frameskip", 0);
     mCoreLoadForeignConfig(core, &core->config); /* Do not load user configuration. */
     core->rtc.override = RTC_FAKE_EPOCH;
     core->rtc.value = 946684800000LL; /* Milliseconds: 2000-01-01T00:00:00Z. */
@@ -137,6 +140,7 @@ int main(int argc, char** argv) {
     if (!bios || !core->loadBIOS(core, bios, 0)) return 7;
     if (argc == 8 && !mCoreLoadSaveFile(core, argv[7], true)) return 8;
     core->reset(core);
+    if (((struct GBA*)core->board)->audio.masterVolume != 0x100) return 13;
     struct GBACartridgeHardware* hardware = &((struct GBA*)core->board)->memory.hw;
     GBAHardwareClear(hardware);
     hardware->devices = HW_NONE;

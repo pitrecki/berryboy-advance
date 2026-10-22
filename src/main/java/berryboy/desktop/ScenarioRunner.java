@@ -52,7 +52,9 @@ public final class ScenarioRunner {
         machine.memory.gpio().rtc().setDateTime(date.getYear() % 100, date.getMonthValue(), date.getDayOfMonth(),
                 date.getDayOfWeek().getValue() % 7, date.getHour(), date.getMinute(), date.getSecond());
         var save = config.containsKey("save") ? resolve(base, config.getProperty("save")) : null;
+        var loadedSave = save != null && Files.exists(save);
         if (save != null) SaveFile.load(save, machine.memory.backup());
+        var initialSaveHash = loadedSave ? hash(machine.memory.backup().snapshot()) : null;
         var inputHash = installInputs(machine, config, base);
         var output = resolve(base, required(config, "output"));
         if (Files.exists(output)) {
@@ -92,6 +94,7 @@ public final class ScenarioRunner {
                         frame == warmup, frame == warmup + frames - 1);
             }
         }
+        var saveWritten = save != null && machine.memory.backup().dirty();
         if (save != null) SaveFile.save(save, machine.memory.backup());
         var videoHash = capture.result().videoSha256();
         var audioHash = capture.result().audioSha256();
@@ -105,6 +108,12 @@ public final class ScenarioRunner {
         report.put("qualification", "headless-only; physical presentation and playback unverified");
         report.put("rom_sha256", hash(rom)); report.put("bios_sha256", bios == null ? null : hash(bios));
         report.put("input_sha256", inputHash); report.put("rtc_seed", seed);
+        var backupSnapshot = machine.memory.backup().snapshot();
+        report.put("initial_save_sha256", initialSaveHash);
+        report.put("backup_sha256", hash(backupSnapshot));
+        report.put("backup_type", machine.memory.backup().type());
+        report.put("backup_bytes", backupSnapshot.length);
+        report.put("save_written", saveWritten);
         report.put("devices", Integer.parseInt(config.getProperty("devices", "0")));
         report.put("rumble_active", machine.memory.gpio().rumbling());
         report.put("commit", config.getProperty("commit", "unrecorded"));

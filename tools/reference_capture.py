@@ -54,6 +54,7 @@ def capture(binary, properties, output, frames, initial_save=None, initial_save_
     reference_audio = hashlib.sha256()
     checkpoints = []
     sample_count = 0
+    nonzero_samples = 0
     with (output / "stderr.log").open("wb") as stderr:
         process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=stderr,
                                    env={**os.environ, "TZ": "UTC"})
@@ -73,6 +74,7 @@ def capture(binary, properties, output, frames, initial_save=None, initial_save_
                     reference_video.update(pixels)
                     reference_audio.update(pcm)
                     sample_count += samples
+                    nonzero_samples += sum(1 for (sample,) in struct.iter_unpack("<h", pcm) if sample)
                     audio.writeframesraw(pcm)
                     checkpoint = dict(frame=frame, cycle=cycle, pc=pc, cpsr=cpsr,
                                       rgb_sha256=hashlib.sha256(pixels).hexdigest(), audio_frames=samples)
@@ -99,6 +101,7 @@ def capture(binary, properties, output, frames, initial_save=None, initial_save_
                   bios_sha256=settings["bios_sha256"], input_sha256=settings["input_sha256"],
                   video_sha256=reference_video.hexdigest(), audio_sha256=reference_audio.hexdigest(),
                   audio_frames=sample_count, sample_rate=32768, audio_filter="mGBA blip_buf",
+                  audio_nonzero_samples=nonzero_samples, master_volume=256, muted=False,
                   binary_sha256=hashlib.sha256(binary.read_bytes()).hexdigest(),
                   initial_save_sha256=initial_save_sha256,
                   qualification="independent headless capture; physical playback unverified",

@@ -876,5 +876,6 @@
       "matches_mgba": true,
       "qualification": "game-written initialization data; player progress and reload are not yet qualified"
     }
-  ]
+  ],
+  "reference_audio_status": "Superseded: initial adapter used volume zero. Use validated-game-runs-2026-10-22.json for corrected audible references; original video/save results remain valid."
 }

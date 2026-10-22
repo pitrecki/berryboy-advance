@@ -69,7 +69,8 @@ captures. It reports `diagnostic`, never performance qualification.
 
 Each repetition produces:
 
-- `report.json`: asset/input hashes, commit/dirty state, runtime/hardware,
+- `report.json`: asset/input/initial-save/final-backup hashes, backup type/size,
+  save-write status, commit/dirty state, runtime/hardware,
   cycle/frame/sample counters, p50/p95/p99/max execution work and deadline misses.
 - `frames.jsonl`: cycle/PC/CPSR checkpoints and the SHA-256 of each RGB888 frame.
 - `first.png`, `last.png` and streamed stereo PCM16 `audio.wav` at 32768 Hz.
@@ -108,4 +109,6 @@ mismatch. [Eleven uploaded commercial games](GAME-COMPATIBILITY.md) now have
 DMA service and BIOS/open-bus behavior fixes, all eleven 1200-frame reports have
 no frame/audio counter failures. Two Metroid Fusion captures produce byte-identical
 guest traces, WAV audio and final PNGs. A bus spot check agrees with mGBA;
-complete independent video/audio comparison and physical-device captures remain unrun.
+complete independent video/audio comparison now reports mismatches for all eleven
+titles over 3600-frame captures; see [REFERENCE-VALIDATION.md](REFERENCE-VALIDATION.md).
+Four save initialization/reload files match mGBA. Physical-device captures remain unrun.

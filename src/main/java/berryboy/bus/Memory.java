@@ -71,6 +71,7 @@ public final class Memory implements VideoBus {
 
     public Memory(Cartridge cartridge) {
         this.cartridge = cartridge;
+        ioRegisters[DISPLAY_CONTROL - IO_BASE] = (byte) 0x80; // Reset keeps LCD forced blank.
         backup = new CartridgeBackup(cartridge.backupType());
         automaticEeprom = backup.isEeprom();
         lcd.attachListener(new LcdListener() {
@@ -157,6 +158,9 @@ public final class Memory implements VideoBus {
     public void wake() { halted = false; }
 
     public int fetch(int address, boolean thumb) {
+        if ((address >>> 24) == 1 || (address >>> 24) > 15) {
+            throw new EmulationException("Instruction fetch in unmapped region");
+        }
         if ((address >>> 24) == 0 && address >= BIOS_SIZE) {
             throw new EmulationException("Instruction fetch outside BIOS");
         }
@@ -191,7 +195,7 @@ public final class Memory implements VideoBus {
             case 0x07 -> objectAttributes[address & 0x3ff] & 0xff;
             case 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d -> readCartridge(address);
             case 0x0e, 0x0f -> gpio.tiltAddress(address) ? gpio.readTilt(address) : backup.read8(address);
-            default -> unavailable(address);
+            default -> cpuAccess ? (openBusWord() >>> ((address & 3) * 8)) & 255 : unavailable(address);
         };
     }
 
@@ -279,7 +283,7 @@ public final class Memory implements VideoBus {
         return bios[address] & 255;
     }
 
-    /** Unmapped space above BIOS exposes CPU prefetch, not another BIOS mirror.
+    /** Unmapped CPU data addresses expose prefetch, not a zero or RAM mirror.
      * Other unimplemented devices still fail explicitly. DMA latch behavior and
      * pipeline clobbering by self-modifying code require separate qualification.
      */
@@ -299,6 +303,9 @@ public final class Memory implements VideoBus {
     }
 
     private int prefetched16(int address) {
+        if ((address >>> 24) == 1 || (address >>> 24) > 15) {
+            throw new EmulationException("Prefetch outside mapped instruction region");
+        }
         if ((instructionAddress >>> 24) == 0 && bios != null) return halfword(bios, address & (BIOS_SIZE - 2));
         return rawRead16(address);
     }
@@ -445,7 +452,7 @@ public final class Memory implements VideoBus {
                 writeBackup(address, value);
                 break;
             default:
-                unavailable(address);
+                if (!cpuAccess) unavailable(address); // Unmapped CPU stores have no responding device.
                 break;
         }
     }

@@ -11,6 +11,17 @@ import org.junit.jupiter.api.Test;
 @Tag("core")
 class RasterPpuTest {
     @Test
+    void powerOnDisplayStaysWhiteUntilGuestClearsForcedBlank() {
+        var m = new berryboy.Machine(EmulatorFixtures.blankRom());
+        m.memory.write16(0x05000000, 31);
+        m.clock.advanceTo(160L * 1232);
+        assertThat(m.memory.raster().completedFrame()).containsOnly(0xffffff);
+        m.memory.write16(0x04000000, 0);
+        m.clock.advanceTo(LcdTiming.FRAME_CYCLES + 160L * 1232);
+        assertThat(m.memory.raster().completedFrame()).containsOnly(0xff0000);
+    }
+
+    @Test
     void midScanlinePaletteWritesOnlyAffectLaterPixels() {
         var m = bitmap(0x0404);
         for (int i = 0; i < 240 * 160; i += 2) m.memory.write16(0x06000000 + i, 0x0101);
