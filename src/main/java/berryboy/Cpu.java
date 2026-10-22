@@ -33,6 +33,7 @@ public final class Cpu {
     }
 
     public void step() {
+        if (memory.dma().runPending()) return;
         if (memory.halted()) {
             if (!memory.interrupts().wakePending()) {
                 memory.clock().advanceTo(memory.clock().nextDeadline());

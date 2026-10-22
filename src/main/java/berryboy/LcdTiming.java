@@ -13,6 +13,7 @@ public final class LcdTiming implements CycleEvent {
     private int line;
     private boolean hblank;
     private long frames;
+    private DmaController dma;
 
     public LcdTiming(CycleScheduler clock, InterruptController interrupts) {
         this.clock = clock;
@@ -21,6 +22,8 @@ public final class LcdTiming implements CycleEvent {
     }
 
     public int line() { return line; }
+
+    void attachDma(DmaController controller) { dma = controller; }
 
     public long frames() { return frames; }
 
@@ -33,6 +36,7 @@ public final class LcdTiming implements CycleEvent {
         if (!hblank) {
             hblank = true;
             if ((control & 0x10) != 0) interrupts.request(2);
+            if (dma != null && line < VISIBLE_LINES) dma.request(2);
             clock.schedule(this, clock.now() + LINE_CYCLES - DRAW_CYCLES);
         } else {
             hblank = false;
@@ -42,6 +46,7 @@ public final class LcdTiming implements CycleEvent {
                 frames++;
             }
             if (line == VISIBLE_LINES && (control & 8) != 0) interrupts.request(1);
+            if (dma != null && line == VISIBLE_LINES) dma.request(1);
             if (line == (control >>> 8) && (control & 0x20) != 0) interrupts.request(4);
             clock.schedule(this, clock.now() + DRAW_CYCLES);
         }

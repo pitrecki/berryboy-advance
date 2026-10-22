@@ -95,7 +95,11 @@ returns through the existing exception-return instructions. HALT waits for an
 enabled interrupt request, independently of IME/CPSR.I; STOP remains unsupported.
 `Machine(image, bios)` starts a supplied 16 KiB BIOS at the reset vector with
 SVC/IRQ/FIQ reset state. Synthetic BIOS tests cover reset and IRQ return; real
-BIOS boot remains unverified. DMA must follow before synchronized graphics/audio.
+BIOS boot remains unverified. Four DMA channels latch source/destination/count on
+enable and stop CPU execution while transferring. Immediate, visible HBlank and
+VBlank triggers, channel priority, repeat, destination reload and completion
+IRQs are supported. Bus costs advance LCD/timer events during transfers. Special
+FIFO/video-capture timing and Game Pak DRQ remain explicitly unsupported.
 See [BENCHMARKS.md](BENCHMARKS.md) for the implementation order and measurement gate.
 
 ## Java and performance

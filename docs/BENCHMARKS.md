@@ -92,7 +92,10 @@ items as separate, reviewable changes with their own tests.
    DMA triggers, transfer widths, repeat behavior and CPU/bus interaction.
    Cover simultaneous events and transfer completion IRQs.
    Timer prescalers, reload, cascading, enable/disable and timer IRQ requests
-   are implemented and tested. DMA is the next integration step.
+   are implemented and tested. Four-channel DMA supports immediate/HBlank/VBlank
+   requests, priority, repeat, halfword/word widths, address modes, destination
+   reload and completion IRQs. Special FIFO/video-capture timing and Game Pak
+   DRQ remain unsupported; bus contention still needs reference qualification.
 5. **Interrupts and BIOS:** implement IE/IF/IME behavior, CPU IRQ masking and
    exception return, HALT/wakeup and an explicit BIOS boot/service strategy.
    Keep the diagnostic cartridge entry distinct from verified BIOS boot.

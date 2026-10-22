@@ -33,6 +33,7 @@ public final class Memory {
     private final InterruptController interrupts = new InterruptController();
     private final LcdTiming lcd = new LcdTiming(clock, interrupts);
     private final TimerUnit timers = new TimerUnit(clock, interrupts);
+    private final DmaController dma = new DmaController(this);
     private boolean cpuAccess;
     private boolean halted;
     private int postFlag;
@@ -41,6 +42,7 @@ public final class Memory {
 
     public Memory(Cartridge cartridge) {
         this.cartridge = cartridge;
+        lcd.attachDma(dma);
     }
 
     public void setBios(byte[] image) {
@@ -72,6 +74,8 @@ public final class Memory {
     public InterruptController interrupts() { return interrupts; }
 
     public LcdTiming lcd() { return lcd; }
+
+    public DmaController dma() { return dma; }
 
     public boolean halted() { return halted; }
 
@@ -168,6 +172,7 @@ public final class Memory {
     }
 
     private int readIo(int address) {
+        if (address >= IO_BASE + 0xb0 && address < IO_BASE + 0xe0) return dma.read8(address);
         if (address == IO_BASE + 0x300) return postFlag;
         if (address == IO_BASE + 0x301) return 0;
         if ((address & ~1) == KEY_INPUT + 2) return (keyControl >>> ((address & 1) * 8)) & 255;
@@ -191,6 +196,7 @@ public final class Memory {
     }
 
     private void writeIo(int address, int value) {
+        if (address >= IO_BASE + 0xb0 && address < IO_BASE + 0xe0) { dma.write8(address, value); return; }
         if (address == IO_BASE + 0x300) { postFlag |= value & 1; return; }
         if (address == IO_BASE + 0x301) {
             if ((value & 0x80) != 0) throw new EmulationException("STOP oscillator behavior is not implemented");
