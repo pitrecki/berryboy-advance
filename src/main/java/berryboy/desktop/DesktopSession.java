@@ -12,7 +12,7 @@ import javax.swing.SwingUtilities;
 /** Owns the machine on one worker thread; Swing only receives frame snapshots and input. */
 final class DesktopSession implements AutoCloseable {
     private static final int AUDIO_FRAMES_PER_BATCH = 512;
-    private static final int INSTRUCTIONS_PER_BATCH = 10000;
+    private static final long CYCLES_PER_BATCH = (long) AUDIO_FRAMES_PER_BATCH * 512;
     private static final long BATCH_NANOS = 1_000_000_000L * AUDIO_FRAMES_PER_BATCH / AudioUnit.SAMPLE_RATE;
 
     private final Machine machine;
@@ -36,17 +36,30 @@ final class DesktopSession implements AutoCloseable {
     private void run() {
         var samples = new short[AUDIO_FRAMES_PER_BATCH * 2];
         var audioStatus = openAudio();
+        var stream = machine.memory.clockedAudio();
+        stream.setCapture(true);
+        var target = (machine.clock.now() / 512 + AUDIO_FRAMES_PER_BATCH) * 512;
+        var presented = machine.memory.raster().completedFrames();
+        var deadline = System.nanoTime();
         try {
             while (running.get()) {
-                var started = System.nanoTime();
                 machine.memory.setPressedKeys(input.pressedButtons());
-                machine.runInstructions(INSTRUCTIONS_PER_BATCH);
-                machine.audio.render(samples);
+                machine.runCycles(Math.max(0, target - machine.clock.now()));
+                if (stream.drain(samples) != AUDIO_FRAMES_PER_BATCH || stream.overruns() != 0) {
+                    throw new IllegalStateException("Clocked audio buffer underrun/overrun");
+                }
                 if (audio != null) {
                     audio.write(samples);
                 }
-                presentFrame(audioStatus);
-                var remaining = BATCH_NANOS - (System.nanoTime() - started);
+                var completed = machine.memory.raster().completedFrames();
+                if (completed != presented) {
+                    if (completed != presented + 1) throw new IllegalStateException("Unpresented guest frame");
+                    presentFrame(audioStatus);
+                    presented = completed;
+                }
+                target += CYCLES_PER_BATCH;
+                deadline += BATCH_NANOS;
+                var remaining = deadline - System.nanoTime();
                 if (remaining > 0) {
                     LockSupport.parkNanos(remaining);
                 }
@@ -59,6 +72,7 @@ final class DesktopSession implements AutoCloseable {
             reportFailure(failure);
         } finally {
             running.set(false);
+            stream.setCapture(false);
             input.releaseAll();
             machine.memory.setPressedKeys(0);
             if (audio != null) {
@@ -70,18 +84,18 @@ final class DesktopSession implements AutoCloseable {
     private String openAudio() {
         try {
             audio = PcmAudio.open();
-            return "Audio: channel 2 / stereo PCM";
+            return "Audio: PSG + Direct Sound / guest clock";
         } catch (LineUnavailableException | IllegalArgumentException | SecurityException unavailable) {
             return "Audio device unavailable / emulation continues silently";
         }
     }
 
     private void presentFrame(String audioStatus) throws InterruptedException, InvocationTargetException {
-        var pixels = machine.video.render().clone();
+        var pixels = machine.memory.raster().completedFrame().clone();
         var keys = machine.memory.read16(Memory.KEY_INPUT);
         // Apply backpressure instead of skipping presentations or building an unbounded queue.
         SwingUtilities.invokeAndWait(() ->
-                panel.present(pixels, keys, audioStatus + " / experimental instruction pacing"));
+                panel.present(pixels, keys, audioStatus + " / cycle pacing"));
     }
 
     private void reportFailure(Throwable failure) {

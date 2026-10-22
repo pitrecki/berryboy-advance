@@ -53,15 +53,19 @@ encoding; no Java Sound API enters the BlackBerry export.
 | Channel 2 pulse, four duty cycles, frequency and restart | Implemented and regression-tested |
 | Channel 2 length, volume envelope and DAC disable | Implemented and regression-tested |
 | Stereo routing and PSG volume ratio | Implemented and regression-tested |
-| Channels 1, 3 and 4; Direct Sound A/B, FIFOs and timer/DMA feed | Pending; unsupported register accesses report errors |
+| Channels 1, 3 and 4; Direct Sound A/B, FIFOs and timer/DMA feed | Implemented with focused synthetic regressions |
 | SOUNDBIAS register storage | Implemented; PWM and bias effects are not modeled |
-| CPU-cycle synchronization and hardware sequencer edge cases | Pending |
+| CPU-cycle synchronization | Implemented: one PCM frame per 512 guest cycles |
+| Hardware sequencer edge cases | Pending hardware/reference qualification |
 | Actual listening test, device latency and underrun measurements | Not verified in this environment |
 
-Audio advances by the number of generated samples. The desktop runs fixed
-instruction batches between PCM blocks. This is an initial interactive path;
-it is not a cycle-timed GBA scheduler or evidence of stable game FPS. Swing
-presentation applies backpressure; no deliberate frame-skip option is present.
+`ClockedAudio` advances synthesis on guest-cycle deadlines. The desktop uses
+absolute cycle targets for PCM blocks and drains the bounded queue, reporting
+underruns/overruns explicitly. It presents completed raster frames and rejects
+missing guest frames between batches. `AudioUnit.render` is a separate diagnostic
+API that advances by the requested samples. Swing applies backpressure but can
+coalesce repaints; physical presentation, stable game FPS and audible A/V sync
+still require measurement. No deliberate frame-skip option is present.
 
 ## BlackBerry adapter
 

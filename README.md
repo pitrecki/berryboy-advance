@@ -8,10 +8,12 @@ Commercial games are not supported yet.
 ## Changes in 0.6
 
 The desktop session now forwards all ten GBA buttons, including simultaneous
-presses and focus-loss release. The portable core provides initial channel 2
-audio: pulse duty, envelope, length and stereo PCM. A separate audio demo exports
-a WAV file or plays it through Java Sound. This is partial audio support, without
-CPU-cycle synchronization or the other GBA sound channels.
+presses and focus-loss release. The portable core provides four PSG channels and
+timer/DMA-fed Direct Sound A/B, sampled on the shared guest clock. The desktop
+drains bounded PCM buffers and presents completed raster frames with absolute
+cycle pacing. A separate diagnostic audio demo exports a WAV file or plays it
+through Java Sound. Hardware sequencer/PWM edge cases and device output remain
+unverified.
 
 ![Actual desktop component showing the original demo](docs/images/desktop-demo.png)
 
@@ -149,7 +151,7 @@ startup alone is not a passing integration test; inspect the MIDlet's result.
 | `InstructionInterpreter` | Shared decoder operations |
 | `Memory` | RAM, ROM, mirroring, bus access and selected registers |
 | `Keypad` | Ten named buttons and active-low input |
-| `AudioUnit`, `PulseChannel` | Initial channel 2 synthesis and stereo mixing |
+| `AudioUnit`, `ClockedAudio` | Four PSG channels, Direct Sound and bounded cycle-driven PCM |
 | `BitmapRenderer` | BG2 snapshots in bitmap modes 3, 4 and 5 |
 | `DemoRom`, `RuntimeChecks` | Original demo and portable runtime diagnostics |
 | `desktop/LaunchCommand`, `desktop/Main` | Typed CLI commands, execution and PNG export |

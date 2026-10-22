@@ -12,7 +12,7 @@
 | `BarrelShifter` | Calculates shifts, rotations and carry-out |
 | `InstructionInterpreter` | Shares unaligned-read, BX and SWI rules |
 | `Keypad` | Stores the ten pressed-button bits and exposes active-low input |
-| `AudioUnit`, `PulseChannel` | Decode sound registers, synthesize channel 2 and mix stereo samples |
+| `AudioUnit`, `ClockedAudio` | Decode PSG/FIFO registers and produce cycle-driven stereo samples |
 
 The decoders share one `CpuState` and one `Memory` bus. Their ALUs and shifters are
 created during construction, with no per-instruction allocation on successful
@@ -139,10 +139,10 @@ excluded from BlackBerry export.
 
 `DesktopSession` owns that machine on one worker thread. `KeyboardInput` receives
 Swing actions and publishes an atomic button mask; focus loss clears held keys.
-The worker applies input, runs an instruction batch, produces PCM and passes a
-frame snapshot to the event dispatch thread. Presentation applies backpressure
+The worker applies input, runs to absolute audio-cycle targets, drains clocked
+PCM and passes completed raster frames to the event dispatch thread. Presentation applies backpressure
 instead of accumulating frames in an unbounded queue. Swing can still coalesce
-repaints; this is not a verified no-drop video pipeline or a GBA frame scheduler.
+repaints; this is not a verified no-drop physical video pipeline.
 
 `PcmAudio` owns Java Sound playback and WAV encoding. A missing audio device is
 reported in the window and leaves the diagnostic session running silently.
