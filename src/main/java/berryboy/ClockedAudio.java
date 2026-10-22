@@ -31,15 +31,21 @@ public final class ClockedAudio implements CycleEvent {
     public long underruns() { return underruns; }
 
     public int drain(short[] output) {
-        if (output == null || (output.length & 1) != 0) throw new IllegalArgumentException("Complete stereo frames required");
-        var requested = output.length / 2;
+        if (output == null) throw new IllegalArgumentException("Complete stereo frames required");
+        return drain(output, output.length / 2);
+    }
+
+    public int drain(short[] output, int requested) {
+        if (output == null || (output.length & 1) != 0 || requested < 0 || requested > output.length / 2) {
+            throw new IllegalArgumentException("Complete stereo frames required");
+        }
         var count = requested < size ? requested : size;
         for (var i = 0; i < count; i++) {
             output[i * 2] = buffer[head * 2];
             output[i * 2 + 1] = buffer[head * 2 + 1];
             head = (head + 1) % CAPACITY;
         }
-        for (var i = count * 2; i < output.length; i++) output[i] = 0;
+        for (var i = count * 2; i < requested * 2; i++) output[i] = 0;
         size -= count;
         consumed += count;
         if (count < requested) underruns++;

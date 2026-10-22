@@ -52,7 +52,7 @@ commercial-game compatibility or BlackBerry device readiness.
 | M2: Software graphics (in progress) | Complete PPU features listed above, driven by scanline timing | Pixel comparisons for each feature and combined scenes, including register writes during display |
 | M3: Synchronized audio (in progress) | All PSG channels, Direct Sound, timer/DMA refill and bounded output queues | Reference PCM comparisons, sample-count checks and measured A/V drift with no buffer failures |
 | M4: Cartridge compatibility (in progress) | Persistent save types, RTC and required cartridge peripherals | Save/reload round trips, command-sequence tests and deterministic sensor playback |
-| M5: Reproducible game runner | Local ROM/BIOS mapping, recorded input, frame/audio checkpoints and machine-readable reports | The same inputs reproduce guest checkpoints; missing assets fail explicitly rather than skip a game |
+| M5: Reproducible game runner (capture path implemented) | Local ROM/BIOS mapping, recorded input, frame/audio checkpoints and machine-readable reports | The same inputs reproduce guest checkpoints; missing assets fail explicitly rather than skip a game |
 | M6: Platform validation and optimization | Profile-guided improvements, BlackBerry build/playback/input checks and optional supported acceleration | Output matches the software reference; Linux and Bold 9900 reports identify their own hardware and runtime |
 | M7: Sustained playback qualification | Execute the complete five-game protocol on each target | All correctness, frame deadline, audio and drift gates below pass for every recorded run |
 
@@ -131,6 +131,14 @@ items as separate, reviewable changes with their own tests.
   validation evidence, and keep planned, failed, blocked and passed runs distinct.
 
 ## Five-game candidate suite
+
+[SCENARIOS.md](SCENARIOS.md) documents the implemented local capture runner,
+asset hashes, input/sensor recordings, references and report limitations. The
+original demo passes repeatability checks; the commercial-game suite is still
+unrun. The user has ROMs but no physical target device. The supplied archive.org
+collection is currently blocked by the environment network proxy (HTTP 403).
+Required archive.org domain additions are saved in the environment draft;
+saving the draft alone does not enable runtime downloads.
 
 [suite.json](../benchmarks/suite.json) records the proposed tests and their
 current `planned-not-run` status. Selection is based on documented emulator
