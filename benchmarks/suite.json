@@ -23,7 +23,7 @@
       "focus": "OBJ priority and transparency interactions; effects-heavy battle scenes",
       "proposed_scene": "Interior with overlapping character/carpet layers, followed by a battle",
       "evidence": "https://github.com/jsmolka/eggvance/issues/3",
-      "rom_sha256": null,
+      "rom_sha256": "c14f1151897e8d73f25ffdd67e21eebb6dc57973ff2458872ee89fa9060aaca1",
       "scenario_recording": null
     },
     {
@@ -32,7 +32,7 @@
       "focus": "Bitmap output, sprite overlays and backdrop blending during racing",
       "proposed_scene": "A reproducible race segment including sky and overlay transitions",
       "evidence": "https://github.com/DaveTCode/GBADotnet/issues/74",
-      "rom_sha256": null,
+      "rom_sha256": "5818fa74fdcacf39b53a1acea99432c4362979dd656c8153fd9861094aca51f7",
       "scenario_recording": null
     },
     {
@@ -50,7 +50,7 @@
       "focus": "Timer/IRQ-sensitive audio and long-running audio stability",
       "proposed_scene": "Intro followed by a fixed level route with continuous audio",
       "evidence": "https://github.com/skylersaleh/SkyEmu/issues/11",
-      "rom_sha256": null,
+      "rom_sha256": "d16c7bf6e62bb84049fff1b387108fbd1e6e2cd38ca994ab5310dd9cbf9ba414",
       "scenario_recording": null
     },
     {

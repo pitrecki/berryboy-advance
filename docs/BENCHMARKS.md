@@ -153,8 +153,12 @@ items as separate, reviewable changes with their own tests.
 
 [SCENARIOS.md](SCENARIOS.md) documents the implemented local capture runner,
 asset hashes, input/sensor recordings, references and report limitations. The
-original demo passes repeatability checks; the commercial-game suite is still
-unrun. The user has ROMs but no physical target device. The supplied archive.org
+original demo passes repeatability checks. Eleven uploaded games now have
+[initial compatibility captures](GAME-COMPATIBILITY.md): six completed long
+captures without counter failures, four reported missing guest frames, and
+Metroid Fusion raised a reproducible exception. This does not satisfy the
+five-game sustained qualification suite. The user has no physical target device.
+The supplied archive.org
 collection is currently blocked by the environment network proxy (HTTP 403).
 Required archive.org domain additions are saved in the environment draft;
 saving the draft alone does not enable runtime downloads.
@@ -233,13 +237,14 @@ implemented with deterministic inputs. Serial regressions cover RTC leap-day and
 year rollover, 12-hour PM, sensor latching, dummy bits, solar threshold and GPIO
 direction/read enable. Busy/ADC timing, RTC IRQs and hardware calibration still
 require implementation/qualification; M4 remains in progress.
-A portable cycle scheduler and
-initial CPU/bus timing are implemented. There is no full PPU, complete mixer,
-cartridge peripheral support or commercial-game
-benchmark runner. The new desktop session is an interactive diagnostic.
-No benchmark ROMs, save states or reference captures were supplied for this
-update. Consequently all five entries remain unrun, and 60 FPS on either target
-is an unverified goal.
+The portable scheduler, initial CPU/bus timing, software PPU, mixer, cartridge
+devices and headless game capture runner are implemented, with accuracy and
+qualification gaps listed above. Eleven uploaded ROMs enabled initial game
+captures; independent references and game-specific routes remain missing.
+The qualification suite also still lacks Mario & Luigi and WarioWare: Twisted!
+assets. All five sustained qualification entries remain unrun, and native-rate
+playback on either target is an unverified goal. The next compatibility queue
+is recorded in [GAME-COMPATIBILITY.md](GAME-COMPATIBILITY.md).
 
 Current headless demo screenshots are in [AUDIO-INPUT.md](AUDIO-INPUT.md). They
 are not evidence for this five-game milestone.
