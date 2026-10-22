@@ -16,8 +16,15 @@ import javax.swing.SwingUtilities;
 /** Paints the production Swing component with real emulator state, without a display server. */
 public final class CaptureDocumentation {
     public static void main(String[] args) throws Exception {
+        if (args.length != 0 && args.length != 1 && (args.length != 4 || !args[1].equals("--game-frame"))) {
+            throw new IllegalArgumentException("Usage: CaptureDocumentation [output [--game-frame frame.png caption]]");
+        }
         var output = Path.of(args.length == 0 ? "docs/images" : args[0]);
         Files.createDirectories(output);
+        if (args.length == 4) {
+            captureGameFrame(output, Path.of(args[2]), args[3]);
+            return;
+        }
         var machine = new Machine(DemoRom.create());
         machine.runInstructions(DemoRom.RUN_BUDGET);
         SwingUtilities.invokeAndWait(() -> {
@@ -40,6 +47,28 @@ public final class CaptureDocumentation {
                 input.releaseAll();
             } catch (Exception failure) {
                 throw new IllegalStateException("Documentation capture failed", failure);
+            }
+        });
+    }
+
+    /** Presents an actual ScenarioRunner checkpoint; never synthesizes game pixels. */
+    private static void captureGameFrame(Path output, Path framePath, String caption) throws Exception {
+        var frame = ImageIO.read(framePath.toFile());
+        if (frame == null || frame.getWidth() != 240 || frame.getHeight() != 160) {
+            throw new IllegalArgumentException("Game checkpoint must be a 240x160 emulator frame");
+        }
+        var pixels = frame.getRGB(0, 0, 240, 160, null, 0, 240);
+        SwingUtilities.invokeAndWait(() -> {
+            try {
+                var panel = new DesktopPanel();
+                var input = new KeyboardInput();
+                input.bind(panel);
+                panel.setSize(panel.getPreferredSize());
+                layout(panel);
+                panel.present(pixels, 0x3ff, caption);
+                capture(panel, output.resolve("desktop-game.png"));
+            } catch (Exception failure) {
+                throw new IllegalStateException("Game documentation capture failed", failure);
             }
         });
     }

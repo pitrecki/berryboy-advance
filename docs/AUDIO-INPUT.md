@@ -79,9 +79,20 @@ still pending. Desktop Java Sound output does not establish phone playback.
 
 ## Application captures
 
-These images are the production `DesktopPanel`, painted headlessly using the
-real demo framebuffer. They are not simulator captures, physical-monitor
-captures or evidence of commercial-game compatibility.
+The README now shows the production `DesktopPanel` displaying an actual recorded
+LeafGreen USA Rev-A frame after restoring the player save. Guest frame 1272
+matches all 38400 pixels in the independent mGBA comparison. The screenshot
+includes the real application title and keyboard legend; no game pixels are
+painted by the documentation tool. It presents the selected recorded frame with
+all buttons released, rather than claiming a live interactive window capture.
+
+![LeafGreen player save restored in the desktop component](images/desktop-game.png)
+
+This is a headless component capture, not a BlackBerry simulator, physical
+monitor or performance measurement. It verifies one restored-room checkpoint;
+[other video/audio and gameplay checks](REFERENCE-VALIDATION.md) remain open.
+The original pattern captures below are retained as diagnostics for the demo and
+keyboard bindings, rather than the README's game preview.
 
 ![Original demo in the desktop view](images/desktop-demo.png)
 
@@ -98,6 +109,24 @@ tools/capture-docs.sh
 # For a temporary capture that does not replace tracked documentation:
 tools/capture-docs.sh target/documentation-captures
 ```
+
+To regenerate the game preview, first replay the recorded LeafGreen continuation
+with the matching ROM/BIOS/initial-save/input hashes from
+[REFERENCE-VALIDATION.md](REFERENCE-VALIDATION.md) and select frame 1272 with
+`checkpoints=1272`. Assets and scenario output stay outside Git. Then run:
+
+```bash
+tools/capture-docs.sh docs/images --game-frame \
+  target/leafgreen-menu-diagnosis/replay/frame-1272.png \
+  "Pokemon LeafGreen / player save restored"
+```
+
+`--game-frame` accepts only a 240x160 checkpoint and writes `desktop-game.png`;
+it leaves the diagnostic images unchanged. Use a temporary output directory to
+review a replacement before updating tracked documentation. The capture uses
+the host's Swing fonts, so UI text can vary across hosts; the selected guest
+pixels remain unchanged and are scaled by the production component. Provenance
+is recorded in [readme-capture-2026-10-22.json](../benchmarks/readme-capture-2026-10-22.json).
 
 ## References
 

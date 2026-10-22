@@ -2,8 +2,8 @@
 
 An experimental GBA emulator for classic BlackBerry devices, targeting the Bold
 9900 and BBOS 7.1. Development runs on **Linux, Java 21 and Maven**. The core
-executes ARM/Thumb instructions and renders the project's original demo program.
-Commercial games are not supported yet.
+executes ARM/Thumb instructions and renders local games with a software PPU.
+Commercial-game accuracy and BlackBerry runtime compatibility remain under validation.
 
 ## Changes in 0.6
 
@@ -15,10 +15,12 @@ cycle pacing. A separate diagnostic audio demo exports a WAV file or plays it
 through Java Sound. Hardware sequencer/PWM edge cases and device output remain
 unverified.
 
-![Actual desktop component showing the original demo](docs/images/desktop-demo.png)
+![Pokemon LeafGreen: restored player save in the BerryBoy desktop view](docs/images/desktop-game.png)
 
-This is a headless capture of the application's Swing component, not a BlackBerry
-simulator screenshot. See [audio, controls and captures](docs/AUDIO-INPUT.md).
+Pokemon LeafGreen after loading a player save. The game frame matches mGBA
+pixel for pixel at this checkpoint. This is the application's desktop component
+painted headlessly from the recorded frame. See [capture provenance and reproduction](docs/AUDIO-INPUT.md#application-captures)
+and [current game-validation limits](docs/REFERENCE-VALIDATION.md).
 
 The legacy exporter now resolves only explicitly supplied sources and protects
 handwritten files in its output directory. Export tests live in the build package;

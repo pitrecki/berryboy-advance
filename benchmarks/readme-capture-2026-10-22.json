@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-22",
+  "base_commit": "24ed139f019f1b8de508b91880a653b1e066c244",
+  "source_dirty": true,
+  "application_component": "berryboy.desktop.DesktopPanel",
+  "capture": "Headless Swing component painted with the recorded ScenarioRunner frame; no native window or BlackBerry execution",
+  "game": "Pokemon LeafGreen USA Rev-A",
+  "frame": 1272,
+  "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+  "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+  "input_sha256": "83fbaacb4b6c7707e367959540da80dc4494abef89265bff4d345f0981b0e96d",
+  "initial_save_sha256": "fd44f0a2d5348f7ea91c1e3c50a9b2b794023be9bb86787a32bcb9d90c9aa8a9",
+  "guest_rgb_sha256": "74e77aa5cdc3a445d3c207278d70e039c9910ce4c3a776b74a95fd28f8426234",
+  "guest_reference_matching_pixels": 38400,
+  "guest_pixels": 38400,
+  "image": "docs/images/desktop-game.png",
+  "image_sha256": "d54e40015d541682c5db2eacc609e0b9b6566c9089d327218c697521bbff2e4a",
+  "image_dimensions": [
+    752,
+    640
+  ],
+  "guest_screen_rectangle": [
+    16,
+    62,
+    720,
+    480
+  ],
+  "integer_scale": 3,
+  "guest_pixels_preserved": true,
+  "buttons": "all released",
+  "reproduction": "tools/capture-docs.sh docs/images --game-frame target/leafgreen-menu-diagnosis/replay/frame-1272.png \"Pokemon LeafGreen / player save restored\"",
+  "limits": "One restored-room checkpoint, not full-game compatibility, physical presentation, audio or sustained performance qualification"
+}
