@@ -34,6 +34,8 @@ public final class Memory {
     private final LcdTiming lcd = new LcdTiming(clock, interrupts);
     private final TimerUnit timers = new TimerUnit(clock, interrupts);
     private final DmaController dma = new DmaController(this);
+    private final RasterPpu raster = new RasterPpu(this);
+    private long videoVersion;
     private boolean cpuAccess;
     private boolean halted;
     private int postFlag;
@@ -76,6 +78,10 @@ public final class Memory {
     public LcdTiming lcd() { return lcd; }
 
     public DmaController dma() { return dma; }
+
+    public RasterPpu raster() { return raster; }
+
+    long videoVersion() { return videoVersion; }
 
     public boolean halted() { return halted; }
 
@@ -232,6 +238,8 @@ public final class Memory {
             unavailable(address);
         }
         ioRegisters[address - IO_BASE] = (byte) value;
+        videoVersion++;
+        raster.affineWrite(address);
     }
 
     private void writeRepeatedByte(int address, int value) {
@@ -266,12 +274,15 @@ public final class Memory {
                 break;
             case 0x05:
                 palette[address & 0x3ff] = (byte) value;
+                videoVersion++;
                 break;
             case 0x06:
                 videoRam[videoRamOffset(address)] = (byte) value;
+                videoVersion++;
                 break;
             case 0x07:
                 objectAttributes[address & 0x3ff] = (byte) value;
+                videoVersion++;
                 break;
             case 0x08:
             case 0x09:

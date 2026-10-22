@@ -10,6 +10,12 @@ public final class SoftwarePpu {
     private final int[] objects = new int[240];
     private final int[] objectPriority = new int[240];
     private final boolean[] objectWindow = new boolean[240];
+    private int cachedRow = -1;
+    private int cachedDisplay;
+    private long cachedVersion = -1;
+    private boolean timed;
+    private final int[] referenceX = new int[2];
+    private final int[] referenceY = new int[2];
 
     public SoftwarePpu(Memory memory) { this.memory = memory; }
 
@@ -17,12 +23,47 @@ public final class SoftwarePpu {
         if (y < 0 || y >= 160 || output == null || offset < 0 || offset > output.length - 240) {
             throw new IllegalArgumentException("Invalid scanline destination");
         }
+        timed = false;
+        renderRange(y, 0, 240, output, offset);
+    }
+
+    void renderPixel(int x, int y, int[] output) {
+        timed = true;
+        renderRange(y, x, x + 1, output, y * 240);
+    }
+
+    void reloadAffine() {
+        for (var bg = 0; bg < 2; bg++) {
+            referenceX[bg] = read32(0x04000028 + bg * 16) << 4 >> 4;
+            referenceY[bg] = read32(0x0400002c + bg * 16) << 4 >> 4;
+        }
+    }
+
+    void affineWrite(int address) {
+        for (var bg = 0; bg < 2; bg++) {
+            var base = 0x04000028 + bg * 16;
+            if (address >= base && address < base + 4) referenceX[bg] = read32(base) << 4 >> 4;
+            if (address >= base + 4 && address < base + 8) referenceY[bg] = read32(base + 4) << 4 >> 4;
+        }
+    }
+
+    void finishLine() {
+        for (var bg = 0; bg < 2; bg++) {
+            referenceX[bg] += (short) io(0x22 + bg * 16);
+            referenceY[bg] += (short) io(0x26 + bg * 16);
+        }
+    }
+
+    private void renderRange(int y, int start, int end, int[] output, int offset) {
         var display = io(0);
         var mode = display & 7;
         if (mode > 5) throw new EmulationException("Reserved display mode");
-        renderObjects(y, display);
+        if (cachedRow != y || cachedDisplay != display || cachedVersion != memory.videoVersion()) {
+            renderObjects(y, display);
+            cachedRow = y; cachedDisplay = display; cachedVersion = memory.videoVersion();
+        }
         var backdrop = palette(0);
-        for (var x = 0; x < 240; x++) {
+        for (var x = start; x < end; x++) {
             if ((display & 0x80) != 0) { output[offset + x] = 0xffffff; continue; }
             var mask = windowMask(x, y, display);
             var first = backdrop;
@@ -78,10 +119,12 @@ public final class SoftwarePpu {
         if (mode == 0 || (mode == 1 && bg < 2)) return textPixel(bg, x, y, control);
         if ((mode == 1 && bg == 2) || (mode == 2 && bg >= 2) || (mode >= 3 && bg == 2)) {
             var base = 0x20 + (bg - 2) * 16;
-            var sx = ((read32(0x04000000 + base + 8) << 4 >> 4)
-                    + (short) io(base) * x + (short) io(base + 2) * y) >> 8;
-            var sy = ((read32(0x04000000 + base + 12) << 4 >> 4)
-                    + (short) io(base + 4) * x + (short) io(base + 6) * y) >> 8;
+            var refX = timed ? referenceX[bg - 2] : (read32(0x04000000 + base + 8) << 4 >> 4);
+            var refY = timed ? referenceY[bg - 2] : (read32(0x04000000 + base + 12) << 4 >> 4);
+            // Timed affine references already include completed rows.
+            var row = timed ? 0 : y;
+            var sx = (refX + (short) io(base) * x + (short) io(base + 2) * row) >> 8;
+            var sy = (refY + (short) io(base + 4) * x + (short) io(base + 6) * row) >> 8;
             if (mode <= 2) return affinePixel(sx, sy, control);
             var width = mode == 5 ? 160 : 240;
             var height = mode == 5 ? 128 : 160;

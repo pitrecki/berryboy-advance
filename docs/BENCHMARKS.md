@@ -184,8 +184,10 @@ alone cannot pass the gate.
 `SoftwarePpu` now composes snapshots for text/affine/bitmap backgrounds (modes
 0–5), normal/affine OBJ, priorities, windows/OBJ windows, alpha/brightness and
 mosaic. Seven focused pixel regressions supplement the existing bitmap tests.
-Scanline/pixel sampling and hardware limits still require integration and
-qualification; this is not a completed full-graphics milestone.
+`RasterPpu` now samples one pixel per four guest cycles and publishes completed
+frames. Tests cover mid-scanline palette changes, affine reference writes and
+completed-frame stability. LCD fetch-pipeline delays, mosaic edge cases and OBJ
+hardware limits still require qualification; M2 remains in progress.
 A portable cycle scheduler and
 initial CPU/bus timing are implemented. There is no full PPU, complete mixer,
 cartridge peripheral support or commercial-game

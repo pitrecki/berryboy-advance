@@ -107,8 +107,12 @@ See [BENCHMARKS.md](BENCHMARKS.md) for the implementation order and measurement 
 `SoftwarePpu` is the reference compositor behind the `BitmapRenderer` snapshot
 adapter. It supports text/affine/bitmap BGs, OBJ/affine OBJ, priority/transparency,
 windows/OBJ windows, mosaic and color effects. Device reads bypass CPU bus
-accounting. Snapshot composition does not yet preserve mid-scanline register
-writes, internal affine latches or OBJ hardware fetch limits.
+accounting. `RasterPpu` samples visible pixels every four guest cycles, maintains
+affine row references and publishes complete double-buffered frames. Palette and
+affine reference changes affect subsequent samples instead of repainting the
+whole frame. Snapshot rendering remains available for diagnostics. This logical
+sampling model does not reproduce the LCD fetch pipeline or OBJ hardware limits;
+those remain qualification work.
 
 The development project targets Java 21. The instruction execution path uses
 primitives and arrays. Local `var` changes source syntax only; the exporter
