@@ -94,7 +94,8 @@ items as separate, reviewable changes with their own tests.
    Timer prescalers, reload, cascading, enable/disable and timer IRQ requests
    are implemented and tested. Four-channel DMA supports immediate/HBlank/VBlank
    requests, priority, repeat, halfword/word widths, address modes, destination
-   reload and completion IRQs. Special FIFO/video-capture timing and Game Pak
+   reload and completion IRQs. DMA1/2 also support timer-driven sound FIFO refill.
+   Video-capture timing and Game Pak
    DRQ remain unsupported; bus contention still needs reference qualification.
 5. **Interrupts and BIOS:** implement IE/IF/IME behavior, CPU IRQ masking and
    exception return, HALT/wakeup and an explicit BIOS boot/service strategy.
@@ -191,8 +192,10 @@ hardware limits still require qualification; M2 remains in progress.
 Guest-clocked sample output is implemented. PSG channels 1–4 support sweep,
 banked wave RAM, noise, length/envelope and stereo mixing. Tests verify sweep
 overflow, signed wave nibble order, 7-bit noise feedback, exact sample deadlines
-and bounded-buffer failure counters. Direct Sound, device playback and hardware
-sequencer/PWM edge cases remain open.
+and bounded-buffer failure counters. Direct Sound A/B now consume signed FIFO
+samples on timer overflow, refill through DMA1/2 and mix with saturation.
+Validation: 968 host and 906 exported-core tests pass. Device playback and
+hardware sequencer/PWM edge cases remain open.
 A portable cycle scheduler and
 initial CPU/bus timing are implemented. There is no full PPU, complete mixer,
 cartridge peripheral support or commercial-game

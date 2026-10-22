@@ -6,12 +6,16 @@ public final class TimerUnit {
     private final CycleScheduler clock;
     private final InterruptController interrupts;
     private final Timer[] timers = new Timer[4];
+    private AudioUnit audio;
+    private DmaController dma;
 
     public TimerUnit(CycleScheduler clock, InterruptController interrupts) {
         this.clock = clock;
         this.interrupts = interrupts;
         for (var i = 0; i < 4; i++) timers[i] = new Timer(i);
     }
+
+    void attachSound(AudioUnit unit, DmaController controller) { audio = unit; dma = controller; }
 
     int read8(int address) {
         var offset = address - 0x04000100;
@@ -72,6 +76,11 @@ public final class TimerUnit {
             counter = reload;
             lastCycle = clock.now();
             if ((control & 0x40) != 0) interrupts.request(8 << index);
+            if (audio != null && index < 2) {
+                var request = audio.timerOverflow(index);
+                if ((request & 1) != 0) dma.requestFifo(0x040000a0);
+                if ((request & 2) != 0) dma.requestFifo(0x040000a4);
+            }
             if (index < 3) {
                 var next = timers[index + 1];
                 if (next.enabled() && next.cascade()) {

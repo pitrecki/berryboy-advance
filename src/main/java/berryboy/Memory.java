@@ -46,6 +46,7 @@ public final class Memory {
     public Memory(Cartridge cartridge) {
         this.cartridge = cartridge;
         lcd.attachDma(dma);
+        timers.attachSound(audio, dma);
     }
 
     public void setBios(byte[] image) {

@@ -148,9 +148,9 @@ class AudioUnitTest {
         var machine = tone(0xf080, false);
 
         assertSoftly(softly -> {
-            softly.assertThatThrownBy(() -> machine.memory.write16(AudioUnit.MIX_CONTROL, 0x0302))
-                    .isInstanceOf(EmulationException.class).hasMessageContaining("Direct Sound");
-            softly.assertThatThrownBy(() -> machine.memory.write32(Memory.IO_BASE + 0xa0, 1))
+            softly.assertThatThrownBy(() -> machine.memory.write16(AudioUnit.MIX_CONTROL, 3))
+                    .isInstanceOf(EmulationException.class).hasMessageContaining("ratio");
+            softly.assertThatThrownBy(() -> machine.memory.write32(Memory.IO_BASE + 0xac, 1))
                     .isInstanceOf(EmulationException.class);
             softly.assertThatThrownBy(() -> machine.memory.write16(Memory.IO_BASE + 0x8c, 1))
                     .isInstanceOf(EmulationException.class);

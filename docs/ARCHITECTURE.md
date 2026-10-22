@@ -86,8 +86,10 @@ and independent stereo routing. `ClockedAudio` generates one sample every 512
 guest cycles and optionally captures it in a bounded 8192-frame queue with
 produced/consumed/overrun/underrun counters. `AudioUnit.render` remains an explicit
 sample-advancing diagnostic API; live sinks must drain `ClockedAudio` instead of
-advancing synthesis a second time. Direct Sound, timer/DMA refill, PWM/BIAS
-effects and hardware sequencer edge cases remain open.
+advancing synthesis a second time. Direct Sound A/B latch signed FIFO bytes on
+selected timer overflows, route independently to stereo and request four-word
+DMA1/2 refills at the 16-byte threshold. The mixer saturates instead of wrapping.
+PWM/BIAS effects and hardware sequencer edge cases remain open.
 
 The shared scheduler drives LCD HBlank/VBlank/VCOUNT and four reloadable,
 prescaled/cascaded timers. IE/IF/IME expose interrupt requests with write-one-to-
@@ -100,7 +102,8 @@ BIOS boot remains unverified. Four DMA channels latch source/destination/count o
 enable and stop CPU execution while transferring. Immediate, visible HBlank and
 VBlank triggers, channel priority, repeat, destination reload and completion
 IRQs are supported. Bus costs advance LCD/timer events during transfers. Special
-FIFO/video-capture timing and Game Pak DRQ remain explicitly unsupported.
+video-capture timing and Game Pak DRQ remain explicitly unsupported. DMA1/2
+support sound FIFO timing with forced word width, fixed destination and count 4.
 See [BENCHMARKS.md](BENCHMARKS.md) for the implementation order and measurement gate.
 
 ## Java and performance

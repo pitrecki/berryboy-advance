@@ -31,7 +31,9 @@ public final class DmaController {
             if ((control & 0x8000) != 0 && (previous & 0x8000) == 0) {
                 if ((control & 0x180) == 0x180) throw new EmulationException("Reserved DMA source mode");
                 if ((control & 0x800) != 0) throw new EmulationException("Game Pak DMA DRQ is not implemented");
-                if ((control & 0x3000) == 0x3000) throw new EmulationException("Special DMA timing is not implemented");
+                if ((control & 0x3000) == 0x3000 && (channel.index == 0 || channel.index == 3)) {
+                    throw new EmulationException("Special video/Game Pak DMA timing is not implemented");
+                }
             }
             channel.control = control;
             if ((control & 0x8000) == 0) channel.pending = false;
@@ -43,6 +45,15 @@ public final class DmaController {
         for (var i = 0; i < 4; i++) {
             var channel = channels[i];
             if ((channel.control & 0x8000) != 0 && ((channel.control >>> 12) & 3) == timing) {
+                channel.pending = true;
+            }
+        }
+    }
+
+    void requestFifo(int address) {
+        for (var i = 1; i <= 2; i++) {
+            var channel = channels[i];
+            if ((channel.control & 0xb000) == 0xb000 && (channel.currentDestination & ~3) == address) {
                 channel.pending = true;
             }
         }
@@ -86,15 +97,18 @@ public final class DmaController {
             currentDestination = destination & (index == 3 ? 0x0fffffff : 0x07ffffff);
             initialCount = count & (index == 3 ? 0xffff : 0x3fff);
             if (initialCount == 0) initialCount = index == 3 ? 0x10000 : 0x4000;
+            if ((control & 0x3000) == 0x3000) initialCount = 4;
             remaining = initialCount;
             first = true;
             pending = ((control >>> 12) & 3) == 0;
         }
 
         void transfer() {
-            var width = (control & 0x400) != 0 ? 4 : 2;
+            var fifo = (control & 0x3000) == 0x3000;
+            var width = fifo || (control & 0x400) != 0 ? 4 : 2;
             var sourceMode = (control >>> 7) & 3;
             var destinationMode = (control >>> 5) & 3;
+            if (fifo) destinationMode = 2;
             var sourceAddress = currentSource & ~(width - 1);
             var destinationAddress = currentDestination & ~(width - 1);
             if (first) memory.clock().advance(2); // DMA bus ownership startup.

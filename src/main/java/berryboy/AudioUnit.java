@@ -29,6 +29,8 @@ public final class AudioUnit {
     private final SweepChannel channel1 = new SweepChannel();
     private final WaveChannel channel3 = new WaveChannel();
     private final NoiseChannel channel4 = new NoiseChannel();
+    private final SoundFifo fifoA = new SoundFifo();
+    private final SoundFifo fifoB = new SoundFifo();
 
     private int stereoControl;
     private int mixControl;
@@ -37,7 +39,7 @@ public final class AudioUnit {
 
     static boolean handles(int address) {
         return (address >= Memory.IO_BASE + 0x60 && address < Memory.IO_BASE + 0x8a)
-                || (address >= Memory.IO_BASE + 0x90 && address < Memory.IO_BASE + 0xa0);
+                || (address >= Memory.IO_BASE + 0x90 && address < Memory.IO_BASE + 0xa8);
     }
 
     int read8(int address) {
@@ -53,6 +55,10 @@ public final class AudioUnit {
             channel3.writeWave(address - 0x04000090, value);
             return;
         }
+        if (address >= 0x040000a0 && address < 0x040000a8) {
+            if (address < 0x040000a4) fifoA.push(value); else fifoB.push(value);
+            return;
+        }
         if (address == MASTER_CONTROL) {
             enabled = (value & MASTER_ENABLE) != 0;
             if (!enabled) {
@@ -61,14 +67,14 @@ public final class AudioUnit {
                 stereoControl = 0;
             }
         } else if (address == MIX_CONTROL) {
-            if ((value & 3) == 3 || (value & 0x0c) != 0) {
-                throw new EmulationException("Unsupported sound mix: Direct Sound and ratio 3 are not implemented");
+            if ((value & 3) == 3) {
+                throw new EmulationException("Reserved PSG ratio 3");
             }
-            mixControl = value & 3;
+            mixControl = (mixControl & 0xff00) | (value & 15);
         } else if (address == MIX_CONTROL + 1) {
-            if (value != 0) {
-                throw new EmulationException("Direct Sound FIFO/timers are not implemented");
-            }
+            mixControl = (mixControl & 255) | ((value & 0x77) << 8);
+            if ((value & 8) != 0) fifoA.reset();
+            if ((value & 0x80) != 0) fifoB.reset();
         } else if ((address & ~1) == BIAS_CONTROL) {
             biasControl = replaceByte(biasControl, address, value) & 0xc3fe;
         } else if (enabled) {
@@ -92,10 +98,31 @@ public final class AudioUnit {
                 left = routed(first, second, third, fourth, stereoControl >>> 12);
                 right = routed(first, second, third, fourth, stereoControl >>> 8);
             }
-            interleaved[index] = (short) ((left * PCM_SCALE >> (2 - mixControl)) * (((stereoControl >>> 4) & 7) + 1));
-            interleaved[index + 1] = (short) ((right * PCM_SCALE >> (2 - mixControl)) * ((stereoControl & 7) + 1));
+            left = (left * PCM_SCALE >> (2 - (mixControl & 3))) * (((stereoControl >>> 4) & 7) + 1);
+            right = (right * PCM_SCALE >> (2 - (mixControl & 3))) * ((stereoControl & 7) + 1);
+            if (enabled) {
+                var a = fifoA.output() * ((mixControl & 4) != 0 ? 256 : 128);
+                var b = fifoB.output() * ((mixControl & 8) != 0 ? 256 : 128);
+                if ((mixControl & 0x200) != 0) left += a;
+                if ((mixControl & 0x100) != 0) right += a;
+                if ((mixControl & 0x2000) != 0) left += b;
+                if ((mixControl & 0x1000) != 0) right += b;
+            }
+            interleaved[index] = clip(left);
+            interleaved[index + 1] = clip(right);
         }
     }
+
+    /** Returns bit 0/1 for FIFO A/B DMA refill requests. */
+    int timerOverflow(int timer) {
+        if (!enabled) return 0;
+        int request = 0;
+        if (((mixControl >>> 10) & 1) == timer) { fifoA.tick(); if (fifoA.needsDma()) request |= 1; }
+        if (((mixControl >>> 14) & 1) == timer) { fifoB.tick(); if (fifoB.needsDma()) request |= 2; }
+        return request;
+    }
+
+    private static short clip(int sample) { return (short) (sample > 32767 ? 32767 : sample < -32768 ? -32768 : sample); }
 
     private int routed(int a, int b, int c, int d, int routes) {
         return ((routes & 1) != 0 ? a : 0) + ((routes & 2) != 0 ? b : 0)
