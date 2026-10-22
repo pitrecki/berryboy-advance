@@ -34,6 +34,10 @@ public final class Memory {
     private final LcdTiming lcd = new LcdTiming(clock, interrupts);
     private final TimerUnit timers = new TimerUnit(clock, interrupts);
     private boolean cpuAccess;
+    private boolean halted;
+    private int postFlag;
+    private int keyControl;
+    private boolean keyMatched;
 
     public Memory(Cartridge cartridge) {
         this.cartridge = cartridge;
@@ -54,6 +58,7 @@ public final class Memory {
     /** GBA bit order: A, B, Select, Start, Right, Left, Up, Down, R, L. */
     public void setPressedKeys(int mask) {
         keypad.setPressed(mask);
+        updateKeyInterrupt();
     }
 
     public AudioUnit audio() {
@@ -67,6 +72,10 @@ public final class Memory {
     public InterruptController interrupts() { return interrupts; }
 
     public LcdTiming lcd() { return lcd; }
+
+    public boolean halted() { return halted; }
+
+    void wake() { halted = false; }
 
     int fetch(int address, boolean thumb) {
         bus.fetch(address, thumb ? 2 : 4);
@@ -159,6 +168,9 @@ public final class Memory {
     }
 
     private int readIo(int address) {
+        if (address == IO_BASE + 0x300) return postFlag;
+        if (address == IO_BASE + 0x301) return 0;
+        if ((address & ~1) == KEY_INPUT + 2) return (keyControl >>> ((address & 1) * 8)) & 255;
         if (InterruptController.handles(address)) return interrupts.read8(address);
         if (address >= IO_BASE + 4 && address <= IO_BASE + 7) return lcd.read8(address);
         if (address >= IO_BASE + 0x100 && address < IO_BASE + 0x110) return timers.read8(address);
@@ -179,6 +191,18 @@ public final class Memory {
     }
 
     private void writeIo(int address, int value) {
+        if (address == IO_BASE + 0x300) { postFlag |= value & 1; return; }
+        if (address == IO_BASE + 0x301) {
+            if ((value & 0x80) != 0) throw new EmulationException("STOP oscillator behavior is not implemented");
+            halted = true;
+            return;
+        }
+        if ((address & ~1) == KEY_INPUT + 2) {
+            var shift = (address & 1) * 8;
+            keyControl = ((keyControl & ~(255 << shift)) | ((value & 255) << shift)) & 0xc3ff;
+            updateKeyInterrupt();
+            return;
+        }
         if (InterruptController.handles(address)) { interrupts.write8(address, value); return; }
         if (address >= IO_BASE + 4 && address <= IO_BASE + 7) { lcd.write8(address, value); return; }
         if (address >= IO_BASE + 0x100 && address < IO_BASE + 0x110) { timers.write8(address, value); return; }
@@ -257,6 +281,14 @@ public final class Memory {
         return address == DISPLAY_CONTROL || address == DISPLAY_CONTROL + 1
                 || address == BACKGROUND_2_CONTROL || address == BACKGROUND_2_CONTROL + 1
                 || (address >= BACKGROUND_2_TRANSFORM && address < BACKGROUND_2_TRANSFORM + 16);
+    }
+
+    private void updateKeyInterrupt() {
+        var selected = keyControl & 0x3ff;
+        var pressed = ~keypad.readInput() & selected;
+        var match = selected != 0 && ((keyControl & 0x8000) != 0 ? pressed == selected : pressed != 0);
+        if (match && !keyMatched && (keyControl & 0x4000) != 0) interrupts.request(1 << 12);
+        keyMatched = match;
     }
 
     private static int videoRamOffset(int address) {

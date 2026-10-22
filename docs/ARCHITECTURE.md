@@ -78,19 +78,24 @@ hidden defaults.
 
 `Memory` owns the keypad and audio unit. `Machine.audio` exposes the same audio
 unit for platform adapters. Guest loads observe keypad updates through read-only
-`KEYINPUT`; keypad IRQs are not implemented.
+`KEYINPUT`; KEYCNT supports OR/AND chord matching and keypad IRQ requests.
 
 Channel 2 produces interleaved signed PCM16 at 32768 Hz, with duty selection,
 length, envelope and stereo routing. Synthesis uses integers and caller-owned
 buffers, without desktop APIs. Output sample counts advance audio time. CPU
-instructions do not yet advance an emulated clock, so audio register writes are
-not synchronized to CPU cycles. Channel 1, wave/noise channels, Direct Sound,
+instructions advance the shared clock, but the audio path still advances from
+output samples, so register writes are not synchronized to CPU cycles.
+Channel 1, wave/noise channels, Direct Sound,
 timer/DMA refill, PWM/BIAS effects and hardware sequencer edge cases remain open.
 
 The shared scheduler drives LCD HBlank/VBlank/VCOUNT and four reloadable,
 prescaled/cascaded timers. IE/IF/IME expose interrupt requests with write-one-to-
-clear acknowledgement. DMA and CPU exception delivery must follow before
-extending graphics and synchronized audio.
+clear acknowledgement. CPU IRQ entry preserves CPSR/LR in the IRQ bank and
+returns through the existing exception-return instructions. HALT waits for an
+enabled interrupt request, independently of IME/CPSR.I; STOP remains unsupported.
+`Machine(image, bios)` starts a supplied 16 KiB BIOS at the reset vector with
+SVC/IRQ/FIQ reset state. Synthetic BIOS tests cover reset and IRQ return; real
+BIOS boot remains unverified. DMA must follow before synchronized graphics/audio.
 See [BENCHMARKS.md](BENCHMARKS.md) for the implementation order and measurement gate.
 
 ## Java and performance

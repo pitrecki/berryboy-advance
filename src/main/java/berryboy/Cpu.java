@@ -33,6 +33,20 @@ public final class Cpu {
     }
 
     public void step() {
+        if (memory.halted()) {
+            if (!memory.interrupts().wakePending()) {
+                memory.clock().advanceTo(memory.clock().nextDeadline());
+                return;
+            }
+            memory.wake();
+        }
+        if (memory.interrupts().irqPending() && (state.status() & 0x80) == 0) {
+            if (!memory.hasBios()) throw new EmulationException("IRQ needs a supplied BIOS");
+            state.enterIrq();
+            memory.clock().advance(1);
+            memory.busTiming().refill(0x18, 4);
+            return;
+        }
         var address = state.programCounter();
         var thumbMode = state.isThumb();
         int opcode = 0;

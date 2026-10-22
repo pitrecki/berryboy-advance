@@ -96,6 +96,9 @@ items as separate, reviewable changes with their own tests.
 5. **Interrupts and BIOS:** implement IE/IF/IME behavior, CPU IRQ masking and
    exception return, HALT/wakeup and an explicit BIOS boot/service strategy.
    Keep the diagnostic cartridge entry distinct from verified BIOS boot.
+   IRQ entry/return, interrupt masking, keypad requests, HALT wakeup and a
+   supplied-BIOS reset path are implemented. Synthetic BIOS tests cover ARM IRQ
+   entry and return to Thumb; real BIOS boot and STOP remain unverified.
 6. **Integrated timing regression:** run a small original test ROM combining
    LCD events, timers, DMA and IRQ, recording cycle-stamped checkpoints.
    Require identical guest results across repeated host and exported-core runs

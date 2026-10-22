@@ -155,6 +155,15 @@ final class CpuState {
         writeRegister(PROGRAM_COUNTER, 8);
     }
 
+    void enterIrq() {
+        var previousStatus = status;
+        var returnAddress = programCounter() + 4;
+        writeStatus((status & ~0x3f) | Cpu.IRQ | 0x80);
+        writeSavedStatus(previousStatus);
+        writeRegister(LINK_REGISTER, returnAddress);
+        writeRegister(PROGRAM_COUNTER, 0x18);
+    }
+
     int userRegister(int index) {
         if (index == PROGRAM_COUNTER) {
             return instructionAddress + 12;
