@@ -1,6 +1,6 @@
 package berryboy;
 
-/** GBA bus transfer costs without Game Pak prefetch or display-bus contention. */
+/** GBA bus transfer costs and an eight-halfword Game Pak opcode prefetch model. */
 public final class BusTiming {
     private static final int[] FIRST_WAIT = {5, 4, 3, 9};
     private final CycleScheduler clock;
@@ -10,6 +10,8 @@ public final class BusTiming {
     private int nextData;
     private int dataRegion = -1;
     private boolean dataWrite;
+    private int prefetched;
+    private int prefetchCredit;
 
     public BusTiming(CycleScheduler clock) {
         this.clock = clock;
@@ -20,10 +22,8 @@ public final class BusTiming {
     }
 
     public void setWaitControl(int value) {
-        if ((value & 0x4000) != 0) {
-            throw new EmulationException("Game Pak prefetch timing is not implemented");
-        }
         waitControl = value & 0x5fff;
+        invalidateFetch();
     }
 
     public int accessCycles(int address, int width, boolean sequential) {
@@ -44,23 +44,50 @@ public final class BusTiming {
     }
 
     void fetch(int address, int width) {
-        clock.advance(accessCycles(address, width, nextFetchSequential && address == expectedFetch));
+        var sequential = nextFetchSequential && address == expectedFetch;
+        var cost = accessCycles(address, width, sequential);
+        var hit = false;
+        if (prefetchEnabled() && gamePakRom(address) && sequential) {
+            var halfwords = width / 2;
+            if (prefetched >= halfwords) { prefetched -= halfwords; cost = 1; hit = true; }
+            else {
+                var missingAddress = address + prefetched * 2;
+                var missing = halfwords - prefetched;
+                cost = -prefetchCredit;
+                for (var i = 0; i < missing; i++) cost += accessCycles(missingAddress + i * 2, 2, true);
+                if (cost < 1) cost = 1;
+                prefetched = 0; prefetchCredit = 0;
+            }
+        } else { prefetched = 0; prefetchCredit = 0; }
         expectedFetch = address + width;
         nextFetchSequential = true;
         dataRegion = -1;
+        clock.advance(cost);
+        if (hit) fillPrefetch(1);
     }
 
     void data(int address, int width, boolean write) {
         var region = address >>> 24;
         var sequential = region == dataRegion && address == nextData && write == dataWrite;
-        clock.advance(accessCycles(address, width, sequential));
+        var cost = accessCycles(address, width, sequential);
+        clock.advance(cost);
         nextData = address + width;
         dataRegion = region;
         dataWrite = write;
-        nextFetchSequential = false;
+        if (prefetchEnabled() && (address >>> 24) < 8) fillPrefetch(cost);
+        else invalidateFetch();
+    }
+
+    void internal(int cycles, boolean branch) {
+        clock.advance(cycles);
+        if (!branch && cycles > 0) {
+            if (prefetchEnabled()) fillPrefetch(cycles);
+            else if (gamePakRom(expectedFetch)) invalidateFetch(); // Documented prefetch-disable N-cycle bug.
+        }
     }
 
     void refill(int address, int width) {
+        invalidateFetch();
         clock.advance(accessCycles(address, width, false));
         clock.advance(accessCycles(address + width, width, true));
         expectedFetch = address;
@@ -69,5 +96,23 @@ public final class BusTiming {
 
     void invalidateFetch() {
         nextFetchSequential = false;
+        prefetched = 0;
+        prefetchCredit = 0;
+    }
+
+    private boolean prefetchEnabled() { return (waitControl & 0x4000) != 0; }
+
+    private static boolean gamePakRom(int address) { return (address >>> 24) >= 8 && (address >>> 24) <= 13; }
+
+    private void fillPrefetch(int freeCycles) {
+        if (!nextFetchSequential || !gamePakRom(expectedFetch)) return;
+        prefetchCredit += freeCycles;
+        while (prefetched < 8) {
+            var cost = accessCycles(expectedFetch + prefetched * 2, 2, true);
+            if (prefetchCredit < cost) break;
+            prefetchCredit -= cost;
+            prefetched++;
+        }
+        if (prefetched == 8) prefetchCredit = 0;
     }
 }

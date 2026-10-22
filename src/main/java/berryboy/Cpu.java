@@ -61,7 +61,7 @@ public final class Cpu {
             } else if (execute) {
                 arm.execute(opcode);
             }
-            memory.clock().advance(internal);
+            memory.busTiming().internal(internal, state.branched());
             if (state.branched()) memory.busTiming().refill(state.programCounter(), state.isThumb() ? 2 : 4);
             instructionCount++;
         } catch (EmulationException error) {

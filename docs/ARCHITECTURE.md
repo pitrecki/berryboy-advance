@@ -25,8 +25,10 @@ Operand names describe their roles, such as `destination`, `baseRegister` and
 The ARMv4T interpreter advances the shared guest clock for instruction/data bus
 transfers, internal execution cycles and branch refills. `BusTiming` models
 memory widths and WAITCNT waits; `InstructionTiming` models internal cycles.
-Game Pak prefetch is rejected explicitly; display-bus contention and full
-pipeline overlap remain unverified. This is a timing foundation, not a claim of
+Game Pak opcode prefetch has an eight-halfword buffer, fills during internal
+cycles/off-cartridge data transfers and flushes on branches or cartridge data
+access. The documented prefetch-disable N-cycle bug is modeled. Display-bus
+contention and full pipeline overlap remain unverified. This is a timing foundation, not a claim of
 hardware-cycle accuracy across games. Internally,
 `r15` holds the next instruction address; operand reads add the pipeline offset.
 ARM reads use PC+8, or PC+12 for register shifts and STR. Thumb reads use PC+4.

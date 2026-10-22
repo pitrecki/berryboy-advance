@@ -81,8 +81,11 @@ items as separate, reviewable changes with their own tests.
    Test representative cycle traces against documented ARM7TDMI/GBA behavior.
    `BusTimingTest` covers wait-state selection, memory widths, conditional
    execution, register shifts, branch refill and device deadlines during a
-   load. Game Pak prefetch is rejected; contention, prefetch and pipeline
-   overlap need hardware/reference qualification before this step is complete.
+   load. Game Pak opcode prefetch now fills an eight-halfword buffer during free
+   bus/internal cycles and flushes on branches/cartridge data accesses. Tests
+   cover buffered fetches, capacity and the documented prefetch-disable bug.
+   Contention and pipeline overlap need hardware/reference qualification before
+   this step is complete.
 3. **LCD events (implemented):** schedule 1232 cycles per scanline and 228 lines per frame
    (280896 cycles), with HBlank/VBlank, VCOUNT and DISPSTAT transitions and IRQ
    requests. Test boundaries and several consecutive frames without drift.
