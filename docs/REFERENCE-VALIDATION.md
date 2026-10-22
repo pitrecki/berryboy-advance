@@ -1,6 +1,42 @@
 # Independent reference validation, 2026-10-22
 
-## Current result
+## Verified player save and cross-emulator continuation
+
+LeafGreen USA Rev-A has a recorded route from a fresh game to a manual player
+save: choose a character/name, enter the upstairs bedroom, move right, open Save,
+confirm it, and wait for **LEAF saved the game**. The 6950-frame route was replayed
+automatically and produced the exact same 128 KiB Flash file and confirmation
+image as the interactive run. All 14 save sections have generation counter 1.
+
+Fresh BerryBoy and mGBA instances both accept an isolated copy of that file.
+Both show **CONTINUE, PLAYER LEAF** and restore the character in the saved bedroom
+position. The frame-1272 room checkpoint matches **all 38400 pixels**. The loaded
+save remains unchanged and matches the mGBA backup snapshot byte for byte; the
+original file is preserved. The menu checkpoint is readable in both but only
+18768/38400 pixels match, so it is explicitly not an exact pixel pass. Both
+automated BerryBoy runs have zero missing guest frames or software audio buffer
+failures. This establishes a real player-save round trip beyond initialization.
+
+Restart exposed a missing unmapped CPU-store case above BIOS, at `0x7c00`.
+These stores now leave memory unchanged. ARM/Thumb regressions cover low/high
+ranges and preserve diagnostics for unsupported devices/execution. Latest
+validation: **1031 host tests and 956 exported-core tests passed**.
+
+Evidence: [leafgreen-player-save-2026-10-22.json](../benchmarks/leafgreen-player-save-2026-10-22.json).
+Original input recordings are committed as
+[leafgreen-create-save.tsv](../benchmarks/inputs/leafgreen-create-save.tsv) and
+[leafgreen-continue.tsv](../benchmarks/inputs/leafgreen-continue.tsv). ROM, BIOS,
+save bytes, screenshots and WAV remain outside Git. Replay with the recorded
+ROM/BIOS/input hashes, backup type 2, no warmup and fresh output paths in
+`ScenarioRunner`. Creation requires an absent initial save and 6950 frames;
+continuation requires a copy of the recorded save and 1272 frames. Exact local
+properties/logs are under
+`/workspace/roms/gba/validation/2026-10-22/leafgreen-player-validation`.
+
+Whole-stream continuation still differs (991/1272 exact RGB frames; PCM differs).
+The room checkpoint does not close renderer, audio or timing qualification gates.
+
+## Longer-run result
 
 All eleven 3600-frame runs were repeated after correcting the LCD reset state
 and high-address open-bus handling. They still have zero missing guest frames
@@ -33,7 +69,7 @@ ignores unmapped CPU stores. Unknown I/O, unsupported execution and DMA open-bus
 latches retain explicit diagnostics. Original ARM/Thumb regressions cover the
 read widths, sign extension and store isolation. LeafGreen's recorded 4000-frame
 name route now finishes without exception (3713 exact RGB frames against mGBA);
-it does not yet include a manually saved game.
+the subsequent complete save/continue route is verified above.
 
 Validation: **1028 host tests and 953 exported-core tests passed**. The scenario
 report now includes initial save hash, final backup hash/type/size and whether

@@ -112,3 +112,10 @@ guest traces, WAV audio and final PNGs. A bus spot check agrees with mGBA;
 complete independent video/audio comparison now reports mismatches for all eleven
 titles over 3600-frame captures; see [REFERENCE-VALIDATION.md](REFERENCE-VALIDATION.md).
 Four save initialization/reload files match mGBA. Physical-device captures remain unrun.
+
+
+The committed LeafGreen recordings in `benchmarks/inputs/` cover a 6950-frame
+fresh-game/manual-save route and a 1272-frame continuation from the same copied
+save. The independent restored-room checkpoint matches every pixel; menu and
+full-stream hashes still differ. See REFERENCE-VALIDATION.md for asset identities,
+source, counters and reproduction requirements.

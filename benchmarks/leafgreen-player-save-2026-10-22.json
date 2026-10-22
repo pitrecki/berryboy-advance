@@ -1,0 +1,214 @@
+{
+  "date": "2026-10-22",
+  "base_commit": "2d8ae11bed8f976ce7a56a5b74b1e50791943fd8",
+  "source_dirty": true,
+  "host_tests": 1031,
+  "exported_core_tests": 956,
+  "game": "Pokemon LeafGreen USA Rev-A",
+  "save_sha256": "fd44f0a2d5348f7ea91c1e3c50a9b2b794023be9bb86787a32bcb9d90c9aa8a9",
+  "save_bytes": 131072,
+  "save_sections": [
+    {
+      "physical_sector": 14,
+      "id": 13,
+      "counter": 1
+    },
+    {
+      "physical_sector": 15,
+      "id": 0,
+      "counter": 1
+    },
+    {
+      "physical_sector": 16,
+      "id": 1,
+      "counter": 1
+    },
+    {
+      "physical_sector": 17,
+      "id": 2,
+      "counter": 1
+    },
+    {
+      "physical_sector": 18,
+      "id": 3,
+      "counter": 1
+    },
+    {
+      "physical_sector": 19,
+      "id": 4,
+      "counter": 1
+    },
+    {
+      "physical_sector": 20,
+      "id": 5,
+      "counter": 1
+    },
+    {
+      "physical_sector": 21,
+      "id": 6,
+      "counter": 1
+    },
+    {
+      "physical_sector": 22,
+      "id": 7,
+      "counter": 1
+    },
+    {
+      "physical_sector": 23,
+      "id": 8,
+      "counter": 1
+    },
+    {
+      "physical_sector": 24,
+      "id": 9,
+      "counter": 1
+    },
+    {
+      "physical_sector": 25,
+      "id": 10,
+      "counter": 1
+    },
+    {
+      "physical_sector": 26,
+      "id": 11,
+      "counter": 1
+    },
+    {
+      "physical_sector": 27,
+      "id": 12,
+      "counter": 1
+    }
+  ],
+  "creation": {
+    "status": "captured",
+    "correctness": "unverified",
+    "qualification": "headless-only; physical presentation and playback unverified",
+    "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+    "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+    "input_sha256": "c4a88be754f75cb6c5c39300f952a422cdbdb049d5b27ddb86a057f4ca4dac4e",
+    "rtc_seed": "2000-01-01T00:00:00",
+    "initial_save_sha256": null,
+    "backup_sha256": "fd44f0a2d5348f7ea91c1e3c50a9b2b794023be9bb86787a32bcb9d90c9aa8a9",
+    "backup_type": 2,
+    "backup_bytes": 131072,
+    "save_written": true,
+    "devices": 0,
+    "rumble_active": false,
+    "commit": "2d8ae11bed8f976ce7a56a5b74b1e50791943fd8",
+    "source_dirty": "true",
+    "frames": 6950,
+    "warmup_frames": 0,
+    "guest_cycles": 1952227200,
+    "audio_frames": 3812943,
+    "audio_overruns": 0,
+    "audio_underruns": 0,
+    "produced_audio_frames": 3812943,
+    "consumed_audio_frames": 3812943,
+    "dropped_guest_frames": 0,
+    "video_sha256": "45bdc491ca260f6c39c598bffd15c58d074ef4c3b6dee888beb514ab4601ac64",
+    "audio_sha256": "195cd78fc3c9eb514e7b9a922fa95c5e912f25bd20cb98a2c052f51bed644cf8",
+    "work_p50_ns": 18454617,
+    "work_p95_ns": 32299638,
+    "work_p99_ns": 40343970,
+    "work_max_ns": 217238054,
+    "work_deadline_misses": 3936,
+    "physically_presented_frames": null,
+    "physical_audio_underruns": null,
+    "java": "21.0.8+9-LTS",
+    "os": "Linux",
+    "architecture": "amd64",
+    "hardware": "x86_64 Linux cloud host; headless smoke only",
+    "os_version": "6.18.55"
+  },
+  "continue_capture": {
+    "status": "captured",
+    "correctness": "unverified",
+    "qualification": "headless-only; physical presentation and playback unverified",
+    "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+    "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+    "input_sha256": "83fbaacb4b6c7707e367959540da80dc4494abef89265bff4d345f0981b0e96d",
+    "rtc_seed": "2000-01-01T00:00:00",
+    "initial_save_sha256": "fd44f0a2d5348f7ea91c1e3c50a9b2b794023be9bb86787a32bcb9d90c9aa8a9",
+    "backup_sha256": "fd44f0a2d5348f7ea91c1e3c50a9b2b794023be9bb86787a32bcb9d90c9aa8a9",
+    "backup_type": 2,
+    "backup_bytes": 131072,
+    "save_written": false,
+    "devices": 0,
+    "rumble_active": false,
+    "commit": "2d8ae11bed8f976ce7a56a5b74b1e50791943fd8",
+    "source_dirty": "true",
+    "frames": 1272,
+    "warmup_frames": 0,
+    "guest_cycles": 357299712,
+    "audio_frames": 697851,
+    "audio_overruns": 0,
+    "audio_underruns": 0,
+    "produced_audio_frames": 697851,
+    "consumed_audio_frames": 697851,
+    "dropped_guest_frames": 0,
+    "video_sha256": "3e68811368e5316113a752e2543ac7e2429ef1b132091b1d072729cf449023a0",
+    "audio_sha256": "b6f81e57a4555265875afcaf35cd4788e39b8fb40d274fa0498b6ef38bc9ed7c",
+    "work_p50_ns": 8438982,
+    "work_p95_ns": 14257264,
+    "work_p99_ns": 28791564,
+    "work_max_ns": 127625610,
+    "work_deadline_misses": 32,
+    "physically_presented_frames": null,
+    "physical_audio_underruns": null,
+    "java": "21.0.8+9-LTS",
+    "os": "Linux",
+    "architecture": "amd64",
+    "hardware": "x86_64 Linux cloud host; headless smoke only",
+    "os_version": "6.18.55"
+  },
+  "reference_continue": {
+    "emulator": "mGBA 0.10.5",
+    "frames": 1272,
+    "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+    "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+    "input_sha256": "83fbaacb4b6c7707e367959540da80dc4494abef89265bff4d345f0981b0e96d",
+    "video_sha256": "549864dcc12dff21fbf62dff5fee929d03074a20f46f4eb11f8ce69fb8a3e689",
+    "audio_sha256": "2f94bd594105d83da71e076bc84d4ea76f6cd91d3708ff1899c230c8c5de053f",
+    "audio_frames": 697852,
+    "sample_rate": 32768,
+    "audio_filter": "mGBA blip_buf",
+    "audio_nonzero_samples": 946817,
+    "master_volume": 256,
+    "muted": false,
+    "binary_sha256": "2735a6479111919fc641faeeb9729b03b35ba24ea17208aaec70f19b5477fe42",
+    "initial_save_sha256": "fd44f0a2d5348f7ea91c1e3c50a9b2b794023be9bb86787a32bcb9d90c9aa8a9",
+    "qualification": "independent headless capture; physical playback unverified",
+    "rtc_seed": "2000-01-01T00:00:00",
+    "rtc_timezone": "UTC",
+    "devices": 0,
+    "sensors": "stationary; no recorded peripheral motion"
+  },
+  "comparison": {
+    "status": "mismatch",
+    "exact_video_frames": 991,
+    "total_video_frames": 1272,
+    "first_video_mismatch": 10,
+    "whole_video_hash_match": false,
+    "whole_audio_hash_match": false,
+    "reference_audio_frames": 697852,
+    "berryboy_audio_frames": 697851,
+    "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+  },
+  "checkpoint_menu": {
+    "frame": 1029,
+    "observed": "CONTINUE, PLAYER LEAF in both engines",
+    "exact": false,
+    "matching_pixels": 18768,
+    "berryboy_rgb_sha256": "cab48c398267f59f10238373d5a88189e2342b229985a7111b5a0e222216e092",
+    "reference_rgb_sha256": "4094435a96921940d1665621224ae34948668ffc63f06154cc2533cd1f25861e"
+  },
+  "checkpoint_room": {
+    "frame": 1272,
+    "exact": true,
+    "matching_pixels": 38400,
+    "rgb_sha256": "74e77aa5cdc3a445d3c207278d70e039c9910ce4c3a776b74a95fd28f8426234"
+  },
+  "creation_replayed_byte_identically": true,
+  "initial_save_preserved": true,
+  "qualification": "Manual save and cross-emulator load/room checkpoint verified; menu/full-stream RGB, PCM and physical timing remain unqualified"
+}

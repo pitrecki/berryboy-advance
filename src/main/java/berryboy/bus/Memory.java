@@ -414,7 +414,7 @@ public final class Memory implements VideoBus {
     private void writeByteLane(int address, int value) {
         switch (address >>> 24) {
             case 0x00:
-                if (address >= BIOS_SIZE) {
+                if (address >= BIOS_SIZE && !cpuAccess) {
                     unavailable(address);
                 }
                 break;

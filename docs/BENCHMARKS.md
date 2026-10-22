@@ -126,8 +126,10 @@ items as separate, reviewable changes with their own tests.
    former 428-frame exception is resolved. ARM bus spot checks agree with mGBA;
    full IRQ/SWI timing, reference correctness and longer gameplay remain open.
    Independent references now expose differences over eleven 3600-frame runs;
-   four save/reload images match mGBA. See REFERENCE-VALIDATION.md.
-   Latest validation: 1028 host and 953 exported-core tests passed.
+   four save/reload images match mGBA. LeafGreen also has a verified manual
+   player save and cross-emulator restored-room pixel checkpoint.
+   See REFERENCE-VALIDATION.md.
+   Latest validation: 1031 host and 956 exported-core tests passed.
    BIOS data and captures remain outside Git.
 6. **Integrated timing regression (implemented):** run a small original test ROM combining
    LCD events, timers, DMA and IRQ, recording cycle-stamped checkpoints.

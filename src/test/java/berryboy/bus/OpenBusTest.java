@@ -38,11 +38,12 @@ class OpenBusTest {
         assertThat(m.cpu.register(3)).isEqualTo(0xab);
     }
 
-    @Test
-    void unmappedStoresAreIgnoredButUnknownDevicesAndExecutionStillDiagnose() {
+    @ParameterizedTest
+    @CsvSource({"0xe55ec000", "0x01000000", "0x00007c00"})
+    void unmappedStoresAreIgnoredButUnknownDevicesAndExecutionStillDiagnose(long address) {
         var m = arm(0xe5801000);
         m.memory.write32(0x02000000, 0x12345678);
-        m.cpu.setRegister(0, 0xe55ec000);
+        m.cpu.setRegister(0, (int) address);
         m.cpu.setRegister(1, 42);
         m.cpu.step();
         assertThat(m.memory.read32(0x02000000)).isEqualTo(0x12345678);
@@ -51,5 +52,20 @@ class OpenBusTest {
         assertThatThrownBy(() -> m.memory.read16(0xe55ec000)).isInstanceOf(EmulationException.class);
         m.cpu.setPc(0xe55ec000);
         assertThatThrownBy(m.cpu::step).isInstanceOf(EmulationException.class).hasMessageContaining("unmapped region");
+    }
+
+    @Test
+    void thumbByteStoresAboveBiosLeaveBiosAndRamIntact() {
+        var m = thumb(0x7008); // STRB r0,[r1].
+        m.memory.setBios(new byte[0x4000]);
+        m.memory.write32(0x02000000, 0x12345678);
+        m.cpu.setRegister(0, 255);
+        m.cpu.setRegister(1, 0x7c00);
+        m.cpu.step();
+        assertThat(m.memory.read32(0x02000000)).isEqualTo(0x12345678);
+        m.cpu.setPc(0);
+        assertThat(m.memory.fetch(0, false)).isZero();
+        m.memory.finishInstruction();
+        assertThatThrownBy(() -> m.memory.write8(0x7c00, 255)).isInstanceOf(EmulationException.class);
     }
 }
