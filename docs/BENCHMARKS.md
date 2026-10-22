@@ -67,11 +67,15 @@ milestones and on the external assets and device access listed below.
 The next implementation commit should cover the first item only. Keep later
 items as separate, reviewable changes with their own tests.
 
-1. **Cycle clock and scheduler:** introduce a portable guest clock and event
+1. **Cycle clock and scheduler (implemented):** `CycleScheduler` provides a
+   portable guest clock and event
    queue, with explicit ordering for events at the same cycle. Test exact
    deadlines, advancement across multiple events, reset, large cycle counts and
    deterministic replay. Keep instruction counts as a separate diagnostic;
    this initial infrastructure does not claim accurate instruction timing.
+   Validation: 931 host tests and 869 exported-core tests passed, including
+   exact deadlines, stable ties, cancellation/replacement, replay, reset,
+   overflow and callback failure recovery (`CycleSchedulerTest`).
 2. **CPU and bus timing:** account for ARM/Thumb execution, conditional paths,
    branch/pipeline effects, memory regions, sequential accesses and WAITCNT.
    Test representative cycle traces against documented ARM7TDMI/GBA behavior.
