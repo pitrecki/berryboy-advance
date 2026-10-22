@@ -10,7 +10,14 @@ Host: Linux x86_64, Java 21.0.8+9. Full per-game hashes, counters, runtime metad
 errors and replay evidence are in
 [the machine-readable record](../benchmarks/uploaded-games-smoke-2026-10-22.json).
 
-## Current BIOS/open-bus follow-up
+## Longer independent-reference validation
+
+All eleven games also completed 3600-frame fresh-state captures. Independent
+mGBA video/audio comparison now runs for every title and reports mismatches;
+four game-written initialization saves match mGBA byte for byte. See
+[REFERENCE-VALIDATION.md](REFERENCE-VALIDATION.md) for protocol, counts and limits.
+
+## BIOS/open-bus follow-up
 
 All eleven games now complete 1200 frames with zero missing guest frames and
 zero software audio underruns/overruns, using the original input script and BIOS.
