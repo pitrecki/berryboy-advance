@@ -13,6 +13,42 @@ import org.junit.jupiter.api.Test;
 @Tag("core")
 class CycleSchedulerTest {
     @Test
+    void observationPreservesTiesAndPairsCallbacksAtTheirExactDeadlines() {
+        var clock = new CycleScheduler();
+        var observed = new ArrayList<String>();
+        var calls = new int[1];
+        CycleEvent first = () -> {
+            calls[0]++;
+            clock.schedule(() -> calls[0]++, clock.now());
+        };
+        CycleEvent second = () -> calls[0]++;
+        clock.setObserver((event, before) -> observed.add(clock.now() + ":" + before + ":" + calls[0]));
+        clock.schedule(first, 10); clock.schedule(second, 10);
+        clock.advanceTo(20);
+        assertThat(observed).containsExactly("10:true:0", "10:false:1", "10:true:1", "10:false:2",
+                "10:true:2", "10:false:3");
+        assertThat(clock.now()).isEqualTo(20);
+        clock.setObserver(null);
+        clock.schedule(first, 21); clock.advanceTo(21);
+        assertThat(calls[0]).isEqualTo(5);
+        assertThat(observed).hasSize(6);
+    }
+
+    @Test
+    void failedDeviceDoesNotProduceAnAfterNotificationAndClockRemainsRecoverable() {
+        var clock = new CycleScheduler();
+        var phases = new ArrayList<Boolean>();
+        clock.setObserver((event, before) -> phases.add(before));
+        clock.schedule(() -> { throw new EmulationException("device failed"); }, 5);
+        clock.schedule(() -> {}, 7);
+        assertThatThrownBy(() -> clock.advanceTo(10)).hasMessage("device failed");
+        assertThat(phases).containsExactly(true);
+        assertThat(clock.now()).isEqualTo(5);
+        clock.advanceTo(10);
+        assertThat(phases).containsExactly(true, true, false);
+    }
+
+    @Test
     void dispatchesExactDeadlinesAndStableTiesIncludingNewEvents() {
         var clock = new CycleScheduler();
         var trace = new ArrayList<String>();

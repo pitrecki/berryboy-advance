@@ -60,7 +60,10 @@ command. This does not prove the MIDlet loaded or ran: the initial touch-screen
 instruction dialog remains visible and no BBOS application/check result has
 been observed. Xvfb initially has no window manager; GUI setup is still under
 investigation. Early crashes before fonts were installed are superseded by this
-window-startup result, not by a runtime pass.
+window-startup result, not by a runtime pass. A follow-up with Openbox and the
+vendor's `/automate /automate-timeout=1 /automate-no-dialogs` options still
+produces no confirmed BBOS boot or application result; it can leave a blank
+main window. A controller connection alone does not establish GUI responsiveness.
 
 Do not treat Wine/QEMU timing as Bold performance. The simulator's native audio
 backend also has no sound device on this host. Physical input/audio/performance

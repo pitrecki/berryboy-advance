@@ -136,6 +136,53 @@ equal mid-frame register history; LCD status can differ near a boundary even
 when completed images match. ROM/BIOS/backup bytes are excluded, but video memory
 and generated PNGs can contain game assets and remain outside Git.
 
+## Bounded guest-event diagnostics
+
+For a direct `ScenarioRunner` configuration, enable LCD callback snapshots with:
+
+```properties
+event_trace=true
+trace_start_cycle=0
+trace_end_cycle=3370753
+trace_capacity=65536
+trace_events=lcd
+```
+
+This example includes the last boundary of a 12-frame, zero-warmup capture.
+The window is `[start, end)`, defaults to the complete configured run including
+its final boundary, and must remain inside that budget. `trace_events=all`
+also records other scheduled callbacks; audio/pixel clocks can fill the buffer
+quickly, so narrow the window. The default is LCD only. Capacity is 1..1000000
+rows, with a default of 65536. Invalid settings fail before output creation.
+
+`events.tsv` records before/after callback state: effective cycle, dispatch cycle,
+phase, local event ID/type, PC, CPSR, VCOUNT, DISPSTAT, DISPCNT, BLDCNT,
+BLDALPHA, BLDY, IE, IF, IME and HALT. Numbers are unsigned decimal. Event IDs
+identify callback instances within one trace, not devices across emulators.
+PC is the CPU's current instruction position during dispatch, not a bus trace.
+The optional observer stays on the guest owner, copies primitive values using
+read-only peeks, and performs no disk IO. Serialization occurs after detaching.
+Only the diagnostic buffer is bounded by this setting; normal capture continues
+after it fills. The report explicitly counts `dropped_rows` and marks a truncated
+trace. A failed device callback has no successful `after` record.
+
+Recompile `tools/mgba-capture.c`, then pass `--event-trace` and optional
+`--trace-start-cycle`, `--trace-end-cycle`, `--trace-capacity` to
+`tools/reference_capture.py`. The mGBA adapter observes LCD callbacks only. It
+buffers the same columns without changing the event's context, priority or
+deadline. `cycle` is its effective deadline (`dispatch_cycle - cyclesLate`);
+`dispatch_cycle` exposes instruction-level lateness. BerryBoy dispatches at the
+exact scheduler deadline, so its two cycle columns are equal. The normal RGB/PCM
+protocol is unchanged; reference metadata also records trace truncation.
+
+These snapshots diagnose scheduled event order. They do not record every CPU
+bus transaction, BIOS-protected read, register write or IRQ entry. In particular,
+end-of-frame blend coefficients may already belong to the next frame; inspect
+the visible-line trace before explaining a pixel difference. A matching trace
+does not establish hardware correctness or physical playback performance.
+See the [BIOS startup diagnosis](REFERENCE-VALIDATION.md#bios-startup-event-diagnosis)
+for measured noninterference and the remaining timing questions.
+
 ## Current validation
 
 Two three-frame captures of the original demo produced identical video/PCM

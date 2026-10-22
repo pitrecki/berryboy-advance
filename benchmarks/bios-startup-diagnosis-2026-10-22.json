@@ -1,0 +1,173 @@
+{
+  "date": "2026-10-22",
+  "base_commit": "5426bc4624aa0e774f780c90a011e277a8d45697",
+  "source_dirty": true,
+  "scope": "12-frame LeafGreen real-BIOS startup diagnosis; not a timing fix or hardware qualification",
+  "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+  "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+  "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "initial_save_sha256": null,
+  "backup_type": 2,
+  "rtc_seed": "2000-01-01T00:00:00",
+  "devices": 0,
+  "frames": 12,
+  "warmup_frames": 0,
+  "hardware": "Linux x86_64 cloud host; headless; physical device unrun",
+  "java": "Temurin 21.0.8+9",
+  "maven": "3.9.11",
+  "reference": "mGBA 0.10.5 RGB888 software build",
+  "reference_binary_sha256": "7d0a13be62410149de31e77d0df3b9d84d2ba759b37fdd3688f452c94ac889ca",
+  "untraced_reference_binary_sha256": "630316c4eee13cbfbe5fd07f2cca31c051630d2086f23225bf5d25b11a717ac8",
+  "tracing": {
+    "columns": [
+      "cycle",
+      "dispatch_cycle",
+      "phase",
+      "event_id",
+      "event",
+      "pc",
+      "cpsr",
+      "vcount",
+      "dispstat",
+      "dispcnt",
+      "bldcnt",
+      "bldalpha",
+      "bldy",
+      "ie",
+      "if",
+      "ime",
+      "halted"
+    ],
+    "window_start": 0,
+    "window_end_exclusive": 3370753,
+    "capacity": 65536,
+    "rows_each": 10944,
+    "dropped_rows_each": 0,
+    "rows_match_in_count_only": true,
+    "trace_sha256": {
+      "traced-effects": "41feb19ae8258598c3bc1986f5f5a7c1cecb87230970e4035f1d01236a0712e9",
+      "reference-effects": "9bcf3b9204b8bc04ab454c9f638d5d1c5c98db33d7a5afa653b82ceb7e954786"
+    },
+    "noninterference": "Within each emulator, exact full RGB/PCM hashes, sample counts and CPU/frame JSONL are preserved; BerryBoy/reference still differ",
+    "noninterference_checked_files": [
+      "frames.jsonl",
+      "audio.wav",
+      "video-state-10.bin",
+      "frame-10.png"
+    ],
+    "final_control_captures": [
+      "baseline-effects",
+      "reference-baseline-effects"
+    ]
+  },
+  "capture_hashes": {
+    "baseline": {
+      "video_sha256": "92cdadfa2c12ac8e82c2db7f44e73a8e05d53e3c6dfeaded8a2109e36244289c",
+      "audio_sha256": "848f5c00162c2e55c50df5151726594be83306fc0f4da97e92e95c77d41ecb3f",
+      "audio_frames": 6583
+    },
+    "traced-effects": {
+      "video_sha256": "92cdadfa2c12ac8e82c2db7f44e73a8e05d53e3c6dfeaded8a2109e36244289c",
+      "audio_sha256": "848f5c00162c2e55c50df5151726594be83306fc0f4da97e92e95c77d41ecb3f",
+      "audio_frames": 6583
+    },
+    "reference-baseline": {
+      "video_sha256": "bd9cf3ff739ac3764158ce4e9d90de85eafee7c95eac0d20ffc638dc2afa35a5",
+      "audio_sha256": "a76cb72b195fc60aa5838f40ab16c552a39b8b99be6b18979f294faf7688e158",
+      "audio_frames": 6584
+    },
+    "reference-effects": {
+      "video_sha256": "bd9cf3ff739ac3764158ce4e9d90de85eafee7c95eac0d20ffc638dc2afa35a5",
+      "audio_sha256": "a76cb72b195fc60aa5838f40ab16c552a39b8b99be6b18979f294faf7688e158",
+      "audio_frames": 6584
+    }
+  },
+  "comparison": {
+    "status": "mismatch",
+    "exact_video_frames": 9,
+    "total_video_frames": 12,
+    "first_video_mismatch": 10,
+    "whole_video_hash_match": false,
+    "whole_audio_hash_match": false,
+    "reference_audio_frames": 6584,
+    "berryboy_audio_frames": 6583,
+    "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+  },
+  "lcd_timing": {
+    "first_hblank_cycle": {
+      "berryboy": 960,
+      "reference": 1008
+    },
+    "hblank_phase_difference_cycles": 48,
+    "line_advance_deadlines_identical": true,
+    "line_advances_each": 2736,
+    "line_cycles": 1232,
+    "initial_dispstat_before_first_hblank": {
+      "berryboy": 4,
+      "reference": 0
+    },
+    "interpretation": "Callback boundaries only; phase difference and CPU checkpoints need independent bus/IRQ/BIOS qualification"
+  },
+  "frame_10": {
+    "raw_state_sha256": "dae78a6a9479726b5a2ef2bb997acb3a12401d59fcc26a382301c96569080a3d",
+    "reference_raw_state_sha256": "dae78a6a9479726b5a2ef2bb997acb3a12401d59fcc26a382301c96569080a3d",
+    "raw_state_identical": true,
+    "raw_state_bytes": 100478,
+    "identical_white_pixels": 37718,
+    "different_pixels": 682,
+    "berryboy_rgb": [
+      255,
+      222,
+      255
+    ],
+    "reference_rgb": [
+      255,
+      223,
+      255
+    ],
+    "visible_line_effects": {
+      "bldcnt": "0x3f5f",
+      "bldalpha": "0x0e02",
+      "bldy": 0,
+      "eva": 2,
+      "evb": 14,
+      "both_traces_agree": true
+    },
+    "final_snapshot_bldalpha": "0x0d03",
+    "native_first_color": "0x7c1f",
+    "native_second_color": "0x7fff",
+    "native_green": "floor(31*14/16)=27; (27<<3)|(27>>2)=222",
+    "reference_green": "floor(255*14/16)=223",
+    "explained_pixels": 682,
+    "unexplained_pixels": 0,
+    "reference_source": "include/mgba/core/interface.h:mColorMix5Bit RGB888 branch",
+    "interpretation": "Reference effect precision difference; native alpha arithmetic retained; exact RGB qualification remains open"
+  },
+  "validation": {
+    "host_tests": 1054,
+    "exported_core_tests": 960,
+    "actual_ecj_cldc_core_tests": 960,
+    "failures": 0,
+    "skipped": 0,
+    "maven_bb_sim_profile": "BUILD SUCCESS; RAPC No errors; COD emitted",
+    "reference_compiler": "cc -std=c11 -Wall -Wextra -Werror -D_GNU_SOURCE -DBUILD_STATIC -DM_CORE_GBA",
+    "on_bbos_checks": null,
+    "physical_bold": "unrun",
+    "reference_truncation": "passed: capacity 1 stores one row and reports one dropped row in a one-event window",
+    "reference_invalid_capacity": "exit 2 before output directory creation"
+  },
+  "source_files_sha256": {
+    "src/main/java/berryboy/timing/CycleObserver.java": "ac96c8cbbece202ddb82f61acd363828e849c797f8bab17de8d2d73dfa9bd268",
+    "src/main/java/berryboy/timing/CycleScheduler.java": "dacce97af7b85620349e99af802ee9c244f10840d1f76ca3bdd326cc36150cb9",
+    "src/main/java/berryboy/desktop/capture/GuestEventTrace.java": "d5aa69edd85d4dd34525eecd84fbe3a6a3befc4f82d504e26e5db63325e841f7",
+    "src/main/java/berryboy/desktop/ScenarioRunner.java": "f111260db16c1cd6dd0301b10a10605d571a09db4a05c2b19d649ffe4f18db44",
+    "tools/mgba-capture.c": "30c8605f462e83bf87ce080c507b398e31a18e63b154706d2bba157f43641c9c",
+    "tools/reference_capture.py": "40c90324c6e975517c30887bf45bbe84449c3f11f102c62e1b817adb36bbb197"
+  },
+  "local_outputs": "target/timing-startup-2026-10-22",
+  "local_logs": [
+    "/workspace/scratch/berryboy-timing-native-verify.log",
+    "/workspace/scratch/berryboy-event-trace-console.log",
+    "/workspace/scratch/berryboy-event-trace-cldc.log"
+  ]
+}

@@ -8,6 +8,7 @@
 #include <mgba/core/blip_buf.h>
 #include <mgba/internal/arm/arm.h>
 #include <mgba/internal/gba/gba.h>
+#include <mgba/internal/gba/io.h>
 #include <mgba-util/vfs.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -19,6 +20,9 @@
 #define PCM_CAPACITY 8192
 
 struct Input { unsigned long long cycle; unsigned keys; };
+struct LcdRecord {
+    uint32_t cycle, dispatchCycle, before, pc, cpsr, vcount, dispstat, dispcnt, bldcnt, bldalpha, bldy, ie, irq, ime, halted;
+};
 struct Capture {
     struct mCore* core;
     color_t* pixels;
@@ -30,7 +34,67 @@ struct Capture {
     size_t saveSize;
     const char* savePath;
     unsigned char* videoFrames;
+    struct LcdRecord* lcdRecords;
+    uint32_t traceStart, traceEnd, traceCapacity, traceRows;
+    unsigned long long traceDropped;
+    const char* tracePath;
+    void (*lcdCallback)(struct mTiming*, void*, uint32_t);
 };
+/* One core per adapter process. The original event's context/priority/deadline
+ * remain unchanged. Buffer primitive snapshots, never write IO during dispatch. */
+static struct Capture* tracedCapture;
+
+static void recordLcd(struct mTiming* timing, uint32_t late, unsigned before) {
+    struct Capture* c = tracedCapture;
+    uint32_t now = mTimingCurrentTime(timing), cycle = now - late;
+    if (cycle < c->traceStart || cycle >= c->traceEnd) return;
+    if (c->traceRows == c->traceCapacity) { ++c->traceDropped; return; }
+    struct GBA* gba = c->core->board;
+    struct ARMCore* cpu = c->core->cpu;
+    c->lcdRecords[c->traceRows++] = (struct LcdRecord){
+        cycle, now, before, cpu->gprs[15] - (cpu->executionMode == MODE_THUMB ? 2 : 4),
+        cpu->cpsr.packed, gba->video.vcount, gba->memory.io[REG_DISPSTAT >> 1],
+        gba->memory.io[REG_DISPCNT >> 1], gba->memory.io[REG_BLDCNT >> 1],
+        gba->memory.io[REG_BLDALPHA >> 1], gba->memory.io[REG_BLDY >> 1], gba->memory.io[REG_IE >> 1],
+        gba->memory.io[REG_IF >> 1], gba->memory.io[REG_IME >> 1], cpu->halted != 0
+    };
+}
+
+static void tracedLcdEvent(struct mTiming* timing, void* context, uint32_t late) {
+    struct Capture* c = tracedCapture;
+    struct GBAVideo* video = context;
+    recordLcd(timing, late, 1);
+    video->event.callback = c->lcdCallback;
+    c->lcdCallback(timing, context, late);
+    c->lcdCallback = video->event.callback;
+    video->event.callback = tracedLcdEvent;
+    recordLcd(timing, late, 0);
+}
+
+static int writeLcdTrace(struct Capture* c) {
+    FILE* output = fopen(c->tracePath, "wx");
+    if (!output) return 15;
+    fprintf(output, "cycle\tdispatch_cycle\tphase\tevent_id\tevent\tpc\tcpsr\tvcount\tdispstat\tdispcnt\tbldcnt\tbldalpha\tbldy\tie\tif\time\thalted\n");
+    for (uint32_t i = 0; i < c->traceRows; ++i) {
+        const struct LcdRecord* r = &c->lcdRecords[i];
+        fprintf(output, "%u\t%u\t%s\t0\tGBA Video\t%u\t%u\t%u\t%u\t%u\t%u\t%u\t%u\t%u\t%u\t%u\t%u\n",
+            r->cycle, r->dispatchCycle, r->before ? "before" : "after", r->pc, r->cpsr,
+            r->vcount, r->dispstat, r->dispcnt, r->bldcnt, r->bldalpha, r->bldy, r->ie, r->irq, r->ime, r->halted);
+    }
+    int failed = ferror(output);
+    if (fclose(output) || failed) return 15;
+    char* summary = malloc(strlen(c->tracePath) + 6);
+    if (!summary) return 15;
+    sprintf(summary, "%s.json", c->tracePath);
+    output = fopen(summary, "wx"); free(summary);
+    if (!output) return 15;
+    fprintf(output, "{\"status\":\"%s\",\"start_cycle\":%u,\"end_cycle_exclusive\":%u,"
+        "\"capacity\":%u,\"rows\":%u,\"dropped_rows\":%llu,\"scope\":\"LCD callbacks only\"}\n",
+        c->traceDropped ? "truncated" : "complete", c->traceStart, c->traceEnd,
+        c->traceCapacity, c->traceRows, c->traceDropped);
+    failed = ferror(output);
+    return fclose(output) || failed ? 15 : 0;
+}
 static void quiet(struct mLogger* l, int c, enum mLogLevel v, const char* f, va_list a) {
     (void)l; (void)c; (void)v; (void)f; (void)a;
 }
@@ -107,8 +171,8 @@ static void frameEvent(struct mTiming* timing, void* context, uint32_t late) {
 }
 
 int main(int argc, char** argv) {
-    if (argc < 7 || argc > 9) {
-        fprintf(stderr, "Usage: mgba-capture <rom> <bios> <input.tsv> <frames> <save-output> <devices:0|1> [initial-save|- [checkpoint-frames]]\n");
+    if (argc < 7 || (argc > 9 && argc != 13)) {
+        fprintf(stderr, "Usage: mgba-capture <rom> <bios> <input.tsv> <frames> <save-output> <devices:0|1> [initial-save|- [checkpoint-frames|- [event-trace.tsv start-cycle end-cycle capacity]]]\n");
         return 2;
     }
     char* end;
@@ -118,7 +182,19 @@ int main(int argc, char** argv) {
     if (*end || devices < 0 || devices > 1) return 2;
     unsigned char* videoFrames = calloc(frames + 1, 1);
     if (!videoFrames) return 4;
-    if (argc == 9) {
+    unsigned traceStart = 0, traceEnd = 0, traceCapacity = 0;
+    if (argc == 13) {
+        unsigned* fields[] = {&traceStart, &traceEnd, &traceCapacity};
+        for (int i = 0; i < 3; ++i) {
+            if (argv[10 + i][0] < '0' || argv[10 + i][0] > '9') return 2;
+            unsigned long value = strtoul(argv[10 + i], &end, 10);
+            if (*end || value > INT32_MAX) return 2;
+            *fields[i] = value;
+        }
+        if (traceEnd <= traceStart || traceEnd > (unsigned)frames * FRAME_CYCLES + 1
+                || traceCapacity < 1 || traceCapacity > 1000000) return 2;
+    }
+    if (argc >= 9 && strcmp(argv[8], "-")) {
         const char* next = argv[8];
         do {
             if (*next < '0' || *next > '9') return 2;
@@ -187,7 +263,16 @@ int main(int argc, char** argv) {
     blip_set_rates(left, core->frequency(core), 32768);
     blip_set_rates(right, core->frequency(core), 32768);
     struct Capture capture = {.core = core, .pixels = pixels, .inputs = events, .inputCount = count, .frames = frames,
-        .savePath = argv[5], .videoFrames = videoFrames};
+        .savePath = argv[5], .videoFrames = videoFrames,
+        .traceStart = traceStart, .traceEnd = traceEnd, .traceCapacity = traceCapacity};
+    if (traceCapacity) {
+        capture.lcdRecords = calloc(traceCapacity, sizeof(*capture.lcdRecords));
+        if (!capture.lcdRecords) return 4;
+        capture.tracePath = argv[9]; tracedCapture = &capture;
+        struct GBAVideo* video = &((struct GBA*)core->board)->video;
+        capture.lcdCallback = video->event.callback;
+        video->event.callback = tracedLcdEvent;
+    }
     capture.inputEvent = (struct mTimingEvent){.context = &capture, .callback = inputEvent, .name = "recorded input", .priority = 0};
     capture.frameEvent = (struct mTimingEvent){.context = &capture, .callback = frameEvent, .name = "reference frame", .priority = 0xffff};
     if (fwrite("BBREF001", 1, 8, stdout) != 8) return 10;
@@ -195,11 +280,12 @@ int main(int argc, char** argv) {
     if (count && events[0].cycle <= (unsigned long long)frames * FRAME_CYCLES)
         mTimingScheduleAbsolute(core->timing, &capture.inputEvent, events[0].cycle);
     while (capture.frame < capture.frames) core->runLoop(core);
+    if (capture.traceCapacity && writeLcdTrace(&capture)) return 15;
     if (capture.saveSize && capture.save) {
         FILE* output = fopen(argv[5], "wb");
         if (!output || fwrite(capture.save, 1, capture.saveSize, output) != capture.saveSize || fclose(output)) return 12;
     }
-    free(capture.save); free(pixels); free(events); free(videoFrames);
+    free(capture.save); free(capture.lcdRecords); free(pixels); free(events); free(videoFrames);
     mCoreConfigDeinit(&core->config); core->deinit(core);
     if (fflush(stdout)) return 10;
     return 0;

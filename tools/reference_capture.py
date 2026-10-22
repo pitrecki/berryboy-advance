@@ -26,7 +26,7 @@ def read_exact(stream, count):
     return bytes(data)
 
 
-def capture(binary, properties, output, frames, initial_save=None, initial_save_sha256=None, state_frames=()):
+def capture(binary, properties, output, frames, initial_save=None, initial_save_sha256=None, state_frames=(), event_trace=None):
     settings = dict(line.split("=", 1) for line in properties.read_text().splitlines()
                     if "=" in line and not line.startswith("#"))
     if int(settings.get("devices", "0")) not in (0, 1) or settings.get("rtc", "2000-01-01T00:00:00") != "2000-01-01T00:00:00":
@@ -50,10 +50,12 @@ def capture(binary, properties, output, frames, initial_save=None, initial_save_
         local_save = output / "initial.sav"
         shutil.copyfile(initial_save, local_save)
         args.append(str(local_save))
-    if state_frames:
+    if state_frames or event_trace:
         if not initial_save:
             args.append("-")
-        args.append(",".join(map(str, state_frames)))
+        args.append(",".join(map(str, state_frames)) if state_frames else "-")
+    if event_trace:
+        args.extend([str(output / "events.tsv"), *map(str, event_trace)])
     reference_video = hashlib.sha256()
     reference_audio = hashlib.sha256()
     checkpoints = []
@@ -119,6 +121,8 @@ def capture(binary, properties, output, frames, initial_save=None, initial_save_
                   qualification="independent headless capture; physical playback unverified",
                   rtc_seed="2000-01-01T00:00:00", rtc_timezone="UTC", devices=int(settings.get("devices", "0")),
                   sensors="stationary; no recorded peripheral motion")
+    if event_trace:
+        report["event_trace"] = json.loads((output / "events.tsv.json").read_text())
     (output / "report.json").write_text(json.dumps(report, indent=2) + "\n")
     return report, checkpoints
 
@@ -155,6 +159,10 @@ def main():
     parser.add_argument("--initial-save", type=Path)
     parser.add_argument("--initial-save-sha256")
     parser.add_argument("--checkpoints", default="", help="Comma-separated guest-frame IDs for PNG/raw video state")
+    parser.add_argument("--event-trace", action="store_true", help="Capture bounded LCD callback snapshots")
+    parser.add_argument("--trace-start-cycle", type=int, default=0)
+    parser.add_argument("--trace-end-cycle", type=int)
+    parser.add_argument("--trace-capacity", type=int, default=65536)
     args = parser.parse_args()
     if not 1 <= args.frames <= 7000:
         parser.error("frames must be 1..7000")
@@ -166,9 +174,16 @@ def main():
         parser.error("checkpoints must be comma-separated frame IDs")
     if len(set(state_frames)) != len(state_frames) or any(frame < 1 or frame > args.frames for frame in state_frames):
         parser.error("checkpoints must be unique and inside captured frames")
+    end_cycle = args.trace_end_cycle if args.trace_end_cycle is not None else args.frames * 280896 + 1
+    if not (0 <= args.trace_start_cycle < end_cycle <= args.frames * 280896 + 1
+            and 1 <= args.trace_capacity <= 1000000):
+        parser.error("invalid event trace window or capacity")
+    if not args.event_trace and (args.trace_start_cycle or args.trace_end_cycle is not None or args.trace_capacity != 65536):
+        parser.error("trace settings require --event-trace")
+    event_trace = (args.trace_start_cycle, end_cycle, args.trace_capacity) if args.event_trace else None
     report, checkpoints = capture(args.binary.resolve(), args.scenario.resolve(), args.output.resolve(), args.frames,
                                   args.initial_save.resolve() if args.initial_save else None, args.initial_save_sha256,
-                                  state_frames)
+                                  state_frames, event_trace)
     if args.compare:
         result = compare(report, checkpoints, args.compare.resolve())
         (args.output / "comparison.json").write_text(json.dumps(result, indent=2) + "\n")

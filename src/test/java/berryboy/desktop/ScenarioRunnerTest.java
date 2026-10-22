@@ -16,6 +16,50 @@ class ScenarioRunnerTest {
     @TempDir Path directory;
 
     @Test
+    void eventDiagnosticsAreRepeatableAndPreserveFramesPcmAndCpuCheckpoints() throws Exception {
+        var config = config("untraced");
+        var untraced = ScenarioRunner.run(config, directory);
+        config.setProperty("output", "traced"); config.setProperty("event_trace", "true");
+        config.setProperty("trace_events", "all"); config.setProperty("trace_end_cycle", "10000");
+        var traced = ScenarioRunner.run(config, directory);
+        assertThat(traced.get("video_sha256")).isEqualTo(untraced.get("video_sha256"));
+        assertThat(traced.get("audio_sha256")).isEqualTo(untraced.get("audio_sha256"));
+        assertThat(Files.readString(directory.resolve("traced/frames.jsonl")))
+                .isEqualTo(Files.readString(directory.resolve("untraced/frames.jsonl")));
+        var events = Files.readString(directory.resolve("traced/events.tsv"));
+        assertThat(events).contains("\tbefore\t", "\tafter\t", "berryboy.video.LcdTiming");
+        config.setProperty("output", "repeated");
+        ScenarioRunner.run(config, directory);
+        assertThat(Files.readString(directory.resolve("repeated/events.tsv"))).isEqualTo(events);
+        assertThat(traced.get("event_trace").toString()).contains("status=complete", "dropped_rows=0");
+    }
+
+    @Test
+    void boundedTraceReportsTruncationWithoutChangingTheGuestCapture() throws Exception {
+        var config = config("bounded");
+        config.setProperty("event_trace", "true"); config.setProperty("trace_capacity", "1");
+        config.setProperty("trace_start_cycle", "960"); config.setProperty("trace_end_cycle", "961");
+        var report = ScenarioRunner.run(config, directory);
+        var lines = Files.readAllLines(directory.resolve("bounded/events.tsv"));
+        assertThat(lines).hasSize(2);
+        assertThat(lines.get(1)).startsWith("960\t960\tbefore\t");
+        assertThat(report.get("event_trace").toString()).contains("status=truncated", "rows=1", "dropped_rows=1");
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.CsvSource({
+            "event_trace,yes", "trace_capacity,0", "trace_capacity,1000001",
+            "trace_start_cycle,-1", "trace_end_cycle,0", "trace_end_cycle,999999999", "trace_events,cpu"
+    })
+    void invalidEventDiagnosticsFailBeforeCreatingOutputs(String key, String value) throws Exception {
+        var config = config("invalid-trace");
+        config.setProperty("event_trace", "true"); config.setProperty(key, value);
+        assertThatThrownBy(() -> ScenarioRunner.run(config, directory)).isInstanceOf(IllegalArgumentException.class);
+        assertThat(directory.resolve("invalid-trace")).doesNotExist();
+    }
+
+
+    @Test
     void selectedCheckpointsPreserveCaptureHashesAndIncludeOwnedVideoState() throws Exception {
         var config = config("baseline");
         var baseline = ScenarioRunner.run(config, directory);

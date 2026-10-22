@@ -1,5 +1,50 @@
 # Independent reference validation, 2026-10-22
 
+## BIOS startup event diagnosis
+
+LeafGreen USA Rev-A was cold-booted with the real BIOS for 12 frames, empty
+input, no initial save and the default stationary peripherals/RTC. Both
+BerryBoy and mGBA 0.10.5 now support bounded LCD before/after snapshots.
+Each recorded **10944 rows, zero dropped**. Enabling diagnostics preserves each
+emulator's entire RGB stream, PCM stream, sample count and frame/CPU checkpoints
+byte for byte. The independent comparator still reports 9/12 exact frames and
+the first RGB mismatch at frame 10; no tolerance or timing constant changed.
+
+At frame 10, **all 100478 raw video-state bytes match**, including registers,
+palette, VRAM and OAM. Exactly **682 pixels** differ: BerryBoy `(255,222,255)`
+versus the reference `(255,223,255)`; the other 37718 are identical white.
+Visible-line traces in both emulators show `BLDCNT=0x3f5f` and
+`BLDALPHA=0x0e02` (EVA=2, EVB=14). Mixing native magenta `0x7c1f` over white
+`0x7fff` gives native green `floor(31*14/16)=27`, expanded to 222. The mGBA
+RGB888 branch of `mColorMix5Bit` instead gives `floor(255*14/16)=223`.
+These two arithmetic predictions explain every differing pixel. The final
+snapshot has already advanced to `BLDALPHA=0x0d03`; using that value to explain
+the completed image would be incorrect. An original asset-free regression
+preserves native alpha rounding in both software and timed raster output.
+
+This explains the checked title's first RGB divergence as a reference color
+precision difference, rather than demonstrating a timing defect. It does not
+qualify other titles or close the exact RGB reference gate. Native-precision
+independent effect validation remains necessary, as for the menu below.
+
+Timing questions remain measurable: HBlank begins at cycle 960 in BerryBoy and
+1008 in mGBA; both advance the line at multiples of 1232, with matching line
+advance deadlines throughout this capture. Initial DISPSTAT VCounter flags and
+some CPU checkpoints differ. A 48-cycle HBlank phase difference alone is not
+evidence to change the drawing constant. These callback snapshots do not yet
+isolate CPU bus/IRQ/BIOS ordering, and PCM still differs (6583 versus 6584 stereo
+samples over 12 frames). No guest-timing fix or hardware pass is claimed.
+
+Validation: **1054 host tests, 960 exported-core tests, 960 actual ECJ CLDC-class
+core tests**, all passed without skips. The full native `bb-sim` profile also
+produces a COD with no RAPC errors. The reference adapter compiles with
+`-std=c11 -Wall -Wextra -Werror -D_GNU_SOURCE` and the existing mGBA include/link
+flags. Scenario settings and TSV semantics are documented in
+[SCENARIOS.md](SCENARIOS.md#bounded-guest-event-diagnostics).
+Asset identities, hashes, observed boundaries and arithmetic evidence:
+[bios-startup-diagnosis-2026-10-22.json](../benchmarks/bios-startup-diagnosis-2026-10-22.json).
+Raw output remains outside Git in `target/timing-startup-2026-10-22/`.
+
 ## LeafGreen menu color-precision diagnosis
 
 The recorded 1272-frame continuation was replayed with selected video checkpoints

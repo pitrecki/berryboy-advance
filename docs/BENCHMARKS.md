@@ -81,7 +81,7 @@ See [REFERENCE-VALIDATION.md](REFERENCE-VALIDATION.md) and its linked JSON recor
 | Stage / priority | Work | Exit evidence |
 | --- | --- | --- |
 | R1 / P0: LeafGreen menu (diagnosis complete; pixel qualification open) | Identical raw video state and all 19632 differing pixels explained by native 5-bit versus mGBA RGB888 darkening; preserve native arithmetic | Diagnosis and original regression verified; restored-room frame 1272 remains exact and saves unchanged. The original exact-menu RGB gate still fails and needs a reference with matching effect precision |
-| R2 / P0: Timing and bus accuracy | Explain the common first RGB divergence at frame 10; compare guest-cycle capture boundaries, LCD events/fetch phase, IRQ/SWI, BIOS protection and CPU/DMA bus ordering | A minimal original regression and documented expected event trace for each diagnosed defect; corrected boundaries match independent evidence without regressing DMA deadlines, open-bus handling or save routes |
+| R2 / P0: Timing and bus accuracy (startup diagnostics delivered) | LeafGreen frame 10 is fully explained by native/RGB888 alpha rounding; use bounded event traces to qualify LCD phase, IRQ/SWI, BIOS protection and CPU/DMA bus ordering | A minimal original regression and documented expected event trace for each diagnosed defect; corrected boundaries match independent evidence without regressing DMA deadlines, open-bus handling or save routes |
 | R3 / P1: Audio correctness | Start with late Sonic Advance 3 and Wario Land 4 differences; compare timer/DMA FIFO events, PSG state and sample clocks; distinguish guest-state errors from output gain, filter and resampling differences | Repeatable event/sample checkpoints, justified comparison tolerances and listening review; no unexplained divergence in the selected routes and zero software buffer failures |
 | R4 / P1: Gameplay and player saves | Record fixed routes through actual levels, races, battles and menus; extend manual save/restart/load beyond LeafGreen | Named reference checkpoints for all eleven available titles; save-capable titles restore player progress in fresh BerryBoy and mGBA instances from isolated copies |
 | R5 / P2: Sustained Linux playback | After route correctness passes, profile bottlenecks, optimize one at a time, and run the warmup/measurement protocol below | Three 10-minute runs per qualified scenario after 30-second warmup, actual presentation/audio counters, bounded memory/queues and A/V drift; all acceptance gates below pass |
@@ -112,12 +112,15 @@ execution and physical-device access remain separate gates.
    native-precision effect reference or hardware test before declaring the menu
    pixel gate passed. The existing reference's RGB888 arithmetic is now recorded
    explicitly. No renderer fix is justified by this diagnosis alone.
-3. **Locate the first timing divergence.** Add bounded, cycle-stamped diagnostics
-   around BIOS/LCD startup and the first differing frame. Check reference capture
-   phase as well as emulated state. The current HBlank transition at cycle 960
-   needs qualification against the reference's different draw/event convention;
-   do not change a constant solely to improve screenshot counts. Land each
-   demonstrated timing/bus fix with its own regression and comparison report.
+3. **Locate the first timing divergence (diagnostic tooling delivered).** Bounded
+   LCD before/after traces preserve RGB, PCM and CPU/frame checkpoints in both
+   emulators. The checked LeafGreen BIOS frame 10 has identical raw video state;
+   all 682 pixel differences follow native/RGB888 alpha rounding, using the
+   visible-line coefficients rather than the next frame's final register state.
+   See [the startup diagnosis](REFERENCE-VALIDATION.md#bios-startup-event-diagnosis).
+   Next isolate CPU bus/IRQ/BIOS ordering and qualify HBlank at cycle 960 versus
+   the reference's 1008. Do not change a constant solely to improve screenshot
+   counts. Land each demonstrated defect with a regression and comparison report.
 4. **Isolate the first audio divergence.** Record channel, timer and FIFO events
    for Sonic and Wario; compare selected active windows with the corrected,
    unmuted reference. Define acceptable filter/resampling differences before

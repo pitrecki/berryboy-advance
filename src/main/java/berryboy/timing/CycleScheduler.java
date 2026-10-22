@@ -14,6 +14,12 @@ public final class CycleScheduler {
     private int size;
     private long now;
     private boolean advancing;
+    private CycleObserver observer;
+
+    /** Null disables observation. Device scheduling and tie order are unchanged. */
+    public void setObserver(CycleObserver observer) {
+        this.observer = observer;
+    }
 
     public long now() {
         return now;
@@ -81,7 +87,10 @@ public final class CycleScheduler {
                 now = deadlines[0];
                 var event = events[0];
                 remove(0); // A callback may reschedule itself or cancel another event.
+                var currentObserver = observer;
+                if (currentObserver != null) currentObserver.dispatch(event, true);
                 event.fire();
+                if (currentObserver != null) currentObserver.dispatch(event, false);
             }
             now = target;
         } finally {

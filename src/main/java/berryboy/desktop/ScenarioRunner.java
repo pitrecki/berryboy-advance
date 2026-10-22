@@ -3,6 +3,7 @@ package berryboy.desktop;
 import berryboy.desktop.capture.JsonReport;
 import berryboy.desktop.capture.ScenarioCapture;
 import berryboy.desktop.capture.VideoState;
+import berryboy.desktop.capture.GuestEventTrace;
 
 import berryboy.cartridge.CartridgeBackup;
 import berryboy.video.LcdTiming;
@@ -58,6 +59,7 @@ public final class ScenarioRunner {
         if (save != null) SaveFile.load(save, machine.memory.backup());
         var initialSaveHash = loadedSave ? hash(machine.memory.backup().snapshot()) : null;
         var inputHash = installInputs(machine, config, base);
+        var eventTrace = GuestEventTrace.from(config, machine, (warmup + (long) frames) * LcdTiming.FRAME_CYCLES);
         var output = resolve(base, required(config, "output"));
         if (Files.exists(output)) {
             try (var entries = Files.list(output)) {
@@ -76,6 +78,7 @@ public final class ScenarioRunner {
         var report = new LinkedHashMap<String, Object>();
         var capture = new ScenarioCapture(output);
         try (capture) {
+            if (eventTrace != null) machine.clock.setObserver(eventTrace);
             for (int frame = 0; frame < warmup + frames; frame++) {
                 var target = (frame + 1L) * LcdTiming.FRAME_CYCLES;
                 var started = System.nanoTime();
@@ -96,7 +99,10 @@ public final class ScenarioRunner {
                         frame == warmup, frame == warmup + frames - 1,
                         checkpoints[frame + 1] ? VideoState.snapshot(machine.memory) : null);
             }
+        } finally {
+            machine.clock.setObserver(null);
         }
+        if (eventTrace != null) report.put("event_trace", eventTrace.write(output.resolve("events.tsv")));
         var saveWritten = save != null && machine.memory.backup().dirty();
         if (save != null) SaveFile.save(save, machine.memory.backup());
         var videoHash = capture.result().videoSha256();

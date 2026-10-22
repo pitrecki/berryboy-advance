@@ -106,6 +106,21 @@ class SoftwarePpuTest {
     }
 
     @Test
+    void alphaBlendRoundsNativeChannelsBeforeRgbExpansion() {
+        var m = text(0x100);
+        m.memory.write16(0x06000000, 0x1111);
+        m.memory.write16(0x05000002, 0x7c1f); // Native magenta (31,0,31).
+        m.memory.write16(0x05000000, 0x7fff); // White second target (31,31,31).
+        m.memory.write16(0x04000050, 0x2041); // BG0 first, backdrop second.
+        m.memory.write16(0x04000052, 0x0e02); // EVA=2, EVB=14.
+        // Native green floor(31*14/16)=27 expands to 222. Blending RGB888
+        // first gives floor(255*14/16)=223, despite identical guest state.
+        assertThat(line(m, 0)[0]).isEqualTo(0xffdeff);
+        m.clock.advanceTo(160L * 1232);
+        assertThat(m.memory.raster().completedFrame()[0]).isEqualTo(0xffdeff);
+    }
+
+    @Test
     void darkeningRoundsNativeFiveBitChannelsBeforeRgbExpansion() {
         // GBATEK BLDY: I = I1 - ((I1 * EVY) >> 4), independently per 5-bit channel.
         // RGB888 reference renderers can produce different shades from identical state.
