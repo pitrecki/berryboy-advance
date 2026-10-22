@@ -128,9 +128,8 @@ public final class SoftwarePpu {
             if (mode <= 2) return affinePixel(sx, sy, control);
             var width = mode == 5 ? 160 : 240;
             var height = mode == 5 ? 128 : 160;
-            if ((control & 0x2000) != 0) {
-                sx = wrap(sx, width); sy = wrap(sy, height);
-            } else if (sx < 0 || sy < 0 || sx >= width || sy >= height) return TRANSPARENT;
+            // BG overflow wrapping only applies to affine tiled modes, not bitmaps.
+            if (sx < 0 || sy < 0 || sx >= width || sy >= height) return TRANSPARENT;
             var page = mode != 3 && (display & 0x10) != 0 ? 0xa000 : 0;
             var address = 0x06000000 + page;
             if (mode == 4) {
@@ -175,6 +174,7 @@ public final class SoftwarePpu {
     private void renderObjects(int y, int display) {
         for (var x = 0; x < 240; x++) { objects[x] = TRANSPARENT; objectPriority[x] = 4; objectWindow[x] = false; }
         if ((display & 0x1000) == 0) return;
+        var cycles = (display & 0x20) != 0 ? 954 : 1210;
         for (var object = 0; object < 128; object++) {
             var address = 0x07000000 + object * 8;
             var a = read16(address);
@@ -190,10 +190,13 @@ public final class SoftwarePpu {
             var boxHeight = doubleSize ? height * 2 : height;
             var row = (y - (a & 255)) & 255;
             if (row >= boxHeight) continue;
+            if (affine) cycles -= 10;
             var positionX = b & 511;
             if (positionX >= 256) positionX -= 512;
             var priority = (c >>> 10) & 3;
             for (var column = 0; column < boxWidth; column++) {
+                cycles -= affine ? 2 : 1;
+                if (cycles < 0) return;
                 var x = positionX + column;
                 if (x < 0 || x >= 240) continue;
                 var px = column;
@@ -265,7 +268,6 @@ public final class SoftwarePpu {
         }
         return result;
     }
-    private static int wrap(int coordinate, int size) { var value = coordinate % size; return value < 0 ? value + size : value; }
     private int io(int offset) { return read16(0x04000000 + offset); }
     private int palette(int index) { return read16(0x05000000 + index * 2) & 0x7fff; }
     private int read8(int address) { return memory.peek8(address); }

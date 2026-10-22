@@ -115,6 +115,32 @@ class SoftwarePpuTest {
         assertThat(line(b, 0)).startsWith(0, 0xff0000);
     }
 
+    @Test
+    void offscreenObjectsConsumeLineBudgetAndHblankFreeReducesIt() {
+        var m = text(0x1000);
+        disableObjects(m);
+        m.memory.write16(0x05000202, 0x7c00);
+        m.memory.write16(0x06010000, 0x1111);
+        for (int i = 0; i < 15; i++) {
+            m.memory.write16(0x07000000 + i * 8, 0);
+            m.memory.write16(0x07000002 + i * 8, 0xc100); // Invisible 64x64 OBJ.
+        }
+        m.memory.write16(0x07000000 + 15 * 8, 0);
+        m.memory.write16(0x07000002 + 15 * 8, 0);
+        assertThat(line(m, 0)[0]).isEqualTo(0x0000ff);
+        m.memory.write16(0x04000000, 0x1020);
+        assertThat(line(m, 0)[0]).isZero();
+    }
+
+    @Test
+    void bitmapOverflowStaysTransparentEvenWhenAffineWrapBitIsSet() {
+        var m = bitmap(0x0405);
+        m.memory.write16(0x0400000c, 0x2000);
+        m.memory.write16(0x06000000, 31);
+        m.memory.write32(0x04000028, 160 << 8);
+        assertThat(line(m, 0)[0]).isZero();
+    }
+
     private Machine text(int display) {
         var m = bitmap(display);
         m.memory.write16(0x04000008, 0x1f00);

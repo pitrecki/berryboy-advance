@@ -198,8 +198,10 @@ alone cannot pass the gate.
 mosaic. Seven focused pixel regressions supplement the existing bitmap tests.
 `RasterPpu` now samples one pixel per four guest cycles and publishes completed
 frames. Tests cover mid-scanline palette changes, affine reference writes and
-completed-frame stability. LCD fetch-pipeline delays, mosaic edge cases and OBJ
-hardware limits still require qualification; M2 remains in progress.
+completed-frame stability. OBJ evaluation consumes the documented 1210/954-cycle
+line budget, including offscreen objects; bitmap overflow stays transparent.
+LCD fetch-pipeline delays, mosaic edge cases and sprite evaluation timing still
+require qualification; M2 remains in progress.
 Guest-clocked sample output is implemented. PSG channels 1–4 support sweep,
 banked wave RAM, noise, length/envelope and stereo mixing. Tests verify sweep
 overflow, signed wave nibble order, 7-bit noise feedback, exact sample deadlines

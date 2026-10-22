@@ -133,8 +133,10 @@ accounting. `RasterPpu` samples visible pixels every four guest cycles, maintain
 affine row references and publishes complete double-buffered frames. Palette and
 affine reference changes affect subsequent samples instead of repainting the
 whole frame. Snapshot rendering remains available for diagnostics. This logical
-sampling model does not reproduce the LCD fetch pipeline or OBJ hardware limits;
-those remain qualification work.
+sampling model does not reproduce the LCD fetch pipeline. OBJ evaluation uses
+the documented line-cycle budget (1210 or 954 with HBlank free), including
+affine setup/pixel costs and offscreen objects; detailed fetch timing remains
+qualification work.
 
 The development project targets Java 21. The instruction execution path uses
 primitives and arrays. Local `var` changes source syntax only; the exporter
