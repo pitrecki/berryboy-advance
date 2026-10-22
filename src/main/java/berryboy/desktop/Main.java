@@ -1,7 +1,7 @@
 package berryboy.desktop;
 
-import berryboy.BitmapRenderer;
-import berryboy.Cartridge;
+import berryboy.video.BitmapRenderer;
+import berryboy.cartridge.Cartridge;
 import berryboy.DemoRom;
 import berryboy.Machine;
 import java.awt.GraphicsEnvironment;

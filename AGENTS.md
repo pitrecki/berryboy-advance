@@ -23,6 +23,12 @@
   credentials out of Git.
 - Prefer small classes with one responsibility and named hardware constants.
   Explain register behavior and timing assumptions beside the relevant code.
+- Group core code and tests by feature (`cpu`, `bus`, `timing`, `video`, `audio`,
+  `cartridge`, `input`). Keep the root for composition and diagnostics. Preserve
+  device ports/listeners rather than introducing dependencies on decoder internals.
+- Keep guest state on its deterministic emulation owner. Parallel host work must
+  receive owned snapshots through bounded queues, propagate failures and apply
+  backpressure; do not share live memory/frame/audio buffers across threads.
 - Keep the full-graphics/performance roadmap in `docs/BENCHMARKS.md`. Every future
   performance result must identify the ROM hash, scenario, target hardware and
   actual video/audio timing. Never report instruction throughput as game FPS.

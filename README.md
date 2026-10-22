@@ -142,34 +142,28 @@ startup alone is not a passing integration test; inspect the MIDlet's result.
 
 ## Source map
 
-| File or package | Responsibility |
+| Package / path | Responsibility |
 | --- | --- |
-| `Cpu` | Instruction loop, decoder selection and diagnostics |
-| `CpuState` | Registers, CPSR/SPSR, conditions, register banks and SWI entry |
-| `ArmInterpreter`, `ThumbInterpreter` | Instruction decoding and execution |
-| `ArithmeticLogicUnit`, `BarrelShifter` | Arithmetic, logic, NZCV flags and shifts |
-| `InstructionInterpreter` | Shared decoder operations |
-| `Memory` | RAM, ROM, mirroring, bus access and selected registers |
-| `Keypad` | Ten named buttons and active-low input |
-| `AudioUnit`, `ClockedAudio` | Four PSG channels, Direct Sound and bounded cycle-driven PCM |
-| `BitmapRenderer` | BG2 snapshots in bitmap modes 3, 4 and 5 |
-| `DemoRom`, `RuntimeChecks` | Original demo and portable runtime diagnostics |
-| `desktop/LaunchCommand`, `desktop/Main` | Typed CLI commands, execution and PNG export |
-| `desktop/DesktopSession`, `DesktopWindow`, `DesktopPanel` | Worker lifecycle and Swing presentation |
-| `desktop/KeyboardInput`, `PcmAudio`, `AudioDemo` | Key bindings, host playback and deterministic WAV demo |
-| `build/LegacyExport`, `LegacySyntaxScanner`, `LegacyApiScanner` | Source export, syntax checks and API checks |
-| `build/GeneratedSources` | Output ownership checks and stale-source removal |
+| `berryboy` | `Machine` composition, original demo, portable diagnostics and errors |
+| `berryboy.cpu` | ARM/Thumb decoding, register banks, ALU, shifts and exceptions |
+| `berryboy.bus` | Address mapping, bus timing, DMA and device wiring |
+| `berryboy.timing` | Guest cycle scheduler, timers and interrupt requests |
+| `berryboy.video` | Software/raster PPU, LCD timing and read-only `VideoBus` port |
+| `berryboy.audio` | PSG channels, Direct Sound and bounded clocked PCM |
+| `berryboy.cartridge` | ROM headers, backup protocols, GPIO, RTC and sensors |
+| `berryboy.input` | Portable keypad state and button definitions |
+| `berryboy.desktop` | CLI, Swing integration, scenario capture and host persistence |
+| `berryboy.build` | Recursive legacy source export, syntax/API and ownership checks |
 | `platform/midp/berryboy/BlackBerryMidlet.java` | MIDP adapter for the simulator or device |
-| `src/test/java/berryboy/` | JUnit 5 tests, AssertJ assertions and fixtures |
-| `tools/blackberry.sh` | Linux → Wine → legacy compiler → RAPC → simulator |
-| `tools/test-with-console.sh` | Jupiter tests on host and exported core classes |
-| `tools/capture-docs.sh` | Reproducible captures of the application's Swing component |
+| `src/test/java/berryboy/` | Feature-aligned host/core tests and shared fixtures |
+| `tools/` | BlackBerry build, isolated core tests, captures and benchmark orchestration |
 
-Production classes are under `src/main/java/berryboy/` unless a full path is shown.
+Production packages live under `src/main/java/berryboy/`. The legacy exporter
+preserves feature directories and excludes the desktop/build packages.
 
 ## Verification
 
-- `mvn verify`: **926 passing tests** on Linux, JDK 21 and Maven 3.9.9.
+- `mvn verify`: **994 passing tests** on Linux, JDK 21 and Maven 3.9.11 (2026-10-22).
 - **864 core tests** repeated against the exported classes through Jupiter.
 - Test counts include individual parameterized invocations, not assertion counts.
 - The exporter performs 248 syntax rewrites. Generated sources compile with

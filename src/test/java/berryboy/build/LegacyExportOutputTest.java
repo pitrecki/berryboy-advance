@@ -120,4 +120,35 @@ class LegacyExportOutputTest {
                 .hasMessageContaining("Sample.java");
         assertThat(outside).hasContent(previous);
     }
+
+    @Test
+    void preservesFeaturePackagesWithDuplicateBasenamesAndRemovesNestedStaleFiles() throws IOException {
+        Files.createDirectories(sources.resolve("audio")); Files.createDirectories(sources.resolve("video"));
+        Files.writeString(sources.resolve("audio/Model.java"), "package berryboy.audio; public class Model { public int value=2; }");
+        Files.writeString(sources.resolve("video/Model.java"), "package berryboy.video; public class Model { public int value=3; }");
+        Files.writeString(sources.resolve("Sample.java"), "package berryboy; public class Sample { int value=new berryboy.audio.Model().value + new berryboy.video.Model().value; }");
+        LegacyExport.export(sources, generated);
+        assertThat(generated.resolve("audio/Model.java")).content().contains("package berryboy.audio;");
+        assertThat(generated.resolve("video/Model.java")).content().contains("package berryboy.video;");
+        var compilation = CompilerFixture.compileLegacySources(generated, temporary.resolve("classes"));
+        assertThat(compilation.successful()).as(compilation::diagnostics).isTrue();
+        Files.writeString(sources.resolve("Sample.java"), SAMPLE);
+        Files.delete(sources.resolve("audio/Model.java"));
+        LegacyExport.export(sources, generated);
+        assertThat(generated.resolve("audio/Model.java")).doesNotExist();
+        assertThat(generated.resolve("video/Model.java")).exists();
+    }
+
+    @Test
+    void rejectsNestedOutputSymlinkBeforeWritingAnyFiles() throws IOException {
+        Files.createDirectories(sources.resolve("video"));
+        Files.writeString(sources.resolve("video/Frame.java"), "package berryboy.video; public class Frame {}");
+        LegacyExport.export(sources, generated);
+        Files.delete(generated.resolve("video/Frame.java")); Files.delete(generated.resolve("video"));
+        var outside = Files.createDirectory(temporary.resolve("outside"));
+        Files.createSymbolicLink(generated.resolve("video"), outside);
+        assertThatThrownBy(() -> LegacyExport.export(sources, generated)).isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("symlink");
+        assertThat(outside.resolve("Frame.java")).doesNotExist();
+    }
 }

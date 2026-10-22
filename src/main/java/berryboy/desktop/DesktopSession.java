@@ -1,8 +1,8 @@
 package berryboy.desktop;
 
-import berryboy.AudioUnit;
+import berryboy.audio.AudioUnit;
 import berryboy.Machine;
-import berryboy.Memory;
+import berryboy.bus.Memory;
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.LockSupport;

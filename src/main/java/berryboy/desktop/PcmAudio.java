@@ -1,6 +1,6 @@
 package berryboy.desktop;
 
-import berryboy.AudioUnit;
+import berryboy.audio.AudioUnit;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;

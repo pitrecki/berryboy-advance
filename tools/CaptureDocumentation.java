@@ -2,7 +2,7 @@ package berryboy.desktop;
 
 import berryboy.DemoRom;
 import berryboy.Machine;
-import berryboy.Memory;
+import berryboy.bus.Memory;
 import java.awt.Container;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;

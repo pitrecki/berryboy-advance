@@ -1,5 +1,7 @@
 package berryboy.build;
 
+import berryboy.cpu.Cpu;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -73,7 +75,7 @@ class LegacyExportTest {
     }
 
     @ParameterizedTest(name = "host dependency: {0}")
-    @ValueSource(strings = {"berryboy.Cpu", "berryboy.desktop.Main", "org.junit.jupiter.api.Test"})
+    @ValueSource(strings = {"berryboy.cpu.Cpu", "berryboy.desktop.Main", "org.junit.jupiter.api.Test"})
     void rejectsTypesAvailableOnlyOnTheHostClasspath(String type) throws IOException {
         writeSample("package berryboy; public class Sample { " + type + " dependency; }");
 

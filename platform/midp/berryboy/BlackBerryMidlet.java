@@ -1,5 +1,9 @@
 package berryboy;
 
+import berryboy.bus.Memory;
+import berryboy.input.Keypad;
+import berryboy.video.BitmapRenderer;
+
 import javax.microedition.lcdui.Canvas;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;

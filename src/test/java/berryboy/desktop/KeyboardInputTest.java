@@ -2,7 +2,7 @@ package berryboy.desktop;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import berryboy.Keypad;
+import berryboy.input.Keypad;
 import java.awt.event.KeyEvent;
 import javax.swing.JComponent;
 import javax.swing.JPanel;

@@ -1,5 +1,7 @@
 package berryboy;
 
+import berryboy.bus.Memory;
+
 /** Small portable self-test also executed inside the real MIDP/BlackBerry runtime. */
 public final class RuntimeChecks {
     private RuntimeChecks() {

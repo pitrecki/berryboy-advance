@@ -2,6 +2,21 @@
 
 ## Responsibilities
 
+Production and test sources are grouped by feature: `cpu`, `bus`, `timing`,
+`video`, `audio`, `cartridge` and `input`. The `berryboy` root contains composition
+and diagnostic entry points. Desktop and build tooling remain host-only.
+
+CPU execution depends on the bus; devices do not call into CPU internals.
+`VideoBus` gives the PPU read-only sampling/version access. `LcdListener` and
+`TimerOverflowListener` route device events through bus wiring, avoiding a
+video-to-DMA or timer-to-audio dependency. Decoder implementation classes remain
+package-private. Register ports are public integration boundaries.
+
+The legacy exporter recursively includes core packages, preserves relative
+paths (including identical filenames in different packages), and excludes host
+packages. Generated nested directories receive the same ownership, stale-file
+and symlink checks as root files.
+
 | Class | Responsibility |
 | --- | --- |
 | `Cpu` | Fetches instructions, chooses ARM/Thumb and adds failure diagnostics |

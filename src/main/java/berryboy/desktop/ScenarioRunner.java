@@ -1,7 +1,7 @@
 package berryboy.desktop;
 
-import berryboy.CartridgeBackup;
-import berryboy.LcdTiming;
+import berryboy.cartridge.CartridgeBackup;
+import berryboy.video.LcdTiming;
 import berryboy.Machine;
 import java.awt.image.BufferedImage;
 import java.io.IOException;

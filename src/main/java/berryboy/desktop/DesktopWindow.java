@@ -1,7 +1,7 @@
 package berryboy.desktop;
 
 import berryboy.Machine;
-import berryboy.Memory;
+import berryboy.bus.Memory;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.JFrame;

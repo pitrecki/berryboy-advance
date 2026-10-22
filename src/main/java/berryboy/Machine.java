@@ -1,5 +1,12 @@
 package berryboy;
 
+import berryboy.audio.AudioUnit;
+import berryboy.bus.Memory;
+import berryboy.cartridge.Cartridge;
+import berryboy.cpu.Cpu;
+import berryboy.timing.CycleScheduler;
+import berryboy.video.BitmapRenderer;
+
 /** Owns the components of one emulator instance. */
 public final class Machine {
     private static final int DEVELOPMENT_STACK_TOP = 0x03007f00;
@@ -26,7 +33,7 @@ public final class Machine {
         clock = memory.clock();
         if (bios == null) {
             cpu.setPc(Memory.ROM_BASE);
-            cpu.setRegister(CpuState.STACK_POINTER, DEVELOPMENT_STACK_TOP);
+            cpu.setRegister(Cpu.STACK_POINTER, DEVELOPMENT_STACK_TOP);
         } else {
             memory.setBios(bios);
             cpu.setCpsr(0xd3); // Reset: ARM, Supervisor, IRQ/FIQ masked.

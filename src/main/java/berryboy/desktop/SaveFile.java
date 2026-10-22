@@ -1,6 +1,6 @@
 package berryboy.desktop;
 
-import berryboy.CartridgeBackup;
+import berryboy.cartridge.CartridgeBackup;
 import java.io.IOException;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;

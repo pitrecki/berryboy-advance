@@ -1,5 +1,7 @@
 package berryboy.build;
 
+import berryboy.RuntimeChecks;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.URL;

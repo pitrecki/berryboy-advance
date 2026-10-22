@@ -34,13 +34,14 @@ public final class LegacyExport {
     }
 
     public static int export(Path root, Path output) throws IOException {
-        var outputDirectory = GeneratedSources.outputDirectory(root, output);
+        var sourceRoot = root.toRealPath();
+        var outputDirectory = GeneratedSources.outputDirectory(sourceRoot, output);
         var compiler = ToolProvider.getSystemJavaCompiler();
         if (compiler == null) {
             throw new IllegalStateException("Legacy export requires a full JDK 21+");
         }
 
-        var paths = sourcePaths(root);
+        var paths = sourcePaths(sourceRoot);
         var diagnostics = new DiagnosticCollector<JavaFileObject>();
         try (var manager = compiler.getStandardFileManager(diagnostics, null, StandardCharsets.UTF_8)) {
             // Only explicit core inputs and JDK symbols may participate in type resolution.
@@ -54,7 +55,7 @@ public final class LegacyExport {
             var trees = Trees.instance(task);
 
             // javac replaces local var nodes during analysis, so collect edit positions first.
-            var sources = parseSources(task, trees);
+            var sources = parseSources(task, trees, sourceRoot);
             task.analyze();
             rejectCompilerErrors(diagnostics);
             sources.forEach(source -> LegacyApiScanner.validate(source.tree(), trees));
@@ -70,8 +71,9 @@ public final class LegacyExport {
     }
 
     private static List<Path> sourcePaths(Path root) throws IOException {
-        try (var files = Files.list(root)) {
+        try (var files = Files.walk(root)) {
             var paths = files.filter(Files::isRegularFile)
+                    .filter(path -> !path.startsWith(root.resolve("build")) && !path.startsWith(root.resolve("desktop")))
                     .filter(path -> path.toString().endsWith(".java")).sorted().toList();
             if (paths.isEmpty()) {
                 throw new IllegalArgumentException("No core Java files in " + root);
@@ -80,12 +82,12 @@ public final class LegacyExport {
         }
     }
 
-    private static List<SourceFile> parseSources(JavacTask task, Trees trees) throws IOException {
+    private static List<SourceFile> parseSources(JavacTask task, Trees trees, Path root) throws IOException {
         var sources = new ArrayList<SourceFile>();
         for (var tree : task.parse()) {
             var text = tree.getSourceFile().getCharContent(true).toString();
             var edits = LegacySyntaxScanner.collectEdits(tree, text, trees);
-            sources.add(new SourceFile(tree, text, edits));
+            sources.add(new SourceFile(tree, text, edits, root.relativize(Path.of(tree.getSourceFile().toUri()))));
         }
         return sources;
     }
@@ -100,9 +102,9 @@ public final class LegacyExport {
         }
     }
 
-    private record SourceFile(CompilationUnitTree tree, String text, List<LegacySyntaxScanner.Edit> edits) {
+    private record SourceFile(CompilationUnitTree tree, String text, List<LegacySyntaxScanner.Edit> edits, Path relativePath) {
         Path fileName() {
-            return Path.of(tree.getSourceFile().toUri()).getFileName();
+            return relativePath;
         }
 
         String rewrite(Trees trees) {

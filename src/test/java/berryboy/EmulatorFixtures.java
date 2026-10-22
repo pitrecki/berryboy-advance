@@ -1,18 +1,21 @@
 package berryboy;
 
+import berryboy.bus.Memory;
+import berryboy.cpu.Cpu;
+
 /** Program images and hardware setup shared by the emulator tests. */
-final class EmulatorFixtures {
-    static final int STACK_TOP = 0x03007f00;
+public final class EmulatorFixtures {
+    public static final int STACK_TOP = 0x03007f00;
     private static final int ROM_SIZE = 512;
 
     private EmulatorFixtures() {
     }
 
-    static byte[] blankRom() {
+    public static byte[] blankRom() {
         return new byte[ROM_SIZE];
     }
 
-    static Machine arm(int... instructions) {
+    public static Machine arm(int... instructions) {
         var image = blankRom();
         for (var index = 0; index < instructions.length; index++) {
             writeWord(image, index * 4, instructions[index]);
@@ -20,7 +23,7 @@ final class EmulatorFixtures {
         return new Machine(image);
     }
 
-    static Machine thumb(int... instructions) {
+    public static Machine thumb(int... instructions) {
         var image = blankRom();
         for (var index = 0; index < instructions.length; index++) {
             writeHalfword(image, index * 2, instructions[index]);
@@ -30,7 +33,7 @@ final class EmulatorFixtures {
         return machine;
     }
 
-    static Machine bitmap(int displayControl) {
+    public static Machine bitmap(int displayControl) {
         var machine = new Machine(blankRom());
         machine.memory.write16(Memory.DISPLAY_CONTROL, displayControl);
         machine.memory.write16(Memory.BACKGROUND_2_TRANSFORM, 0x100);
@@ -38,12 +41,12 @@ final class EmulatorFixtures {
         return machine;
     }
 
-    static void writeWord(byte[] image, int offset, int value) {
+    public static void writeWord(byte[] image, int offset, int value) {
         writeHalfword(image, offset, value);
         writeHalfword(image, offset + 2, value >>> 16);
     }
 
-    static void writeHalfword(byte[] image, int offset, int value) {
+    public static void writeHalfword(byte[] image, int offset, int value) {
         image[offset] = (byte) value;
         image[offset + 1] = (byte) (value >>> 8);
     }

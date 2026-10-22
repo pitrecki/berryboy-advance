@@ -1,5 +1,8 @@
 package berryboy;
 
+import berryboy.bus.Memory;
+import berryboy.video.BitmapRenderer;
+
 /** Original synthetic cartridge: ARM setup, Thumb loop fills all 38,400 pixels. */
 public final class DemoRom {
     public static final int RUN_BUDGET = 200000;

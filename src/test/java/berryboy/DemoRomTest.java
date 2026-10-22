@@ -1,5 +1,7 @@
 package berryboy;
 
+import berryboy.bus.Memory;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 

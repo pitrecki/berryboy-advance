@@ -1,8 +1,8 @@
 package berryboy.desktop;
 
-import berryboy.AudioUnit;
-import berryboy.Cartridge;
-import berryboy.Memory;
+import berryboy.audio.AudioUnit;
+import berryboy.cartridge.Cartridge;
+import berryboy.bus.Memory;
 import java.io.IOException;
 import java.nio.file.Path;
 import javax.sound.sampled.LineUnavailableException;

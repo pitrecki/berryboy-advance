@@ -1,6 +1,6 @@
 package berryboy.desktop;
 
-import berryboy.BitmapRenderer;
+import berryboy.video.BitmapRenderer;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;

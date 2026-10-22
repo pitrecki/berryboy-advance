@@ -32,9 +32,18 @@ final class GeneratedSources {
                 throw new IllegalArgumentException("Refusing to replace an unowned generated source: " + file);
             }
         }
+        for (var target : sources.keySet()) {
+            if (!target.normalize().startsWith(directory)) throw new IllegalArgumentException("Generated path escapes output");
+            for (var parent = target.getParent(); parent.startsWith(directory); parent = parent.getParent()) {
+                if (Files.exists(parent, LinkOption.NOFOLLOW_LINKS) && !Files.isDirectory(parent, LinkOption.NOFOLLOW_LINKS)) {
+                    throw new IllegalArgumentException("Invalid generated source directory: " + parent);
+                }
+            }
+        }
 
         Files.createDirectories(directory);
         for (var source : sources.entrySet()) {
+            Files.createDirectories(source.getKey().getParent());
             Files.writeString(source.getKey(), HEADER + source.getValue());
         }
         for (var file : previous) {
@@ -48,8 +57,10 @@ final class GeneratedSources {
         if (!Files.exists(directory)) {
             return List.of();
         }
-        try (var entries = Files.list(directory)) {
-            return entries.filter(path -> path.toString().endsWith(".java")).sorted().toList();
+        try (var entries = Files.walk(directory)) {
+            return entries.peek(path -> {
+                if (Files.isSymbolicLink(path)) throw new IllegalArgumentException("Refusing generated output symlink: " + path);
+            }).filter(path -> path.toString().endsWith(".java")).sorted().toList();
         }
     }
 

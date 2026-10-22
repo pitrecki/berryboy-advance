@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-import berryboy.AudioUnit;
+import berryboy.audio.AudioUnit;
 import java.nio.file.Path;
 import java.util.Arrays;
 import javax.sound.sampled.AudioSystem;

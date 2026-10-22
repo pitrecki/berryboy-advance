@@ -3,7 +3,7 @@ package berryboy.desktop;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import berryboy.CartridgeBackup;
+import berryboy.cartridge.CartridgeBackup;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
