@@ -152,7 +152,7 @@ class AudioUnitTest {
                     .isInstanceOf(EmulationException.class).hasMessageContaining("Direct Sound");
             softly.assertThatThrownBy(() -> machine.memory.write32(Memory.IO_BASE + 0xa0, 1))
                     .isInstanceOf(EmulationException.class);
-            softly.assertThatThrownBy(() -> machine.memory.write16(Memory.IO_BASE + 0x60, 1))
+            softly.assertThatThrownBy(() -> machine.memory.write16(Memory.IO_BASE + 0x8c, 1))
                     .isInstanceOf(EmulationException.class);
         });
         assertThatThrownBy(() -> machine.audio.render(new short[3]))

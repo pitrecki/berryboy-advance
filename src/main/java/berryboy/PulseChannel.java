@@ -33,6 +33,12 @@ final class PulseChannel {
         return active;
     }
 
+    int frequency() { return frequencyControl & FREQUENCY_MASK; }
+
+    void sweepFrequency(int value) { frequencyControl = (frequencyControl & ~FREQUENCY_MASK) | value; }
+
+    void silence() { active = false; }
+
     void writeDutyAndLength(int value) {
         dutyAndLength = value & 0xff;
         remainingSamples = (64 - (value & 0x3f)) * SAMPLES_PER_LENGTH_TICK;

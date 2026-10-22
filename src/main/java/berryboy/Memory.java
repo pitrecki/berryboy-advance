@@ -35,6 +35,7 @@ public final class Memory {
     private final TimerUnit timers = new TimerUnit(clock, interrupts);
     private final DmaController dma = new DmaController(this);
     private final RasterPpu raster = new RasterPpu(this);
+    private final ClockedAudio clockedAudio = new ClockedAudio(clock, audio);
     private long videoVersion;
     private boolean cpuAccess;
     private boolean halted;
@@ -80,6 +81,8 @@ public final class Memory {
     public DmaController dma() { return dma; }
 
     public RasterPpu raster() { return raster; }
+
+    public ClockedAudio clockedAudio() { return clockedAudio; }
 
     long videoVersion() { return videoVersion; }
 

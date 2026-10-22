@@ -80,13 +80,14 @@ hidden defaults.
 unit for platform adapters. Guest loads observe keypad updates through read-only
 `KEYINPUT`; KEYCNT supports OR/AND chord matching and keypad IRQ requests.
 
-Channel 2 produces interleaved signed PCM16 at 32768 Hz, with duty selection,
-length, envelope and stereo routing. Synthesis uses integers and caller-owned
-buffers, without desktop APIs. Output sample counts advance audio time. CPU
-instructions advance the shared clock, but the audio path still advances from
-output samples, so register writes are not synchronized to CPU cycles.
-Channel 1, wave/noise channels, Direct Sound,
-timer/DMA refill, PWM/BIAS effects and hardware sequencer edge cases remain open.
+The four PSG channels produce interleaved signed PCM16 at 32768 Hz: pulse with
+sweep, pulse, banked wave RAM and 15/7-bit noise, with length/envelope controls
+and independent stereo routing. `ClockedAudio` generates one sample every 512
+guest cycles and optionally captures it in a bounded 8192-frame queue with
+produced/consumed/overrun/underrun counters. `AudioUnit.render` remains an explicit
+sample-advancing diagnostic API; live sinks must drain `ClockedAudio` instead of
+advancing synthesis a second time. Direct Sound, timer/DMA refill, PWM/BIAS
+effects and hardware sequencer edge cases remain open.
 
 The shared scheduler drives LCD HBlank/VBlank/VCOUNT and four reloadable,
 prescaled/cascaded timers. IE/IF/IME expose interrupt requests with write-one-to-
