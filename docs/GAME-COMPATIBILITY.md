@@ -161,13 +161,15 @@ screenshots are committed.
 
 ## Next compatibility work
 
-1. Preserve the Metroid Fusion BIOS/open-bus regression; compare IRQ/SWI timing
-   and the differing protected-BIOS latches against independent execution.
-2. The original missing-frame counts are resolved by incremental DMA service;
-   preserve the deadline and priority regressions during further timing work.
-3. Create per-game input routes and checkpoints, especially for black final
-   frames, then obtain independent video/audio references.
-4. Exercise save/write/restart/load round trips for each detected backup type;
-   validate RTC separately where the game uses it.
-5. Only after correctness gates pass, execute long warmup/measurement runs and
-   the SDK/device qualification protocol in [BENCHMARKS.md](BENCHMARKS.md).
+The canonical [next roadmap and concrete commits](BENCHMARKS.md#next-roadmap-correctness-gameplay-then-sustained-playback)
+uses the eleven independent longer-run comparisons and LeafGreen player-save
+evidence. Priorities are the known Continue-menu pixel mismatch, BIOS/LCD and bus
+timing, Sonic/Wario audio differences, then real gameplay and repeated player
+saves. Independent references and four initialization-save reloads already
+exist; they are not pending asset collection.
+
+Preserve the Metroid Fusion BIOS/open-bus and incremental DMA deadline/priority
+regressions throughout. The [reference validation report](REFERENCE-VALIDATION.md)
+distinguishes the exact LeafGreen restored-room checkpoint from the still
+mismatching menu and full streams. Long warmup/measurement runs and SDK/device
+qualification follow correctness; see the canonical plan for their gates.

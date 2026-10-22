@@ -193,10 +193,11 @@ demos after publication. A local pass does not establish a remote CI pass.
 
 ## Next steps
 
-Start with the shared guest cycle clock and deterministic event scheduler, then
-add CPU/bus timing, LCD events, timers, DMA, IRQ and BIOS integration. The
-[delivery milestones and immediate queue](docs/BENCHMARKS.md#delivery-milestones)
-define the implementation sequence and completion evidence for each stage.
+The next deliveries isolate LeafGreen's Continue-menu pixel mismatch, qualify
+BIOS/LCD and bus timing, then address Sonic/Wario audio differences. Extend the
+recorded save/continue route into real gameplay scenarios before sustained
+performance qualification. The [next roadmap and concrete commits](docs/BENCHMARKS.md#next-roadmap-correctness-gameplay-then-sustained-playback)
+define priorities, dependencies and completion evidence.
 
 The long-term goal is full GBA graphics, platform-appropriate acceleration,
 unusual cartridge hardware and synchronized sound, validated by five demanding

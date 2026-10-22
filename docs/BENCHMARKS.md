@@ -5,7 +5,9 @@
 The requested goal is stable approximately 60 FPS, complete sound, no emulator
 frame skipping and no drops on five demanding games. The final device target
 remains the Bold 9900 on BBOS 7.1; Linux/Java 21 results are recorded separately.
-No result from this milestone has been measured yet.
+The sustained-playback acceptance target remains unqualified. Short host
+compatibility captures and independent comparisons are available; their scope
+and the next delivery plan are recorded below.
 
 Use the GBA's native frame clock: `16777216 / 280896`, approximately
 **59.7275 refreshes per second**, with about **16.7427 ms** per frame. Maintain
@@ -39,33 +41,122 @@ as emulator frame drops.
 
 ## Delivery milestones
 
-Roadmap updated on 2026-10-22. M1 is in progress; later milestones are planned.
-the completed baseline is the imported ARM/Thumb interpreter, bitmap diagnostic,
-channel-two audio, keypad controls, legacy exporter and Linux verification.
-Local validation passed 926 host tests and 864 exported-core tests, plus headless
-video/audio demos and documentation capture. These results do not establish
-commercial-game compatibility or BlackBerry device readiness.
+Roadmap updated on **2026-10-22**, after the eleven-game mGBA comparisons and
+LeafGreen player-save validation at `f96dc5d`. The shared clock, scheduler,
+CPU/bus timing, software renderer, mixer, cartridge devices and capture runner
+are implemented. Their accuracy is still being qualified; implementation does
+not close M1–M4. Latest local validation passed **1031 host tests and 956
+exported-core tests**. Neither test count establishes BlackBerry readiness.
 
 | Milestone | Deliverables | Completion evidence |
 | --- | --- | --- |
-| M1: Shared timing | Guest cycle clock, deterministic scheduler, CPU/bus costs, LCD timing, timers, DMA, IRQ and BIOS integration | Focused timing ROMs and tests verify event boundaries, ordering, interrupt entry/return and repeatable guest state |
+| M1: Shared timing (accuracy qualification in progress) | Guest cycle clock, deterministic scheduler, CPU/bus costs, LCD timing, timers, DMA, IRQ and BIOS integration | Focused timing ROMs and tests verify event boundaries, ordering, interrupt entry/return and repeatable guest state |
 | M2: Software graphics (in progress) | Complete PPU features listed above, driven by scanline timing | Pixel comparisons for each feature and combined scenes, including register writes during display |
 | M3: Synchronized audio (in progress) | All PSG channels, Direct Sound, timer/DMA refill and bounded output queues | Reference PCM comparisons, sample-count checks and measured A/V drift with no buffer failures |
 | M4: Cartridge compatibility (in progress) | Persistent save types, RTC and required cartridge peripherals | Save/reload round trips, command-sequence tests and deterministic sensor playback |
-| M5: Reproducible game runner (capture path implemented) | Local ROM/BIOS mapping, recorded input, frame/audio checkpoints and machine-readable reports | The same inputs reproduce guest checkpoints; missing assets fail explicitly rather than skip a game |
+| M5: Reproducible game runner (implemented; gameplay routes incomplete) | Local ROM/BIOS mapping, recorded input, frame/audio checkpoints and machine-readable reports | The same inputs reproduce guest checkpoints; missing assets fail explicitly rather than skip a game |
 | M6: Platform validation and optimization (host profiling in progress) | Profile-guided improvements, BlackBerry build/playback/input checks and optional supported acceleration | Output matches the software reference; Linux and Bold 9900 reports identify their own hardware and runtime |
 | M7: Sustained playback qualification | Execute the complete five-game protocol on each target | All correctness, frame deadline, audio and drift gates below pass for every recorded run |
 
-Develop M1 through M4 in dependency order. Build M5 as deterministic timing and
-capture interfaces become available, before performance qualification. Validate
-the BlackBerry export/build incrementally during earlier milestones; do not
-defer platform compatibility until optimization. M7 depends on all earlier
-milestones and on the external assets and device access listed below.
+Use the following evidence-driven queue to qualify M1–M5 before M6 performance
+optimization and M7 sustained playback. Continue checking the portable export
+during core changes. SDK/device validation can progress independently when the
+external prerequisites become available.
 
-### Immediate queue: timing foundation
+### Next roadmap: correctness, gameplay, then sustained playback
 
-The next implementation commit should cover the first item only. Keep later
-items as separate, reviewable changes with their own tests.
+This queue supersedes the original timing implementation queue below. Each row
+is a separate delivery stage; a diagnostic result can change the following fix
+without changing its acceptance criteria. Do not mark an entire hardware feature
+complete because a single game or checkpoint passes.
+
+**Starting evidence:** eleven uploaded games each complete 3600 guest frames
+with zero missing guest frames or software audio-buffer failures. Independent
+RGB and PCM streams still differ; every run first differs in RGB at frame 10.
+Four initialization-save reloads match mGBA. LeafGreen additionally has a real
+manual player-save round trip, including an exact restored-room checkpoint.
+These are boot/intro and limited save results, not eleven gameplay passes.
+See [REFERENCE-VALIDATION.md](REFERENCE-VALIDATION.md) and its linked JSON records.
+
+| Stage / priority | Work | Exit evidence |
+| --- | --- | --- |
+| R1 / P0: LeafGreen menu regression | Reproduce Continue-menu frame 1029 from the recorded save/input; find the first differing register, palette, window, priority or blending state before selecting a fix | All 38400 menu pixels match the independent reference; restored-room frame 1272 remains exact; player/save data remain valid |
+| R2 / P0: Timing and bus accuracy | Explain the common first RGB divergence at frame 10; compare guest-cycle capture boundaries, LCD events/fetch phase, IRQ/SWI, BIOS protection and CPU/DMA bus ordering | A minimal original regression and documented expected event trace for each diagnosed defect; corrected boundaries match independent evidence without regressing DMA deadlines, open-bus handling or save routes |
+| R3 / P1: Audio correctness | Start with late Sonic Advance 3 and Wario Land 4 differences; compare timer/DMA FIFO events, PSG state and sample clocks; distinguish guest-state errors from output gain, filter and resampling differences | Repeatable event/sample checkpoints, justified comparison tolerances and listening review; no unexplained divergence in the selected routes and zero software buffer failures |
+| R4 / P1: Gameplay and player saves | Record fixed routes through actual levels, races, battles and menus; extend manual save/restart/load beyond LeafGreen | Named reference checkpoints for all eleven available titles; save-capable titles restore player progress in fresh BerryBoy and mGBA instances from isolated copies |
+| R5 / P2: Sustained Linux playback | After route correctness passes, profile bottlenecks, optimize one at a time, and run the warmup/measurement protocol below | Three 10-minute runs per qualified scenario after 30-second warmup, actual presentation/audio counters, bounded memory/queues and A/V drift; all acceptance gates below pass |
+| R6 / external prerequisite: BlackBerry qualification | Obtain compatible SDK/JDK and simulator access, build with RAPC, validate playback/input, then repeat on a physical Bold 9900 | Separate reproducible build, simulator and device reports; physical-device correctness and sustained-playback gates pass before a Bold compatibility claim |
+
+R1 provides a small, known failing image before broader timing changes. R2 must
+establish event ordering before any R3 fix that depends on timer/DMA timing.
+R4 input recording can proceed while individual defects are isolated, but a
+route remains failing until its reference differences are explained and fixed.
+R5 depends on correctness for the selected routes. The original five-game suite
+also needs its two missing assets; eleven uploaded titles do not silently replace
+that qualification suite. R6 is blocked on tooling and device access, not on
+additional host test counts.
+
+### Concrete next commits
+
+1. **Isolate the LeafGreen Continue mismatch.** Reuse the committed
+   [continuation input](../benchmarks/inputs/leafgreen-continue.tsv) and recorded
+   initial-save hash. Capture frame 1029 and its relevant rendering state on
+   both implementations. Currently 19632 of 38400 pixels differ; frame 1272
+   already matches all pixels. Reduce the cause to an original, asset-free test
+   and preserve both checkpoint results in the diagnosis.
+2. **Fix the proven menu defect.** Change the responsible feature only after
+   step 1 identifies it, add the focused regression, and replay creation/load
+   plus the eleven-game baseline. If the cause is timing rather than composition,
+   resolve that R2 dependency first. Keep unexpected differences visible.
+3. **Locate the first timing divergence.** Add bounded, cycle-stamped diagnostics
+   around BIOS/LCD startup and the first differing frame. Check reference capture
+   phase as well as emulated state. The current HBlank transition at cycle 960
+   needs qualification against the reference's different draw/event convention;
+   do not change a constant solely to improve screenshot counts. Land each
+   demonstrated timing/bus fix with its own regression and comparison report.
+4. **Isolate the first audio divergence.** Record channel, timer and FIFO events
+   for Sonic and Wario; compare selected active windows with the corrected,
+   unmuted reference. Define acceptable filter/resampling differences before
+   evaluating a fix. Local correlation and shifted signals are diagnostics,
+   not a substitute for correct guest timing or an audio-quality pass.
+5. **Add the first gameplay routes and second save generation.** Start with a
+   LeafGreen overworld/menu/save route, a fixed Sonic or Wario level route, and
+   a Golden Sun battle or V-Rally race. Expand to the remaining titles in small
+   commits. For save-capable routes, create a second player save, cold-restart
+   both emulators, and verify the latest progress and expected backup changes.
+
+Each implementation delivery records source revision, ROM/BIOS/input/initial-save
+hashes, RTC/sensor seed, frame/sample coordinates, reference version and outcomes.
+Use fresh output paths and copies of save files. Commit original input traces
+and metadata; keep ROM, BIOS, save bytes and generated captures outside Git.
+Run `mvn verify` and, for portable-core/export changes,
+`tools/test-with-console.sh`; commit and push each verified update. Do not relax
+pixel tolerances, skip frames or mute audio to turn an unexplained failure green.
+Report regression results separately from exploratory measurements.
+
+### Remaining gameplay coverage and later goals
+
+- Add checkpoints that exercise affine/bitmap scenes, overlapping OBJ, windows,
+  blending and palette changes. Inspect Zone of the Enders scene/event alignment
+  before attributing its low exact-frame count to a rendering feature.
+- Cover SRAM, Flash 64/128 KiB and both EEPROM sizes with actual player progress
+  wherever the available cartridges use them; retain original protocol tests
+  for hardware variants not represented by a local game. Add repeated saves,
+  bank/erase boundaries and deterministic RTC rollover. Apply write-failure
+  injection only to disposable copies and documented recovery behavior.
+- Preserve deterministic guest ownership. Move host encoding, file I/O or
+  presentation to bounded snapshot queues only when profiling justifies it;
+  measure ordering, failure propagation and backpressure. Do not split live CPU,
+  PPU and audio state across independent host threads.
+- Consider versioned save states/rewind, link play and optional accelerated
+  presentation after the correctness and playback gates. These are deferred
+  features, not prerequisites for fixing current game behavior.
+
+### Timing foundation: implementation history
+
+The following records preserve the original implementation sequence and its
+per-change validation counts. They are historical evidence, not the next queue
+or a claim of full hardware accuracy.
 
 1. **Cycle clock and scheduler (implemented):** `CycleScheduler` provides a
    portable guest clock and event
@@ -256,7 +347,8 @@ remaining RGB/PCM differences. Game-specific gameplay routes remain incomplete.
 The qualification suite also still lacks Mario & Luigi and WarioWare: Twisted!
 assets. All five sustained qualification entries remain unrun, and native-rate
 playback on either target is an unverified goal. The next compatibility queue
-is recorded in [GAME-COMPATIBILITY.md](GAME-COMPATIBILITY.md).
+is the [next roadmap above](#next-roadmap-correctness-gameplay-then-sustained-playback);
+[GAME-COMPATIBILITY.md](GAME-COMPATIBILITY.md) preserves earlier smoke evidence.
 
 Current headless demo screenshots are in [AUDIO-INPUT.md](AUDIO-INPUT.md). They
 are not evidence for this five-game milestone.
