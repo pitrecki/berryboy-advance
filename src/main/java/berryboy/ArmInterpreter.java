@@ -359,7 +359,8 @@ final class ArmInterpreter extends InstructionInterpreter {
 
         if (bitSet(opcode, SAVED_STATUS)) {
             var updatedStatus = (state.savedStatus() & ~mask) | (value & mask);
-            validateStatusMode(updatedStatus);
+            // SPSR is storage: BIOS reset code may write a temporary invalid mode.
+            // Validate only when it is restored into the live CPSR.
             state.writeSavedStatus(updatedStatus);
             return;
         }

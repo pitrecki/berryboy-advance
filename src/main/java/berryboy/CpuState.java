@@ -141,7 +141,9 @@ final class CpuState {
     }
 
     void restoreSavedStatus() {
-        writeStatus(savedStatus());
+        var saved = savedStatus();
+        if (!validMode(saved & MODE_MASK)) throw new EmulationException("Invalid status mode on exception return");
+        writeStatus(saved);
     }
 
     void enterSupervisorCall() {

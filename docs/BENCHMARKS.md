@@ -106,6 +106,10 @@ items as separate, reviewable changes with their own tests.
    IRQ entry/return, interrupt masking, keypad requests, HALT wakeup and a
    supplied-BIOS reset path are implemented. Synthetic BIOS tests cover ARM IRQ
    entry and return to Thumb; real BIOS boot and STOP remain unverified.
+   A user-supplied 16 KiB BIOS is now available outside Git. Reset execution
+   exposed and fixed overly strict validation of temporary SPSR mode bits;
+   invalid modes are rejected when restored into CPSR, not when stored.
+   Full BIOS/game boot remains under investigation.
 6. **Integrated timing regression (implemented):** run a small original test ROM combining
    LCD events, timers, DMA and IRQ, recording cycle-stamped checkpoints.
    Require identical guest results across repeated host and exported-core runs

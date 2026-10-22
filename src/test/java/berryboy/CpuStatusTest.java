@@ -4,6 +4,7 @@ import static berryboy.EmulatorFixtures.arm;
 import static berryboy.EmulatorFixtures.thumb;
 import static berryboy.EmulatorFixtures.writeWord;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import org.junit.jupiter.api.DisplayName;
@@ -68,5 +69,17 @@ class CpuStatusTest {
 
         machine.cpu.step();
         assertThat(machine.cpu.register(0)).as("execution resumes in Thumb").isEqualTo(7);
+    }
+
+    @Test
+    void storesTemporaryInvalidSavedModeButRejectsItOnExceptionReturn() {
+        var machine = arm(0xe169f00e, 0xe14f1000, 0xe1b0f00e); // MSR SPSR_fc,lr; MRS; MOVS pc,lr.
+        machine.cpu.setCpsr(Cpu.SUPERVISOR);
+        machine.cpu.setRegister(14, 0);
+        machine.runInstructions(2);
+        assertThat(machine.cpu.register(1)).isZero();
+        assertThat(machine.cpu.cpsr()).isEqualTo(Cpu.SUPERVISOR);
+        assertThatThrownBy(machine.cpu::step).isInstanceOf(EmulationException.class)
+                .hasMessageContaining("exception return").hasMessageContaining("opcode=0xe1b0f00e");
     }
 }
