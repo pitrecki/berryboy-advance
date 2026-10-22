@@ -126,7 +126,7 @@ final class ArmInterpreter extends InstructionInterpreter {
         } else if (byteAccess) {
             memory.write8(address, state.register(destination));
         } else {
-            memory.write32(address & ~3, state.operand(destination, 12));
+            memory.write32(address, state.operand(destination, 12));
         }
         if (writeBack) {
             state.writeRegister(baseRegister, updatedBase);
@@ -168,7 +168,7 @@ final class ArmInterpreter extends InstructionInterpreter {
         if (load) {
             state.writeRegister(destination, readHalfwordTransfer(address, accessType));
         } else {
-            memory.write16(address & ~1, state.register(destination));
+            memory.write16(address, state.register(destination));
         }
         if (writeBack) {
             state.writeRegister(baseRegister, updatedBase);
@@ -240,7 +240,7 @@ final class ArmInterpreter extends InstructionInterpreter {
                 if (writeBack && register == baseRegister && register != first) {
                     value = updatedBase;
                 }
-                memory.write32(address & ~3, value);
+                memory.write32(address, value);
             }
             address += 4;
         }
@@ -336,7 +336,7 @@ final class ArmInterpreter extends InstructionInterpreter {
         if (byteAccess) {
             memory.write8(address, value);
         } else {
-            memory.write32(address & ~3, value);
+            memory.write32(address, value);
         }
         state.writeRegister(destination, previous);
     }

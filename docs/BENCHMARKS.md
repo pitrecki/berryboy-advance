@@ -199,7 +199,11 @@ hardware sequencer/PWM edge cases remain open.
 SRAM, Flash 64/128 KiB and EEPROM 512-byte/8 KiB command protocols are implemented
 with portable snapshots and host file persistence. Tests cover unlock/ID,
 program/bank/erase isolation, serial bit order/dummy bits, size mismatch safety
-and save reload. Busy timing, RTC/GPIO and cartridge sensors remain open.
+and save reload. Configurable RTC/GPIO, solar, gyro, tilt and rumble state are now
+implemented with deterministic inputs. Serial regressions cover RTC leap-day and
+year rollover, 12-hour PM, sensor latching, dummy bits, solar threshold and GPIO
+direction/read enable. Busy/ADC timing, RTC IRQs and hardware calibration still
+require implementation/qualification; M4 remains in progress.
 A portable cycle scheduler and
 initial CPU/bus timing are implemented. There is no full PPU, complete mixer,
 cartridge peripheral support or commercial-game

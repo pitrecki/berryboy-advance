@@ -15,8 +15,8 @@ class CartridgeBackupTest {
     void sramMirrorsAndWideBusReadsRepeatOneByteWithoutChangingNeighbors() {
         var m = arm(0xe1a00000);
         m.memory.write32(0x0e000001, 0x12345678);
-        assertThat(m.memory.read8(0x0e008001)).isEqualTo(0x78);
-        assertThat(m.memory.read32(0x0e000001)).isEqualTo(0x78787878);
+        assertThat(m.memory.read8(0x0e008001)).isEqualTo(0x56);
+        assertThat(m.memory.read32(0x0e000001)).isEqualTo(0x56565656);
         assertThat(m.memory.read8(0x0e000002)).isEqualTo(255);
         assertThat(m.memory.backup().dirty()).isTrue();
     }

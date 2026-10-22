@@ -114,7 +114,15 @@ type; EEPROM command DMA lengths resolve its address width. An explicit
 `Memory.setBackup` overrides detection. Flash/EEPROM busy timing is not yet
 modeled. Backup snapshots do not alias live storage. Desktop `SaveFile` validates
 loaded sizes and replaces saves through a temporary file; platform adapters own
-their persistence mechanism. RTC/GPIO and sensors remain pending.
+their persistence mechanism. `CartridgeGpio.configure` explicitly selects RTC,
+solar, gyro, tilt and rumble hardware. Inputs can be supplied deterministically
+with `setSensors`; conversion start latches gyro/tilt values. `CartridgeRtc`
+implements serial control/date/time transfers, BCD and 12/24-hour mode, advancing
+its calendar from guest cycles rather than host time. GPIO reads honor direction
+and read-enable bits. RTC IRQ waveforms, sensor conversion latency/calibration
+and physical rumble remain unverified. Peripheral selection and RTC seeding must
+be recorded by scenario runners; no implicit host clock or game-specific hack
+is used.
 
 `SoftwarePpu` is the reference compositor behind the `BitmapRenderer` snapshot
 adapter. It supports text/affine/bitmap BGs, OBJ/affine OBJ, priority/transparency,

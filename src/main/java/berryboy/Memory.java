@@ -36,6 +36,7 @@ public final class Memory {
     private final DmaController dma = new DmaController(this);
     private final RasterPpu raster = new RasterPpu(this);
     private final ClockedAudio clockedAudio = new ClockedAudio(clock, audio);
+    private final CartridgeGpio gpio = new CartridgeGpio(clock);
     private long videoVersion;
     private CartridgeBackup backup;
     private boolean automaticEeprom;
@@ -89,6 +90,8 @@ public final class Memory {
 
     public ClockedAudio clockedAudio() { return clockedAudio; }
 
+    public CartridgeGpio gpio() { return gpio; }
+
     long videoVersion() { return videoVersion; }
 
     public CartridgeBackup backup() { return backup; }
@@ -141,14 +144,14 @@ public final class Memory {
             case 0x06 -> videoRam[videoRamOffset(address)] & 0xff;
             case 0x07 -> objectAttributes[address & 0x3ff] & 0xff;
             case 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d -> readCartridge(address);
-            case 0x0e, 0x0f -> backup.read8(address);
+            case 0x0e, 0x0f -> gpio.tiltAddress(address) ? gpio.readTilt(address) : backup.read8(address);
             default -> unavailable(address);
         };
     }
 
     public int read16(int address) {
         if (cpuAccess) bus.data(address, 2, false);
-        if ((address >>> 24) >= 0x0e && (address >>> 24) <= 0x0f) return backup.read8(address) * 0x101;
+        if ((address >>> 24) >= 0x0e && (address >>> 24) <= 0x0f) return rawRead8(address) * 0x101;
         if (eepromAddress(address)) return backup.readSerial();
         return rawRead16(address);
     }
@@ -163,7 +166,7 @@ public final class Memory {
 
     public int read32(int address) {
         if (cpuAccess) bus.data(address, 4, false);
-        if ((address >>> 24) >= 0x0e && (address >>> 24) <= 0x0f) return backup.read8(address) * 0x01010101;
+        if ((address >>> 24) >= 0x0e && (address >>> 24) <= 0x0f) return rawRead8(address) * 0x01010101;
         return rawRead16(address) | (rawRead16(address + 2) << 16);
     }
 
@@ -182,20 +185,27 @@ public final class Memory {
 
     public void write16(int address, int value) {
         if (cpuAccess) bus.data(address, 2, true);
-        if ((address >>> 24) >= 0x0e && (address >>> 24) <= 0x0f) { backup.write8(address, value); return; }
+        if ((address >>> 24) >= 0x0e && (address >>> 24) <= 0x0f) {
+            writeBackup(address, value >>> ((address & 1) * 8)); return;
+        }
         if (eepromAddress(address)) { backup.writeSerial(value); return; }
         rawWrite16(address, value);
     }
 
     private void rawWrite16(int address, int value) {
         var alignedAddress = address & ~1;
+        if ((address >>> 24) >= 8 && (address >>> 24) <= 13 && gpio.handles(alignedAddress)) {
+            gpio.write16(alignedAddress, value); return;
+        }
         writeByteLane(alignedAddress, value);
         writeByteLane(alignedAddress + 1, value >>> 8);
     }
 
     public void write32(int address, int value) {
         if (cpuAccess) bus.data(address, 4, true);
-        if ((address >>> 24) >= 0x0e && (address >>> 24) <= 0x0f) { backup.write8(address, value); return; }
+        if ((address >>> 24) >= 0x0e && (address >>> 24) <= 0x0f) {
+            writeBackup(address, BarrelShifter.rotateRight(value, (address & 3) * 8)); return;
+        }
         var alignedAddress = address & ~3;
         rawWrite16(alignedAddress, value);
         rawWrite16(alignedAddress + 2, value >>> 16);
@@ -209,6 +219,7 @@ public final class Memory {
     }
 
     private int readCartridge(int address) {
+        if (gpio.handles(address) && gpio.readable()) return gpio.read8(address);
         var offset = address & 0x1ffffff;
         if (offset < cartridge.size()) {
             return cartridge.byteAt(offset);
@@ -331,7 +342,7 @@ public final class Memory {
                 break; // Cartridge ROM is read-only.
             case 0x0e:
             case 0x0f:
-                backup.write8(address, value);
+                writeBackup(address, value);
                 break;
             default:
                 unavailable(address);
@@ -349,6 +360,11 @@ public final class Memory {
         var match = selected != 0 && ((keyControl & 0x8000) != 0 ? pressed == selected : pressed != 0);
         if (match && !keyMatched && (keyControl & 0x4000) != 0) interrupts.request(1 << 12);
         keyMatched = match;
+    }
+
+    private void writeBackup(int address, int value) {
+        if (gpio.tiltAddress(address)) gpio.writeTilt(address, value);
+        else backup.write8(address, value);
     }
 
     private static int videoRamOffset(int address) {

@@ -204,10 +204,10 @@ final class ThumbInterpreter extends InstructionInterpreter {
 
         switch ((opcode >>> 9) & 7) {
             case 0: // STR
-                memory.write32(address & ~3, state.register(destination));
+                memory.write32(address, state.register(destination));
                 break;
             case 1: // STRH
-                memory.write16(address & ~1, state.register(destination));
+                memory.write16(address, state.register(destination));
                 break;
             case 2: // STRB
                 memory.write8(address, state.register(destination));
@@ -243,7 +243,7 @@ final class ThumbInterpreter extends InstructionInterpreter {
         } else if (byteTransfer) {
             memory.write8(address, state.register(destination));
         } else {
-            memory.write32(address & ~3, state.register(destination));
+            memory.write32(address, state.register(destination));
         }
     }
 
@@ -256,7 +256,7 @@ final class ThumbInterpreter extends InstructionInterpreter {
         if (bitSet(opcode, LOAD)) {
             state.writeRegister(destination, loadHalfword(address));
         } else {
-            memory.write16(address & ~1, state.register(destination));
+            memory.write16(address, state.register(destination));
         }
     }
 
@@ -268,7 +268,7 @@ final class ThumbInterpreter extends InstructionInterpreter {
         if (bitSet(opcode, LOAD)) {
             state.writeRegister(destination, loadWord(address));
         } else {
-            memory.write32(address & ~3, state.register(destination));
+            memory.write32(address, state.register(destination));
         }
     }
 
@@ -310,7 +310,7 @@ final class ThumbInterpreter extends InstructionInterpreter {
             if (pop) {
                 state.writeRegister(register, memory.read32(address & ~3));
             } else {
-                memory.write32(address & ~3, state.register(register));
+                memory.write32(address, state.register(register));
             }
             address += 4;
         }
@@ -320,7 +320,7 @@ final class ThumbInterpreter extends InstructionInterpreter {
                 // ARMv4 POP writes PC without changing the Thumb state.
                 state.writeRegister(CpuState.PROGRAM_COUNTER, memory.read32(address & ~3));
             } else {
-                memory.write32(address & ~3, state.register(CpuState.LINK_REGISTER));
+                memory.write32(address, state.register(CpuState.LINK_REGISTER));
             }
             address += 4;
         }
@@ -351,7 +351,7 @@ final class ThumbInterpreter extends InstructionInterpreter {
                 var value = register == baseRegister && register != first
                         ? updatedBase
                         : state.register(register);
-                memory.write32(address & ~3, value);
+                memory.write32(address, value);
             }
             address += 4;
         }

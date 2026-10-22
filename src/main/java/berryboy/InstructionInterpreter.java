@@ -26,11 +26,13 @@ abstract class InstructionInterpreter {
     }
 
     protected int loadWord(int address) {
+        if ((address >>> 24) == 14 || (address >>> 24) == 15) return memory.read32(address);
         var word = memory.read32(address & ~3);
         return BarrelShifter.rotateRight(word, (address & 3) * 8);
     }
 
     protected int loadHalfword(int address) {
+        if ((address >>> 24) == 14 || (address >>> 24) == 15) return memory.read16(address);
         var halfword = memory.read16(address & ~1);
         return BarrelShifter.rotateRight(halfword, (address & 1) * 8);
     }
