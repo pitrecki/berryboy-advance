@@ -105,11 +105,12 @@ items as separate, reviewable changes with their own tests.
    Keep the diagnostic cartridge entry distinct from verified BIOS boot.
    IRQ entry/return, interrupt masking, keypad requests, HALT wakeup and a
    supplied-BIOS reset path are implemented. Synthetic BIOS tests cover ARM IRQ
-   entry and return to Thumb; real BIOS boot and STOP remain unverified.
+   entry and return to Thumb; real-BIOS game starts have short capture evidence,
+   while STOP remains unsupported.
    A user-supplied 16 KiB BIOS is now available outside Git. Reset execution
    exposed and fixed overly strict validation of temporary SPSR mode bits;
    invalid modes are rejected when restored into CPSR, not when stored.
-   Full BIOS/game boot remains under investigation.
+   Full game compatibility and IRQ/SWI timing remain under investigation.
    Reserved I/O writes and the undocumented BIOS write at `0x04000410` are
    handled; internal WRAM control/mirrors and wait settings are modeled.
    The supplied BIOS Div SWI returned quotient 726/remainder 3 for 12345/17.
@@ -119,9 +120,13 @@ items as separate, reviewable changes with their own tests.
    180 frames and produced the GAME BOY animation, 98752 stereo samples, zero
    missing guest frames and zero software audio-buffer failures. Eight cold
    work deadlines were missed; this is not performance qualification. The
-   original demo lacks a BIOS-accepted cartridge logo, so full game boot remains
-   unverified. Latest regression validation: 1003 host and 929 exported-core
-   tests passed. BIOS data and captures remain outside Git.
+   original demo lacks a BIOS-accepted cartridge logo. Eleven uploaded commercial
+   games subsequently completed 1200-frame real-BIOS smoke captures, after fixing
+   DMA capture deadlines and BIOS-protected/open-bus reads. Metroid Fusion's
+   former 428-frame exception is resolved. ARM bus spot checks agree with mGBA;
+   full IRQ/SWI timing, independent video/audio references and longer gameplay
+   remain open. Latest validation: 1017 host and 943 exported-core tests passed.
+   BIOS data and captures remain outside Git.
 6. **Integrated timing regression (implemented):** run a small original test ROM combining
    LCD events, timers, DMA and IRQ, recording cycle-stamped checkpoints.
    Require identical guest results across repeated host and exported-core runs
@@ -154,9 +159,9 @@ items as separate, reviewable changes with their own tests.
 [SCENARIOS.md](SCENARIOS.md) documents the implemented local capture runner,
 asset hashes, input/sensor recordings, references and report limitations. The
 original demo passes repeatability checks. Eleven uploaded games now have
-[compatibility captures](GAME-COMPATIBILITY.md): after incremental DMA service,
-ten completed long captures without counter failures and Metroid Fusion raised
-a reproducible exception. This does not satisfy the
+[compatibility captures](GAME-COMPATIBILITY.md): after incremental DMA service
+and BIOS/open-bus fixes, all eleven completed 1200-frame captures without counter
+failures. This does not satisfy the
 five-game sustained qualification suite. The user has no physical target device.
 The supplied archive.org
 collection is currently blocked by the environment network proxy (HTTP 403).

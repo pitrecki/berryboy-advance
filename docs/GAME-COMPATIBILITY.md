@@ -10,7 +10,59 @@ Host: Linux x86_64, Java 21.0.8+9. Full per-game hashes, counters, runtime metad
 errors and replay evidence are in
 [the machine-readable record](../benchmarks/uploaded-games-smoke-2026-10-22.json).
 
-## DMA deadline follow-up
+## Current BIOS/open-bus follow-up
+
+All eleven games now complete 1200 frames with zero missing guest frames and
+zero software audio underruns/overruns, using the original input script and BIOS.
+Each run records 658350 stereo samples. Metroid Fusion now passes the former
+428-frame failure and reaches its animated space intro. Two Metroid captures
+have byte-identical frame traces, WAV audio and final PNGs. Evidence and exact
+asset/input hashes are in [the current record](../benchmarks/game-bios-bus-2026-10-22.json),
+recorded against dirty source base `0d238b3`. Validation: 1017 host and 943
+exported-core tests passed. Cold work deadline misses remain; full performance
+and independent video/audio correctness are not qualified.
+
+The failing sound channel has a zero waveform pointer and zero
+volume. mGBA 0.10.5 also processes it and continues. The GBA prevents game code
+from directly reading BIOS bytes: data reads retain the last BIOS prefetch word,
+while unmapped addresses above the 16 KiB BIOS expose CPU prefetch byte lanes.
+The bus now models these two behaviors; unimplemented I/O still fails explicitly.
+Original tests cover protected byte/halfword/word reads, BIOS reentry, ARM load
+sign extension and Thumb instruction-bus layouts. DMA open-bus latches and
+self-modifying prefetch behavior remain unqualified.
+
+Four ARM signed-byte observations match mGBA at the same mixer instruction:
+
+| Read address | BerryBoy result | mGBA result |
+| --- | --- | --- |
+| `0x4007` | `0xffffffe0` | `0xffffffe0` |
+| `0x4cd2` | `0x00000044` | `0x00000044` |
+| `0x599d` | `0x00000040` | `0x00000040` |
+| `0x6668` | `0x00000003` | `0x00000003` |
+
+This is a bus spot check, not agreement of complete guest state. At the first
+zero-waveform checkpoint BerryBoy retains BIOS word `0xe3a02004`, whereas mGBA
+retains `0xe55ec002`; the recorded guest cycles also differ. Compare IRQ/SWI event
+ordering and latch timing before making a full timing claim.
+The reproducible standalone reference tool is
+[mgba-fusion-probe.c](../tools/mgba-fusion-probe.c). With the local static mGBA
+0.10.5 build used for this investigation, compile/run from the checkout:
+
+```bash
+cc -Wall -Wextra -Werror -O2 -DBUILD_STATIC -DM_CORE_GBA -DUSE_PTHREADS \
+  -I/workspace/toolchains/mgba-reference/mgba-0.10.5/include \
+  -I/workspace/toolchains/mgba-reference/build/include \
+  tools/mgba-fusion-probe.c /workspace/toolchains/mgba-reference/build/libmgba.a \
+  -lm -lpthread -o /tmp/mgba-fusion-probe
+/tmp/mgba-fusion-probe '/workspace/roms/gba/Metroid Fusion (USA).gba' \
+  /workspace/roms/gba/gba_bios.bin
+```
+
+The mGBA source, build and CMake installation stay outside Git. Its diagnostic
+is version/ROM specific and does not replace the emulator regression suite.
+The following sections retain the earlier failing evidence for comparison.
+
+## DMA deadline follow-up (before BIOS/open-bus fix)
 
 The whole-block DMA implementation advanced 458754 cycles in a single CPU step
 in Metroid's startup clear, crossing a capture deadline. Four other titles
@@ -76,7 +128,7 @@ A second Golden Sun run matched the first run's entire video/PCM hashes.
 This is replay stability against the same emulator, not independent correctness.
 Metroid Fusion repeated the same 428-frame trace and exception:
 `Unimplemented bus / IO address 0x4179 [opcode=0xe1b530d9, pc=0x30037ac]`.
-The root cause is not yet isolated; accepting the read blindly would hide it.
+The bus behavior responsible is now isolated and corrected as described above.
 
 ## Local reproduction
 
@@ -84,7 +136,9 @@ Assets and their manifest are under `/workspace/roms/gba`. Exact scenario
 properties, inputs, logs and summaries are preserved under
 `/workspace/roms/gba/validation/2026-10-22/`. Original captures remain in
 `target/uploaded-games-smoke-2026-10-22` and
-`target/uploaded-games-input-smoke-2026-10-22`.
+`target/uploaded-games-input-smoke-2026-10-22`. Current captures and reports are
+in `target/game-bios-bus-2026-10-22`; persistent properties/logs are in the
+`bios-bus` subdirectory of the validation directory above.
 
 After building and sourcing `/workspace/toolchains/activate.sh`, choose a copied
 scenario, change its `output` to a new empty directory, and run:
@@ -100,8 +154,8 @@ screenshots are committed.
 
 ## Next compatibility work
 
-1. Isolate the reproducible Metroid Fusion invalid-address read and add a small
-   original regression before fixing the CPU/bus behavior responsible.
+1. Preserve the Metroid Fusion BIOS/open-bus regression; compare IRQ/SWI timing
+   and the differing protected-BIOS latches against independent execution.
 2. The original missing-frame counts are resolved by incremental DMA service;
    preserve the deadline and priority regressions during further timing work.
 3. Create per-game input routes and checkpoints, especially for black final

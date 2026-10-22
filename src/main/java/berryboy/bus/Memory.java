@@ -61,6 +61,9 @@ public final class Memory implements VideoBus {
     private boolean automaticEeprom;
     private int memoryControl = 0x0d000020;
     private boolean cpuAccess;
+    private int instructionAddress;
+    private boolean thumbInstruction;
+    private int biosPrefetch;
     private boolean halted;
     private int postFlag;
     private int keyControl;
@@ -154,7 +157,18 @@ public final class Memory implements VideoBus {
     public void wake() { halted = false; }
 
     public int fetch(int address, boolean thumb) {
+        if ((address >>> 24) == 0 && address >= BIOS_SIZE) {
+            throw new EmulationException("Instruction fetch outside BIOS");
+        }
         bus.fetch(address, thumb ? 2 : 4);
+        instructionAddress = address;
+        thumbInstruction = thumb;
+        if (bios != null && address < BIOS_SIZE) {
+            // BIOS protection retains the word prefetched past the last BIOS
+            // instruction, including the instruction that branches out of ROM.
+            var prefetch = (address + (thumb ? 4 : 8)) & (BIOS_SIZE - 4);
+            biosPrefetch = halfword(bios, prefetch) | (halfword(bios, prefetch + 2) << 16);
+        }
         cpuAccess = true;
         return thumb ? rawRead16(address) : rawRead16(address) | (rawRead16(address + 2) << 16);
     }
@@ -259,10 +273,34 @@ public final class Memory implements VideoBus {
     }
 
     private int readBios(int address) {
-        if (bios != null && address < bios.length) {
-            return bios[address] & 0xff;
+        if (bios == null) return unavailable(address);
+        if (address >= BIOS_SIZE) return (openBusWord() >>> ((address & 3) * 8)) & 255;
+        if (instructionAddress >= BIOS_SIZE) return (biosPrefetch >>> ((address & 3) * 8)) & 255;
+        return bios[address] & 255;
+    }
+
+    /** Unmapped space above BIOS exposes CPU prefetch, not another BIOS mirror.
+     * Other unimplemented devices still fail explicitly. DMA latch behavior and
+     * pipeline clobbering by self-modifying code require separate qualification.
+     */
+    private int openBusWord() {
+        if (!thumbInstruction) {
+            var address = instructionAddress + 8;
+            return prefetched16(address) | (prefetched16(address + 2) << 16);
         }
-        return unavailable(address);
+        var next = prefetched16(instructionAddress + 4);
+        var region = instructionAddress >>> 24;
+        if (region == 0 || region == 7) return next | (prefetched16(instructionAddress + 6) << 16);
+        if (region == 3) {
+            var previous = prefetched16(instructionAddress + 2);
+            return (instructionAddress & 2) == 0 ? next | (previous << 16) : previous | (next << 16);
+        }
+        return next | (next << 16);
+    }
+
+    private int prefetched16(int address) {
+        if ((instructionAddress >>> 24) == 0 && bios != null) return halfword(bios, address & (BIOS_SIZE - 2));
+        return rawRead16(address);
     }
 
     private int readCartridge(int address) {

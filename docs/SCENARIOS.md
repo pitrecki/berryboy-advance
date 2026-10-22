@@ -104,6 +104,8 @@ no software audio-buffer failures. One cold-run work deadline was missed; these
 smoke runs are not sustained performance evidence. Java regressions also cover
 wrong hashes, malformed input ordering, stale output refusal and reference
 mismatch. [Eleven uploaded commercial games](GAME-COMPATIBILITY.md) now have
-360-frame BIOS captures and 1200-frame scripted-input attempts. After incremental DMA service, ten long reports have no frame/audio counter
-failures and Metroid Fusion still raises a reproducible exception. Physical-device
-captures remain unrun.
+360-frame BIOS captures and 1200-frame scripted-input attempts. After incremental
+DMA service and BIOS/open-bus behavior fixes, all eleven 1200-frame reports have
+no frame/audio counter failures. Two Metroid Fusion captures produce byte-identical
+guest traces, WAV audio and final PNGs. A bus spot check agrees with mGBA;
+complete independent video/audio comparison and physical-device captures remain unrun.

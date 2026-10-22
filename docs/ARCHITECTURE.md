@@ -106,9 +106,12 @@ Byte writes to palette RAM and BG VRAM duplicate the byte across the halfword.
 OAM and OBJ VRAM ignore byte stores. `KEYINPUT` is active-low and read-only.
 DISPCNT, BG2CNT and the BG2 affine registers drive the renderer.
 
-Unimplemented regions and I/O stop execution. Save hardware, EEPROM, flash, RTC,
-BIOS protection, prefetch/open-bus latches and cartridge bus details are absent.
-ROM reads beyond the cartridge size return an address-derived pattern.
+Unimplemented regions and I/O stop execution. SRAM/Flash/EEPROM and configurable
+RTC/GPIO devices are implemented. BIOS data reads from outside BIOS retain the
+last BIOS prefetch word. Unmapped data reads at `0x00004000..0x00ffffff` expose
+ARM prefetch byte lanes or Thumb instruction-bus layouts. DMA open-bus latches,
+self-modifying prefetch behavior and some cartridge timing details still need
+qualification. ROM reads beyond the cartridge size return an address-derived pattern.
 
 ## Rendering
 
@@ -144,11 +147,14 @@ clear acknowledgement. CPU IRQ entry preserves CPSR/LR in the IRQ bank and
 returns through the existing exception-return instructions. HALT waits for an
 enabled interrupt request, independently of IME/CPSR.I; STOP remains unsupported.
 `Machine(image, bios)` starts a supplied 16 KiB BIOS at the reset vector with
-SVC/IRQ/FIQ reset state. Synthetic BIOS tests cover reset and IRQ return; real
-BIOS boot remains unverified. Four DMA channels latch source/destination/count on
+SVC/IRQ/FIQ reset state. Synthetic BIOS tests cover reset and IRQ return; eleven
+uploaded games complete real-BIOS startup smoke captures (see
+[GAME-COMPATIBILITY.md](GAME-COMPATIBILITY.md)). Four DMA channels latch source/destination/count on
 enable and stop CPU execution while transferring. Immediate, visible HBlank and
 VBlank triggers, channel priority, repeat, destination reload and completion
-IRQs are supported. Bus costs advance LCD/timer events during transfers. Special
+IRQs are supported. DMA yields to the host cycle-budget caller after each transfer
+unit, retaining channel priority and CPU bus ownership until completion. Bus
+costs advance LCD/timer events during transfers. Special
 video-capture timing and Game Pak DRQ remain explicitly unsupported. DMA1/2
 support sound FIFO timing with forced word width, fixed destination and count 4.
 See [BENCHMARKS.md](BENCHMARKS.md) for the implementation order and measurement gate.
