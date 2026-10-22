@@ -36,6 +36,8 @@ public final class Cartridge {
     public int byteAt(int offset) {
         return offset >= 0 && offset < rom.length ? rom[offset] & 0xff : 0xff;
     }
+
+    int halfwordAt(int offset) { return (rom[offset] & 255) | ((rom[offset + 1] & 255) << 8); }
     public String title() {
         return ascii(0xa0, 12);
     }

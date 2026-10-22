@@ -38,6 +38,7 @@ public final class Memory {
     private final ClockedAudio clockedAudio = new ClockedAudio(clock, audio);
     private final CartridgeGpio gpio = new CartridgeGpio(clock);
     private long videoVersion;
+    private long displayVersion;
     private CartridgeBackup backup;
     private boolean automaticEeprom;
     private boolean cpuAccess;
@@ -93,6 +94,8 @@ public final class Memory {
     public CartridgeGpio gpio() { return gpio; }
 
     long videoVersion() { return videoVersion; }
+
+    long displayVersion() { return displayVersion; }
 
     public CartridgeBackup backup() { return backup; }
 
@@ -157,8 +160,22 @@ public final class Memory {
     }
 
     private int rawRead16(int address) {
+        if ((address & 1) == 0) {
+            var region = address >>> 24;
+            if (region == 2) return halfword(externalRam, address & 0x3ffff);
+            if (region == 3) return halfword(internalRam, address & 0x7fff);
+            if (region == 5) return halfword(palette, address & 0x3ff);
+            if (region == 6) return halfword(videoRam, videoRamOffset(address));
+            if (region == 7) return halfword(objectAttributes, address & 0x3ff);
+            if (region >= 8 && region <= 13 && !gpio.handles(address)) {
+                var offset = address & 0x1ffffff;
+                if (offset < cartridge.size() - 1) return cartridge.halfwordAt(offset);
+            }
+        }
         return rawRead8(address) | (rawRead8(address + 1) << 8);
     }
+
+    private static int halfword(byte[] bytes, int index) { return (bytes[index] & 255) | ((bytes[index + 1] & 255) << 8); }
 
     int peek8(int address) { return rawRead8(address); }
 
@@ -288,6 +305,7 @@ public final class Memory {
         }
         ioRegisters[address - IO_BASE] = (byte) value;
         videoVersion++;
+        displayVersion++;
         raster.affineWrite(address);
     }
 

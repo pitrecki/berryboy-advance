@@ -48,4 +48,19 @@ class RasterPpuTest {
         assertThat(m.memory.raster().completedFrame()).containsOnly(0);
         assertThat(m.memory.raster().completedFrames()).isEqualTo(2);
     }
+
+    @Test
+    void midlineScrollWriteInvalidatesCachedDisplayRegisters() {
+        var m = bitmap(0x0100);
+        m.memory.write16(0x04000008, 0x1f00);
+        m.memory.write16(0x06000000, 0x0321);
+        m.memory.write16(0x05000002, 31);
+        m.memory.write16(0x05000004, 0x3e0);
+        m.memory.write16(0x05000006, 0x7c00);
+        m.clock.advanceTo(4);
+        m.memory.write16(0x04000010, 1);
+        m.clock.advanceTo(160L * 1232);
+        assertThat(m.memory.raster().completedFrame()[0]).isEqualTo(0xff0000);
+        assertThat(m.memory.raster().completedFrame()[1]).isEqualTo(0x0000ff);
+    }
 }

@@ -138,6 +138,11 @@ the documented line-cycle budget (1210 or 954 with HBlank free), including
 affine setup/pixel costs and offscreen objects; detailed fetch timing remains
 qualification work.
 
+Aligned halfword reads use direct RAM/video/cartridge paths, retaining the slow
+path for unaligned reads, GPIO, IO and undriven ROM. Display-register caching is
+invalidated by writes; VRAM and palette reads remain live. Raster tests verify
+that register/palette writes still affect subsequent pixels.
+
 The development project targets Java 21. The instruction execution path uses
 primitives and arrays. Local `var` changes source syntax only; the exporter
 resolves concrete types before generating the BlackBerry sources.

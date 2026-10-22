@@ -16,6 +16,8 @@ public final class SoftwarePpu {
     private boolean timed;
     private final int[] referenceX = new int[2];
     private final int[] referenceY = new int[2];
+    private final int[] registers = new int[0x56 / 2];
+    private long registerVersion = -1;
 
     public SoftwarePpu(Memory memory) { this.memory = memory; }
 
@@ -55,6 +57,10 @@ public final class SoftwarePpu {
     }
 
     private void renderRange(int y, int start, int end, int[] output, int offset) {
+        if (registerVersion != memory.displayVersion()) {
+            for (var i = 0; i < registers.length; i++) registers[i] = memory.peek16(0x04000000 + i * 2);
+            registerVersion = memory.displayVersion();
+        }
         var display = io(0);
         var mode = display & 7;
         if (mode > 5) throw new EmulationException("Reserved display mode");
@@ -268,7 +274,7 @@ public final class SoftwarePpu {
         }
         return result;
     }
-    private int io(int offset) { return read16(0x04000000 + offset); }
+    private int io(int offset) { return registers[offset / 2]; }
     private int palette(int index) { return read16(0x05000000 + index * 2) & 0x7fff; }
     private int read8(int address) { return memory.peek8(address); }
     private int read16(int address) { return memory.peek16(address); }

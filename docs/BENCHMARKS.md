@@ -53,7 +53,7 @@ commercial-game compatibility or BlackBerry device readiness.
 | M3: Synchronized audio (in progress) | All PSG channels, Direct Sound, timer/DMA refill and bounded output queues | Reference PCM comparisons, sample-count checks and measured A/V drift with no buffer failures |
 | M4: Cartridge compatibility (in progress) | Persistent save types, RTC and required cartridge peripherals | Save/reload round trips, command-sequence tests and deterministic sensor playback |
 | M5: Reproducible game runner (capture path implemented) | Local ROM/BIOS mapping, recorded input, frame/audio checkpoints and machine-readable reports | The same inputs reproduce guest checkpoints; missing assets fail explicitly rather than skip a game |
-| M6: Platform validation and optimization | Profile-guided improvements, BlackBerry build/playback/input checks and optional supported acceleration | Output matches the software reference; Linux and Bold 9900 reports identify their own hardware and runtime |
+| M6: Platform validation and optimization (host profiling in progress) | Profile-guided improvements, BlackBerry build/playback/input checks and optional supported acceleration | Output matches the software reference; Linux and Bold 9900 reports identify their own hardware and runtime |
 | M7: Sustained playback qualification | Execute the complete five-game protocol on each target | All correctness, frame deadline, audio and drift gates below pass for every recorded run |
 
 Develop M1 through M4 in dependency order. Build M5 as deterministic timing and
@@ -228,7 +228,41 @@ is an unverified goal.
 Current headless demo screenshots are in [AUDIO-INPUT.md](AUDIO-INPUT.md). They
 are not evidence for this five-game milestone.
 
-## Hardware reference
+## Synthetic host profiling, 2026-10-22
+
+This is an original-demo work-cost experiment, not a five-game or Bold FPS result.
+Baseline: `7dec35b`, Linux x86_64 on Intel Xeon Platinum 8573C, four-CPU quota, JDK 21.0.8+9,
+software raster output, no physical audio/display. ROM SHA-256:
+`9d0b290b28f9bbd105ee48133f660bb8916fdfb3b018d9204d64aec73af25229`.
+Scenario: direct-entry original demo, no input, deterministic default RTC;
+300 guest frames warmup, 600 measured frames, three repetitions per variant,
+`-Xms256m -Xmx256m`, no profiler during the comparison. Guest frame and sample
+clocks remain native, with all sound synthesis enabled; the demo does not itself
+enable a tone. This is not an effects-heavy graphics/audio workload.
+
+JFR sampling first identified memory reads in CPU fetch and PPU register access.
+The candidate adds aligned halfword fast paths and a display-register cache
+invalidated on writes; regression tests preserve midline palette/scroll changes.
+
+| Variant | Per-run p50 work (ms) | Per-run p95 work (ms) | Per-run work deadline misses |
+| --- | --- | --- | --- |
+| Baseline | 2.635, 2.666, 2.600 | 4.686, 5.957, 3.574 | 0, 0, 0 |
+| Candidate | 2.308, 2.270, 2.285 | 2.884, 2.774, 2.645 | 0, 0, 0 |
+
+All six captures have identical aggregate video/PCM hashes, zero missing guest
+frames and zero software audio-buffer failures. The median of run medians fell
+by about 13%; shared-cloud timing remains variable. An earlier shorter JFR run
+of the candidate had two work deadline misses, which motivated the longer
+warmup and repeated comparison. No physical deadline or audible output result
+is inferred. Work timings cover emulation, excluding file encoding/presentation.
+Reports/JFR files remain under ignored `target/profile-*`.
+
+BlackBerry verification is blocked: `tools/blackberry.sh --launch false` exits
+with `Missing wine`; vendor SDK/JDK6 bindings are absent. No physical Bold is
+available, and the user confirms that they do not have SDK/JDK6 tooling.
+GPU acceleration is not claimed without a supported target backend.
+
+## Hardware references
 
 - [GBATEK LCD timing and hardware descriptions](https://mgba-emu.github.io/gbatek/#gba-lcd-video-controller)
 - [NanoBoyAdvance hardware tests](https://github.com/nba-emu/hw-test)
