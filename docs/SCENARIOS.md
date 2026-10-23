@@ -345,3 +345,39 @@ coefficient-0/16 controls agree across all models. Intermediate outputs disagree
 the [three-way report](REFERENCE-VALIDATION.md#three-way-brightness-model-comparison)
 records the counts and the open hardware expectations. The C probe rejects an
 RGB888/RGB565 build to prevent an accidental pixel ABI mismatch.
+
+## LeafGreen second-save route
+
+Use LeafGreen USA Rev-A, the original BIOS and a copy of the generation-1 player
+save identified in `benchmarks/leafgreen-second-save-2026-10-23.json`. Configure
+the scenario with `benchmarks/inputs/leafgreen-second-save.tsv`, its recorded
+SHA-256, `frames=2750`, `backup=2`, zero warmup and fresh output/save paths.
+Use checkpoints `1317,1418,1530,2050,2150,2450,2750`.
+
+The trace retains the Continue prefix. It holds Right for frames 1300–1315,
+presses Start at 1360, Down at 1390/1408, and A at 1426/1520/1660/1800/2100/2450.
+Each menu press lasts three frames. These conservative waits allow save and
+overwrite text to finish before confirmation. All sensors retain their default
+stationary values. Run ScenarioRunner and the RGB555 reference adapter using
+the same copied initial save and identities; never use the original save as
+an output path.
+
+Inspect the initial and generated copies without modifying them:
+
+```bash
+python3 tools/inspect_leafgreen_save.py /path/to/initial-copy.sav
+python3 tools/inspect_leafgreen_save.py /path/to/berryboy-second.sav
+python3 tools/inspect_leafgreen_save.py /path/to/reference-second.sav
+```
+
+The inspector checks the 128 KiB geometry, signatures, section identities,
+checksums and complete generations before reporting latest position, play time
+and decoded money. Unknown/corrupt data fails explicitly. It targets this
+LeafGreen layout; counter-wrap/recovery behavior is outside its scope.
+
+For each generated file, start fresh BerryBoy and mGBA instances with the
+existing `leafgreen-continue.tsv`, 1272 frames and checkpoints 1029/1272.
+Use separate copies and fresh output paths for all four cross-loads. Room frame
+1272 must match post-save frame 2750 exactly, and each reload's backup hash must
+remain its initial hash. Preserve strict whole-file and full-stream comparisons:
+the recorded new saves differ in 667 bytes, despite exact restored-room progress.

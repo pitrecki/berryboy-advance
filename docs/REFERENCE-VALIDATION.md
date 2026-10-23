@@ -1,5 +1,41 @@
 # Independent reference validation, 2026-10-23
 
+## Second LeafGreen player save and cold cross-load
+
+The [second-save input](../benchmarks/inputs/leafgreen-second-save.tsv) extends
+the existing Continue route: move right by one tile, open SAVE, confirm the
+overwrite and return to the room. Both BerryBoy and unmodified mGBA 0.10.5
+RGB555 complete 2750 frames from isolated copies of the original player save.
+The original remains byte-identical.
+
+Both create generation **2**, preserving the previous generation. The
+[read-only inspector](../tools/inspect_leafgreen_save.py) validates all **28
+section checksums**, all 14 section identities in each generation, and reports
+the saved position changing from **(7,6) to (8,6)** on map group 4/map 1.
+Both decoded money values remain 3000. The initial image contains 14 valid
+sections and generation 1. The inspector is specific to this LeafGreen layout,
+not a general save-recovery implementation.
+
+The new files differ in **667 bytes**. Their encryption keys differ, and play
+time differs by one game-counter frame: `0:00:27:45` versus `0:00:27:46`.
+These observations do not independently explain every differing byte, so the
+strict whole-file comparison remains **unmatched**. The exact 2750-frame
+comparison also remains unmatched: **2356 exact RGB frames**, first difference
+930, and different PCM. No byte/pixel tolerance or frame shift is introduced.
+
+Each generated save is then loaded into fresh instances of **both** emulators:
+four cold cross-loads in total, each 1272 frames. All four restored-room
+captures match the post-save room in **all 38400 pixels** and differ from the
+original saved position. Every reload retains its input save hash. This
+qualifies latest-position restoration and save interoperability for this narrow
+route, while full binary/timing equality and broader gameplay remain open.
+
+Validation: **1295 host tests pass**; no production or exported-core changes.
+The existing **1201 exported/actual CLDC** checks remain the latest core
+validation. Route, save identities, inspections and strict comparisons:
+[leafgreen-second-save-2026-10-23.json](../benchmarks/leafgreen-second-save-2026-10-23.json).
+Reproduction: [SCENARIOS.md](SCENARIOS.md#leafgreen-second-save-route).
+
 ## Three-way brightness model comparison
 
 The earlier attribution of the Continue-menu difference solely to reference

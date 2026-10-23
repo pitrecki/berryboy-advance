@@ -4,6 +4,14 @@ mvn verify (native bb-sim profile): 1295 passed; 0 failed/errors/skipped.
 Exported core console suite: 1201 passed; 0 failed/skipped.
 Actual ECJ CLDC-class core suite: 1201 passed; 0 failed/skipped.
 
+Second LeafGreen player save: generation 2 stores a one-tile move from (7,6) to
+(8,6), with all 28 section checksums valid. Four fresh cross-loads (both generated
+saves in both emulators) restore the exact post-save room: all 38400 pixels.
+Original/reload saves remain unchanged. Generated saves differ in 667 bytes,
+including different encryption keys and a one-frame play-time difference; strict
+binary/full-stream gates remain unmatched. No production change or tolerance.
+See benchmarks/leafgreen-second-save-2026-10-23.json.
+
 Eleven-game regression after the timing/DMA corrections: 3600 fresh-state frames
 per title, 39600 total and 21725550 stereo samples. Zero missing guest frames or
 software audio underruns/overruns; four initialization backups written. Each run

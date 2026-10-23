@@ -88,7 +88,7 @@ smoke scope; it does not close the independent correctness or gameplay gates.
 | R1 / P0: LeafGreen menu (three-way model comparison delivered; pixel qualification open) | Menu state matches; NBA agrees with mGBA on its color, while the 2244-case matrix exposes broader disagreement in rounding and palette bit 15 | Establish independently justified expected rounding and palette-bit behavior before correcting the renderer or passing the menu gate; existing arithmetic tests preserve behavior without certifying hardware |
 | R2 / P0: Timing and bus accuracy (MUL, ROM addressing and shared DMA ownership corrected) | Independent NBA now matches all 96 ownership cases; mGBA count-dependent event timing is isolated; frame 930 initialization offset remains open | Qualify request activation and write/IRQ phases using independent evidence; land each demonstrated core defect with a minimal regression and event trace, without regressing DMA deadlines, open-bus handling or saves |
 | R3 / P1: Audio correctness | Start with late Sonic Advance 3 and Wario Land 4 differences; compare timer/DMA FIFO events, PSG state and sample clocks; distinguish guest-state errors from output gain, filter and resampling differences | Repeatable event/sample checkpoints, justified comparison tolerances and listening review; no unexplained divergence in the selected routes and zero software buffer failures |
-| R4 / P1: Gameplay and player saves | Record fixed routes through actual levels, races, battles and menus; extend manual save/restart/load beyond LeafGreen | Named reference checkpoints for all eleven available titles; save-capable titles restore player progress in fresh BerryBoy and mGBA instances from isolated copies |
+| R4 / P1: Gameplay and player saves (second LeafGreen cross-load delivered) | A one-tile indoor route creates generation 2; four cold cross-loads restore the exact room in both emulators. New saves still differ in 667 bytes. Extend routes to levels, races, battles and other titles | Named reference checkpoints for all eleven titles; save-capable games restore latest progress from isolated copies, with explicit strict binary/full-stream outcomes |
 | R5 / P2: Sustained Linux playback | After route correctness passes, profile bottlenecks, optimize one at a time, and run the warmup/measurement protocol below | Three 10-minute runs per qualified scenario after 30-second warmup, actual presentation/audio counters, bounded memory/queues and A/V drift; all acceptance gates below pass |
 | R6 / SDK build passed; runtime qualification open | Native ECJ/CLDC build against JDE 7.1 and RAPC conversion pass; qualify simulator playback/input, then repeat on a physical Bold 9900 | Separate reproducible build, simulator and device reports; physical-device correctness and sustained-playback gates pass before a Bold compatibility claim |
 
@@ -174,6 +174,13 @@ execution and physical-device access remain separate gates.
    a Golden Sun battle or V-Rally race. Expand to the remaining titles in small
    commits. For save-capable routes, create a second player save, cold-restart
    both emulators, and verify the latest progress and expected backup changes.
+   The [second LeafGreen route](REFERENCE-VALIDATION.md#second-leafgreen-player-save-and-cold-cross-load)
+   now records one-tile indoor movement and an overwrite save. All 28 section
+   checksums validate; generation 2 restores at the new position in four cold
+   cross-loads, each exact in all room pixels. Strict save comparison retains
+   667 differences, including distinct encryption keys and a one-frame play-time
+   difference; no normalization makes that gate green. Next diagnose the
+   remaining binary differences and add the first level/race/battle route.
 
 Each implementation delivery records source revision, ROM/BIOS/input/initial-save
 hashes, RTC/sensor seed, frame/sample coordinates, reference version and outcomes.

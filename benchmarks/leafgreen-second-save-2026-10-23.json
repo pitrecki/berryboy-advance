@@ -1,0 +1,188 @@
+{
+  "date": "2026-10-23",
+  "capture_source_commit": "c20ebf5ee5a725fecb8ece257567d2a253590760",
+  "source_dirty_at_capture": false,
+  "production_core_commit": "b4889b933d7982aae7c758e28869263b656d3580",
+  "scope": "LeafGreen USA Rev-A indoor one-tile movement, manual overwrite save and cold cross-load; not a full overworld/gameplay pass",
+  "hardware": "Linux x86_64 cloud host; Temurin 21.0.8+9; unmodified mGBA 0.10.5 RGB555; no physical Bold",
+  "assets": {
+    "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+    "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+    "input_sha256": "7d76b201cd764e15122b3ea9b43992332d4e72bf4e21bd28b98a36856048c678",
+    "initial_save_sha256": "fd44f0a2d5348f7ea91c1e3c50a9b2b794023be9bb86787a32bcb9d90c9aa8a9",
+    "rtc_seed": "2000-01-01T00:00:00",
+    "devices": 0
+  },
+  "input": "benchmarks/inputs/leafgreen-second-save.tsv",
+  "input_protocol": {
+    "prefix": "Existing leafgreen-continue.tsv",
+    "right_frames": [
+      1300,
+      1316
+    ],
+    "start_frames": [
+      1360,
+      1363
+    ],
+    "down_presses": [
+      1390,
+      1408
+    ],
+    "a_presses": [
+      1426,
+      1520,
+      1660,
+      1800,
+      2100,
+      2450
+    ],
+    "button_hold_frames": 3,
+    "movement_hold_frames": 16,
+    "cycles_per_frame": 280896,
+    "source_frames": 2750,
+    "restored_frames": 1272,
+    "sensors": "2048 2048 0 0 stationary"
+  },
+  "save_inspection": {
+    "tool": "tools/inspect_leafgreen_save.py",
+    "initial": {
+      "save_sha256": "fd44f0a2d5348f7ea91c1e3c50a9b2b794023be9bb86787a32bcb9d90c9aa8a9",
+      "bytes": 131072,
+      "valid_sectors": 14,
+      "generations": [
+        1
+      ],
+      "latest_generation": 1,
+      "position": {
+        "x": 7,
+        "y": 6,
+        "map_group": 4,
+        "map_number": 1
+      },
+      "play_time": {
+        "hours": 0,
+        "minutes": 0,
+        "seconds": 8,
+        "frames": 51
+      },
+      "money": 3000
+    },
+    "berryboy": {
+      "save_sha256": "5412fd290f3e4500e99bdd994c78e956636dfcab9f4ee828f6c08fff3a326da2",
+      "bytes": 131072,
+      "valid_sectors": 28,
+      "generations": [
+        1,
+        2
+      ],
+      "latest_generation": 2,
+      "position": {
+        "x": 8,
+        "y": 6,
+        "map_group": 4,
+        "map_number": 1
+      },
+      "play_time": {
+        "hours": 0,
+        "minutes": 0,
+        "seconds": 27,
+        "frames": 45
+      },
+      "money": 3000
+    },
+    "reference": {
+      "save_sha256": "7221d65d5cb8cb357a774dd1f34df6c432a033fdf9f8abe1a96d5d3a213d29df",
+      "bytes": 131072,
+      "valid_sectors": 28,
+      "generations": [
+        1,
+        2
+      ],
+      "latest_generation": 2,
+      "position": {
+        "x": 8,
+        "y": 6,
+        "map_group": 4,
+        "map_number": 1
+      },
+      "play_time": {
+        "hours": 0,
+        "minutes": 0,
+        "seconds": 27,
+        "frames": 46
+      },
+      "money": 3000
+    },
+    "strict_whole_file_equal": false,
+    "differing_bytes": 667,
+    "encryption_key_equal": false,
+    "observed_frame_counter_difference": 1,
+    "qualification": "Latest generation, all section checksums, position/map and decoded money match. Keys and time differ; all 667 differing bytes are not independently explained. Whole-file gate remains unmatched."
+  },
+  "cross_loads": {
+    "count": 4,
+    "pairs": [
+      "BerryBoy-generated save in fresh BerryBoy and fresh mGBA",
+      "mGBA-generated save in fresh BerryBoy and fresh mGBA"
+    ],
+    "room_exact_pixels_per_load": 38400,
+    "room_rgb_sha256": "c2adbc6c263f51ef98678d265c825727f877d78a5711cdb0c3adaec5b9be7787",
+    "all_match_post_save_room": true,
+    "all_reload_backups_unchanged": true,
+    "original_player_save_unchanged": true
+  },
+  "full_stream_comparisons": {
+    "saved": {
+      "status": "mismatch",
+      "exact_video_frames": 2356,
+      "total_video_frames": 2750,
+      "first_video_mismatch": 930,
+      "whole_video_hash_match": false,
+      "whole_audio_hash_match": false,
+      "reference_audio_frames": 1508720,
+      "berryboy_audio_frames": 1508718,
+      "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+    },
+    "reload-berryboy": {
+      "status": "mismatch",
+      "exact_video_frames": 1112,
+      "total_video_frames": 1272,
+      "first_video_mismatch": 931,
+      "whole_video_hash_match": false,
+      "whole_audio_hash_match": false,
+      "reference_audio_frames": 697852,
+      "berryboy_audio_frames": 697851,
+      "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+    },
+    "reload-reference": {
+      "status": "mismatch",
+      "exact_video_frames": 1112,
+      "total_video_frames": 1272,
+      "first_video_mismatch": 931,
+      "whole_video_hash_match": false,
+      "whole_audio_hash_match": false,
+      "reference_audio_frames": 697852,
+      "berryboy_audio_frames": 697851,
+      "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+    }
+  },
+  "validation": {
+    "host_tests": 1295,
+    "host_failures": 0,
+    "host_skips": 0,
+    "production_changed": false,
+    "exported_actual_cldc": "1201 each passed for production core commit; unchanged",
+    "physical_playback": "unverified"
+  },
+  "source_files_sha256": {
+    "benchmarks/inputs/leafgreen-second-save.tsv": "7d76b201cd764e15122b3ea9b43992332d4e72bf4e21bd28b98a36856048c678",
+    "tools/inspect_leafgreen_save.py": "e4b2aacb408770ea1f61cf440d4112c96d362b5f191580f9110d7cd6cf9080cb"
+  },
+  "local_output": "target/leafgreen-second-save-2026-10-23",
+  "local_logs": [
+    "/workspace/scratch/leafgreen-second-saved.log",
+    "/workspace/scratch/leafgreen-second-saved-reference.log",
+    "/workspace/scratch/leafgreen-second-save-verify.log"
+  ],
+  "next_step": "Diagnose binary save differences with known encrypted-field layout and timing; expand gameplay routes while retaining strict whole-file and full-stream mismatch status"
+}

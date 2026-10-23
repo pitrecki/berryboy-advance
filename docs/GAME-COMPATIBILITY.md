@@ -18,6 +18,12 @@ open. Per-title assets, hashes, counters and prior-BerryBoy comparisons:
 
 The original imported/uploaded-game validation follows below.
 
+LeafGreen also has a [second player-save route](REFERENCE-VALIDATION.md#second-leafgreen-player-save-and-cold-cross-load):
+one-tile indoor movement, generation-2 save and four cold cross-loads between
+BerryBoy and mGBA. Every restored room matches all pixels at the new position;
+the two generated save files remain different in 667 bytes. This is a narrow
+progress/save result, not an overworld or complete gameplay qualification.
+
 Eleven user-uploaded ZIPs supplied eleven unique USA-region ROMs (LeafGreen is
 Rev-A). ZIP CRC verification and GBA header checksums passed; SHA-256 identities
 were recorded. This verifies local asset identity, not independent dump provenance.
