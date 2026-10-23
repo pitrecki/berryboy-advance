@@ -1,5 +1,65 @@
 # Independent reference validation, 2026-10-23
 
+## FIFO DMA timing reference counterexample
+
+The four-cycle discrepancy below now has an original, asset-free reproducer.
+It exposes a count-dependent timing defect in the unmodified mGBA 0.10.5
+reference. **That reference is not an absolute FIFO DMA timing oracle.**
+BerryBoy's production timing and the reference library remain unchanged.
+
+[GBATEK's Sound DMA section](https://github.com/mgba-emu/gbatek/blob/64b5087aa45cd0187b8b239d77e54ee5eb2917d1/index.md#sound-dma-fifo-timing-mode-dma1-and-dma2-only)
+specifies four 32-bit units per FIFO request, with the Word Count register
+ignored. The paired [Java](../tools/FifoDmaTimingProbe.java) and
+[mGBA](../tools/mgba-fifo-dma-probe.c) probes inject a FIFO request at cycle zero,
+allow service after 0–3 cycles, and retire one IWRAM Thumb ADD afterwards.
+They cover eight count values, IWRAM/EWRAM/ROM sources and one/two channels:
+**192 observations per emulator**. They generate their cartridge data in memory
+and load no BIOS or commercial ROM. The C probe calls the normal audio FIFO
+request path and passively observes the normal DMA scheduler; the controlled
+delay is injected directly, rather than claimed as a complete timer/CPU workload.
+
+Changing only the ignored count alters mGBA's final cycle in **20/24 parameter
+groups**. BerryBoy is count-invariant in **24/24 groups**. For IWRAM sources
+and a two-cycle service delay, cycles from request to the end of the ADD are:
+
+| DMA channels | Programmed count | BerryBoy | mGBA 0.10.5 |
+| --- | --- | --- | --- |
+| 1 | 0 | 13 | 11 |
+| 1 | 4 | 13 | 13 |
+| 1 + 2 | 0 | 23 | 19 |
+| 1 + 2 | 4 | 23 | 21 |
+
+Both mGBA channels still transfer exactly four words and advance their source
+by 16 bytes. In `src/gba/dma.c`, `_dmaEvent` resets the scheduled start to the
+current time when `nextCount == count`; `GBADMAService` uses the same equality
+to choose first/nonsequential bus costs. FIFO requests set `nextCount=4`, but
+retain the programmed `count` (zero becomes 16384). The supposedly ignored
+register therefore affects overdue-event handling and ROM wait-state selection.
+Counts 1–3 can also trigger the first-transfer branch partway through a burst.
+
+The two-channel/count-zero case reproduces the earlier BIOS step exactly:
+relative to request cycle 1882527, BerryBoy finishes at +23 and mGBA at +19.
+The reference's two-cycle overdue-event credit depends on the ignored count;
+its next channel also starts before the preceding completion event. For count
+4, the remaining pair discrepancy is two cycles. This identifies the reference
+artifacts behind the comparison, without proving the hardware's channel-handoff
+latency or every BerryBoy request/IRQ boundary. Obtain an independent timing
+source or original hardware measurements before changing production timing.
+
+The new **192 core regressions** vary the same parameters over **two repeated
+bursts**. They check every byte through separate left/right FIFO PCM, source
+progress, empty FIFO after 16 samples, control readback, CPU exclusion and
+resumption. Latency is compared against count=4, without imposing an unqualified
+absolute cycle value. All pass on the existing production implementation.
+
+Validation: **1287 host tests, 1193 exported-core tests and 1193 actual ECJ CLDC
+core tests** pass without skips. Native SDK/RAPC compilation passes. No fresh
+game replay was needed because production sources are unchanged; the latest
+1272-frame replay remains the prior commit's **1111/1272** exact RGB frames,
+first mismatch **930**, with unmatched PCM. That initialization offset is open.
+Reproduction commands are in [SCENARIOS.md](SCENARIOS.md#original-fifo-dma-timing-probes).
+Evidence: [fifo-dma-reference-2026-10-23.json](../benchmarks/fifo-dma-reference-2026-10-23.json).
+
 ## DMA Game Pak source addressing and next timing boundary
 
 DMA previously applied fixed or decrementing source modes to Game Pak ROM.

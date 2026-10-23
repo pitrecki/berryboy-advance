@@ -42,10 +42,11 @@ as emulator frame drops.
 ## Delivery milestones
 
 Roadmap updated on **2026-10-23**, after RGB555 reference qualification and
-the Thumb multiply timing and Game Pak DMA source corrections. The shared clock, scheduler,
+the Thumb multiply timing and Game Pak DMA source corrections, plus the FIFO
+DMA reference counterexample. The shared clock, scheduler,
 CPU/bus timing, software renderer, mixer, cartridge devices and capture runner
 are implemented. Their accuracy is still being qualified; implementation does
-not close M1–M4. Latest local validation passed **1095 host tests and 1001
+not close M1–M4. Latest local validation passed **1287 host tests and 1193
 exported-core tests**. Neither test count establishes BlackBerry readiness.
 
 | Milestone | Deliverables | Completion evidence |
@@ -81,7 +82,7 @@ See [REFERENCE-VALIDATION.md](REFERENCE-VALIDATION.md) and its linked JSON recor
 | Stage / priority | Work | Exit evidence |
 | --- | --- | --- |
 | R1 / P0: LeafGreen menu (RGB555 reference delivered; pixel qualification open) | RGB555 confirms all 12 BIOS startup RGB frames; menu state matches but unmodified mGBA's shifted-channel brightness still differs in 19632 pixels | Preserve native channel arithmetic and original regressions; obtain independently correct brightness rounding before passing the menu gate. Room frame 1272 remains exact and saves unchanged |
-| R2 / P0: Timing and bus accuracy (Thumb MUL and ROM DMA addressing corrected; initialization offset open) | Original probes confirm MUL timing and forced ROM source increment; the next retired-instruction boundary differs by four cycles during paired FIFO DMA; frame 930 still has 820 differing VRAM bytes and a roughly one-frame initialization offset | A minimal original regression and documented expected event trace for each diagnosed defect; corrected boundaries match independent evidence without regressing DMA deadlines, open-bus handling or save routes |
+| R2 / P0: Timing and bus accuracy (two fixes delivered; FIFO timing reference unqualified) | Original probes confirm MUL timing and ROM source increment; an asset-free FIFO reproducer reveals mGBA count-dependent timing and reproduces the four-cycle BIOS discrepancy; frame 930 initialization offset remains open | Obtain an independent FIFO timing source or original hardware measurements; land each demonstrated core defect with a minimal regression and event trace, without regressing DMA deadlines, open-bus handling or saves |
 | R3 / P1: Audio correctness | Start with late Sonic Advance 3 and Wario Land 4 differences; compare timer/DMA FIFO events, PSG state and sample clocks; distinguish guest-state errors from output gain, filter and resampling differences | Repeatable event/sample checkpoints, justified comparison tolerances and listening review; no unexplained divergence in the selected routes and zero software buffer failures |
 | R4 / P1: Gameplay and player saves | Record fixed routes through actual levels, races, battles and menus; extend manual save/restart/load beyond LeafGreen | Named reference checkpoints for all eleven available titles; save-capable titles restore player progress in fresh BerryBoy and mGBA instances from isolated copies |
 | R5 / P2: Sustained Linux playback | After route correctness passes, profile bottlenecks, optimize one at a time, and run the warmup/measurement protocol below | Three 10-minute runs per qualified scenario after 30-second warmup, actual presentation/audio counters, bounded memory/queues and A/V drift; all acceptance gates below pass |
@@ -135,7 +136,13 @@ execution and physical-device access remain separate gates.
    now isolates the next discrepancy at retired row 796679: paired FIFO DMA
    precedes an otherwise matching ADD, with BerryBoy four cycles later. Next
    qualify DMA request, ownership and completion ordering, including channel
-   handoff; do not drop startup cycles solely to align this trace. A separate
+   handoff; do not drop startup cycles solely to align this trace. The
+   [FIFO count-invariance counterexample](REFERENCE-VALIDATION.md#fifo-dma-timing-reference-counterexample)
+   now reproduces it without game assets: mGBA changes timing with an ignored
+   count in 20/24 parameter groups, while BerryBoy is invariant. Its 192 new
+   regressions preserve two repeated FIFO bursts. Obtain a second timing source
+   or original hardware measurements before attributing this discrepancy to
+   BerryBoy; mGBA 0.10.5 cannot be its absolute timing oracle. A separate
    [ROM DMA source correction](REFERENCE-VALIDATION.md#dma-game-pak-source-addressing-and-next-timing-boundary)
    matches 24 original reference cases and preserves the whole replay's RGB/PCM,
    selected video states and save. The FIFO sources in this trace are IWRAM.

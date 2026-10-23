@@ -245,3 +245,45 @@ fresh-game/manual-save route and a 1272-frame continuation from the same copied
 save. The independent restored-room checkpoint matches every pixel; menu and
 full-stream hashes still differ. See REFERENCE-VALIDATION.md for asset identities,
 source, counters and reproduction requirements.
+
+## Original FIFO DMA timing probes
+
+These probes generate pattern cartridges in memory and require no external ROM,
+BIOS, save or input files. Use JDK 21 and an unmodified mGBA 0.10.5 RGB888 static
+library built with `tools/build-mgba-reference.sh`. The two programs request FIFO
+DMA at cycle zero, delay service by 0–3 cycles and retire one IWRAM Thumb ADD.
+The mGBA probe injects the request through `GBAAudioSampleFIFO` and observes its
+normal scheduler without changing the library's implementation or deadlines.
+This controlled delay is a diagnostic setup, not a complete timer workload.
+
+```bash
+mvn -B -ntp -DskipTests package
+mkdir -p target/fifo-dma-probes/classes
+javac -Xlint:all -Werror -cp target/classes \
+  -d target/fifo-dma-probes/classes tools/FifoDmaTimingProbe.java
+java -cp target/classes:target/fifo-dma-probes/classes \
+  berryboy.bus.FifoDmaTimingProbe > target/fifo-dma-probes/berryboy.csv
+
+cc -std=c11 -D_GNU_SOURCE -O2 -Wall -Wextra -Werror \
+  -DBUILD_STATIC -DM_CORE_GBA -DUSE_PTHREADS \
+  -I/path/to/mgba-0.10.5/include -I/path/to/reference-rgb888/build/include \
+  tools/mgba-fifo-dma-probe.c /path/to/reference-rgb888/build/libmgba.a \
+  -lm -lpthread -o target/fifo-dma-probes/mgba-fifo-dma-probe
+target/fifo-dma-probes/mgba-fifo-dma-probe > target/fifo-dma-probes/reference.csv
+```
+
+Each CSV contains 192 cases: three source regions, one/two DMA channels, eight
+programmed counts and four service delays. `after` is the cycle from request to
+the end of the single ADD, including service delay and DMA processing. `r0=1`
+confirms the ADD retired. Reference-only columns report the observed first
+transfer/completion event and number of words per channel; `-1` denotes an
+inactive channel's event. First/completion callbacks reflect the reference's
+event model, not independently measured hardware bus ownership.
+
+Group rows by `(source, channels, late)` and vary only `count`. FIFO mode ignores
+the Word Count register, so timing should be invariant within each group. The
+recorded reference varies in 20/24 groups; BerryBoy is invariant in 24/24. The
+Java regression suite also checks byte contents, two repeated bursts and CPU
+exclusion/resumption. This establishes a reference counterexample, not an
+absolute DMA latency pass. See [REFERENCE-VALIDATION.md](REFERENCE-VALIDATION.md#fifo-dma-timing-reference-counterexample)
+for the minimal IWRAM case and the remaining qualification work.

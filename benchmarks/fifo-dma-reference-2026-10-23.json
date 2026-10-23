@@ -1,0 +1,206 @@
+{
+  "date": "2026-10-23",
+  "base_commit": "4989d08f6b67543dc36a609c3495b199c706d071",
+  "source_dirty": true,
+  "production_sources_changed": false,
+  "outcome": "Unmodified mGBA 0.10.5 FIFO DMA timing depends on the ignored word-count register. This reference cannot establish absolute FIFO DMA latency; no production timing or reference library was patched.",
+  "hardware": "Linux x86_64 cloud host; Temurin 21.0.8+9; Maven 3.9.11; no physical GBA or Bold",
+  "contract": {
+    "documentation": "https://github.com/mgba-emu/gbatek/blob/64b5087aa45cd0187b8b239d77e54ee5eb2917d1/index.md#sound-dma-fifo-timing-mode-dma1-and-dma2-only",
+    "documentation_sha256": "577bdf10a235fa72f05d7256069ee79bd848d9e17990155d5f083e744cdc38ab",
+    "rule": "FIFO requests transfer four 32-bit units; Word Count and DMA Transfer Type are ignored",
+    "absolute_handoff_latency_qualified": false
+  },
+  "probe": {
+    "java_source": "tools/FifoDmaTimingProbe.java",
+    "reference_source": "tools/mgba-fifo-dma-probe.c",
+    "reference_version": "unmodified mGBA 0.10.5 RGB888",
+    "library_sha256": "b47af07b62f97b0dacb9e48f0feeed90d7038e45c14564437c1d38bafdee7bb3",
+    "binary_sha256": "04a13b4dff83023f49a676ed473176d69df22e70756956742307940fa1473e58",
+    "commercial_rom_loaded": false,
+    "bios_loaded": false,
+    "generated_cartridge_bytes": 512,
+    "source_regions": [
+      "IWRAM",
+      "EWRAM",
+      "Game Pak ROM"
+    ],
+    "channels": [
+      1,
+      2
+    ],
+    "programmed_counts": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      8,
+      16383
+    ],
+    "service_delays": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "request_cycle": 0,
+    "after": "Cycle from request to end of one IWRAM Thumb ADD; includes delay and DMA processing",
+    "injection": "Controlled service delay: BerryBoy scheduled request at zero, mGBA normal audio FIFO request with cyclesLate and CPU cycle offset; not a complete timer/instruction workload",
+    "reference_observation": "Passive callback wrapper records first transfer, completion and word count; event state/deadlines are not modified",
+    "summaries": {
+      "berryboy": {
+        "cases": 192,
+        "parameter_groups": 24,
+        "invariant_groups": 24,
+        "variant_groups": 0,
+        "csv_sha256": "3dd787a86c76b4604d0240ab11166d4e8a1309dc710dcab15fa4eacd49d65a5e"
+      },
+      "reference": {
+        "cases": 192,
+        "parameter_groups": 24,
+        "invariant_groups": 4,
+        "variant_groups": 20,
+        "csv_sha256": "f7314f3ab2b10ae3009ab6567c665ec1423e5919e87ea6fd284cef56a8c070a9"
+      }
+    },
+    "minimal_observations": [
+      {
+        "source": "0x03000000",
+        "channels": 1,
+        "count": 0,
+        "service_delay": 2,
+        "berryboy_after": 13,
+        "reference_after": 11,
+        "reference_first1": 2,
+        "reference_completion1": 10,
+        "reference_first2": -1,
+        "reference_completion2": -1
+      },
+      {
+        "source": "0x03000000",
+        "channels": 1,
+        "count": 4,
+        "service_delay": 2,
+        "berryboy_after": 13,
+        "reference_after": 13,
+        "reference_first1": 2,
+        "reference_completion1": 12,
+        "reference_first2": -1,
+        "reference_completion2": -1
+      },
+      {
+        "source": "0x03000000",
+        "channels": 2,
+        "count": 0,
+        "service_delay": 2,
+        "berryboy_after": 23,
+        "reference_after": 19,
+        "reference_first1": 2,
+        "reference_completion1": 10,
+        "reference_first2": 8,
+        "reference_completion2": 18
+      },
+      {
+        "source": "0x03000000",
+        "channels": 2,
+        "count": 4,
+        "service_delay": 2,
+        "berryboy_after": 23,
+        "reference_after": 21,
+        "reference_first1": 2,
+        "reference_completion1": 12,
+        "reference_first2": 10,
+        "reference_completion2": 20
+      }
+    ],
+    "sound_setup": "Master enabled; FIFO A routed right and B left at full FIFO volume"
+  },
+  "reference_diagnosis": {
+    "functions": [
+      "GBAAudioSampleFIFO",
+      "_dmaEvent",
+      "GBADMAService"
+    ],
+    "counterexample": "FIFO nextCount=4 but count retains the programmed value. Equality nextCount==count controls overdue-event reset and first/nonsequential access selection. Counts 1..3 can trigger that branch during later words.",
+    "source_files_sha256": {
+      "src/gba/dma.c": "83f1ff180942907d274208284d3d5d9148bbcb9e60ab51302bf59933d1ccdb41",
+      "src/gba/audio.c": "32f8067d09c80b3e77bedc16d52f16a3b4ee7ba099a6cd24e8d5cc8579729a7c"
+    },
+    "paired_completion_overlap": "For IWRAM count=0 delay=2, channel 2 first transfer at cycle 8 precedes channel 1 completion event at cycle 10. For count=4 these are 10 and 12. Hardware handoff latency remains unqualified."
+  },
+  "bios_link": {
+    "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+    "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+    "retired_row_zero_based": 796679,
+    "request_cycle": 1882527,
+    "before_add_step": 1882529,
+    "berryboy_after": 1882550,
+    "reference_after": 1882546,
+    "count_read_from_reference_channels": [
+      16384,
+      16384
+    ],
+    "match": "Minimal paired IWRAM count-zero delay-two case gives +23 BerryBoy and +19 mGBA relative to the real trace request",
+    "additional_passive_log_sha256": "a2d1bd987c78dc1198a803303bca5b8d63e441be90cc7bd5ba0e1cd8d54607f9",
+    "additional_local_probe_sha256": "a613de6dd1f79df5c0aa9ece7c95e2fa80aef6b3f6ec68d539e7bde82b7e9cb6"
+  },
+  "regressions": {
+    "class": "src/test/java/berryboy/bus/DmaFifoInvariantTest.java",
+    "parameterized_cases": 192,
+    "new_production_fix": false,
+    "all_pass_on_existing_core": true,
+    "bursts_per_capture": 2,
+    "baseline_count": 4,
+    "absolute_cycles_asserted": false,
+    "checks": [
+      "Latency invariance with ignored count",
+      "All 32 bytes per FIFO across two bursts as separate left/right PCM",
+      "No extra sample beyond 16-byte burst",
+      "Source address progress on repeat",
+      "Control readback and repeat enable",
+      "CPU excluded during DMA and exactly one ADD afterwards"
+    ]
+  },
+  "validation": {
+    "host_tests": 1287,
+    "exported_core_tests": 1193,
+    "actual_ecj_cldc_core_tests": 1193,
+    "failures": 0,
+    "skipped": 0,
+    "native_bb_sim": "BUILD SUCCESS; RAPC No errors; COD emitted",
+    "probe_compilers": "C11 -Wall -Wextra -Werror; javac -Xlint:all -Werror",
+    "on_bbos_runtime_checks": null,
+    "physical_gba": "unrun",
+    "physical_bold": "unrun"
+  },
+  "game_replay": {
+    "fresh_run": false,
+    "reason": "Production sources unchanged; latest game replay retained from base commit",
+    "evidence": "benchmarks/dma-source-addressing-2026-10-23.json",
+    "frames": 1272,
+    "exact_rgb_frames": 1111,
+    "first_rgb_mismatch": 930,
+    "initialization_offset": "open",
+    "pcm": "unmatched",
+    "physical_playback": "unqualified"
+  },
+  "source_files_sha256": {
+    "tools/FifoDmaTimingProbe.java": "df9ee63290f5d54af8213804155c83e9f37377d76669d55ba4bd5a702410c685",
+    "tools/mgba-fifo-dma-probe.c": "272e67fa806504e18d1c2c64692b501640f7b41f3f428c400072e89fb2f17ce3",
+    "src/test/java/berryboy/bus/DmaFifoInvariantTest.java": "160e369e3e579090e1802495da1800b61513820b64617f5b3ba42d00e4ced01c"
+  },
+  "cod": {
+    "bytes": 46680,
+    "sha256": "7806498c7b0f7545d48e3ee542e199e1264010647b999986999c666d644aa678"
+  },
+  "next_step": "Obtain an independent FIFO request/ownership/completion timing source or original hardware measurements before changing the core; keep frame-930 initialization offset open",
+  "local_output": "target/fifo-dma-qualification-2026-10-23",
+  "local_logs": [
+    "/workspace/scratch/berryboy-fifo-invariant-focused.log",
+    "/workspace/scratch/berryboy-fifo-invariant-verify.log",
+    "/workspace/scratch/berryboy-fifo-invariant-console.log",
+    "/workspace/scratch/berryboy-fifo-invariant-cldc.log"
+  ]
+}

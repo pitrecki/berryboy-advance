@@ -179,8 +179,8 @@ preserves feature directories and excludes the desktop/build packages.
 
 ## Verification
 
-- `mvn verify`: **1095 passing tests** on Linux, JDK 21 and Maven 3.9.11 (2026-10-23).
-- **1001 core tests** repeated against the exported classes through Jupiter.
+- `mvn verify`: **1287 passing tests** on Linux, JDK 21 and Maven 3.9.11 (2026-10-23).
+- **1193 core tests** repeated against the exported classes through Jupiter.
 - Test counts include individual parameterized invocations, not assertion counts.
 - The exporter performs 472 syntax rewrites. Generated sources compile with
   `--release 8` and run on the host JVM.
@@ -189,7 +189,7 @@ preserves feature directories and excludes the desktop/build packages.
 - Headless demo, WAV encoding, Swing key actions and documentation captures pass.
 - Physical audio output, native window interaction and sustained frame/audio timing remain unverified.
 - Native ECJ/CLDC compilation against JDE 7.1 and vendor RAPC conversion pass;
-  1001 tests also pass on the actual CLDC classes.
+  1193 tests also pass on the actual CLDC classes.
 - Windows JDK 6, simulator application execution and a physical Bold remain unqualified.
 - These are project regression tests, not ARM certification or external test-ROM results.
 
@@ -209,8 +209,10 @@ demos after publication. A local pass does not establish a remote CI pass.
 ## Next steps
 
 LeafGreen's Continue-menu difference is traced to reference RGB888 color-effect
-arithmetic; native 5-bit behavior is preserved. The next deliveries qualify
-BIOS/LCD and bus timing, then address Sonic/Wario audio differences. Extend the
+arithmetic; native 5-bit behavior is preserved. Original FIFO probes also expose
+count-dependent timing in mGBA 0.10.5, so FIFO latency needs a second independent
+source. The next deliveries qualify BIOS/LCD and bus timing, then address
+Sonic/Wario audio differences. Extend the
 recorded save/continue route into real gameplay scenarios before sustained
 performance qualification. The [next roadmap and concrete commits](docs/BENCHMARKS.md#next-roadmap-correctness-gameplay-then-sustained-playback)
 define priorities, dependencies and completion evidence.
