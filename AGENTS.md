@@ -69,3 +69,20 @@
 
 See `docs/ARCHITECTURE.md` for the project-specific interpretation of these
 principles. Treat them as design constraints, not a quota of patterns to add.
+
+## Autonomous roadmap work
+
+- The user authorizes successive roadmap steps, verification, commits and pushes
+  without requesting a new "follow-up" after each delivery. Within an active
+  session, a completed commit is a checkpoint, not a default stopping condition.
+- Read the current evidence and next actions in `docs/BENCHMARKS.md`; implement
+  the next eligible small step, run the appropriate checks, update its evidence,
+  commit and push, then continue with the next eligible step.
+- Report progress in commentary. If a gate needs unavailable hardware or an
+  independent expected result, record the specific dependency and continue other
+  authorized work that does not depend on it. Do not bypass correctness gates.
+- Persist enough state in the roadmap and linked records to resume from the
+  actual checkpoint without repeating completed work or asking for known inputs.
+- Distinguish this in-session workflow from an external scheduler. Do not claim
+  background execution or automatic session restart unless a working mechanism
+  has actually been configured and verified.
