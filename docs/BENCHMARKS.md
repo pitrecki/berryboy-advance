@@ -78,6 +78,10 @@ Four initialization-save reloads match mGBA. LeafGreen additionally has a real
 manual player-save round trip, including an exact restored-room checkpoint.
 These are boot/intro and limited save results, not eleven gameplay passes.
 See [REFERENCE-VALIDATION.md](REFERENCE-VALIDATION.md) and its linked JSON records.
+The [post-DMA regression](../benchmarks/dma-game-regression-2026-10-23.json)
+repeats all eleven 3600-frame captures on the corrected core: 39600 frames,
+zero software-buffer losses and isolated fresh backups. This preserves the
+smoke scope; it does not close the independent correctness or gameplay gates.
 
 | Stage / priority | Work | Exit evidence |
 | --- | --- | --- |

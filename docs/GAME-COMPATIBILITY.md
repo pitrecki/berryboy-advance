@@ -1,4 +1,22 @@
-# Uploaded-game compatibility smoke, 2026-10-22
+# Uploaded-game compatibility smoke, updated 2026-10-23
+
+## Regression after the timing and DMA corrections
+
+All eleven titles completed fresh **3600-frame** captures after the Thumb MUL,
+ROM DMA source and shared ownership corrections: **39600 guest frames** and
+**21725550 stereo samples**, with zero missing guest frames or software audio
+underruns/overruns. Each title used the original BIOS and Start/A input script,
+a separate new backup path and no player save. Four titles wrote initialization
+backup files. Original player saves were not modified.
+
+The production core is `b4889b933d7982aae7c758e28869263b656d3580`; capture metadata
+records source base `3d2f0b9` with pending diagnostic-only changes. This is a
+headless boot/intro smoke, not eleven gameplay or independent correctness passes.
+Brightness, full RGB/PCM agreement, longer gameplay and physical playback remain
+open. Per-title assets, hashes, counters and prior-BerryBoy comparisons:
+[dma-game-regression-2026-10-23.json](../benchmarks/dma-game-regression-2026-10-23.json).
+
+The original imported/uploaded-game validation follows below.
 
 Eleven user-uploaded ZIPs supplied eleven unique USA-region ROMs (LeafGreen is
 Rev-A). ZIP CRC verification and GBA header checksums passed; SHA-256 identities

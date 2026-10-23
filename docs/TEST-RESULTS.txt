@@ -4,6 +4,13 @@ mvn verify (native bb-sim profile): 1295 passed; 0 failed/errors/skipped.
 Exported core console suite: 1201 passed; 0 failed/skipped.
 Actual ECJ CLDC-class core suite: 1201 passed; 0 failed/skipped.
 
+Eleven-game regression after the timing/DMA corrections: 3600 fresh-state frames
+per title, 39600 total and 21725550 stereo samples. Zero missing guest frames or
+software audio underruns/overruns; four initialization backups written. Each run
+used a new save path, original input/BIOS and no player save. This remains a
+headless boot/intro smoke, not independent correctness, gameplay or physical
+playback qualification. See benchmarks/dma-game-regression-2026-10-23.json.
+
 Three-way brightness: 2244 settled backdrop cases per renderer, including both
 effects, all coefficients and palette bit 15. BerryBoy/NBA differ in 1182 cases;
 BerryBoy/mGBA RGB555 in 862; NBA/mGBA in 1488. All 264 endpoint controls agree.
