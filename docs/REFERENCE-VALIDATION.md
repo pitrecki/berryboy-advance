@@ -1,5 +1,50 @@
 # Independent reference validation, 2026-10-23
 
+## Three-way brightness model comparison
+
+The earlier attribution of the Continue-menu difference solely to reference
+rounding was too strong. A second independent renderer, unmodified
+NanoBoyAdvance, produces the **same menu color as mGBA RGB555**, differing from
+BerryBoy. The historical pairwise arithmetic explanations below remain
+observations of those implementations, not proof of BerryBoy's hardware accuracy.
+
+Three original probes now capture **2244 settled uniform backdrop frames per
+implementation**: 32 gray levels plus the menu color, both brightness effects,
+coefficients 0–16 and palette bit 15 clear/set. Each case discards one frame and
+inspects the second. All full frames are uniform, and BerryBoy's software line
+matches its timed raster output. The 264 coefficient-endpoint controls agree
+across all three models. No external ROM or BIOS is used. NBA uses its original
+PPU/scheduler composition; mGBA executes an original IWRAM branch loop.
+
+| Compared implementations | Matching cases | Differing cases |
+| --- | --- | --- |
+| BerryBoy / NBA | 1062 | 1182 |
+| BerryBoy / mGBA RGB555 | 1382 | 862 |
+| NBA / mGBA RGB555 | 756 | 1488 |
+
+For backdrop `0x7e51`, darkening coefficient 7 and palette bit 15 clear:
+BerryBoy emits `0x525a94` (82,90,148); both references emit `0x52528c`
+(82,82,140). Agreement on this one case does not reconcile the broader matrix.
+NBA's model uses nearest-integer brightness arithmetic and a sixth internal
+green bit; its v1.7 changelog explicitly records the green bit and rounding
+change. Its output depends on palette bit 15 in **247/1122 paired cases**, while
+BerryBoy and mGBA are invariant. This is a concrete additional model difference
+that a five-bit-only explanation does not resolve.
+
+**R1 remains open.** Obtain independently justified expected outputs for rounding
+and palette-bit behavior before choosing a renderer correction. The current
+arithmetic is preserved, and its tests are explicitly regression contracts,
+not hardware certification. No tolerance, frame offset or gameplay pass changed.
+The previous independent DMA probe's complete CSV remains byte-identical after
+extracting the shared headless device fixture for these two concrete uses.
+
+Validation: **1295 host tests pass**; both C++ probes, the RGB555 C adapter and
+Java brightness adapter compile with warnings treated as errors. Production
+sources and the last game replay are unchanged from the shared-DMA correction.
+Exported/actual CLDC validation remains that correction's **1201 passing tests**.
+Reproduction: [SCENARIOS.md](SCENARIOS.md#three-way-brightness-probes).
+Evidence: [brightness-models-2026-10-23.json](../benchmarks/brightness-models-2026-10-23.json).
+
 ## Shared DMA ownership correction
 
 Pending DMA channels now share a continuous bus-ownership interval. The two

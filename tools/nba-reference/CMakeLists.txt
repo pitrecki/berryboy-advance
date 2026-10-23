@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
-project(BerryBoyIndependentDmaProbe LANGUAGES CXX)
+project(BerryBoyIndependentReferenceProbes LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(NBA_REFERENCE_COMMIT 55b5cf0ae3d929582ac5bfd486558173502b8354)
@@ -20,10 +20,12 @@ endif()
 add_subdirectory("${NBA_SOURCE_DIR}/thirdparty/fmt-12.1.0" fmt)
 add_subdirectory("${NBA_SOURCE_DIR}/thirdparty/atom-1.0.1" atom)
 add_subdirectory("${NBA_SOURCE_DIR}/src/nba" nba)
-add_executable(nba-dma-probe ../nba-dma-probe.cc)
-target_include_directories(nba-dma-probe SYSTEM PRIVATE
-  "${NBA_SOURCE_DIR}/src/nba/src" "${NBA_SOURCE_DIR}/src/nba/include"
-  "${NBA_SOURCE_DIR}/thirdparty/atom-1.0.1/common/include"
-  "${NBA_SOURCE_DIR}/thirdparty/atom-1.0.1/logger/include")
-target_link_libraries(nba-dma-probe PRIVATE nba)
-target_compile_options(nba-dma-probe PRIVATE -Wall -Wextra -Werror)
+foreach(probe IN ITEMS nba-dma-probe nba-color-probe)
+  add_executable(${probe} ../${probe}.cc)
+  target_include_directories(${probe} SYSTEM PRIVATE
+    "${NBA_SOURCE_DIR}/src/nba/src" "${NBA_SOURCE_DIR}/src/nba/include"
+    "${NBA_SOURCE_DIR}/thirdparty/atom-1.0.1/common/include"
+    "${NBA_SOURCE_DIR}/thirdparty/atom-1.0.1/logger/include")
+  target_link_libraries(${probe} PRIVATE nba)
+  target_compile_options(${probe} PRIVATE -Wall -Wextra -Werror)
+endforeach()

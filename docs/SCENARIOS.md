@@ -313,3 +313,35 @@ Counts remain ignored in all 12 NBA parameter groups. Original device methods
 and scheduler perform the transfer; source progress and repeat count are checked.
 See [REFERENCE-VALIDATION.md](REFERENCE-VALIDATION.md#independent-dma-ownership-reference)
 for the paired-channel overhead discrepancy and qualification limits.
+
+## Three-way brightness probes
+
+Use the pinned NBA checkout and build configuration above, the unmodified mGBA
+RGB555 library and JDK 21. These adapters generate cartridges in memory and
+require no BIOS, game, save or input files. Each captures 2244 uniform backdrop
+cases: 32 gray levels plus `0x7e51`, brighten/darken, coefficients 0–16 and
+palette bit 15 clear/set. One frame settles the renderer; the second is checked
+for uniform output. BerryBoy additionally checks software-line/raster agreement.
+
+```bash
+cmake --build target/nba-reference --target nba-color-probe --parallel 4
+target/nba-reference/nba-color-probe > target/nba-reference/colors.csv
+mkdir -p target/color-probes/classes
+javac -Xlint:all -Werror -cp target/classes \
+  -d target/color-probes/classes tools/ColorEffectProbe.java
+java -cp target/classes:target/color-probes/classes \
+  berryboy.video.ColorEffectProbe > target/color-probes/berryboy.csv
+cc -std=c11 -D_GNU_SOURCE -O2 -Wall -Wextra -Werror \
+  -DCOLOR_16_BIT -DBUILD_STATIC -DM_CORE_GBA -DUSE_PTHREADS \
+  -I/path/to/mgba-0.10.5/include -I/path/to/reference-rgb555/build/include \
+  tools/mgba-color-probe.c /path/to/reference-rgb555/build/libmgba.a \
+  -lm -lpthread -o target/color-probes/mgba-color-probe
+target/color-probes/mgba-color-probe > target/color-probes/mgba-rgb555.csv
+```
+
+Compare exact `rgb` values only after checking identical ordered
+`(color,effect,coefficient,high_bit)` keys and 2244 records in each file. The 264
+coefficient-0/16 controls agree across all models. Intermediate outputs disagree;
+the [three-way report](REFERENCE-VALIDATION.md#three-way-brightness-model-comparison)
+records the counts and the open hardware expectations. The C probe rejects an
+RGB888/RGB565 build to prevent an accidental pixel ABI mismatch.

@@ -208,8 +208,9 @@ demos after publication. A local pass does not establish a remote CI pass.
 
 ## Next steps
 
-LeafGreen's Continue-menu difference is traced to reference RGB888 color-effect
-arithmetic; native 5-bit behavior is preserved. Original FIFO probes also expose
+LeafGreen's Continue-menu state matches, but three-way brightness probes expose
+unresolved rounding and palette-bit differences. The current renderer remains
+unqualified against hardware. Original FIFO probes also expose
 count-dependent timing in mGBA 0.10.5. A second independent reference now
 confirms the corrected overhead for continuous DMA ownership; activation and
 write/IRQ phases remain open. The next deliveries qualify BIOS/LCD and bus timing, then address

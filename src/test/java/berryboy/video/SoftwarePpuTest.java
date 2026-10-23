@@ -89,7 +89,7 @@ class SoftwarePpuTest {
     }
 
     @Test
-    void blendingClampsCoefficientsAndBrightnessUsesHardwareRounding() {
+    void blendingClampsCoefficientsAndBrightnessUsesCurrentNativeRounding() {
         var m = text(0x100);
         m.memory.write16(0x06000000, 0x1111);
         m.memory.write16(0x05000000, 0x7c00);
@@ -122,8 +122,9 @@ class SoftwarePpuTest {
 
     @Test
     void darkeningRoundsNativeFiveBitChannelsBeforeRgbExpansion() {
-        // GBATEK BLDY: I = I1 - ((I1 * EVY) >> 4), independently per 5-bit channel.
-        // RGB888 reference renderers can produce different shades from identical state.
+        // Current GBATEK-derived contract: I = I1 - ((I1 * EVY) >> 4), per 5-bit channel.
+        // This preserves existing behavior; the independent NBA matrix disagrees,
+        // so it is not a hardware qualification. See docs/REFERENCE-VALIDATION.md.
         var m = text(0);
         m.memory.write16(0x05000000, 0x7e51); // Native RGB (17,18,31).
         m.memory.write16(0x04000050, 0x00ff); // Darken all first targets, including backdrop.

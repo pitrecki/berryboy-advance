@@ -81,19 +81,20 @@ See [REFERENCE-VALIDATION.md](REFERENCE-VALIDATION.md) and its linked JSON recor
 
 | Stage / priority | Work | Exit evidence |
 | --- | --- | --- |
-| R1 / P0: LeafGreen menu (RGB555 reference delivered; pixel qualification open) | RGB555 confirms all 12 BIOS startup RGB frames; menu state matches but unmodified mGBA's shifted-channel brightness still differs in 19632 pixels | Preserve native channel arithmetic and original regressions; obtain independently correct brightness rounding before passing the menu gate. Room frame 1272 remains exact and saves unchanged |
+| R1 / P0: LeafGreen menu (three-way model comparison delivered; pixel qualification open) | Menu state matches; NBA agrees with mGBA on its color, while the 2244-case matrix exposes broader disagreement in rounding and palette bit 15 | Establish independently justified expected rounding and palette-bit behavior before correcting the renderer or passing the menu gate; existing arithmetic tests preserve behavior without certifying hardware |
 | R2 / P0: Timing and bus accuracy (MUL, ROM addressing and shared DMA ownership corrected) | Independent NBA now matches all 96 ownership cases; mGBA count-dependent event timing is isolated; frame 930 initialization offset remains open | Qualify request activation and write/IRQ phases using independent evidence; land each demonstrated core defect with a minimal regression and event trace, without regressing DMA deadlines, open-bus handling or saves |
 | R3 / P1: Audio correctness | Start with late Sonic Advance 3 and Wario Land 4 differences; compare timer/DMA FIFO events, PSG state and sample clocks; distinguish guest-state errors from output gain, filter and resampling differences | Repeatable event/sample checkpoints, justified comparison tolerances and listening review; no unexplained divergence in the selected routes and zero software buffer failures |
 | R4 / P1: Gameplay and player saves | Record fixed routes through actual levels, races, battles and menus; extend manual save/restart/load beyond LeafGreen | Named reference checkpoints for all eleven available titles; save-capable titles restore player progress in fresh BerryBoy and mGBA instances from isolated copies |
 | R5 / P2: Sustained Linux playback | After route correctness passes, profile bottlenecks, optimize one at a time, and run the warmup/measurement protocol below | Three 10-minute runs per qualified scenario after 30-second warmup, actual presentation/audio counters, bounded memory/queues and A/V drift; all acceptance gates below pass |
 | R6 / SDK build passed; runtime qualification open | Native ECJ/CLDC build against JDE 7.1 and RAPC conversion pass; qualify simulator playback/input, then repeat on a physical Bold 9900 | Separate reproducible build, simulator and device reports; physical-device correctness and sustained-playback gates pass before a Bold compatibility claim |
 
-[R1 diagnosis](REFERENCE-VALIDATION.md#leafgreen-menu-color-precision-diagnosis)
-found a reference-precision difference, rather than a demonstrated guest-state
-defect. Do not change native color arithmetic to force agreement with RGB888
-effects. The [RGB555 follow-up](REFERENCE-VALIDATION.md#rgb555-reference-qualification)
-confirms startup alpha blending and exposes upstream packed-channel brightness
-rounding; the all-pixel menu gate remains open. No comparison tolerance has changed. R2 must
+[R1's three-way comparison](REFERENCE-VALIDATION.md#three-way-brightness-model-comparison)
+supersedes the earlier attribution solely to reference precision. It exposes
+disagreement in brightness rounding and palette-bit handling even though the
+menu's raw video state matches. The RGB555 startup agreement remains a measured
+result, not general hardware certification. Choose a color-model correction
+using independently justified expected outputs; do not force a screenshot match.
+The all-pixel menu gate remains open and no tolerance has changed. R2 must
 establish event ordering before any R3 fix that depends on timer/DMA timing.
 R4 input recording can proceed while individual defects are isolated, but a
 route remains failing until its reference differences are explained and fixed.
@@ -104,19 +105,23 @@ execution and physical-device access remain separate gates.
 
 ### Concrete next commits
 
-1. **Isolate the LeafGreen Continue mismatch (completed).** The committed
+1. **Isolate the LeafGreen Continue mismatch (state/arithmetic diagnosis delivered;
+   hardware interpretation reopened).** The committed
    [continuation input](../benchmarks/inputs/leafgreen-continue.tsv) reproduces
    identical registers, palette, VRAM and OAM at frame 1029. All 19632 differing
    pixels are explained by native 5-bit versus mGBA RGB888 darkening. Original
    asset-free host/export regressions preserve native arithmetic. Full video,
    PCM and save hashes are unchanged; room frame 1272 stays exact.
-2. **Qualify color-effect reference precision (RGB555 build delivered; brightness
-   open).** Build both independent library and adapter with the same pixel ABI.
+2. **Qualify color-effect reference precision (RGB555 and three-way matrix delivered;
+   brightness open).** Build both independent library and adapter with the same pixel ABI.
    The unmodified RGB555 reference matches 12/12 BIOS RGB frames and 1111/1272
    continuation frames. Menu frame 1029 still has all 19632 differences explained
    by upstream shifted-channel darkening. Obtain independent channel-correct
-   brightness or hardware evidence before passing that pixel gate. Preserve
-   native BerryBoy arithmetic; no renderer fix follows from this comparison.
+   brightness or hardware evidence before passing that pixel gate. The new
+   2244-case comparison shows NBA agrees with mGBA on the menu color but differs
+   broadly from both renderers, including palette bit 15. The previous unshifted
+   five-bit explanation does not establish hardware correctness. Resolve those
+   expected outputs before changing the current renderer regression contract.
 3. **Locate the first timing divergence (diagnostic tooling delivered).** Bounded
    LCD before/after traces preserve RGB, PCM and CPU/frame checkpoints in both
    emulators. The checked LeafGreen BIOS frame 10 has identical raw video state;

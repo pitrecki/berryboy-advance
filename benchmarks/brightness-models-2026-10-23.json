@@ -1,0 +1,150 @@
+{
+  "date": "2026-10-23",
+  "base_commit": "3d2f0b9199540d19eb2fa28fc6c5e8f4233c899c",
+  "source_dirty": true,
+  "production_sources_changed": false,
+  "outcome": "Three settled-renderer brightness models disagree. NBA agrees with mGBA on the menu color; the earlier attribution solely to reference rounding was too strong. No hardware-correct model is selected and production arithmetic is unchanged.",
+  "hardware": "Linux x86_64 cloud host; Temurin 21.0.8+9; Maven 3.9.11; GCC 14.2.0; no physical GBA/Bold",
+  "cases": {
+    "per_renderer": 2244,
+    "source_colors": "32 native gray levels plus 0x7e51",
+    "effects": {
+      "2": "brighten",
+      "3": "darken"
+    },
+    "coefficients": "0..16",
+    "palette_high_bit": [
+      0,
+      1
+    ],
+    "frames_per_case": 2,
+    "discarded_frames_per_case": 1,
+    "uniform_full_frame_required": true,
+    "berryboy_software_raster_agreement": true,
+    "commercial_rom_loaded": false,
+    "bios_loaded": false,
+    "generated_cartridge_bytes": 512,
+    "cpu_execution": "NBA/BerryBoy device-clock composition, no instructions; mGBA original IWRAM B . loop"
+  },
+  "comparisons": {
+    "berryboy/nba": {
+      "matching": 1062,
+      "different": 1182
+    },
+    "berryboy/mgba": {
+      "matching": 1382,
+      "different": 862
+    },
+    "nba/mgba": {
+      "matching": 756,
+      "different": 1488
+    }
+  },
+  "endpoint_controls": {
+    "cases": 264,
+    "all_three_match": true
+  },
+  "palette_high_bit_pairs": {
+    "pairs_per_renderer": 1122,
+    "dependent_pairs": {
+      "berryboy": 0,
+      "nba": 247,
+      "mgba": 0
+    }
+  },
+  "selected_counterexamples": [
+    {
+      "color": "0x0000",
+      "effect": "2",
+      "coefficient": "1",
+      "high_bit": "0",
+      "rgb": {
+        "berryboy": "0x080808",
+        "nba": "0x101010",
+        "mgba": "0x080808"
+      }
+    },
+    {
+      "color": "0x7e51",
+      "effect": "3",
+      "coefficient": "7",
+      "high_bit": "0",
+      "rgb": {
+        "berryboy": "0x525a94",
+        "nba": "0x52528c",
+        "mgba": "0x52528c"
+      }
+    },
+    {
+      "color": "0x7e51",
+      "effect": "3",
+      "coefficient": "7",
+      "high_bit": "1",
+      "rgb": {
+        "berryboy": "0x525a94",
+        "nba": "0x52528c",
+        "mgba": "0x52528c"
+      }
+    }
+  ],
+  "nba": {
+    "commit": "55b5cf0ae3d929582ac5bfd486558173502b8354",
+    "core_modified": false,
+    "model_observation": "Nearest-integer arithmetic; internal sixth green bit incorporates palette bit 15; original PPU path",
+    "changelog_note": "v1.7 explicitly records sixth green bit during blending and nearest-integer blending",
+    "changelog_sha256": "95e0970e2e17187d435bc71825bb8b97d48a6e3bb332450abde61ab216b7626f",
+    "merge_source_sha256": "f7237483b7ac0c39e3add07e653460bdf7484555b8624def1ff094e23fd81853",
+    "library_sha256": "01a99241e5e3f1e961b64ea5e3f3df3f34c7d5b041868d2d1aae03d40846f304",
+    "probe_binary_sha256": "353e6361e82a98a9eb2557abf4544460d9b7de725cf374e50fd14861e51727c2"
+  },
+  "mgba": {
+    "version": "unmodified 0.10.5 RGB555",
+    "library_and_adapter_defines": [
+      "COLOR_16_BIT"
+    ],
+    "library_sha256": "8a2eb439e339c6f2672fc5083f671c6c1da21354fe470e51b4d0e2ed69c2221e",
+    "probe_binary_sha256": "6ea0b5c59db7baeccd3144dd7d877b638db29420e049abd551108ebaa932535a"
+  },
+  "fixture_refactor": {
+    "shared_after_second_real_use": true,
+    "dma_csv_unchanged": true,
+    "dma_csv_sha256": "1830b392b46c511a1a50f9d50f85c3e871e344f58b0be064be486dc3d3735a08"
+  },
+  "validation": {
+    "host_tests": 1295,
+    "failures": 0,
+    "skipped": 0,
+    "probe_compilers": "C11/C++20 -Wall -Wextra -Werror; javac -Xlint:all -Werror",
+    "exported_and_actual_cldc": "1201 each passed for shared-DMA correction; no export/assertion changes here",
+    "native_sdk": "Passed for shared-DMA correction; production unchanged",
+    "physical_gba": "unrun",
+    "physical_bold": "unrun"
+  },
+  "game_replay": {
+    "fresh_run_for_color_change": false,
+    "reason": "No production color change; latest LeafGreen evidence is benchmarks/dma-shared-ownership-2026-10-23.json",
+    "menu_pixel_gate": "open",
+    "frame_930_offset": "open"
+  },
+  "next_step": "Establish independently justified expected rounding and palette-bit behavior before changing renderer contracts; do not select a model from the single menu match",
+  "source_files_sha256": {
+    "tools/ColorEffectProbe.java": "625fdbea312a87fed96aa9e749f4478b830c4755325851e5e301411b0f64b369",
+    "tools/nba-color-probe.cc": "44b36c5dd3d1ccdebfb4a1e5da5bb428e6e21f0faa092d34028f7b60e4f22b6f",
+    "tools/mgba-color-probe.c": "ad1914347ba92a3b8b040a01b41cebfedf8862b34fbbd365b91fd91eee165473",
+    "tools/nba-reference/probe-machine.hh": "652adfc13a9fa5da09d76ec92b931f6e9ad70aa470867d0d7417995dc22cf84a",
+    "tools/nba-reference/CMakeLists.txt": "d4faa755b84bdf5a7285e1b8794be78ec4a2672a857340ae3632c70a1bb83bae",
+    "tools/nba-dma-probe.cc": "a61d8d7f915a68c3c3107c349a83c8ee90fec2a16fb4656b1eb88b0393755fd7",
+    "src/test/java/berryboy/video/SoftwarePpuTest.java": "e64032cb9f7895a41e356be1851bb89faba3e4c00aa9fae3c8efa9a05d5c7f67"
+  },
+  "csv_sha256": {
+    "berryboy": "dcd102efeade1afcab30d606f92ac424cad8b47a3e2a823b1573dd1f58e9e421",
+    "nba": "25ec23ebbd14d30816cec4b43774a74a461fb883717038d9ca2bf58470c869c4",
+    "mgba": "7cd1a1cac7b09080865b48ec7bf857ef2ce63390dd8d2caeb8664604d3a71e6f"
+  },
+  "local_output": "target/color-reference-2026-10-23",
+  "local_logs": [
+    "/workspace/scratch/nba-color-configure.log",
+    "/workspace/scratch/nba-color-build.log",
+    "/workspace/scratch/color-reference-host-verify.log"
+  ]
+}

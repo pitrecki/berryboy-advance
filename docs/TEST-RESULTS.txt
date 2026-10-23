@@ -4,6 +4,16 @@ mvn verify (native bb-sim profile): 1295 passed; 0 failed/errors/skipped.
 Exported core console suite: 1201 passed; 0 failed/skipped.
 Actual ECJ CLDC-class core suite: 1201 passed; 0 failed/skipped.
 
+Three-way brightness: 2244 settled backdrop cases per renderer, including both
+effects, all coefficients and palette bit 15. BerryBoy/NBA differ in 1182 cases;
+BerryBoy/mGBA RGB555 in 862; NBA/mGBA in 1488. All 264 endpoint controls agree.
+NBA agrees with mGBA on the LeafGreen menu color, so the prior attribution solely
+to reference precision was too strong. Rounding/palette-bit hardware expectations
+remain open; production arithmetic unchanged. Test naming now identifies current
+behavior rather than asserting unverified hardware correctness. Both original
+C++ probes share their headless composition; DMA CSV is byte-identical.
+See benchmarks/brightness-models-2026-10-23.json.
+
 Shared DMA ownership: charge overhead once across pending channels, including
 word-boundary preemption. Eight new regressions: four fail before, all pass
 afterwards. Independent NBA ownership comparison now matches 96/96 cases.
