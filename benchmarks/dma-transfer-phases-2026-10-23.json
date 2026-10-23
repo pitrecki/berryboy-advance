@@ -1,0 +1,161 @@
+{
+  "date": "2026-10-23",
+  "base_commit": "b1a7f253e54ed932315626071eae1c8dc5a438ed",
+  "source_dirty": true,
+  "change": "Split shared DMA ownership overhead into one acquisition cycle and one release cycle; recheck priorities after acquisition callbacks; requests during release start another interval",
+  "hardware": "Linux x86_64 cloud host; Temurin 21.0.8+9; Maven 3.9.11; no physical GBA/Bold",
+  "independent_reference": {
+    "project": "NanoBoyAdvance",
+    "commit": "55b5cf0ae3d929582ac5bfd486558173502b8354",
+    "core_changes": false,
+    "bios_or_external_rom": false,
+    "scope": "Already activated HBlank DMA to RAM; CPU idle; two-cycle activation completed before measurement",
+    "observer": "After queued device callbacks, before the bus access completing at that timestamp returns; NBA priority 3, BerryBoy post-dispatch observer"
+  },
+  "matrix": {
+    "cases": 144,
+    "samples_per_case": 200,
+    "observations": 28800,
+    "source_regions": [
+      "IWRAM",
+      "EWRAM",
+      "Game Pak ROM"
+    ],
+    "destination_regions": [
+      "IWRAM",
+      "EWRAM"
+    ],
+    "widths": [
+      2,
+      4
+    ],
+    "channels": [
+      1,
+      2
+    ],
+    "counts": [
+      1,
+      2,
+      4
+    ],
+    "service_delays": [
+      2,
+      3
+    ],
+    "matching_cases_before": 0,
+    "matching_cases_after": 144,
+    "differing_rows_before": 360,
+    "differing_rows_after": 0,
+    "differing_observations_by_field_before": {
+      "first1": 144,
+      "last1": 144,
+      "first2": 72,
+      "last2": 72,
+      "enabled": 216,
+      "irq": 216
+    },
+    "csv_sha256": {
+      "before": "77b0dc982ff264888b7318b529501e78076bf8142e469e338dee27b4fb1cbbf4",
+      "after": "9fc7296084eb3be6ed557a00bf3015303040d624a0e200fae03067de56fb626b",
+      "reference": "9fc7296084eb3be6ed557a00bf3015303040d624a0e200fae03067de56fb626b"
+    }
+  },
+  "minimal_case": {
+    "source": "IWRAM",
+    "destination": "IWRAM",
+    "width": 2,
+    "channels": 1,
+    "count": 1,
+    "cycles_relative_to_ownership_start": {
+      "berryboy_before_write_complete": 4,
+      "nba_and_fixed_write_complete": 3,
+      "berryboy_before_first_visible_to_callback": 5,
+      "nba_and_fixed_first_visible_to_callback": 4,
+      "ownership_total_all_implementations": 4
+    },
+    "value": "0x0201"
+  },
+  "regressions": {
+    "new_cases": 82,
+    "before_failures": 82,
+    "after_failures": 0,
+    "coverage": [
+      "72 independent-model read/write boundary combinations",
+      "8 source mutations after read, during write",
+      "New request during release",
+      "Higher priority request during acquisition"
+    ],
+    "existing_fifo_probe_byte_identical": true,
+    "fifo_probe_sha256": "3f70b1062f77480350b4faa0ed337bc8bf11df561eeced3776130c94f7c0aa71"
+  },
+  "validation": {
+    "host_tests": 1377,
+    "exported_core_tests": 1283,
+    "actual_ecj_cldc_core_tests": 1283,
+    "failures": 0,
+    "skipped": 0,
+    "syntax_rewrites": 473,
+    "native_bb_sim": "BUILD SUCCESS; RAPC No errors; COD emitted",
+    "physical_gba": "unrun",
+    "bbos_runtime": "unrun",
+    "physical_bold": "unrun"
+  },
+  "game_replay": {
+    "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+    "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+    "input_sha256": "83fbaacb4b6c7707e367959540da80dc4494abef89265bff4d345f0981b0e96d",
+    "initial_save_sha256": "fd44f0a2d5348f7ea91c1e3c50a9b2b794023be9bb86787a32bcb9d90c9aa8a9",
+    "backup_sha256": "fd44f0a2d5348f7ea91c1e3c50a9b2b794023be9bb86787a32bcb9d90c9aa8a9",
+    "rtc_seed": "2000-01-01T00:00:00",
+    "devices": 0,
+    "frames": 1272,
+    "warmup_frames": 0,
+    "guest_cycles": 357299717,
+    "audio_frames": 697851,
+    "video_sha256": "3e68811368e5316113a752e2543ac7e2429ef1b132091b1d072729cf449023a0",
+    "audio_sha256": "91527205cba5febedba13313d071d6568be4a28243b6f815d7d966d8db8c6a72",
+    "dropped_guest_frames": 0,
+    "audio_overruns": 0,
+    "audio_underruns": 0,
+    "video_unchanged": true,
+    "audio_unchanged": true,
+    "video_snapshots_unchanged": {
+      "930": true,
+      "1029": true,
+      "1272": true
+    },
+    "original_save_unchanged": true,
+    "comparison": {
+      "status": "mismatch",
+      "exact_video_frames": 1111,
+      "total_video_frames": 1272,
+      "first_video_mismatch": 930,
+      "whole_video_hash_match": false,
+      "whole_audio_hash_match": false,
+      "reference_audio_frames": 697852,
+      "berryboy_audio_frames": 697851,
+      "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+    },
+    "qualification": "Headless 1272-frame continuation; independent full stream remains unmatched; no physical playback qualification"
+  },
+  "remaining_gates": [
+    "Request activation and CPU continuation during activation",
+    "Equal-deadline IRQ priority and subcycle IF publication",
+    "FIFO/timer workload phase qualification",
+    "LeafGreen frame-930 initialization divergence",
+    "Independent hardware qualification"
+  ],
+  "source_files_sha256": {
+    "src/main/java/berryboy/bus/DmaController.java": "a0298f714ea7300abd7f7f094b922a1be9ba51bcccc3b6e605b5d0e0cdd8b3ac",
+    "src/test/java/berryboy/bus/DmaTransferPhaseTest.java": "0d9099cfeab6639e943c42f6b5e21c086f404d17262b54837d597a7fdf651c68",
+    "tools/DmaPhaseProbe.java": "36140a569fb8cca9d621f7d970a5fc0f8a6df3433a220f5946022a9f5dca0ebe",
+    "tools/nba-dma-phase-probe.cc": "7402ffccb20bc3d0a84fdbb582d70c4c055ec79099d42c3e16c78cc1305cca33",
+    "tools/nba-reference/probe-machine.hh": "652adfc13a9fa5da09d76ec92b931f6e9ad70aa470867d0d7417995dc22cf84a",
+    "tools/nba-reference/CMakeLists.txt": "a43742b748f35c0217e2c2c260b3acc4c45406b22dd26fd94885457c86911ab4"
+  },
+  "local_output": "target/dma-phase-2026-10-23",
+  "cod": {
+    "bytes": 46812,
+    "sha256": "edfb36284dff3ba0139047d662ab944c6f989a1485333dc8bea03c98728fed17"
+  }
+}

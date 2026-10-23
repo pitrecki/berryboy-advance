@@ -314,6 +314,37 @@ and scheduler perform the transfer; source progress and repeat count are checked
 See [REFERENCE-VALIDATION.md](REFERENCE-VALIDATION.md#independent-dma-ownership-reference)
 for the paired-channel overhead discrepancy and qualification limits.
 
+## DMA read/write phase probe
+
+Use the pinned NBA checkout/CMake configuration from the preceding section.
+The original phase adapters require no external ROM, BIOS or save:
+
+```bash
+cmake --build target/nba-reference --target nba-dma-phase-probe --parallel 4
+target/nba-reference/nba-dma-phase-probe > target/nba-reference/phases-reference.csv
+mkdir -p target/docs-tools
+javac -Xlint:all -Werror -cp target/classes -d target/docs-tools tools/DmaPhaseProbe.java
+java -cp target/classes:target/docs-tools berryboy.bus.DmaPhaseProbe > target/nba-reference/phases-berryboy.csv
+cmp target/nba-reference/phases-reference.csv target/nba-reference/phases-berryboy.csv
+```
+
+Reconfigure CMake first when reusing a build configured before this probe was
+added, and compile current host classes with `mvn verify`. The CSV contains 144
+scenarios with 200 guest-cycle observations each. It uses IWRAM/EWRAM/ROM sources,
+IWRAM/EWRAM destinations, halfwords/words, one/two channels and lengths 1/2/4.
+Service begins 2/3 cycles after the HBlank request, after NBA activation. `cycle`
+is relative to that ownership start, not to the original request or CPU work.
+
+Samples observe first/last destination values per channel, enable bits and IF
+after queued device callbacks, before the bus operation ending at that timestamp
+returns. The idle NBA CPU's unused conflict-event slot hosts a priority-3
+observer; its DMA, IRQ, bus and scheduler implementations remain unmodified.
+BerryBoy refreshes its sample after each callback, including equal-deadline
+device callbacks, to match this observation boundary. Neither adapter executes
+CPU instructions during ownership. Equal-deadline IRQ priority, subcycle IF
+publication, request activation and physical hardware are not qualified here.
+See [the correction and limits](REFERENCE-VALIDATION.md#dma-readwrite-phase-correction).
+
 ## Three-way brightness probes
 
 Use the pinned NBA checkout and build configuration above, the unmodified mGBA

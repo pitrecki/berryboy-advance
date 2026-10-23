@@ -1,8 +1,19 @@
 Latest compatibility validation: 2026-10-23 UTC
 Host: Eclipse Temurin 21.0.8+9, Maven 3.9.11, Linux x86_64
-mvn verify (native bb-sim profile): 1295 passed; 0 failed/errors/skipped.
-Exported core console suite: 1201 passed; 0 failed/skipped.
-Actual ECJ CLDC-class core suite: 1201 passed; 0 failed/skipped.
+mvn verify (native bb-sim profile): 1377 passed; 0 failed/errors/skipped.
+Exported core console suite: 1283 passed; 0 failed/skipped.
+Actual ECJ CLDC-class core suite: 1283 passed; 0 failed/skipped.
+
+DMA read/write phases: split the shared overhead into acquisition 1/release 1,
+fixing one-cycle-late accesses while preserving ownership totals. All 144
+scenarios / 28800 observations match unmodified NBA; before: 360 observations
+differ across all 144 scenarios. All 82 new regressions fail before and pass
+after. Existing FIFO ownership CSV remains byte-identical. LeafGreen's fresh
+1272-frame continuation retains full RGB/PCM hashes, raw video states, guest
+cycles, samples and the original save; still 1111/1272 exact reference frames,
+first mismatch 930. Native SDK/RAPC passes. Request activation, equal-deadline
+IRQ priority, FIFO/timer phases and actual hardware remain open.
+See benchmarks/dma-transfer-phases-2026-10-23.json.
 
 Second LeafGreen player save: generation 2 stores a one-tile move from (7,6) to
 (8,6), with all 28 section checksums valid. Four fresh cross-loads (both generated

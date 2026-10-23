@@ -38,6 +38,7 @@ mvn -Dgroups=desktop test
 | `CpuExecutionTest` | Mixed ARM/Thumb program and branching after underflow |
 | `ThumbInstructionTest` | Arithmetic, stack, BL, high registers and transfers |
 | `MemoryTest` | Endianness, mirroring, byte stores and KEYINPUT |
+| `bus/DmaTransferPhaseTest` | Independent-model DMA read/write boundaries, latched source data, acquisition priority and release-time requests |
 | `KeypadTest` | All ten active-low buttons, guest polling, chords and releases |
 | `AudioUnitTest` | Channel 2 frequency, duty, envelope, length, stereo and register behavior |
 | `CartridgeTest` | Header fields and checksum |

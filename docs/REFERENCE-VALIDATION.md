@@ -1,5 +1,47 @@
 # Independent reference validation, 2026-10-23
 
+## DMA read/write phase correction
+
+The original [NBA phase probe](../tools/nba-dma-phase-probe.cc) and
+[BerryBoy adapter](../tools/DmaPhaseProbe.java) expose a defect hidden by the
+previous matching ownership totals. BerryBoy charged both overhead cycles
+before transferring data; the independent core brackets transfers with one
+acquisition cycle and one release cycle. BerryBoy therefore read and wrote
+one cycle late while returning the same total ownership time.
+
+The correction splits those two cycles, preserving continuous ownership across
+channels and word-level yields. Priorities are checked after acquisition
+callbacks. A request arriving during release starts another ownership interval.
+For one IWRAM halfword, relative to ownership start, write completion moves from
+cycle **4 to 3**, while ownership still ends at **4**. A callback at cycle 4 now
+sees the transferred value. Source changes during the following destination
+access no longer incorrectly replace the already latched value.
+
+All **144 scenarios / 28800 observations** now match the unmodified, pinned NBA
+core byte for byte, versus **0 matching scenarios / 360 differing observations**
+before correction. The matrix covers three source regions, two destination
+regions, both widths, one/two channels, three lengths and service at cycles 2/3.
+It samples first/last destination values, enable bits and visible IF after queued
+callbacks and before the current bus operation returns. **82 new core tests fail
+before and pass after**; the previous FIFO ownership CSV remains byte-identical.
+
+This qualifies the measured, already activated RAM-transfer phases against an
+independent model. It excludes request activation/CPU continuation, equal-deadline
+IRQ priority and subcycle IF publication. FIFO/timer workloads and actual
+hardware remain separate gates. No global IRQ delay or request delay is changed.
+
+A fresh **1272-frame LeafGreen continuation** retains the full RGB/PCM hashes,
+all three raw video snapshots, guest cycles, sample count and original save.
+It still matches **1111/1272 RGB frames**, first difference **930**; full reference
+RGB and PCM remain unmatched. There are no missing guest frames or software
+audio-buffer failures. The initialization discrepancy remains open.
+
+Validation: **1377 host tests, 1283 exported-core tests and 1283 actual ECJ CLDC
+core tests** pass without failures or skips. Native SDK compilation and RAPC
+conversion emit a COD; simulator/device execution remains unverified.
+Reproduction: [SCENARIOS.md](SCENARIOS.md#dma-readwrite-phase-probe).
+Evidence: [dma-transfer-phases-2026-10-23.json](../benchmarks/dma-transfer-phases-2026-10-23.json).
+
 ## Second LeafGreen player save and cold cross-load
 
 The [second-save input](../benchmarks/inputs/leafgreen-second-save.tsv) extends

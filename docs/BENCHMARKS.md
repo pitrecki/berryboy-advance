@@ -43,10 +43,10 @@ as emulator frame drops.
 
 Roadmap updated on **2026-10-23**, after RGB555 reference qualification and
 the Thumb multiply timing and Game Pak DMA source corrections, plus the FIFO
-DMA reference counterexample. The shared clock, scheduler,
+DMA reference counterexample and independent DMA read/write phase correction. The shared clock, scheduler,
 CPU/bus timing, software renderer, mixer, cartridge devices and capture runner
 are implemented. Their accuracy is still being qualified; implementation does
-not close M1–M4. Latest local validation passed **1295 host tests and 1201
+not close M1–M4. Latest local validation passed **1377 host tests and 1283
 exported-core tests**. Neither test count establishes BlackBerry readiness.
 
 | Milestone | Deliverables | Completion evidence |
@@ -86,7 +86,7 @@ smoke scope; it does not close the independent correctness or gameplay gates.
 | Stage / priority | Work | Exit evidence |
 | --- | --- | --- |
 | R1 / P0: LeafGreen menu (three-way model comparison delivered; pixel qualification open) | Menu state matches; NBA agrees with mGBA on its color, while the 2244-case matrix exposes broader disagreement in rounding and palette bit 15 | Establish independently justified expected rounding and palette-bit behavior before correcting the renderer or passing the menu gate; existing arithmetic tests preserve behavior without certifying hardware |
-| R2 / P0: Timing and bus accuracy (MUL, ROM addressing and shared DMA ownership corrected) | Independent NBA now matches all 96 ownership cases; mGBA count-dependent event timing is isolated; frame 930 initialization offset remains open | Qualify request activation and write/IRQ phases using independent evidence; land each demonstrated core defect with a minimal regression and event trace, without regressing DMA deadlines, open-bus handling or saves |
+| R2 / P0: Timing and bus accuracy (MUL, ROM addressing, ownership and read/write phases corrected) | NBA matches all 96 ownership cases and 144 activated-transfer phase scenarios; mGBA count-dependent event timing is isolated; frame 930 initialization offset remains open | Qualify request activation/CPU continuation, equal-deadline IRQ priority and FIFO/timer workloads using independent evidence; land demonstrated defects with regressions and traces, preserving DMA deadlines, open-bus handling and saves |
 | R3 / P1: Audio correctness | Start with late Sonic Advance 3 and Wario Land 4 differences; compare timer/DMA FIFO events, PSG state and sample clocks; distinguish guest-state errors from output gain, filter and resampling differences | Repeatable event/sample checkpoints, justified comparison tolerances and listening review; no unexplained divergence in the selected routes and zero software buffer failures |
 | R4 / P1: Gameplay and player saves (second LeafGreen cross-load delivered) | A one-tile indoor route creates generation 2; four cold cross-loads restore the exact room in both emulators. New saves still differ in 667 bytes. Extend routes to levels, races, battles and other titles | Named reference checkpoints for all eleven titles; save-capable games restore latest progress from isolated copies, with explicit strict binary/full-stream outcomes |
 | R5 / P2: Sustained Linux playback | After route correctness passes, profile bottlenecks, optimize one at a time, and run the warmup/measurement protocol below | Three 10-minute runs per qualified scenario after 30-second warmup, actual presentation/audio counters, bounded memory/queues and A/V drift; all acceptance gates below pass |
@@ -160,6 +160,13 @@ execution and physical-device access remain separate gates.
    preemption and CPU resumption. The replay keeps RGB, video states and save
    unchanged; PCM changes and remains unmatched. Continue with request
    activation and write/IRQ phases; hardware qualification remains separate.
+   The subsequent [read/write phase correction](REFERENCE-VALIDATION.md#dma-readwrite-phase-correction)
+   now brackets transfers with one acquisition and one release cycle, fixing
+   one-cycle-late reads/writes without changing ownership totals. All 144 phase
+   scenarios and 28800 observations match NBA; 82 original regressions fail
+   before and pass after. Full LeafGreen RGB/PCM, video states and save remain
+   unchanged. Next qualify request activation/CPU continuation and equal-deadline
+   IRQ priority, then repeat phase observations for actual FIFO/timer workloads.
    A separate
    [ROM DMA source correction](REFERENCE-VALIDATION.md#dma-game-pak-source-addressing-and-next-timing-boundary)
    matches 24 original reference cases and preserves the whole replay's RGB/PCM,

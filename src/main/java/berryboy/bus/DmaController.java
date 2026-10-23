@@ -7,7 +7,7 @@ public final class DmaController {
     private static final int BASE = 0x040000b0;
     private static final int GAME_PAK_ROM_START = 0x08000000;
     private static final int GAME_PAK_ROM_END = 0x0e000000;
-    private static final int OWNERSHIP_CYCLES = 2;
+    private static final int OWNERSHIP_EDGE_CYCLES = 1;
     private final Memory memory;
     private final Channel[] channels = new Channel[4];
     private boolean ownsBus;
@@ -71,19 +71,35 @@ public final class DmaController {
      * long DMA block; pending channels retain ownership and priority on resumption.
      */
     public boolean runPending() {
+        if (!hasPending()) {
+            if (!ownsBus) return false;
+            releaseBus();
+            return true;
+        }
+        if (!ownsBus) {
+            ownsBus = true;
+            // One acquisition cycle and one release cycle bracket the shared
+            // interval. Charging both up front delays every read/write by one
+            // cycle despite preserving the total (tools/nba-dma-phase-probe.cc).
+            memory.clock().advance(OWNERSHIP_EDGE_CYCLES);
+        }
+        // Device callbacks during acquisition may change runnable priorities.
         for (var i = 0; i < 4; i++) {
             if (channels[i].pending) {
-                // Pending channels share one continuous ownership interval.
-                // Keep the existing startup phase; activation/write/IRQ phases
-                // are qualified separately from this independently checked total.
-                if (!ownsBus) memory.clock().advance(OWNERSHIP_CYCLES);
                 channels[i].transfer();
-                ownsBus = hasPending();
+                if (!hasPending()) releaseBus();
                 return true;
             }
         }
+        // A callback may disable the final channel during acquisition.
+        releaseBus();
+        return true;
+    }
+
+    private void releaseBus() {
+        // Requests arriving during release start a new ownership interval.
         ownsBus = false;
-        return false;
+        memory.clock().advance(OWNERSHIP_EDGE_CYCLES);
     }
 
     private boolean hasPending() {
