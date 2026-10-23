@@ -1,5 +1,49 @@
 # Independent reference validation, 2026-10-23
 
+## DMA Game Pak source addressing and next timing boundary
+
+DMA previously applied fixed or decrementing source modes to Game Pak ROM.
+The controller now forces source increment throughout `0x08000000–0x0dffffff`,
+including the three wait-state windows, while preserving programmed control
+readback. RAM transfers retain their selected source mode. The effective mode
+also controls sequential source bus accesses; the destination mode is unchanged.
+
+An [original standalone mGBA probe](../tools/mgba-dma-source-probe.c) builds a
+512-byte pattern cartridge in memory, with no commercial ROM or BIOS. Its
+24 cases cover the three ROM windows plus EWRAM, both transfer widths and
+increment/decrement/fixed source modes. All three ROM modes copy successive
+pattern values; EWRAM distinguishes all three modes. Matching Java regressions
+check every transferred halfword, control readback, completion and CPU exclusion.
+Before correction, **12/24 cases fail**; afterwards all pass. Compile and run the
+probe using the Thumb probe command below, substituting `mgba-dma-source-probe`
+for `mgba-thumb-mul-probe`. This verifies transfer contents against unmodified
+mGBA 0.10.5; it does not independently qualify DMA latency.
+
+The next local BIOS walk aligns **retired instructions**, servicing BerryBoy
+DMA/HALT/IRQ steps until its instruction counter advances. PC/cycle samples
+agree through zero-based row 796678. At row **796679**, the Thumb ADD at BIOS
+`0x1a0a` produces matching registers and next PC `0x1a0c`, but BerryBoy ends at
+cycle **1882550**, versus **1882546** in mGBA. Both start at cycle 1882529.
+Device diagnostics locate two four-word FIFO DMA transfers from IWRAM before
+the ADD. BerryBoy spends 20 cycles servicing them and one on the instruction;
+the reference step takes 17 cycles including DMA processing. Its scheduled
+transfer/completion events differ from BerryBoy's synchronous startup charges.
+This isolates a four-cycle DMA scheduling discrepancy, without establishing
+which ownership/event boundary should change. The ROM-address correction is
+separate: these FIFO sources are in IWRAM. No startup constant was adjusted.
+
+A fresh 1272-frame LeafGreen continuation preserves the previous entire RGB
+and PCM hashes, all selected video snapshots and the player save. It still
+matches **1111/1272** RGB frames, first differing at **930**. The initialization
+offset and DMA event-order investigation remain open. No frame tolerance or
+hardware/runtime pass is inferred.
+
+Validation: **1095 host tests, 1001 exported-core tests and 1001 actual ECJ CLDC
+core tests**, no failures or skips. The native `bb-sim` build emits a COD with
+RAPC reporting no errors. Probe observations, trace identities and replay evidence:
+[dma-source-addressing-2026-10-23.json](../benchmarks/dma-source-addressing-2026-10-23.json).
+Local replay output: `target/dma-source-followup-2026-10-23/`.
+
 ## Thumb multiply timing correction
 
 The first isolated cycle discrepancy in a real-BIOS instruction walk follows

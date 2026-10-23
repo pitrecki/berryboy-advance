@@ -5,6 +5,8 @@ import berryboy.EmulationException;
 /** Four bus-owning DMA channels. Requests latch at device events, CPU services them. */
 public final class DmaController {
     private static final int BASE = 0x040000b0;
+    private static final int GAME_PAK_ROM_START = 0x08000000;
+    private static final int GAME_PAK_ROM_END = 0x0e000000;
     private final Memory memory;
     private final Channel[] channels = new Channel[4];
 
@@ -115,6 +117,9 @@ public final class DmaController {
             if (fifo) destinationMode = 2;
             var sourceAddress = currentSource & ~(width - 1);
             var destinationAddress = currentDestination & ~(width - 1);
+            // Game Pak ROM forces incrementing source addresses, including its
+            // wait-state mirrors. Keep the programmed control bits unchanged.
+            if (sourceAddress >= GAME_PAK_ROM_START && sourceAddress < GAME_PAK_ROM_END) sourceMode = 0;
             if (first) memory.clock().advance(2); // DMA bus ownership startup.
             memory.clock().advance(memory.busTiming().accessCycles(sourceAddress, width, !first && sourceMode == 0));
             var value = width == 4 ? memory.read32(sourceAddress) : memory.read16(sourceAddress);

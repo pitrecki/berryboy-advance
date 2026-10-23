@@ -1,8 +1,18 @@
 Latest compatibility validation: 2026-10-23 UTC
 Host: Eclipse Temurin 21.0.8+9, Maven 3.9.11, Linux x86_64
-mvn verify (native bb-sim profile): 1071 passed; 0 failed/errors/skipped.
-Exported core console suite: 977 passed; 0 failed/skipped.
-Actual ECJ CLDC-class core suite: 977 passed; 0 failed/skipped.
+mvn verify (native bb-sim profile): 1095 passed; 0 failed/errors/skipped.
+Exported core console suite: 1001 passed; 0 failed/skipped.
+Actual ECJ CLDC-class core suite: 1001 passed; 0 failed/skipped.
+
+DMA Game Pak source fix: ROM forces increment across all wait-state windows;
+RAM retains its selected mode and control readback is preserved. An original
+24-case mGBA probe uses only a generated pattern cartridge. Before correction,
+12/24 regressions fail; afterwards all pass. Fresh LeafGreen replay preserves
+whole RGB/PCM hashes, selected video snapshots and the save. Result remains
+1111/1272 exact RGB frames, first mismatch 930. A separate normalized BIOS walk
+finds four extra cycles at retired row 796679, during paired IWRAM-to-FIFO DMA.
+DMA request/ownership/completion ordering remains open; no latency constant
+was changed. See benchmarks/dma-source-addressing-2026-10-23.json.
 
 Thumb MUL timing fix: original Rd drives multiplier iterations. An independent
 asset-free mGBA probe covers 16 operand pairs. Before correction, 16/17 new
@@ -45,9 +55,9 @@ See benchmarks/rgb555-reference-2026-10-22.json and docs/REFERENCE-VALIDATION.md
 
 Native BlackBerry SDK build: ECJ 4.6.1, source 1.3 / target CLDC 1.1,
 JDE 7.1 net_rim_api.jar bootclasspath and original RAPC jar on JDK 21.
-Full bb-sim Maven profile (ecj, launch=false): BUILD SUCCESS; 1071 tests pass.
+Full bb-sim Maven profile (ecj, launch=false): BUILD SUCCESS; 1095 tests pass.
 SDK compiler and RAPC: no errors; BerryBoyAdvance.cod produced.
-Actual CLDC-class core suite: 977 passed; 0 failed/skipped, no host core fallback.
+Actual CLDC-class core suite: 1001 passed; 0 failed/skipped, no host core fallback.
 Plain Java 1.4 target previously failed RAPC with a missing StackMap; the CLDC
 compiler target fixes it. Default Windows javac builds now explicitly preverify.
 See docs/BLACKBERRY.md and benchmarks/blackberry-sdk-build-2026-10-22.json.

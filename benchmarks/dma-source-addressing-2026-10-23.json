@@ -1,0 +1,314 @@
+{
+  "date": "2026-10-23",
+  "base_commit": "91dfd2d49a46f424c9fb2c274b4c8acd701f82e5",
+  "source_dirty": true,
+  "change": "DMA ROM source increment is forced independently of programmed increment/decrement/fixed bits; RAM source modes and control readback preserved; effective mode used for sequential bus access",
+  "hardware": "Linux x86_64 cloud host; Temurin 21.0.8+9; Maven 3.9.11; headless; no physical Bold",
+  "independent_probe": {
+    "source": "tools/mgba-dma-source-probe.c",
+    "reference": "unmodified mGBA 0.10.5 RGB888 library",
+    "library_sha256": "b47af07b62f97b0dacb9e48f0feeed90d7038e45c14564437c1d38bafdee7bb3",
+    "binary_sha256": "c68ed6dbd4f893b949c9a627ca164616efaaa0636fa841357dc10a9c253625d3",
+    "commercial_rom_loaded": false,
+    "bios_loaded": false,
+    "generated_cartridge_bytes": 512,
+    "case_count": 24,
+    "observations": [
+      {
+        "region": "0x02000000",
+        "width": "2",
+        "mode": "0",
+        "control": "0x0000",
+        "halfwords": "1080 1081 1082"
+      },
+      {
+        "region": "0x02000000",
+        "width": "2",
+        "mode": "1",
+        "control": "0x0080",
+        "halfwords": "1080 107f 107e"
+      },
+      {
+        "region": "0x02000000",
+        "width": "2",
+        "mode": "2",
+        "control": "0x0100",
+        "halfwords": "1080 1080 1080"
+      },
+      {
+        "region": "0x02000000",
+        "width": "4",
+        "mode": "0",
+        "control": "0x0400",
+        "halfwords": "1080 1081 1082 1083 1084 1085"
+      },
+      {
+        "region": "0x02000000",
+        "width": "4",
+        "mode": "1",
+        "control": "0x0480",
+        "halfwords": "1080 1081 107e 107f 107c 107d"
+      },
+      {
+        "region": "0x02000000",
+        "width": "4",
+        "mode": "2",
+        "control": "0x0500",
+        "halfwords": "1080 1081 1080 1081 1080 1081"
+      },
+      {
+        "region": "0x08000000",
+        "width": "2",
+        "mode": "0",
+        "control": "0x0000",
+        "halfwords": "1080 1081 1082"
+      },
+      {
+        "region": "0x08000000",
+        "width": "2",
+        "mode": "1",
+        "control": "0x0080",
+        "halfwords": "1080 1081 1082"
+      },
+      {
+        "region": "0x08000000",
+        "width": "2",
+        "mode": "2",
+        "control": "0x0100",
+        "halfwords": "1080 1081 1082"
+      },
+      {
+        "region": "0x08000000",
+        "width": "4",
+        "mode": "0",
+        "control": "0x0400",
+        "halfwords": "1080 1081 1082 1083 1084 1085"
+      },
+      {
+        "region": "0x08000000",
+        "width": "4",
+        "mode": "1",
+        "control": "0x0480",
+        "halfwords": "1080 1081 1082 1083 1084 1085"
+      },
+      {
+        "region": "0x08000000",
+        "width": "4",
+        "mode": "2",
+        "control": "0x0500",
+        "halfwords": "1080 1081 1082 1083 1084 1085"
+      },
+      {
+        "region": "0x0a000000",
+        "width": "2",
+        "mode": "0",
+        "control": "0x0000",
+        "halfwords": "1080 1081 1082"
+      },
+      {
+        "region": "0x0a000000",
+        "width": "2",
+        "mode": "1",
+        "control": "0x0080",
+        "halfwords": "1080 1081 1082"
+      },
+      {
+        "region": "0x0a000000",
+        "width": "2",
+        "mode": "2",
+        "control": "0x0100",
+        "halfwords": "1080 1081 1082"
+      },
+      {
+        "region": "0x0a000000",
+        "width": "4",
+        "mode": "0",
+        "control": "0x0400",
+        "halfwords": "1080 1081 1082 1083 1084 1085"
+      },
+      {
+        "region": "0x0a000000",
+        "width": "4",
+        "mode": "1",
+        "control": "0x0480",
+        "halfwords": "1080 1081 1082 1083 1084 1085"
+      },
+      {
+        "region": "0x0a000000",
+        "width": "4",
+        "mode": "2",
+        "control": "0x0500",
+        "halfwords": "1080 1081 1082 1083 1084 1085"
+      },
+      {
+        "region": "0x0c000000",
+        "width": "2",
+        "mode": "0",
+        "control": "0x0000",
+        "halfwords": "1080 1081 1082"
+      },
+      {
+        "region": "0x0c000000",
+        "width": "2",
+        "mode": "1",
+        "control": "0x0080",
+        "halfwords": "1080 1081 1082"
+      },
+      {
+        "region": "0x0c000000",
+        "width": "2",
+        "mode": "2",
+        "control": "0x0100",
+        "halfwords": "1080 1081 1082"
+      },
+      {
+        "region": "0x0c000000",
+        "width": "4",
+        "mode": "0",
+        "control": "0x0400",
+        "halfwords": "1080 1081 1082 1083 1084 1085"
+      },
+      {
+        "region": "0x0c000000",
+        "width": "4",
+        "mode": "1",
+        "control": "0x0480",
+        "halfwords": "1080 1081 1082 1083 1084 1085"
+      },
+      {
+        "region": "0x0c000000",
+        "width": "4",
+        "mode": "2",
+        "control": "0x0500",
+        "halfwords": "1080 1081 1082 1083 1084 1085"
+      }
+    ],
+    "scope": "Transfer contents and completion/control readback; DMA latency not independently qualified"
+  },
+  "regressions": {
+    "cases": 24,
+    "before_fix_failures": 12,
+    "after_fix_failures": 0,
+    "checks": [
+      "Three Game Pak wait-state windows",
+      "16-bit and 32-bit transfer widths",
+      "Increment, decrement and fixed source modes",
+      "EWRAM control cases preserve each mode",
+      "All transferred halfwords, readable control, completion and CPU exclusion"
+    ]
+  },
+  "normalized_bios_walk": {
+    "base_commit": "91dfd2d49a46f424c9fb2c274b4c8acd701f82e5",
+    "source_dirty": false,
+    "initial_save": null,
+    "input": "none",
+    "method": "BerryBoy steps until instructions() increases by one; one mGBA core->step per row; after-retirement next PC and effective cycle compared",
+    "matching_pc_cycle_rows": 796679,
+    "first_different_row_zero_based": 796679,
+    "instruction_pc": "0x1a0a",
+    "instruction_opcode": "0x1841",
+    "instruction": "Thumb ADD r1,r0,r1",
+    "next_pc": "0x1a0c",
+    "cycle_before": 1882529,
+    "berryboy_cycle_after": 1882550,
+    "reference_cycle_after": 1882546,
+    "registers_at_divergence": "CPSR and r0-r14 identical; r1=50345556 after ADD",
+    "dma_channels": [
+      1,
+      2
+    ],
+    "dma_sources": [
+      "0x03003e7c",
+      "0x030044ac"
+    ],
+    "dma_destinations": [
+      "0x040000a0",
+      "0x040000a4"
+    ],
+    "words_per_channel": 4,
+    "berryboy_dma_cycles": 20,
+    "berryboy_add_cycles": 1,
+    "reference_combined_step_cycles": 17,
+    "diagnosis": "DMA scheduling discrepancy isolated; request, ownership and completion ordering unqualified. Separate from ROM addressing fix because FIFO sources are IWRAM. No startup constant changed.",
+    "scope": "PC/cycle alignment in this local cold-BIOS walk only; no claim all registers match from reset or initialization offset is explained",
+    "local_probe_and_trace_sha256": {
+      "/workspace/scratch/RetiredStepProbe.java": "aabafc77120542f065069ae55adced9da5aa42aac5aa149bdb21c0b32c51d963",
+      "/workspace/scratch/mgba-retired-step-probe.c": "1ba381f8a388beca069ebaa254f322dbbda3b4e69ff269b21556ba355ca8903a",
+      "/workspace/scratch/RetiredDebugProbe.java": "55c4842974879478a7456969d86af30df68fd46af8903028bfd1505c296f55aa",
+      "/workspace/scratch/mgba-retired-dma-probe.c": "fe24eb785e948cec257f7e235580f5b79df0d78dac83dc4399113c311d329cc6",
+      "target/retired-timing-2026-10-23/first-difference.json": "e5301a6a9cded8f43782abcf85fc946b995ae9c0accee33eba3e0e72eac1125c",
+      "target/retired-timing-2026-10-23/berryboy-dma.log": "88d0e16b2e7b2b9fc05a9dd3c5fbbc8c27bf37ddcdb661960d832313ee42d51b",
+      "target/retired-timing-2026-10-23/reference-dma.log": "d1850fc7b016eaf3c39c6e6d5a7860c70bee06abe4307c82fe053f64f0fde8a2"
+    }
+  },
+  "validation": {
+    "host_tests": 1095,
+    "exported_core_tests": 1001,
+    "actual_ecj_cldc_core_tests": 1001,
+    "failures": 0,
+    "skipped": 0,
+    "native_bb_sim": "BUILD SUCCESS; RAPC No errors; COD emitted",
+    "on_bbos_runtime_checks": null,
+    "physical_bold": "unrun"
+  },
+  "game_replay": {
+    "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+    "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+    "input_sha256": "83fbaacb4b6c7707e367959540da80dc4494abef89265bff4d345f0981b0e96d",
+    "initial_save_sha256": "fd44f0a2d5348f7ea91c1e3c50a9b2b794023be9bb86787a32bcb9d90c9aa8a9",
+    "backup_sha256": "fd44f0a2d5348f7ea91c1e3c50a9b2b794023be9bb86787a32bcb9d90c9aa8a9",
+    "rtc_seed": "2000-01-01T00:00:00",
+    "devices": 0,
+    "frames": 1272,
+    "warmup_frames": 0,
+    "guest_cycles": 357299720,
+    "audio_frames": 697851,
+    "video_sha256": "3e68811368e5316113a752e2543ac7e2429ef1b132091b1d072729cf449023a0",
+    "audio_sha256": "6d6c011965919ef279d196dcd672c31d5a98fa3e86fc4b1e4dc552d022e51d11",
+    "dropped_guest_frames": 0,
+    "audio_overruns": 0,
+    "audio_underruns": 0,
+    "previous_capture": "target/timing-followup-2026-10-23/fixed-capture",
+    "unchanged_since_previous": {
+      "video_sha256": true,
+      "audio_sha256": true,
+      "backup_sha256": true,
+      "guest_cycles": true,
+      "audio_frames": true
+    },
+    "unchanged_video_snapshots": {
+      "930": true,
+      "1029": true,
+      "1272": true
+    },
+    "comparison": {
+      "status": "mismatch",
+      "exact_video_frames": 1111,
+      "total_video_frames": 1272,
+      "first_video_mismatch": 930,
+      "whole_video_hash_match": false,
+      "whole_audio_hash_match": false,
+      "reference_audio_frames": 697852,
+      "berryboy_audio_frames": 697851,
+      "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+    },
+    "physical_playback": "unqualified"
+  },
+  "source_files_sha256": {
+    "src/main/java/berryboy/bus/DmaController.java": "6040fbcd7852e05d4df085131d64c221d318bc7fa7fafa7f5178789c11a0ae2c",
+    "src/test/java/berryboy/bus/DmaGamePakSourceTest.java": "8f3c1f31e56fd3d190363f4f2ba47e37b8475e8a40399e0613c1c235725ef93b",
+    "tools/mgba-dma-source-probe.c": "d39099a91ad5506a7e24166c7a8c89c12578201a48246338564081dde2ed2a7e"
+  },
+  "cod": {
+    "bytes": 46680,
+    "sha256": "9c35de947c79a3269e4054d30b35dad97dc51b70118b80da34f4d6974084bbe7"
+  },
+  "local_output": "target/dma-source-followup-2026-10-23",
+  "local_logs": [
+    "/workspace/scratch/berryboy-dma-source-before.log",
+    "/workspace/scratch/berryboy-dma-source-verify.log",
+    "/workspace/scratch/berryboy-dma-source-console.log",
+    "/workspace/scratch/berryboy-dma-source-cldc.log",
+    "/workspace/scratch/berryboy-dma-source-replay.log"
+  ]
+}
