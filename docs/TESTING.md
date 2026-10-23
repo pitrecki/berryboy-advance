@@ -1,6 +1,6 @@
 # Testing with JUnit 5 and AssertJ
 
-Requirements: Linux, JDK 21, Maven 3.9.x, Git and Python 3. Tests use small ARM/Thumb programs
+Requirements: Linux, JDK 21 and Maven 3.9.x. Tests use small ARM/Thumb programs
 and the project's original `DemoRom`; no external BIOS or ROM is required.
 
 ## Standard workflow
@@ -46,7 +46,6 @@ mvn -Dgroups=desktop test
 | `build/LegacyExportTest` | Local `var`, returned switches, rejected APIs and host-class isolation |
 | `build/LegacyExportOutputTest` | Stale files, validation failures, ownership, overlaps and symlinks |
 | `build/LegacyCoreTest` | Whole-core export, compilation and isolated execution |
-| `build/RoadmapLoopTest` | Bounded CLI loop, local Git delivery checks and failure stops; no model calls |
 | `desktop/LaunchCommandTest` | Typed CLI commands and invalid argument rejection |
 | `desktop/KeyboardInputTest` | Actual Swing key actions, simultaneous keys, repeat and release |
 | `desktop/PcmAudioTest` | WAV format, sample bytes and deterministic tone, without a sound device |
