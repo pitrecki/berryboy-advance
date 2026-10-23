@@ -90,8 +90,11 @@ Supported instruction families:
 
 Instruction-family coverage does not imply full conformance. Empty register lists
 and selected unpredictable operand combinations stop execution. MUL preserves C,
-which ARMv4 defines as unpredictable. IRQ scheduling, aborts, undefined exceptions,
-cycles, wait states and self-modifying pipeline behavior are not implemented.
+which ARMv4 defines as unpredictable. IRQ scheduling, the cycle clock and bus
+wait-state models are implemented and remain under accuracy qualification.
+Abort/undefined exception entry and complete self-modifying pipeline behavior
+are not implemented. Thumb MUL's 1–4 internal iterations use the original Rd
+value (the multiplier in its ARM `MULS Rd,Rs,Rd` mapping), before Rd is overwritten.
 ARMv5 and Thumb-2 are outside the target architecture.
 
 ## Memory bus

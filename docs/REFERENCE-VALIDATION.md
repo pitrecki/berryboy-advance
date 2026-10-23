@@ -1,4 +1,55 @@
-# Independent reference validation, 2026-10-22
+# Independent reference validation, 2026-10-23
+
+## Thumb multiply timing correction
+
+The first isolated cycle discrepancy in a real-BIOS instruction walk follows
+the Thumb multiply at BIOS PC `0x1736`, with original Rd=597275 and Rs=224.
+At zero-based step 590519, both emulators start at cycle 1404705 and produce
+the same product, 133789600. BerryBoy previously ended at 1404707, whereas
+unmodified mGBA 0.10.5 ends at 1404709. All preceding pre-step PC/cycle samples
+agree. Reset-mode/banked-stack defaults differ initially, so this is not a claim
+that every CPU register matches throughout reset.
+
+Thumb MUL maps to ARM `MULS Rd,Rs,Rd`. Its early termination depends on the
+original destination value, not the other source. BerryBoy had timed Rs,
+charging one internal iteration instead of three for this case. The timing
+decoder now reads original Rd before execution overwrites it. The product and
+flag implementation is unchanged; ARM multiply operand selection is unchanged.
+
+An [original asset-free mGBA probe](../tools/mgba-thumb-mul-probe.c) executes
+16 IWRAM Thumb MUL cases without any BIOS or cartridge. It independently
+confirms 1–4 internal iterations for positive and negative boundaries, opposite
+operand sizes and the BIOS operand pair. The matching Java regressions also
+check result, source preservation, PC, N/Z/C/V and an intervening device deadline.
+Before the fix, 16/17 regressions fail. After it, all pass, and a fresh BIOS walk
+matches the reference's first **600000 pre-step PC/cycle samples**. Longer walks
+must account for different DMA/HALT/IRQ step semantics before aligning rows.
+
+Compile the standalone probe against the RGB888 library built by
+`tools/build-mgba-reference.sh` (no `COLOR_16_BIT`):
+
+```bash
+cc -std=c11 -D_GNU_SOURCE -O2 -Wall -Wextra -Werror \
+  -DBUILD_STATIC -DM_CORE_GBA -DUSE_PTHREADS \
+  -I/path/to/mgba-0.10.5/include -I/path/to/reference-rgb888/build/include \
+  tools/mgba-thumb-mul-probe.c /path/to/reference-rgb888/build/libmgba.a \
+  -lm -lpthread -o /tmp/mgba-thumb-mul-probe
+/tmp/mgba-thumb-mul-probe
+```
+
+The 1272-frame LeafGreen continuation still has **1111 exact RGB frames**,
+first mismatch at 930, 820 different VRAM bytes there and the same whole RGB
+hash. The original and isolated save remain byte-identical. PCM changes with
+the corrected cycle costs and remains unmatched; zero guest frames or software
+audio buffers are lost. This fixes a measured instruction-timing defect, while
+the roughly one-frame initialization offset remains open. No frame alignment,
+pixel tolerance or LCD constant was changed.
+
+Validation: **1071 host tests, 977 exported-core tests and 977 actual ECJ CLDC
+core tests** pass without skips; the native `bb-sim` profile emits a COD with
+RAPC reporting no errors. Evidence, original probe output, assets and hashes:
+[thumb-mul-timing-2026-10-23.json](../benchmarks/thumb-mul-timing-2026-10-23.json).
+Raw walks and capture files remain in `target/timing-followup-2026-10-23/`.
 
 ## RGB555 reference qualification
 

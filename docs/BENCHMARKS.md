@@ -41,11 +41,11 @@ as emulator frame drops.
 
 ## Delivery milestones
 
-Roadmap updated on **2026-10-22**, after the eleven-game mGBA comparisons and
-LeafGreen player-save validation at `f96dc5d`. The shared clock, scheduler,
+Roadmap updated on **2026-10-23**, after RGB555 reference qualification and
+the Thumb multiply timing correction. The shared clock, scheduler,
 CPU/bus timing, software renderer, mixer, cartridge devices and capture runner
 are implemented. Their accuracy is still being qualified; implementation does
-not close M1–M4. Latest local validation passed **1040 host tests and 957
+not close M1–M4. Latest local validation passed **1071 host tests and 977
 exported-core tests**. Neither test count establishes BlackBerry readiness.
 
 | Milestone | Deliverables | Completion evidence |
@@ -81,7 +81,7 @@ See [REFERENCE-VALIDATION.md](REFERENCE-VALIDATION.md) and its linked JSON recor
 | Stage / priority | Work | Exit evidence |
 | --- | --- | --- |
 | R1 / P0: LeafGreen menu (RGB555 reference delivered; pixel qualification open) | RGB555 confirms all 12 BIOS startup RGB frames; menu state matches but unmodified mGBA's shifted-channel brightness still differs in 19632 pixels | Preserve native channel arithmetic and original regressions; obtain independently correct brightness rounding before passing the menu gate. Room frame 1272 remains exact and saves unchanged |
-| R2 / P0: Timing and bus accuracy (remaining divergence localized) | RGB555 continuation first differs at frame 930: 820 VRAM bytes and a roughly one-frame initialization offset; qualify CPU/bus/IRQ/BIOS ordering and LCD phase | A minimal original regression and documented expected event trace for each diagnosed defect; corrected boundaries match independent evidence without regressing DMA deadlines, open-bus handling or save routes |
+| R2 / P0: Timing and bus accuracy (Thumb MUL corrected; initialization offset open) | Thumb MUL now times the original Rd operand and matches 16 original mGBA cases; frame 930 still has 820 differing VRAM bytes and a roughly one-frame initialization offset | A minimal original regression and documented expected event trace for each diagnosed defect; corrected boundaries match independent evidence without regressing DMA deadlines, open-bus handling or save routes |
 | R3 / P1: Audio correctness | Start with late Sonic Advance 3 and Wario Land 4 differences; compare timer/DMA FIFO events, PSG state and sample clocks; distinguish guest-state errors from output gain, filter and resampling differences | Repeatable event/sample checkpoints, justified comparison tolerances and listening review; no unexplained divergence in the selected routes and zero software buffer failures |
 | R4 / P1: Gameplay and player saves | Record fixed routes through actual levels, races, battles and menus; extend manual save/restart/load beyond LeafGreen | Named reference checkpoints for all eleven available titles; save-capable titles restore player progress in fresh BerryBoy and mGBA instances from isolated copies |
 | R5 / P2: Sustained Linux playback | After route correctness passes, profile bottlenecks, optimize one at a time, and run the warmup/measurement protocol below | Three 10-minute runs per qualified scenario after 30-second warmup, actual presentation/audio counters, bounded memory/queues and A/V drift; all acceptance gates below pass |
@@ -128,6 +128,12 @@ execution and physical-device access remain separate gates.
    qualify HBlank at cycle 960 versus the reference's 1008. Do not change a
    constant solely to improve screenshot counts. Land each demonstrated defect
    with a regression and comparison report.
+   The [Thumb MUL correction](REFERENCE-VALIDATION.md#thumb-multiply-timing-correction)
+   removes the first isolated two-cycle discrepancy and extends PC/cycle agreement
+   to 600000 pre-step samples. Its 17 original regressions and independent probe
+   pass, while the 1111/1272 RGB result remains unchanged. Continue from the next
+   execution difference; distinguish retired instructions from DMA, HALT and IRQ
+   service steps when aligning the two emulator APIs.
 4. **Isolate the first audio divergence.** Record channel, timer and FIFO events
    for Sonic and Wario; compare selected active windows with the corrected,
    unmuted reference. Define acceptable filter/resampling differences before

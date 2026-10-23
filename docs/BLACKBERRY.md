@@ -34,13 +34,15 @@ and produces `target/blackberry/output/BerryBoyAdvance.cod`.
 A plain Java 1.4 classfile target is insufficient: the first SDK run failed with
 **Missing stack map** in `BlackBerryMidlet.commandAction`. With CLDC maps, RAPC
 reports **No errors** and emits a roughly 46 KiB COD. The full Maven profile
-passes 1040 host tests; 957 core tests also pass using the actual ECJ-compiled
+passes 1071 host tests; 977 core tests also pass using the actual ECJ-compiled
 CLDC classes with no host production classes on the runtime classpath. The
-separate exported-core console run still passes all 957 tests. These JVM tests
+separate exported-core console run still passes all 977 tests. These JVM tests
 and the SDK compiler do not establish execution on a BlackBerry.
 
 Evidence and exact tool/output hashes:
 [blackberry-sdk-build-2026-10-22.json](../benchmarks/blackberry-sdk-build-2026-10-22.json).
+The [Thumb MUL follow-up](../benchmarks/thumb-mul-timing-2026-10-23.json)
+records the current test counts and repeated SDK build after the timing fix.
 The compiled application still contains the original demo and eight portable
 checks; it is not a commercial-ROM loading frontend for the phone.
 

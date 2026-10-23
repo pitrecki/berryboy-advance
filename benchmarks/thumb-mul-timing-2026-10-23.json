@@ -1,0 +1,225 @@
+{
+  "date": "2026-10-23",
+  "base_commit": "4e76c0f1a62bab6f526c424fa817aeefc9e5bdab",
+  "source_dirty": true,
+  "change": "Thumb MUL early termination uses original destination Rd instead of source Rs; ARM timing selection unchanged",
+  "hardware": "Linux x86_64 cloud host; Temurin 21.0.8+9; Maven 3.9.11; headless; no physical Bold",
+  "reference": "unmodified mGBA 0.10.5 RGB888 library for original IWRAM timing cases; RGB555 capture for game comparison",
+  "independent_probe": {
+    "source": "tools/mgba-thumb-mul-probe.c",
+    "bios_loaded": false,
+    "rom_loaded": false,
+    "library_sha256": "b47af07b62f97b0dacb9e48f0feeed90d7038e45c14564437c1d38bafdee7bb3",
+    "binary_sha256": "592a696ca7e24dcca50d25b5b508e08c5c5adf5b87966df1a21aa8a30067624d",
+    "case_count": 16,
+    "observations": [
+      {
+        "destination": "0",
+        "source": "2147483647",
+        "cycles": "2",
+        "result": "0",
+        "cpsr": "1879048255"
+      },
+      {
+        "destination": "255",
+        "source": "305419896",
+        "cycles": "2",
+        "result": "572662152",
+        "cpsr": "805306431"
+      },
+      {
+        "destination": "256",
+        "source": "1",
+        "cycles": "3",
+        "result": "256",
+        "cpsr": "805306431"
+      },
+      {
+        "destination": "65535",
+        "source": "1",
+        "cycles": "3",
+        "result": "65535",
+        "cpsr": "805306431"
+      },
+      {
+        "destination": "65536",
+        "source": "224",
+        "cycles": "4",
+        "result": "14680064",
+        "cpsr": "805306431"
+      },
+      {
+        "destination": "16777215",
+        "source": "1",
+        "cycles": "4",
+        "result": "16777215",
+        "cpsr": "805306431"
+      },
+      {
+        "destination": "16777216",
+        "source": "1",
+        "cycles": "5",
+        "result": "16777216",
+        "cpsr": "805306431"
+      },
+      {
+        "destination": "2147483647",
+        "source": "1",
+        "cycles": "5",
+        "result": "2147483647",
+        "cpsr": "805306431"
+      },
+      {
+        "destination": "-1",
+        "source": "305419896",
+        "cycles": "2",
+        "result": "3989547400",
+        "cpsr": "2952790079"
+      },
+      {
+        "destination": "-256",
+        "source": "5",
+        "cycles": "2",
+        "result": "4294966016",
+        "cpsr": "2952790079"
+      },
+      {
+        "destination": "-257",
+        "source": "1",
+        "cycles": "3",
+        "result": "4294967039",
+        "cpsr": "2952790079"
+      },
+      {
+        "destination": "-65536",
+        "source": "7",
+        "cycles": "3",
+        "result": "4294508544",
+        "cpsr": "2952790079"
+      },
+      {
+        "destination": "-65537",
+        "source": "3",
+        "cycles": "4",
+        "result": "4294770685",
+        "cpsr": "2952790079"
+      },
+      {
+        "destination": "-16777216",
+        "source": "2",
+        "cycles": "4",
+        "result": "4261412864",
+        "cpsr": "2952790079"
+      },
+      {
+        "destination": "-16777217",
+        "source": "1",
+        "cycles": "5",
+        "result": "4278190079",
+        "cpsr": "2952790079"
+      },
+      {
+        "destination": "597275",
+        "source": "224",
+        "cycles": "4",
+        "result": "133789600",
+        "cpsr": "805306431"
+      }
+    ]
+  },
+  "bios_walk": {
+    "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+    "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+    "first_different_pre_step_sample_zero_based": 590520,
+    "instruction_index_zero_based": 590519,
+    "pc": "0x1736",
+    "destination_r0": 597275,
+    "source_r4": 224,
+    "product": 133789600,
+    "cycle_before": 1404705,
+    "cycle_after_before_fix": 1404707,
+    "reference_cycle_after": 1404709,
+    "cycle_after_fix": 1404709,
+    "fixed_matching_pre_step_pc_cycle_samples": 600000,
+    "scope": "PC/cycle alignment only. Initial reset mode/banked stack defaults differ; DMA/HALT/IRQ service steps must be normalized for longer walks.",
+    "before_trace_sha256": "5be25978e82147606c78473205a04b8ac9a312ac5d39c2fd97619488e25f4750",
+    "reference_trace_sha256": "1f7fc1904984dab647e7c488730a5232a6593073b7e668d03b2121dbbd1bba1f",
+    "fixed_trace_sha256": "a7367e0bf21e0fda903baf6d5a003411ae00695a4647d62fc6e348277a13f072",
+    "local_java_probe_sha256": "052d18eff6dbac484172f916d80f3e441166779d198c10257ae05742172363a3",
+    "local_reference_probe_sha256": "e545629a0550c8dbc78013f4cc690c7a2a32ff072355e858c5be50d3500368dc"
+  },
+  "regressions": {
+    "cases": 17,
+    "before_fix_failures": 16,
+    "after_fix_failures": 0,
+    "new_tests_are_asset_free": true,
+    "checks": [
+      "1..4 signed multiplier iterations",
+      "opposite operand sizes",
+      "zero and negative boundaries",
+      "product/source/PC",
+      "N/Z/C/V",
+      "intervening device deadline"
+    ]
+  },
+  "validation": {
+    "host_tests": 1071,
+    "exported_core_tests": 977,
+    "actual_ecj_cldc_core_tests": 977,
+    "failures": 0,
+    "skipped": 0,
+    "native_bb_sim": "BUILD SUCCESS; RAPC No errors; COD emitted",
+    "on_bbos_runtime_checks": null,
+    "physical_bold": "unrun"
+  },
+  "game_replay": {
+    "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+    "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+    "input_sha256": "83fbaacb4b6c7707e367959540da80dc4494abef89265bff4d345f0981b0e96d",
+    "initial_save_sha256": "fd44f0a2d5348f7ea91c1e3c50a9b2b794023be9bb86787a32bcb9d90c9aa8a9",
+    "final_save_sha256": "fd44f0a2d5348f7ea91c1e3c50a9b2b794023be9bb86787a32bcb9d90c9aa8a9",
+    "rtc_seed": "2000-01-01T00:00:00",
+    "devices": 0,
+    "frames": 1272,
+    "warmup_frames": 0,
+    "video_sha256_before": "3e68811368e5316113a752e2543ac7e2429ef1b132091b1d072729cf449023a0",
+    "video_sha256_after": "3e68811368e5316113a752e2543ac7e2429ef1b132091b1d072729cf449023a0",
+    "audio_sha256_before": "b6f81e57a4555265875afcaf35cd4788e39b8fb40d274fa0498b6ef38bc9ed7c",
+    "audio_sha256_after": "6d6c011965919ef279d196dcd672c31d5a98fa3e86fc4b1e4dc552d022e51d11",
+    "audio_frames": 697851,
+    "dropped_guest_frames": 0,
+    "audio_overruns": 0,
+    "audio_underruns": 0,
+    "guest_cycles": 357299720,
+    "comparison": {
+      "status": "mismatch",
+      "exact_video_frames": 1111,
+      "total_video_frames": 1272,
+      "first_video_mismatch": 930,
+      "whole_video_hash_match": false,
+      "whole_audio_hash_match": false,
+      "reference_audio_frames": 697852,
+      "berryboy_audio_frames": 697851,
+      "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+    },
+    "remaining_frame_930_vram_difference_bytes": 820,
+    "initialization_offset": "open; RGB hashes and first mismatch unchanged",
+    "physical_playback": "unqualified"
+  },
+  "source_files_sha256": {
+    "src/main/java/berryboy/cpu/InstructionTiming.java": "cc4d97e41fea6480ca9167e0d533115001707e472b0a914eb89952e7fbcd7bdb",
+    "src/test/java/berryboy/cpu/ThumbMultiplyTimingTest.java": "69b100d083ed381ca5a0f107be495140c3b441febb5297d7aefe5d50060519c6",
+    "tools/mgba-thumb-mul-probe.c": "66bcf21f995b09e7b1105072e2e738a5bd1f6a83ac69d344b09e7723942ee65f"
+  },
+  "cod": {
+    "bytes": 46660,
+    "sha256": "9f61a7616278ab55404fc302c8a99708deaccd1b0f49ed68347558a7b578edb6"
+  },
+  "local_output": "target/timing-followup-2026-10-23",
+  "local_logs": [
+    "/workspace/scratch/berryboy-thumb-mul-before.log",
+    "/workspace/scratch/berryboy-thumb-mul-verify.log",
+    "/workspace/scratch/berryboy-thumb-mul-console.log",
+    "/workspace/scratch/berryboy-thumb-mul-cldc.log"
+  ]
+}

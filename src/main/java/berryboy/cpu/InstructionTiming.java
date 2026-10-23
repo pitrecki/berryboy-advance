@@ -9,7 +9,9 @@ final class InstructionTiming {
         if (thumb) {
             if ((opcode & 0xfc00) == 0x4000) {
                 var operation = (opcode >>> 6) & 15;
-                if (operation == 13) return multiplyCycles(state.register((opcode >>> 3) & 7), true);
+                // Thumb MUL maps to ARM MULS Rd,Rs,Rd: early termination uses
+                // the original destination, before execution overwrites it.
+                if (operation == 13) return multiplyCycles(state.register(opcode & 7), true);
                 if (operation == 2 || operation == 3 || operation == 4 || operation == 7) return 1;
             }
             if ((opcode & 0xf800) == 0x4800) return 1;
