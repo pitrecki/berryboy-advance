@@ -1,5 +1,41 @@
 # Independent reference validation, 2026-10-23
 
+## Independent DMA ownership reference
+
+An original [NanoBoyAdvance probe](../tools/nba-dma-probe.cc) now measures
+FIFO bus ownership against a second, independent implementation, pinned to
+`55b5cf0ae3d929582ac5bfd486558173502b8354`. The headless CMake composition
+builds its unmodified core and bundled fmt/atom dependencies, without its
+desktop frontend or changes to CPU, DMA, bus or scheduler sources.
+
+Across **96 original cases**, its FIFO count is invariant in all **12 parameter
+groups**. The cases use three source regions, one/two channels, eight counts
+and service at cycles 2/3. Its original two-cycle request activation is allowed
+to complete before measuring ownership; that activation delay is not included
+in the table. No BIOS or commercial assets are loaded. The probe confirms
+16-byte source progress, repeat count and release of all runnable DMA channels.
+
+| Source | NBA one channel | BerryBoy one channel | NBA two channels | BerryBoy two channels |
+| --- | --- | --- | --- | --- |
+| IWRAM | 10 | 10 | 18 | 20 |
+| EWRAM | 30 | 30 | 58 | 60 |
+| Game Pak ROM | 32 | 32 | 62 | 64 |
+
+These are guest ownership cycles, not FPS. All 48 single-channel observations
+match BerryBoy. All 48 paired observations expose two extra BerryBoy cycles.
+mGBA with programmed count=4 agrees with NBA on all 12 control cases, while
+its other count values retain the earlier reference defect. NBA brackets the
+whole continuous DMA run with one cycle before and one after, rather than
+charging overhead again when the next pending channel takes over.
+
+The next correction should share ownership overhead across pending channels,
+preserving channel priority, per-channel first/nonsequential access and yielding
+between words. Request activation, individual write/IRQ phases and real hardware
+qualification remain separate. This standalone device composition does not
+qualify an entire CPU/timer workload or the LeafGreen frame-930 offset.
+Reproduction: [SCENARIOS.md](SCENARIOS.md#independent-dma-ownership-probe).
+Evidence: [nba-dma-ownership-2026-10-23.json](../benchmarks/nba-dma-ownership-2026-10-23.json).
+
 ## FIFO DMA timing reference counterexample
 
 The four-cycle discrepancy below now has an original, asset-free reproducer.

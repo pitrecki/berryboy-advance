@@ -142,7 +142,13 @@ execution and physical-device access remain separate gates.
    count in 20/24 parameter groups, while BerryBoy is invariant. Its 192 new
    regressions preserve two repeated FIFO bursts. Obtain a second timing source
    or original hardware measurements before attributing this discrepancy to
-   BerryBoy; mGBA 0.10.5 cannot be its absolute timing oracle. A separate
+   BerryBoy; mGBA 0.10.5 cannot be its absolute timing oracle. The new
+   [independent NBA ownership probe](REFERENCE-VALIDATION.md#independent-dma-ownership-reference)
+   provides that second source for continuous bus ownership: 48 single-channel
+   cases match, while 48 paired cases show two extra BerryBoy cycles. Next share
+   ownership overhead across pending channels and preserve word-level yields;
+   activation, write/IRQ phases and hardware qualification remain separate.
+   A separate
    [ROM DMA source correction](REFERENCE-VALIDATION.md#dma-game-pak-source-addressing-and-next-timing-boundary)
    matches 24 original reference cases and preserves the whole replay's RGB/PCM,
    selected video states and save. The FIFO sources in this trace are IWRAM.

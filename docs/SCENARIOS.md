@@ -287,3 +287,29 @@ Java regression suite also checks byte contents, two repeated bursts and CPU
 exclusion/resumption. This establishes a reference counterexample, not an
 absolute DMA latency pass. See [REFERENCE-VALIDATION.md](REFERENCE-VALIDATION.md#fifo-dma-timing-reference-counterexample)
 for the minimal IWRAM case and the remaining qualification work.
+
+## Independent DMA ownership probe
+
+Use GCC with C++20, Git and CMake 3.24 or newer. The following builds only the
+unmodified NanoBoyAdvance core and its bundled fmt/atom dependencies. No SDL,
+OpenGL, BIOS or commercial ROM is needed. The driver rejects a different commit
+or tracked modifications to the reference core/dependencies.
+
+```bash
+git clone https://github.com/nba-emu/NanoBoyAdvance.git /path/to/nba-source
+git -C /path/to/nba-source checkout 55b5cf0ae3d929582ac5bfd486558173502b8354
+cmake -S tools/nba-reference -B target/nba-reference \
+  -DNBA_SOURCE_DIR=/path/to/nba-source -DCMAKE_BUILD_TYPE=Release
+cmake --build target/nba-reference --target nba-dma-probe --parallel 4
+target/nba-reference/nba-dma-probe > target/nba-reference/ownership.csv
+```
+
+The 96-row CSV reports continuous DMA ownership after normal request activation
+has completed, for eight counts, three source regions, one/two channels and
+service at cycles 2/3. Compare `ownership_cycles` with `after-late-1` in the
+BerryBoy FIFO probe: remove the service delay and single Thumb ADD. Do not
+compare the request activation or individual write/IRQ phases using this total.
+Counts remain ignored in all 12 NBA parameter groups. Original device methods
+and scheduler perform the transfer; source progress and repeat count are checked.
+See [REFERENCE-VALIDATION.md](REFERENCE-VALIDATION.md#independent-dma-ownership-reference)
+for the paired-channel overhead discrepancy and qualification limits.

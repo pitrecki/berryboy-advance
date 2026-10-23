@@ -1,0 +1,116 @@
+{
+  "date": "2026-10-23",
+  "base_commit": "4a0f5b5b64d7d4d08faec7921f3e63b01685df97",
+  "source_dirty": true,
+  "production_sources_changed": false,
+  "hardware": "Linux x86_64 cloud host; GCC 14.2.0; CMake 3.31; no physical GBA/Bold",
+  "reference": {
+    "name": "NanoBoyAdvance",
+    "commit": "55b5cf0ae3d929582ac5bfd486558173502b8354",
+    "source_url": "https://github.com/nba-emu/NanoBoyAdvance",
+    "core_modified": false,
+    "configuration": "Original core, bundled fmt/atom, headless standalone device composition; no desktop frontend",
+    "library_sha256": "01a99241e5e3f1e961b64ea5e3f3df3f34c7d5b041868d2d1aae03d40846f304",
+    "probe_binary_sha256": "55e23a50a9d8c7328e4b106e0dbac7f6fd14c2ce724dc66a706e4a2bfbc3aed8",
+    "reference_dma_source_sha256": "e70f22b3a4df44a3f38ad5c04e36a0400996bf23897767481af197c7e630a07a"
+  },
+  "cases": 96,
+  "commercial_rom_loaded": false,
+  "bios_loaded": false,
+  "generated_cartridge_bytes": 512,
+  "invariant_parameter_groups": 12,
+  "variant_parameter_groups": 0,
+  "measurement": "DMA::Run ownership cycles after original request activation at +2 completes; service delays 2/3; no CPU instruction, activation or host time included",
+  "checks": [
+    "All original NBA DMA/scheduler/bus methods",
+    "FIFO source advances 16 bytes",
+    "Repeat length reloads to four words",
+    "All runnable channels finish",
+    "Reported cycles equal scheduler delta"
+  ],
+  "comparison": {
+    "berryboy_source": "target/fifo-dma-qualification-2026-10-23/berryboy.csv",
+    "berryboy_evidence": "benchmarks/fifo-dma-reference-2026-10-23.json",
+    "normalization": "BerryBoy after minus late minus one IWRAM Thumb ADD cycle",
+    "single_channel_matches": 48,
+    "paired_channel_mismatches": 48,
+    "paired_channel_extra_berryboy_cycles": 2,
+    "mgba_count_four_control_matches": 12,
+    "selected_rows": [
+      {
+        "source": "0x03000000",
+        "channels": 1,
+        "count": 0,
+        "service_delay": 2,
+        "nba": 10,
+        "berryboy": 10,
+        "difference": 0
+      },
+      {
+        "source": "0x03000000",
+        "channels": 2,
+        "count": 0,
+        "service_delay": 2,
+        "nba": 18,
+        "berryboy": 20,
+        "difference": 2
+      },
+      {
+        "source": "0x02000000",
+        "channels": 1,
+        "count": 0,
+        "service_delay": 2,
+        "nba": 30,
+        "berryboy": 30,
+        "difference": 0
+      },
+      {
+        "source": "0x02000000",
+        "channels": 2,
+        "count": 0,
+        "service_delay": 2,
+        "nba": 58,
+        "berryboy": 60,
+        "difference": 2
+      },
+      {
+        "source": "0x08000000",
+        "channels": 1,
+        "count": 0,
+        "service_delay": 2,
+        "nba": 32,
+        "berryboy": 32,
+        "difference": 0
+      },
+      {
+        "source": "0x08000000",
+        "channels": 2,
+        "count": 0,
+        "service_delay": 2,
+        "nba": 62,
+        "berryboy": 64,
+        "difference": 2
+      }
+    ]
+  },
+  "conclusion": "Two-cycle overhead belongs to the continuous ownership interval; BerryBoy currently charges it again for each pending channel. Fix ownership accounting while retaining per-channel first access and word-level yields.",
+  "qualification": "Independent emulator agreement for this ownership total only. Request activation, write/IRQ phase, frame-930 initialization offset and physical hardware remain open.",
+  "validation": {
+    "host_tests": 1287,
+    "native_probe": "96 cases complete; count-invariant; no source/library patch",
+    "native_sdk": "unchanged from base commit",
+    "physical_gba": "unrun",
+    "physical_bold": "unrun"
+  },
+  "source_files_sha256": {
+    "tools/nba-dma-probe.cc": "e9cb768cee84e7028e9f1d694e4788513488f9195452a157537f00d0544c7be7",
+    "tools/nba-reference/CMakeLists.txt": "04b8754ee50977cff24a4968f2173ab096d62baf58b5cf4f1e84d423d7339dfa"
+  },
+  "csv_sha256": "1830b392b46c511a1a50f9d50f85c3e871e344f58b0be064be486dc3d3735a08",
+  "local_output": "target/nba-ownership-2026-10-23",
+  "local_logs": [
+    "/workspace/scratch/nba-probe-configure.log",
+    "/workspace/scratch/nba-probe-build.log",
+    "/workspace/scratch/nba-reference-host-verify.log"
+  ]
+}
