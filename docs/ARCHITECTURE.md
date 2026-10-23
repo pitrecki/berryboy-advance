@@ -1,5 +1,36 @@
 # Core architecture and scope
 
+## Design rules
+
+These rules guide new work and improvements to touched code. They do not require
+an unrelated rewrite or an interface, hierarchy or module for every class.
+
+| Principle | Application in this project |
+| --- | --- |
+| SOLID | Keep one reason to change, preserve substitutable device contracts and depend on narrow ports where behavior actually varies. |
+| KISS | Prefer a small direct implementation whose hardware and ownership rules are visible. |
+| YAGNI | Add abstractions, options and extension points for demonstrated current needs. |
+| DRY | Keep stable domain rules in one place; share behavior with the object responsible for it. |
+| WET | A small second implementation can clarify the real common responsibility before extraction; similar syntax alone is insufficient. |
+| GRASP | Assign state, behavior and invariants to the component with the relevant information; keep composition at the root. |
+| Separation of Concerns | Separate CPU/device features, host presentation, export/build logic and independent reference adapters. |
+| CQS | Separate inspection from execution; name mutating commands as operations and document hardware read side effects. |
+| Law of Demeter | Use immediate collaborators and public ports; isolate third-party object graphs inside diagnostic adapters. |
+| High Cohesion | Group code by feature, invariant and reason to change. |
+| Low Coupling | Keep dependencies explicit and avoid sharing mutable internals across devices or host workers. |
+| Composition over Inheritance | Assemble devices and ports; use inheritance only for a justified substitutable contract. |
+| Tell, Don't Ask | Ask the state owner to perform behavior instead of extracting state and duplicating its decisions. |
+| Fail Fast | Reject invalid inputs, unsupported hardware modes and inconsistent reference identities with actionable errors. |
+| Principle of Least Astonishment | Keep names, lifecycle, ownership and side effects predictable. |
+| Boy Scout Rule | Improve nearby code in small verified steps while preserving unrelated work. |
+| ADP / SDP / SAP | Keep package dependencies acyclic, directed toward stable contracts, with focused abstractions at stable boundaries. |
+| REP / CCP / CRP | Group code that is released, changes and is consumed together; retain the portable core versus host/export boundaries. |
+
+DRY and WET are complementary: extract a shared responsibility after concrete
+uses establish it. Do not build a general framework to remove harmless local
+duplication. Hardware timing, deterministic ownership and BlackBerry portability
+remain constraints on every design choice.
+
 ## Responsibilities
 
 Production and test sources are grouped by feature: `cpu`, `bus`, `timing`,
