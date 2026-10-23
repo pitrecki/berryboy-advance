@@ -179,7 +179,7 @@ preserves feature directories and excludes the desktop/build packages.
 
 ## Verification
 
-- `mvn verify`: **1295 passing tests** on Linux, JDK 21 and Maven 3.9.11 (2026-10-23).
+- `mvn verify`: **1311 passing tests** on Linux, JDK 21 and Maven 3.9.11 (2026-10-23).
 - **1201 core tests** repeated against the exported classes through Jupiter.
 - Test counts include individual parameterized invocations, not assertion counts.
 - The exporter performs 473 syntax rewrites. Generated sources compile with
@@ -202,6 +202,11 @@ English commit messages and Markdown documentation. Review ongoing updates in
 Git history; HTML viewers and ZIP archives are generated only when requested.
 See [AGENTS.md](AGENTS.md).
 A missing remote or unavailable write access must be reported explicitly.
+
+For successive roadmap steps without repeated chat prompts, run
+`python3 tools/roadmap_loop.py --max-steps 20` on a persistent, authenticated
+Codex CLI host. See [autonomous work](docs/AUTONOMOUS-WORK.md) for prerequisites,
+verified Git checkpoints, limits and stop conditions.
 
 The GitHub Actions workflow repeats the Linux build, both test runs and headless
 demos after publication. A local pass does not establish a remote CI pass.

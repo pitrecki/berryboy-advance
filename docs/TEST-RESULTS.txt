@@ -1,4 +1,17 @@
-Latest compatibility validation: 2026-10-23 UTC
+Latest tooling validation: 2026-10-23 UTC
+Host: Eclipse Temurin 21.0.8+9, Maven 3.9.11, Linux x86_64
+mvn verify (default profile): 1311 passed; 0 failed/errors/skipped.
+Jupiter console host suite: 1311 passed; 0 failed/skipped.
+Exported core console suite: 1201 passed; 0 failed/skipped.
+
+Autonomous roadmap runner: 16 host cases use isolated local Git repositories,
+bare remotes and a fake CLI, covering successive pushes, budget/resume,
+done/blocked, no progress, malformed/schema-invalid output, wrong author,
+unpublished commits, changed branch, rewritten history, dirty trees, process
+failure/timeout and overlapping loops. No model or background worker started.
+Core/SDK production code unchanged. See docs/AUTONOMOUS-WORK.md.
+
+Previous native SDK compatibility validation: 2026-10-23 UTC
 Host: Eclipse Temurin 21.0.8+9, Maven 3.9.11, Linux x86_64
 mvn verify (native bb-sim profile): 1295 passed; 0 failed/errors/skipped.
 Exported core console suite: 1201 passed; 0 failed/skipped.

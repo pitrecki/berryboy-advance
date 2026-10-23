@@ -46,7 +46,7 @@ the Thumb multiply timing and Game Pak DMA source corrections, plus the FIFO
 DMA reference counterexample. The shared clock, scheduler,
 CPU/bus timing, software renderer, mixer, cartridge devices and capture runner
 are implemented. Their accuracy is still being qualified; implementation does
-not close M1–M4. Latest local validation passed **1295 host tests and 1201
+not close M1–M4. Latest local validation passed **1311 host tests and 1201
 exported-core tests**. Neither test count establishes BlackBerry readiness.
 
 | Milestone | Deliverables | Completion evidence |
@@ -63,6 +63,11 @@ Use the following evidence-driven queue to qualify M1–M5 before M6 performance
 optimization and M7 sustained playback. Continue checking the portable export
 during core changes. SDK/device validation can progress independently when the
 external prerequisites become available.
+
+For successive deliveries without repeated chat prompts, the
+[bounded Codex CLI loop](AUTONOMOUS-WORK.md) reads this queue for each step and
+checks committed, published progress before continuing. It requires a running
+process on a persistent host; adding the tool does not start a background worker.
 
 ### Next roadmap: correctness, gameplay, then sustained playback
 
