@@ -7,8 +7,10 @@ public final class DmaController {
     private static final int BASE = 0x040000b0;
     private static final int GAME_PAK_ROM_START = 0x08000000;
     private static final int GAME_PAK_ROM_END = 0x0e000000;
+    private static final int OWNERSHIP_CYCLES = 2;
     private final Memory memory;
     private final Channel[] channels = new Channel[4];
+    private boolean ownsBus;
 
     public DmaController(Memory memory) {
         this.memory = memory;
@@ -71,10 +73,21 @@ public final class DmaController {
     public boolean runPending() {
         for (var i = 0; i < 4; i++) {
             if (channels[i].pending) {
+                // Pending channels share one continuous ownership interval.
+                // Keep the existing startup phase; activation/write/IRQ phases
+                // are qualified separately from this independently checked total.
+                if (!ownsBus) memory.clock().advance(OWNERSHIP_CYCLES);
                 channels[i].transfer();
+                ownsBus = hasPending();
                 return true;
             }
         }
+        ownsBus = false;
+        return false;
+    }
+
+    private boolean hasPending() {
+        for (var i = 0; i < 4; i++) if (channels[i].pending) return true;
         return false;
     }
 
@@ -120,7 +133,6 @@ public final class DmaController {
             // Game Pak ROM forces incrementing source addresses, including its
             // wait-state mirrors. Keep the programmed control bits unchanged.
             if (sourceAddress >= GAME_PAK_ROM_START && sourceAddress < GAME_PAK_ROM_END) sourceMode = 0;
-            if (first) memory.clock().advance(2); // DMA bus ownership startup.
             memory.clock().advance(memory.busTiming().accessCycles(sourceAddress, width, !first && sourceMode == 0));
             var value = width == 4 ? memory.read32(sourceAddress) : memory.read16(sourceAddress);
             memory.clock().advance(memory.busTiming().accessCycles(destinationAddress, width, !first && destinationMode != 1 && destinationMode != 2));

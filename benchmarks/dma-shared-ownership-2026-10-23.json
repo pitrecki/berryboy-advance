@@ -1,0 +1,111 @@
+{
+  "date": "2026-10-23",
+  "base_commit": "c058a75a0f8ace24e8eb1f55b962bc47fc4f7b3f",
+  "source_dirty": true,
+  "change": "Share the two-cycle ownership overhead across all pending DMA channels; retain per-channel first access, priority and word-level yields; recharge only for a new interval",
+  "hardware": "Linux x86_64 cloud host; Temurin 21.0.8+9; Maven 3.9.11; no physical GBA/Bold",
+  "independent_comparison": {
+    "reference_evidence": "benchmarks/nba-dma-ownership-2026-10-23.json",
+    "reference_commit": "55b5cf0ae3d929582ac5bfd486558173502b8354",
+    "cases": 96,
+    "matching_before": 48,
+    "matching_after": 96,
+    "fixed_berryboy_csv_sha256": "3f70b1062f77480350b4faa0ed337bc8bf11df561eeced3776130c94f7c0aa71",
+    "scope": "Continuous ownership cost only; activation/write/IRQ phases remain unqualified; existing startup placement retained"
+  },
+  "regressions": {
+    "cases": 8,
+    "before_failures": 4,
+    "after_failures": 0,
+    "existing_fifo_invariance_cases_still_passing": 192,
+    "checks": [
+      "Single/paired channels from IWRAM, EWRAM and ROM",
+      "Two groups separated by idle gap recharge overhead",
+      "Higher-priority word-boundary preemption without new ownership charge",
+      "CPU resumption separates intervals",
+      "Existing long DMA frame-budget yields preserved"
+    ]
+  },
+  "normalized_bios_walk": {
+    "first_different_row_zero_based": 796679,
+    "matching_pc_cycle_rows": 796679,
+    "pc": "0x1a0a",
+    "next_pc": "0x1a0c",
+    "cycle_before": 1882529,
+    "berryboy_after_before": 1882550,
+    "berryboy_after_fixed": 1882548,
+    "mgba_after": 1882546,
+    "registers_at_first_difference": "CPSR, r0-r14 and next PC match",
+    "remaining_difference": "Two cycles; mGBA ignored-count-dependent overdue-event behavior; not evidence to remove more ownership overhead",
+    "trace_sha256": "802981f0836d7c64192b61e5ea95d5d0724fc0d35d705700fec0162751aaedf4",
+    "local_java_probe_sha256": "99421da0cf1d2087f948f122cdac17dd47c63084f4fc6b5813048233356ceaeb",
+    "local_reference_probe_sha256": "1ba381f8a388beca069ebaa254f322dbbda3b4e69ff269b21556ba355ca8903a"
+  },
+  "validation": {
+    "host_tests": 1295,
+    "exported_core_tests": 1201,
+    "actual_ecj_cldc_core_tests": 1201,
+    "failures": 0,
+    "skipped": 0,
+    "syntax_rewrites": 473,
+    "native_bb_sim": "BUILD SUCCESS; RAPC No errors; COD emitted",
+    "on_bbos_runtime_checks": null,
+    "physical_gba": "unrun",
+    "physical_bold": "unrun"
+  },
+  "game_replay": {
+    "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+    "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+    "input_sha256": "83fbaacb4b6c7707e367959540da80dc4494abef89265bff4d345f0981b0e96d",
+    "initial_save_sha256": "fd44f0a2d5348f7ea91c1e3c50a9b2b794023be9bb86787a32bcb9d90c9aa8a9",
+    "backup_sha256": "fd44f0a2d5348f7ea91c1e3c50a9b2b794023be9bb86787a32bcb9d90c9aa8a9",
+    "rtc_seed": "2000-01-01T00:00:00",
+    "devices": 0,
+    "frames": 1272,
+    "warmup_frames": 0,
+    "guest_cycles": 357299717,
+    "audio_frames": 697851,
+    "video_sha256": "3e68811368e5316113a752e2543ac7e2429ef1b132091b1d072729cf449023a0",
+    "audio_sha256": "91527205cba5febedba13313d071d6568be4a28243b6f815d7d966d8db8c6a72",
+    "dropped_guest_frames": 0,
+    "audio_overruns": 0,
+    "audio_underruns": 0,
+    "video_unchanged": true,
+    "initial_save_unchanged": true,
+    "video_snapshots_unchanged": [
+      930,
+      1029,
+      1272
+    ],
+    "previous_audio_sha256": "6d6c011965919ef279d196dcd672c31d5a98fa3e86fc4b1e4dc552d022e51d11",
+    "comparison": {
+      "status": "mismatch",
+      "exact_video_frames": 1111,
+      "total_video_frames": 1272,
+      "first_video_mismatch": 930,
+      "whole_video_hash_match": false,
+      "whole_audio_hash_match": false,
+      "reference_audio_frames": 697852,
+      "berryboy_audio_frames": 697851,
+      "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+    },
+    "initialization_offset": "open; first mismatch still 930; full RGB unchanged",
+    "physical_playback": "unqualified"
+  },
+  "source_files_sha256": {
+    "src/main/java/berryboy/bus/DmaController.java": "0e9238741597a575c9c7615bd68014407f49c945a63f841b186718d81c936896",
+    "src/test/java/berryboy/bus/DmaOwnershipTimingTest.java": "01ac7a0fba879e0b824d238dfb89d117cf12a3096d9064b6bd75a5250ccc7d6d"
+  },
+  "cod": {
+    "bytes": 46748,
+    "sha256": "2ae215f844a9ca7c29f131cb9ca399c7b611fe652387ab18d637011b149af484"
+  },
+  "local_output": "target/dma-ownership-fix-2026-10-23",
+  "local_logs": [
+    "/workspace/scratch/dma-ownership-before.log",
+    "/workspace/scratch/dma-ownership-verify.log",
+    "/workspace/scratch/dma-ownership-console.log",
+    "/workspace/scratch/dma-ownership-cldc.log",
+    "/workspace/scratch/dma-ownership-replay.log"
+  ]
+}

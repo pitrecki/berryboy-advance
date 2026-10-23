@@ -1,5 +1,38 @@
 # Independent reference validation, 2026-10-23
 
+## Shared DMA ownership correction
+
+Pending DMA channels now share a continuous bus-ownership interval. The two
+overhead cycles are charged once, including priority preemption between words,
+and charged again after ownership ends. Each channel retains its own first
+access/nonsequential state. Long transfers still yield after every word. This
+corrects the independently demonstrated total; the previous startup placement
+is retained, so request activation and individual write/IRQ phases remain open.
+
+Eight new core regressions cover both channel counts and all three source
+regions, repeated groups separated by an idle gap, higher-priority preemption
+and CPU resumption between requests. **Four fail before correction; all eight
+pass afterwards.** The original 192 FIFO count-invariance cases still pass.
+The standalone BerryBoy probe now matches **96/96 NBA ownership observations**,
+including all 48 paired-channel cases that previously cost two extra cycles.
+
+The normalized BIOS walk still first differs from mGBA at row 796679, with
+identical registers/PC, but BerryBoy now ends at **1882548**, versus reference
+**1882546** (previously 1882550). The remaining two cycles correspond to the
+reference's ignored-count-dependent overdue-event behavior identified below;
+they are not grounds to remove further ownership overhead.
+
+A fresh 1272-frame LeafGreen replay preserves the entire RGB hash, all three
+video snapshots and the original player save. It remains **1111/1272 exact RGB
+frames**, first mismatch **930**. PCM changes with the corrected clock, remains
+unmatched and has 697851 stereo samples; no guest frames or software audio
+buffers are lost. The initialization offset is still open. Host work timings
+are not a native-playback qualification.
+
+Validation: **1295 host tests, 1201 exported-core tests and 1201 actual ECJ CLDC
+core tests**, no failures or skips; native SDK/RAPC compilation passes.
+Evidence: [dma-shared-ownership-2026-10-23.json](../benchmarks/dma-shared-ownership-2026-10-23.json).
+
 ## Independent DMA ownership reference
 
 An original [NanoBoyAdvance probe](../tools/nba-dma-probe.cc) now measures
@@ -28,7 +61,7 @@ its other count values retain the earlier reference defect. NBA brackets the
 whole continuous DMA run with one cycle before and one after, rather than
 charging overhead again when the next pending channel takes over.
 
-The next correction should share ownership overhead across pending channels,
+The correction above shares ownership overhead across pending channels,
 preserving channel priority, per-channel first/nonsequential access and yielding
 between words. Request activation, individual write/IRQ phases and real hardware
 qualification remain separate. This standalone device composition does not

@@ -1,8 +1,17 @@
 Latest compatibility validation: 2026-10-23 UTC
 Host: Eclipse Temurin 21.0.8+9, Maven 3.9.11, Linux x86_64
-mvn verify (native bb-sim profile): 1287 passed; 0 failed/errors/skipped.
-Exported core console suite: 1193 passed; 0 failed/skipped.
-Actual ECJ CLDC-class core suite: 1193 passed; 0 failed/skipped.
+mvn verify (native bb-sim profile): 1295 passed; 0 failed/errors/skipped.
+Exported core console suite: 1201 passed; 0 failed/skipped.
+Actual ECJ CLDC-class core suite: 1201 passed; 0 failed/skipped.
+
+Shared DMA ownership: charge overhead once across pending channels, including
+word-boundary preemption. Eight new regressions: four fail before, all pass
+afterwards. Independent NBA ownership comparison now matches 96/96 cases.
+LeafGreen replay preserves whole RGB, selected video states and save; PCM
+changes and remains unmatched. First BIOS discrepancy drops from four to two
+cycles, retaining the identified mGBA count-dependent event artifact. Request
+activation/write/IRQ phases and the frame-930 initialization offset remain open.
+See benchmarks/dma-shared-ownership-2026-10-23.json.
 
 FIFO DMA reference counterexample: 192 original observations per emulator;
 unmodified mGBA 0.10.5 changes timing with the ignored FIFO count in 20/24
@@ -64,9 +73,9 @@ See benchmarks/rgb555-reference-2026-10-22.json and docs/REFERENCE-VALIDATION.md
 
 Native BlackBerry SDK build: ECJ 4.6.1, source 1.3 / target CLDC 1.1,
 JDE 7.1 net_rim_api.jar bootclasspath and original RAPC jar on JDK 21.
-Full bb-sim Maven profile (ecj, launch=false): BUILD SUCCESS; 1287 tests pass.
+Full bb-sim Maven profile (ecj, launch=false): BUILD SUCCESS; 1295 tests pass.
 SDK compiler and RAPC: no errors; BerryBoyAdvance.cod produced.
-Actual CLDC-class core suite: 1193 passed; 0 failed/skipped, no host core fallback.
+Actual CLDC-class core suite: 1201 passed; 0 failed/skipped, no host core fallback.
 Plain Java 1.4 target previously failed RAPC with a missing StackMap; the CLDC
 compiler target fixes it. Default Windows javac builds now explicitly preverify.
 See docs/BLACKBERRY.md and benchmarks/blackberry-sdk-build-2026-10-22.json.

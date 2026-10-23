@@ -46,7 +46,7 @@ the Thumb multiply timing and Game Pak DMA source corrections, plus the FIFO
 DMA reference counterexample. The shared clock, scheduler,
 CPU/bus timing, software renderer, mixer, cartridge devices and capture runner
 are implemented. Their accuracy is still being qualified; implementation does
-not close M1–M4. Latest local validation passed **1287 host tests and 1193
+not close M1–M4. Latest local validation passed **1295 host tests and 1201
 exported-core tests**. Neither test count establishes BlackBerry readiness.
 
 | Milestone | Deliverables | Completion evidence |
@@ -82,7 +82,7 @@ See [REFERENCE-VALIDATION.md](REFERENCE-VALIDATION.md) and its linked JSON recor
 | Stage / priority | Work | Exit evidence |
 | --- | --- | --- |
 | R1 / P0: LeafGreen menu (RGB555 reference delivered; pixel qualification open) | RGB555 confirms all 12 BIOS startup RGB frames; menu state matches but unmodified mGBA's shifted-channel brightness still differs in 19632 pixels | Preserve native channel arithmetic and original regressions; obtain independently correct brightness rounding before passing the menu gate. Room frame 1272 remains exact and saves unchanged |
-| R2 / P0: Timing and bus accuracy (two fixes delivered; FIFO timing reference unqualified) | Original probes confirm MUL timing and ROM source increment; an asset-free FIFO reproducer reveals mGBA count-dependent timing and reproduces the four-cycle BIOS discrepancy; frame 930 initialization offset remains open | Obtain an independent FIFO timing source or original hardware measurements; land each demonstrated core defect with a minimal regression and event trace, without regressing DMA deadlines, open-bus handling or saves |
+| R2 / P0: Timing and bus accuracy (MUL, ROM addressing and shared DMA ownership corrected) | Independent NBA now matches all 96 ownership cases; mGBA count-dependent event timing is isolated; frame 930 initialization offset remains open | Qualify request activation and write/IRQ phases using independent evidence; land each demonstrated core defect with a minimal regression and event trace, without regressing DMA deadlines, open-bus handling or saves |
 | R3 / P1: Audio correctness | Start with late Sonic Advance 3 and Wario Land 4 differences; compare timer/DMA FIFO events, PSG state and sample clocks; distinguish guest-state errors from output gain, filter and resampling differences | Repeatable event/sample checkpoints, justified comparison tolerances and listening review; no unexplained divergence in the selected routes and zero software buffer failures |
 | R4 / P1: Gameplay and player saves | Record fixed routes through actual levels, races, battles and menus; extend manual save/restart/load beyond LeafGreen | Named reference checkpoints for all eleven available titles; save-capable titles restore player progress in fresh BerryBoy and mGBA instances from isolated copies |
 | R5 / P2: Sustained Linux playback | After route correctness passes, profile bottlenecks, optimize one at a time, and run the warmup/measurement protocol below | Three 10-minute runs per qualified scenario after 30-second warmup, actual presentation/audio counters, bounded memory/queues and A/V drift; all acceptance gates below pass |
@@ -144,10 +144,13 @@ execution and physical-device access remain separate gates.
    or original hardware measurements before attributing this discrepancy to
    BerryBoy; mGBA 0.10.5 cannot be its absolute timing oracle. The new
    [independent NBA ownership probe](REFERENCE-VALIDATION.md#independent-dma-ownership-reference)
-   provides that second source for continuous bus ownership: 48 single-channel
-   cases match, while 48 paired cases show two extra BerryBoy cycles. Next share
-   ownership overhead across pending channels and preserve word-level yields;
-   activation, write/IRQ phases and hardware qualification remain separate.
+   provides that second source for continuous bus ownership. The
+   [shared ownership correction](REFERENCE-VALIDATION.md#shared-dma-ownership-correction)
+   now matches all 96 cases, including 48 previously overcharged pairs, and
+   preserves word-level yields. Eight new regressions cover repeated groups,
+   preemption and CPU resumption. The replay keeps RGB, video states and save
+   unchanged; PCM changes and remains unmatched. Continue with request
+   activation and write/IRQ phases; hardware qualification remains separate.
    A separate
    [ROM DMA source correction](REFERENCE-VALIDATION.md#dma-game-pak-source-addressing-and-next-timing-boundary)
    matches 24 original reference cases and preserves the whole replay's RGB/PCM,
