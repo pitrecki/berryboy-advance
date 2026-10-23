@@ -82,6 +82,11 @@ The [post-DMA regression](../benchmarks/dma-game-regression-2026-10-23.json)
 repeats all eleven 3600-frame captures on the corrected core: 39600 frames,
 zero software-buffer losses and isolated fresh backups. This preserves the
 smoke scope; it does not close the independent correctness or gameplay gates.
+The subsequent [phase-correction regression](../benchmarks/dma-phase-game-regression-2026-10-23.json)
+repeats all 39600 frames: RGB/PCM, backups, final cycles and sample counts are
+unchanged, with zero software-buffer losses. Its 134 changed cycle/PC/CPSR
+checkpoint rows require equal-cycle CPU-state comparison; frame traces are not
+classified as equivalent merely because output hashes match.
 
 | Stage / priority | Work | Exit evidence |
 | --- | --- | --- |
@@ -167,6 +172,10 @@ execution and physical-device access remain separate gates.
    before and pass after. Full LeafGreen RGB/PCM, video states and save remain
    unchanged. Next qualify request activation/CPU continuation and equal-deadline
    IRQ priority, then repeat phase observations for actual FIFO/timer workloads.
+   The eleven-game replay preserves full RGB/PCM and backups but changes 134
+   frame checkpoint rows in cycle/PC/CPSR. Compare equal-cycle CPU state and
+   distinguish changed observation endpoints from actual guest-state divergence
+   before treating those traces as equivalent.
    A separate
    [ROM DMA source correction](REFERENCE-VALIDATION.md#dma-game-pak-source-addressing-and-next-timing-boundary)
    matches 24 original reference cases and preserves the whole replay's RGB/PCM,

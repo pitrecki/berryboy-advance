@@ -1,0 +1,564 @@
+{
+  "date": "2026-10-23",
+  "tested_source_commit": "9f45db89759c400698f23ab13e48e6e9e8fab923",
+  "production_core_commit": "9f45db89759c400698f23ab13e48e6e9e8fab923",
+  "source_dirty_at_batch_start": false,
+  "provenance_note": "Only AGENTS.md, documentation and the byte-identical input recording were edited during the batch; production sources remained identical to the tested commit. Raw per-run source_dirty=false was cached at batch start, not re-evaluated during each run.",
+  "reason": "Eleven-game regression after splitting DMA ownership into acquisition and release phases",
+  "qualification": "headless scripted smoke; no independent correctness or physical playback pass",
+  "hardware": "Linux x86_64 cloud host; Temurin 21.0.8+9; headless; no physical Bold",
+  "input": "benchmarks/inputs/eleven-game-start-a.tsv",
+  "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+  "input_protocol": "28 Start/A events, three-frame holds at 60-frame intervals from frame 360; released after frame 1143; fresh backup per title; no player save loaded",
+  "rtc_seed": "2000-01-01T00:00:00",
+  "devices": 0,
+  "comparison_baseline": "benchmarks/dma-game-regression-2026-10-23.json",
+  "comparison_baseline_sha256": "a176a2b90e2fe35fe79a6df2d3985447f11b02e9796a0397351bd53831ddf6b6",
+  "games_completed": 11,
+  "frames_per_game": 3600,
+  "total_guest_frames": 39600,
+  "total_stereo_samples": 21725550,
+  "missing_guest_frames": 0,
+  "audio_overruns": 0,
+  "audio_underruns": 0,
+  "game_written_backup_files": 4,
+  "all_previous_rgb_pcm_backups_final_cycles_and_sample_counts_unchanged": true,
+  "frame_trace_different_rows": 134,
+  "frame_trace_interpretation": "Only cycle/PC/CPSR checkpoint fields change. ScenarioRunner records after whole instructions/DMA units, which can overshoot nominal frame deadlines; phase changes move unit boundaries. This record does not prove equal CPU state at equal guest cycles or classify all trace differences as harmless. Keep exact trace equivalence and timing qualification open.",
+  "runs": [
+    {
+      "game_code": "AGFE",
+      "title": "Golden Sun - The Lost Age (USA)",
+      "exit_code": 0,
+      "frame_records": 3600,
+      "rom_sha256": "4199d82f845edf3e2e92f3783bca00190b5bc102d7c8aa339b951de280b1e6cc",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+      "frames": 3600,
+      "warmup_frames": 0,
+      "guest_cycles": 1011225610,
+      "audio_frames": 1975050,
+      "video_sha256": "ac7220a78d04aa8a0245b5535ac02d76ee19bab0540b21e9004a7aa671825fb7",
+      "audio_sha256": "3f9c6330312e77e49c2c66398bb6a4df75ff841b6c82f4d8664815638934db6d",
+      "initial_save_sha256": null,
+      "backup_sha256": "71189f7fb6aed638640078fba3a35fda6c39c8962e74dcc75935aac948da9063",
+      "backup_type": 1,
+      "backup_bytes": 65536,
+      "save_written": false,
+      "dropped_guest_frames": 0,
+      "audio_overruns": 0,
+      "audio_underruns": 0,
+      "previous_berryboy_video_unchanged": true,
+      "previous_berryboy_audio_unchanged": true,
+      "previous_berryboy_backup_unchanged": true,
+      "previous_berryboy_guest_cycles_unchanged": true,
+      "previous_berryboy_audio_frames_unchanged": true,
+      "frame_trace_comparison": {
+        "before_sha256": "109f31f714ac7e52b83d37f8acd9b79cff493202e1287a6d024348157ee883e7",
+        "after_sha256": "c5e3cd5d4a702b69e2d55adbaaae6d5b88443f0061fe9c088871f6c6de88b97f",
+        "different_rows": 48,
+        "different_fields_count": {
+          "cpsr": 1,
+          "cycle": 46,
+          "pc": 9
+        },
+        "cycle_delta_min": -6,
+        "cycle_delta_max": 7,
+        "first_difference": {
+          "frame": 322,
+          "differences": {
+            "cycle": {
+              "before": 90448512,
+              "after": 90448518
+            }
+          }
+        }
+      }
+    },
+    {
+      "game_code": "AGSE",
+      "title": "Golden Sun (USA)",
+      "exit_code": 0,
+      "frame_records": 3600,
+      "rom_sha256": "c14f1151897e8d73f25ffdd67e21eebb6dc57973ff2458872ee89fa9060aaca1",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+      "frames": 3600,
+      "warmup_frames": 0,
+      "guest_cycles": 1011225600,
+      "audio_frames": 1975050,
+      "video_sha256": "988bc197cbd1d5013bb9d2e4ab098a0b755723bcd96f4998b6ea950b4c661dc3",
+      "audio_sha256": "d6be2e47e18884c9112df8f6f681220d7323a358e5e53661c9256800af112b66",
+      "initial_save_sha256": null,
+      "backup_sha256": "71189f7fb6aed638640078fba3a35fda6c39c8962e74dcc75935aac948da9063",
+      "backup_type": 1,
+      "backup_bytes": 65536,
+      "save_written": false,
+      "dropped_guest_frames": 0,
+      "audio_overruns": 0,
+      "audio_underruns": 0,
+      "previous_berryboy_video_unchanged": true,
+      "previous_berryboy_audio_unchanged": true,
+      "previous_berryboy_backup_unchanged": true,
+      "previous_berryboy_guest_cycles_unchanged": true,
+      "previous_berryboy_audio_frames_unchanged": true,
+      "frame_trace_comparison": {
+        "before_sha256": "54c907a8f25e6c49b730fa7bd828319ed865c2442531043b4fa861986e99f158",
+        "after_sha256": "fa3e30035b0b502e1d8e36f9875ab51673058697d0334dd904df3b11d8eee2ba",
+        "different_rows": 28,
+        "different_fields_count": {
+          "cycle": 28
+        },
+        "cycle_delta_min": -1,
+        "cycle_delta_max": 11,
+        "first_difference": {
+          "frame": 522,
+          "differences": {
+            "cycle": {
+              "before": 146627714,
+              "after": 146627713
+            }
+          }
+        }
+      }
+    },
+    {
+      "game_code": "AMTE",
+      "title": "Metroid Fusion (USA)",
+      "exit_code": 0,
+      "frame_records": 3600,
+      "rom_sha256": "a56ce3d7f8f3f4f4d0468d421fff5dd3ee3aec99a58244377e43aae769dc3fe8",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+      "frames": 3600,
+      "warmup_frames": 0,
+      "guest_cycles": 1011225600,
+      "audio_frames": 1975050,
+      "video_sha256": "7c63270973194cc973b139295f1e1a313954184941e7f9378f3d9d4cefe54759",
+      "audio_sha256": "0dfca2dcd145643058d4b13878df5b4544a6041dbbd15f52a96e24b8832b926f",
+      "initial_save_sha256": null,
+      "backup_sha256": "5b7becd1c51999f6f13359f1515672056849788383af8a2834a6ce69b94aa4f0",
+      "backup_type": 0,
+      "backup_bytes": 32768,
+      "save_written": true,
+      "dropped_guest_frames": 0,
+      "audio_overruns": 0,
+      "audio_underruns": 0,
+      "previous_berryboy_video_unchanged": true,
+      "previous_berryboy_audio_unchanged": true,
+      "previous_berryboy_backup_unchanged": true,
+      "previous_berryboy_guest_cycles_unchanged": true,
+      "previous_berryboy_audio_frames_unchanged": true,
+      "frame_trace_comparison": {
+        "before_sha256": "8502fd9ba3d342851e9cd95fe105acb114741b5b768317129ce15df815d5f7f1",
+        "after_sha256": "1f645b48c282118dbb209b0dbcc40fb4292cf3772729084aac7b3ea77e38a02b",
+        "different_rows": 4,
+        "different_fields_count": {
+          "cycle": 4
+        },
+        "cycle_delta_min": -1,
+        "cycle_delta_max": -1,
+        "first_difference": {
+          "frame": 271,
+          "differences": {
+            "cycle": {
+              "before": 76122817,
+              "after": 76122816
+            }
+          }
+        }
+      }
+    },
+    {
+      "game_code": "AVRE",
+      "title": "V-Rally 3 (USA)",
+      "exit_code": 0,
+      "frame_records": 3600,
+      "rom_sha256": "5818fa74fdcacf39b53a1acea99432c4362979dd656c8153fd9861094aca51f7",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+      "frames": 3600,
+      "warmup_frames": 0,
+      "guest_cycles": 1011225656,
+      "audio_frames": 1975050,
+      "video_sha256": "0201bafe4bc96886d8f09641193d3b76045e219d7833b6886d6fb9ea07e992c2",
+      "audio_sha256": "6f2f43d19e5a2adeb50ef0c1ef9e3a2d4dbfc3fa417d9186c2a89e812ba50318",
+      "initial_save_sha256": null,
+      "backup_sha256": "7d2c7ac4888bfd75cd5f56e8d61f69595121183afc81556c876732fd3782c62f",
+      "backup_type": 4,
+      "backup_bytes": 8192,
+      "save_written": false,
+      "dropped_guest_frames": 0,
+      "audio_overruns": 0,
+      "audio_underruns": 0,
+      "previous_berryboy_video_unchanged": true,
+      "previous_berryboy_audio_unchanged": true,
+      "previous_berryboy_backup_unchanged": true,
+      "previous_berryboy_guest_cycles_unchanged": true,
+      "previous_berryboy_audio_frames_unchanged": true,
+      "frame_trace_comparison": {
+        "before_sha256": "62bc77bc1ed8268aaeb6156847fbc7dda56ccccef490b8d234d218d9ac52af7d",
+        "after_sha256": "29720aa9e29accf30a5a76afbb339786afafe778277d96d08053d1db677a474a",
+        "different_rows": 11,
+        "different_fields_count": {
+          "cycle": 11,
+          "pc": 2
+        },
+        "cycle_delta_min": -9,
+        "cycle_delta_max": 20,
+        "first_difference": {
+          "frame": 2507,
+          "differences": {
+            "cycle": {
+              "before": 704206279,
+              "after": 704206278
+            }
+          }
+        }
+      }
+    },
+    {
+      "game_code": "AWAE",
+      "title": "Wario Land 4 (USA)",
+      "exit_code": 0,
+      "frame_records": 3600,
+      "rom_sha256": "d16c7bf6e62bb84049fff1b387108fbd1e6e2cd38ca994ab5310dd9cbf9ba414",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+      "frames": 3600,
+      "warmup_frames": 0,
+      "guest_cycles": 1011225600,
+      "audio_frames": 1975050,
+      "video_sha256": "607471de81655b1834b765c46f268ca4adca4943db7e0f818745ca85b2e9a00d",
+      "audio_sha256": "b0fd4236a1604dbf48df3d3b3401864b78cbd6888f9dfaa78d321fa33dca4dff",
+      "initial_save_sha256": null,
+      "backup_sha256": "fe405055a8c4a9d22ae94d03f6ee4f851b7869ac4f76eb3254c7888398b37903",
+      "backup_type": 0,
+      "backup_bytes": 32768,
+      "save_written": true,
+      "dropped_guest_frames": 0,
+      "audio_overruns": 0,
+      "audio_underruns": 0,
+      "previous_berryboy_video_unchanged": true,
+      "previous_berryboy_audio_unchanged": true,
+      "previous_berryboy_backup_unchanged": true,
+      "previous_berryboy_guest_cycles_unchanged": true,
+      "previous_berryboy_audio_frames_unchanged": true,
+      "frame_trace_comparison": {
+        "before_sha256": "b2840625c8e902fe8a7a74c0420c7227a48036a31c98099c0431998cc92f055c",
+        "after_sha256": "33fb6a4ba3aabc6fd49ded844c19fc7da076bb37f2633c0bc8a0531280050490",
+        "different_rows": 5,
+        "different_fields_count": {
+          "cycle": 5
+        },
+        "cycle_delta_min": -1,
+        "cycle_delta_max": 6,
+        "first_difference": {
+          "frame": 271,
+          "differences": {
+            "cycle": {
+              "before": 76122822,
+              "after": 76122821
+            }
+          }
+        }
+      }
+    },
+    {
+      "game_code": "AZEE",
+      "title": "Zone of the Enders - The Fist of Mars (USA)",
+      "exit_code": 0,
+      "frame_records": 3600,
+      "rom_sha256": "114fff29e5642300a9b3698916ecd86682aa6da0fd821065b7431ba8c059f0f2",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+      "frames": 3600,
+      "warmup_frames": 0,
+      "guest_cycles": 1011225600,
+      "audio_frames": 1975050,
+      "video_sha256": "941434e3c27502c2a4970cb580dad9806c3f01c1d8057f2f8bb578cd13bdb6db",
+      "audio_sha256": "851fc9a5f4f3473d7e6d57b852bcbe54395bdfb22f0a3a0fc4b0d18274fb9c0b",
+      "initial_save_sha256": null,
+      "backup_sha256": "71189f7fb6aed638640078fba3a35fda6c39c8962e74dcc75935aac948da9063",
+      "backup_type": 1,
+      "backup_bytes": 65536,
+      "save_written": false,
+      "dropped_guest_frames": 0,
+      "audio_overruns": 0,
+      "audio_underruns": 0,
+      "previous_berryboy_video_unchanged": true,
+      "previous_berryboy_audio_unchanged": true,
+      "previous_berryboy_backup_unchanged": true,
+      "previous_berryboy_guest_cycles_unchanged": true,
+      "previous_berryboy_audio_frames_unchanged": true,
+      "frame_trace_comparison": {
+        "before_sha256": "a799b27b061b642fa7a2b4139d4ef214a72241f97ee94bbd09a4ecae73b0af32",
+        "after_sha256": "82a77398ea21bca309d231b887bc37a74d69fd25efdf5ddb5520209f1fe9165c",
+        "different_rows": 8,
+        "different_fields_count": {
+          "cpsr": 2,
+          "cycle": 6,
+          "pc": 5
+        },
+        "cycle_delta_min": -1,
+        "cycle_delta_max": 6,
+        "first_difference": {
+          "frame": 271,
+          "differences": {
+            "cycle": {
+              "before": 76122816,
+              "after": 76122822
+            }
+          }
+        }
+      }
+    },
+    {
+      "game_code": "B3SE",
+      "title": "Sonic Advance 3 (USA)",
+      "exit_code": 0,
+      "frame_records": 3600,
+      "rom_sha256": "f937fa93b97b14b9fb9fce98844c534f936222d21d1fdb5f1af42292bad32c85",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+      "frames": 3600,
+      "warmup_frames": 0,
+      "guest_cycles": 1011225600,
+      "audio_frames": 1975050,
+      "video_sha256": "44b6c8460d04cd3f76042ebc861987711d540f5273382a822e36bcd4517cc505",
+      "audio_sha256": "d5b481e9a846e0098384a207672da9c212de3f32b05b022c7c9a0a5c9b6bd684",
+      "initial_save_sha256": null,
+      "backup_sha256": "9d900aa5fddfccd3d528a98d7bf2aa44cb9613640cfb900c6c100e0606318d90",
+      "backup_type": 1,
+      "backup_bytes": 65536,
+      "save_written": true,
+      "dropped_guest_frames": 0,
+      "audio_overruns": 0,
+      "audio_underruns": 0,
+      "previous_berryboy_video_unchanged": true,
+      "previous_berryboy_audio_unchanged": true,
+      "previous_berryboy_backup_unchanged": true,
+      "previous_berryboy_guest_cycles_unchanged": true,
+      "previous_berryboy_audio_frames_unchanged": true,
+      "frame_trace_comparison": {
+        "before_sha256": "e54e952670d97f780bdd18ab6c6fa115f6d133c7a2dd9bd0506394826c6c9221",
+        "after_sha256": "bb6a62c294d5600cd57dfa57c60f1d00c4886a64ca135ab6bc538dd6acccfb6d",
+        "different_rows": 15,
+        "different_fields_count": {
+          "cycle": 13,
+          "pc": 8
+        },
+        "cycle_delta_min": -7,
+        "cycle_delta_max": 3,
+        "first_difference": {
+          "frame": 1744,
+          "differences": {
+            "cycle": {
+              "before": 489882625,
+              "after": 489882624
+            }
+          }
+        }
+      }
+    },
+    {
+      "game_code": "BGTE",
+      "title": "Grand Theft Auto Advance (USA)",
+      "exit_code": 0,
+      "frame_records": 3600,
+      "rom_sha256": "215c574d5afbda0aadbf89dc76b765cfaaeb35953eab63f7687d8bfe8a8e0f4d",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+      "frames": 3600,
+      "warmup_frames": 0,
+      "guest_cycles": 1011225600,
+      "audio_frames": 1975050,
+      "video_sha256": "1ac108b912baf4fdfafbed542572dba0ca1cdb6a223f4084dacc3f2a73c3c04a",
+      "audio_sha256": "3d4193ae962eae1dea27a91e1577765ba7f5c4b08afd3250fe43eff0209fef82",
+      "initial_save_sha256": null,
+      "backup_sha256": "9f56cda75fefeab90f6fa5d5ddc9601544b121732c5ecccab32e631060453a5d",
+      "backup_type": 3,
+      "backup_bytes": 512,
+      "save_written": false,
+      "dropped_guest_frames": 0,
+      "audio_overruns": 0,
+      "audio_underruns": 0,
+      "previous_berryboy_video_unchanged": true,
+      "previous_berryboy_audio_unchanged": true,
+      "previous_berryboy_backup_unchanged": true,
+      "previous_berryboy_guest_cycles_unchanged": true,
+      "previous_berryboy_audio_frames_unchanged": true,
+      "frame_trace_comparison": {
+        "before_sha256": "4826ae999e48a36c33a15fa093686069bcb72f81764f4a7717ba15a807ac6846",
+        "after_sha256": "b6980c67e2d3f6176f5a6498cbd7dda476eabeb24354cd02b8971c163b577c6e",
+        "different_rows": 4,
+        "different_fields_count": {
+          "cycle": 4
+        },
+        "cycle_delta_min": -1,
+        "cycle_delta_max": 6,
+        "first_difference": {
+          "frame": 271,
+          "differences": {
+            "cycle": {
+              "before": 76122816,
+              "after": 76122822
+            }
+          }
+        }
+      }
+    },
+    {
+      "game_code": "BMXE",
+      "title": "Metroid - Zero Mission (USA)",
+      "exit_code": 0,
+      "frame_records": 3600,
+      "rom_sha256": "fc94f65380b65b870a30b9b04b39cca1dc63d6e46a4a373d3904adc0912ebc37",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+      "frames": 3600,
+      "warmup_frames": 0,
+      "guest_cycles": 1011225600,
+      "audio_frames": 1975050,
+      "video_sha256": "b94a1673deb442521e935055b975db807068b042a4ed8acab76cfa4aaf8a7f84",
+      "audio_sha256": "79b846733d2b26ca2fe9bcac7b1ea09c48bee59c2cfe1e6777b32363aa7bd88a",
+      "initial_save_sha256": null,
+      "backup_sha256": "e7ef5933b70b4e5866829363eeb0fa4799f43c152c3b39f3e9ca0e1ffe53df89",
+      "backup_type": 0,
+      "backup_bytes": 32768,
+      "save_written": true,
+      "dropped_guest_frames": 0,
+      "audio_overruns": 0,
+      "audio_underruns": 0,
+      "previous_berryboy_video_unchanged": true,
+      "previous_berryboy_audio_unchanged": true,
+      "previous_berryboy_backup_unchanged": true,
+      "previous_berryboy_guest_cycles_unchanged": true,
+      "previous_berryboy_audio_frames_unchanged": true,
+      "frame_trace_comparison": {
+        "before_sha256": "8a16a6350d696e6ed54fc93ab644191375c362628e4103d11c5944ec533a21d1",
+        "after_sha256": "83a8add5b8d3e069fba733c11ca40d7dd0c4bbf96c4b1cba50767e79e959bb11",
+        "different_rows": 7,
+        "different_fields_count": {
+          "cycle": 7
+        },
+        "cycle_delta_min": -1,
+        "cycle_delta_max": 1,
+        "first_difference": {
+          "frame": 271,
+          "differences": {
+            "cycle": {
+              "before": 76122820,
+              "after": 76122819
+            }
+          }
+        }
+      }
+    },
+    {
+      "game_code": "BPEE",
+      "title": "Pokemon Emerald Version (USA)",
+      "exit_code": 0,
+      "frame_records": 3600,
+      "rom_sha256": "a9dec84dfe7f62ab2220bafaef7479da0929d066ece16a6885f6226db19085af",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+      "frames": 3600,
+      "warmup_frames": 0,
+      "guest_cycles": 1011225603,
+      "audio_frames": 1975050,
+      "video_sha256": "5dcd5d4b1ead03da7ac0bd4514374ec64cdccff9d63739aa89046710ce944d1e",
+      "audio_sha256": "34c8f16c2f9a38d3af15dc60e0e3cace601d51ce6d48e4a50850b4b1dfe60eac",
+      "initial_save_sha256": null,
+      "backup_sha256": "b5a41c3758763bbec72769fab4a2533bf2db0b6312d93d25a695f9e4b9e02260",
+      "backup_type": 2,
+      "backup_bytes": 131072,
+      "save_written": false,
+      "dropped_guest_frames": 0,
+      "audio_overruns": 0,
+      "audio_underruns": 0,
+      "previous_berryboy_video_unchanged": true,
+      "previous_berryboy_audio_unchanged": true,
+      "previous_berryboy_backup_unchanged": true,
+      "previous_berryboy_guest_cycles_unchanged": true,
+      "previous_berryboy_audio_frames_unchanged": true,
+      "frame_trace_comparison": {
+        "before_sha256": "b1f437141516428ebc775987ad4bb98420fa4904bda493d6e0b3e49aa97fe9b5",
+        "after_sha256": "e14bf361164f58f67896a2368ec0615ecf748bb1fad06a8f0cdc3813b4bb1db0",
+        "different_rows": 2,
+        "different_fields_count": {
+          "cycle": 2
+        },
+        "cycle_delta_min": -1,
+        "cycle_delta_max": 1,
+        "first_difference": {
+          "frame": 543,
+          "differences": {
+            "cycle": {
+              "before": 152526529,
+              "after": 152526528
+            }
+          }
+        }
+      }
+    },
+    {
+      "game_code": "BPGE",
+      "title": "Pokemon LeafGreen Version (USA) (Rev-A)",
+      "exit_code": 0,
+      "frame_records": 3600,
+      "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+      "frames": 3600,
+      "warmup_frames": 0,
+      "guest_cycles": 1011225600,
+      "audio_frames": 1975050,
+      "video_sha256": "d49919c30dab14080db1057861ea66c8ad5ae104d868fd66de2c4f41b0799945",
+      "audio_sha256": "b4f2000e7fd0864f324875d9793cedd5354224265484bfea1b15254d39aabcb0",
+      "initial_save_sha256": null,
+      "backup_sha256": "b5a41c3758763bbec72769fab4a2533bf2db0b6312d93d25a695f9e4b9e02260",
+      "backup_type": 2,
+      "backup_bytes": 131072,
+      "save_written": false,
+      "dropped_guest_frames": 0,
+      "audio_overruns": 0,
+      "audio_underruns": 0,
+      "previous_berryboy_video_unchanged": true,
+      "previous_berryboy_audio_unchanged": true,
+      "previous_berryboy_backup_unchanged": true,
+      "previous_berryboy_guest_cycles_unchanged": true,
+      "previous_berryboy_audio_frames_unchanged": true,
+      "frame_trace_comparison": {
+        "before_sha256": "46aab4dc6cb8f5d3778985041588f8856b06ed97ffafab0e42cc277016239493",
+        "after_sha256": "749affa9f84978f650a3001f660f373be822c54ee5c885655eda46d579a7a167",
+        "different_rows": 2,
+        "different_fields_count": {
+          "cycle": 2
+        },
+        "cycle_delta_min": -1,
+        "cycle_delta_max": -1,
+        "first_difference": {
+          "frame": 733,
+          "differences": {
+            "cycle": {
+              "before": 205896769,
+              "after": 205896768
+            }
+          }
+        }
+      }
+    }
+  ],
+  "validation": {
+    "host_tests": 1377,
+    "exported_core_tests": 1283,
+    "actual_ecj_cldc_core_tests": 1283,
+    "native_sdk": "Passed for production core commit; COD emitted",
+    "independent_game_correctness": "Not qualified; prior RGB/PCM differences remain; no new independent game capture",
+    "physical_playback": "unverified",
+    "new_production_changes_in_this_record": false
+  },
+  "local_output": "target/dma-phase-game-regression-2026-10-23",
+  "local_summary_sha256": "a94522146784eb92abe7eb43158706e5f63ad62ed93b1eaf07e811c92b60ab34"
+}

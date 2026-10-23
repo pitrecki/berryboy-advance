@@ -15,6 +15,16 @@ first mismatch 930. Native SDK/RAPC passes. Request activation, equal-deadline
 IRQ priority, FIFO/timer phases and actual hardware remain open.
 See benchmarks/dma-transfer-phases-2026-10-23.json.
 
+Eleven-game regression after the phase correction: 3600 frames per title,
+39600 frames and 21725550 stereo samples; zero missing guest frames or software
+audio-buffer failures. RGB/PCM, backup hashes, final cycles and sample counts
+match the previous regression; four initialization backup files are written.
+Frame traces differ in 134 cycle/PC/CPSR rows. Whole-unit checkpoint overshoot
+is relevant, but equal-cycle CPU-state equivalence remains unproved; no trace
+normalization or gameplay/physical pass. Shared input is now committed as
+benchmarks/inputs/eleven-game-start-a.tsv. No further production changes.
+See benchmarks/dma-phase-game-regression-2026-10-23.json.
+
 Second LeafGreen player save: generation 2 stores a one-tile move from (7,6) to
 (8,6), with all 28 section checksums valid. Four fresh cross-loads (both generated
 saves in both emulators) restore the exact post-save room: all 38400 pixels.

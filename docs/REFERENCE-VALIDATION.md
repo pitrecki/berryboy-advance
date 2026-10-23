@@ -1,5 +1,34 @@
 # Independent reference validation, 2026-10-23
 
+## Eleven-game regression after DMA phase correction
+
+The clean production revision `9f45db89759c400698f23ab13e48e6e9e8fab923` was
+tested with all eleven uploaded titles, fresh backups, the original BIOS and
+the now [committed Start/A recording](../benchmarks/inputs/eleven-game-start-a.tsv).
+Each completes **3600 frames**: **39600 guest frames / 21725550 stereo samples**
+in total, without missing guest frames or software audio-buffer failures.
+Four games write initialization backups. Full RGB, PCM, backup hashes, final
+guest cycles and sample counts remain identical to the preceding regression.
+
+The frame traces are **not identical**: **134 rows** differ in cycle/PC/CPSR
+checkpoint fields. Per-game counts, first differences, cycle-delta bounds and
+both trace hashes are recorded. `ScenarioRunner` samples after a complete CPU
+instruction or DMA unit, which can overshoot the nominal frame boundary; the
+phase correction moves those unit boundaries. This does not prove equivalent
+CPU state at equal guest cycles or explain every differing PC/CPSR value.
+Compare equal-cycle state before classifying these trace changes as harmless;
+do not normalize them away or claim exact trace stability.
+
+These are boot/intro/attract runs, not full gameplay or independent correctness
+passes. Earlier reference differences and the LeafGreen frame-930 gate remain
+open. No additional production change or tolerance was introduced in this
+regression delivery. The **1377 host / 1283 exported / 1283 actual CLDC** checks
+and native SDK build from the phase correction remain current.
+The evidence records the documentation-only working-tree changes during the
+batch and the cached batch-start dirty flag in raw reports.
+Evidence: [dma-phase-game-regression-2026-10-23.json](../benchmarks/dma-phase-game-regression-2026-10-23.json).
+Reproduction: [SCENARIOS.md](SCENARIOS.md#eleven-game-bootintro-regression-input).
+
 ## DMA read/write phase correction
 
 The original [NBA phase probe](../tools/nba-dma-phase-probe.cc) and

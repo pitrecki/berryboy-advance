@@ -72,6 +72,8 @@ principles. Treat them as design constraints, not a quota of patterns to add.
 
 ## Autonomous roadmap work
 
+- Continue roadmap work directly in the active session. The user withdrew the
+  external Codex loop-runner approach; do not add coding-loop runners or schedulers.
 - The user authorizes successive roadmap steps, verification, commits and pushes
   without requesting a new "follow-up" after each delivery. Within an active
   session, a completed commit is a checkpoint, not a default stopping condition.

@@ -246,6 +246,34 @@ save. The independent restored-room checkpoint matches every pixel; menu and
 full-stream hashes still differ. See REFERENCE-VALIDATION.md for asset identities,
 source, counters and reproduction requirements.
 
+## Eleven-game boot/intro regression input
+
+The [shared Start/A recording](../benchmarks/inputs/eleven-game-start-a.tsv) is
+the byte-identical input used by the eleven-game 3600-frame regressions. Its
+SHA-256 is `5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9`.
+It contains 28 ordered events: alternate Start/A presses beginning at guest
+frame 360, every 60 frames, with three-frame holds. The final A is released at
+frame 1143; all sensors remain stationary at `(2048,2048,0,0)`.
+
+For each local ROM/BIOS pair listed in the corresponding regression evidence,
+create a separate `ScenarioRunner` properties file with verified asset hashes,
+`frames=3600`, zero warmup, `devices=0`, RTC `2000-01-01T00:00:00`, this recording
+and its hash. Use absolute asset/input paths, a new output directory and a new,
+nonexistent `save` path. Do not copy a player save or reuse the last run's
+generated backup. Launch each scenario with:
+
+```bash
+java -Djava.awt.headless=true -cp target/classes \
+  berryboy.desktop.ScenarioRunner /path/to/scenario.properties
+```
+
+Check 3600 ordered frame records, a null initial-save hash and zero missing
+guest frames or software audio-buffer failures. Compare full RGB/PCM, backup
+and frame-trace hashes against the named previous run before interpreting any
+change. These inputs exercise startup/intro/attract states, not a fixed gameplay
+route. This eleven-title regression does not replace the five-game performance
+qualification protocol.
+
 ## Original FIFO DMA timing probes
 
 These probes generate pattern cartridges in memory and require no external ROM,
