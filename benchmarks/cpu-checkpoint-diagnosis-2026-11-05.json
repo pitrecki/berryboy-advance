@@ -1,0 +1,1730 @@
+{
+  "date": "2026-11-05",
+  "source_base_commit": "8d203c6e2d8fad231b9b175d73ce29f41b1734b7",
+  "source_dirty": true,
+  "before_dma_source_commit": "b1a7f253e54ed932315626071eae1c8dc5a438ed",
+  "after_core_commit": "9f45db89759c400698f23ab13e48e6e9e8fab923",
+  "production_change_in_this_delivery": false,
+  "hardware": "Linux x86_64 cloud host; Temurin 21.0.8+9; Maven 3.9.11; no physical GBA/Bold",
+  "baseline_evidence": "benchmarks/dma-phase-game-regression-2026-10-23.json",
+  "baseline_sha256": "48d50e4d459979685737f1e82c8fe27af60c8c5d03dbd8fe3223b6e8edeabbfd",
+  "scenario": "Fresh backups, original Start/A inputs, no peripherals or save IO; same verified assets as baseline",
+  "comparison": "Only DmaController and its inner classes are replaced on the before classpath; all other production classes are shared",
+  "observed_cpu_fields": [
+    "pc",
+    "cpsr",
+    "halted",
+    "irq",
+    "r0",
+    "r1",
+    "r2",
+    "r3",
+    "r4",
+    "r5",
+    "r6",
+    "r7",
+    "r8",
+    "r9",
+    "r10",
+    "r11",
+    "r12",
+    "r13",
+    "r14"
+  ],
+  "window_columns": [
+    "frame",
+    "start_cycle",
+    "end_cycle",
+    "different_clock_cpu_rows",
+    "different_shared_completed_step_cpu_rows"
+  ],
+  "games": [
+    {
+      "game_code": "AGFE",
+      "title": "Golden Sun - The Lost Age (USA)",
+      "rom_sha256": "4199d82f845edf3e2e92f3783bca00190b5bc102d7c8aa339b951de280b1e6cc",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+      "windows": [
+        [
+          322,
+          90448312,
+          90448712,
+          0,
+          0
+        ],
+        [
+          572,
+          160672312,
+          160672712,
+          0,
+          0
+        ],
+        [
+          735,
+          206458360,
+          206458760,
+          335,
+          97
+        ],
+        [
+          736,
+          206739256,
+          206739656,
+          242,
+          122
+        ],
+        [
+          737,
+          207020152,
+          207020552,
+          393,
+          102
+        ],
+        [
+          907,
+          254772472,
+          254772872,
+          0,
+          0
+        ],
+        [
+          1456,
+          408984376,
+          408984776,
+          225,
+          50
+        ],
+        [
+          1571,
+          441287416,
+          441287816,
+          0,
+          0
+        ],
+        [
+          1572,
+          441568312,
+          441568712,
+          0,
+          0
+        ],
+        [
+          1598,
+          448871608,
+          448872008,
+          0,
+          0
+        ],
+        [
+          1601,
+          449714296,
+          449714696,
+          0,
+          0
+        ],
+        [
+          1812,
+          508983352,
+          508983752,
+          0,
+          0
+        ],
+        [
+          2063,
+          579488248,
+          579488648,
+          0,
+          0
+        ],
+        [
+          2064,
+          579769144,
+          579769544,
+          0,
+          0
+        ],
+        [
+          2066,
+          580330936,
+          580331336,
+          0,
+          0
+        ],
+        [
+          2067,
+          580611832,
+          580612232,
+          0,
+          0
+        ],
+        [
+          2321,
+          651959416,
+          651959816,
+          0,
+          0
+        ],
+        [
+          2322,
+          652240312,
+          652240712,
+          0,
+          0
+        ],
+        [
+          2323,
+          652521208,
+          652521608,
+          0,
+          0
+        ],
+        [
+          2348,
+          659543608,
+          659544008,
+          0,
+          0
+        ],
+        [
+          2349,
+          659824504,
+          659824904,
+          0,
+          0
+        ],
+        [
+          2351,
+          660386296,
+          660386696,
+          0,
+          0
+        ],
+        [
+          2352,
+          660667192,
+          660667592,
+          0,
+          0
+        ],
+        [
+          2353,
+          660948088,
+          660948488,
+          0,
+          0
+        ],
+        [
+          2925,
+          821620600,
+          821621000,
+          335,
+          98
+        ],
+        [
+          2926,
+          821901496,
+          821901896,
+          386,
+          96
+        ],
+        [
+          2927,
+          822182392,
+          822182792,
+          401,
+          86
+        ],
+        [
+          2928,
+          822463288,
+          822463688,
+          401,
+          79
+        ],
+        [
+          2929,
+          822744184,
+          822744584,
+          396,
+          100
+        ],
+        [
+          2930,
+          823025080,
+          823025480,
+          393,
+          89
+        ],
+        [
+          2931,
+          823305976,
+          823306376,
+          401,
+          95
+        ],
+        [
+          2932,
+          823586872,
+          823587272,
+          401,
+          87
+        ],
+        [
+          3213,
+          902518648,
+          902519048,
+          41,
+          23
+        ],
+        [
+          3337,
+          937349752,
+          937350152,
+          0,
+          0
+        ],
+        [
+          3342,
+          938754232,
+          938754632,
+          0,
+          0
+        ],
+        [
+          3343,
+          939035128,
+          939035528,
+          0,
+          0
+        ],
+        [
+          3372,
+          947181112,
+          947181512,
+          0,
+          0
+        ],
+        [
+          3436,
+          965158456,
+          965158856,
+          0,
+          0
+        ],
+        [
+          3438,
+          965720248,
+          965720648,
+          0,
+          0
+        ],
+        [
+          3440,
+          966282040,
+          966282440,
+          0,
+          0
+        ],
+        [
+          3459,
+          971619064,
+          971619464,
+          0,
+          0
+        ],
+        [
+          3470,
+          974708920,
+          974709320,
+          0,
+          0
+        ],
+        [
+          3479,
+          977236984,
+          977237384,
+          0,
+          0
+        ],
+        [
+          3488,
+          979765048,
+          979765448,
+          0,
+          0
+        ],
+        [
+          3489,
+          980045944,
+          980046344,
+          0,
+          0
+        ],
+        [
+          3522,
+          989315512,
+          989315912,
+          0,
+          0
+        ],
+        [
+          3532,
+          992124472,
+          992124872,
+          0,
+          0
+        ],
+        [
+          3547,
+          996337912,
+          996338312,
+          0,
+          0
+        ]
+      ],
+      "matching_cpu_windows": 35,
+      "different_cpu_windows": 13,
+      "clock_cpu_comparison": {
+        "common_cycles": 19248,
+        "different_rows": 4350,
+        "before_only": 0,
+        "after_only": 0,
+        "first_difference": {
+          "cycle": 206458360,
+          "fields": {
+            "pc": {
+              "before": "50335240",
+              "after": "50335236"
+            }
+          }
+        }
+      },
+      "shared_completed_step_cpu_comparison": {
+        "common_cycles": 2445,
+        "different_rows": 1124,
+        "before_only": 3385,
+        "after_only": 3382,
+        "first_difference": {
+          "cycle": 206458365,
+          "fields": {
+            "pc": {
+              "before": "50335244",
+              "after": "50335240"
+            },
+            "r4": {
+              "before": "4278191776",
+              "after": "32"
+            }
+          }
+        }
+      },
+      "csv_sha256": {
+        "before": "a8ccbccb8df4d71dd835c9c12a9425e67978f6942b4d40acf69b891f7b97f063",
+        "after": "7a8fe57727f7167a1fef512a3f02c480c5b6c6e2a72e5161cedb18e935669e1c"
+      },
+      "retirement_index_comparison": {
+        "common_instructions": 3513,
+        "before_only": 23,
+        "after_only": 19,
+        "different_fields_count": {
+          "cpsr": 297,
+          "cycle": 2111,
+          "pc": 926,
+          "r0": 105,
+          "r10": 152,
+          "r11": 462,
+          "r12": 302,
+          "r2": 496,
+          "r4": 508,
+          "r5": 300,
+          "r7": 487,
+          "r9": 105
+        },
+        "scope": "Instruction-index alignment is exploratory when loop iteration counts differ; do not drop unmatched instructions to claim equivalence"
+      },
+      "control_shared_completed_step_cpu_comparison": {
+        "common_cycles": 2445,
+        "different_rows": 1124,
+        "before_only": 3385,
+        "after_only": 3382,
+        "first_difference": {
+          "cycle": 206458365,
+          "fields": {
+            "pc": {
+              "before": "50335244",
+              "after": "50335240"
+            },
+            "r4": {
+              "before": "4278191776",
+              "after": "32"
+            }
+          }
+        }
+      }
+    },
+    {
+      "game_code": "AGSE",
+      "title": "Golden Sun (USA)",
+      "rom_sha256": "c14f1151897e8d73f25ffdd67e21eebb6dc57973ff2458872ee89fa9060aaca1",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+      "windows": [
+        [
+          522,
+          146627512,
+          146627912,
+          0,
+          0
+        ],
+        [
+          606,
+          170222776,
+          170223176,
+          0,
+          0
+        ],
+        [
+          649,
+          182301304,
+          182301704,
+          0,
+          0
+        ],
+        [
+          653,
+          183424888,
+          183425288,
+          0,
+          0
+        ],
+        [
+          706,
+          198312376,
+          198312776,
+          0,
+          0
+        ],
+        [
+          788,
+          221345848,
+          221346248,
+          0,
+          0
+        ],
+        [
+          1076,
+          302243896,
+          302244296,
+          0,
+          0
+        ],
+        [
+          1081,
+          303648376,
+          303648776,
+          0,
+          0
+        ],
+        [
+          1105,
+          310389880,
+          310390280,
+          0,
+          0
+        ],
+        [
+          1111,
+          312075256,
+          312075656,
+          0,
+          0
+        ],
+        [
+          1282,
+          360108472,
+          360108872,
+          0,
+          0
+        ],
+        [
+          1287,
+          361512952,
+          361513352,
+          0,
+          0
+        ],
+        [
+          1292,
+          362917432,
+          362917832,
+          0,
+          0
+        ],
+        [
+          1481,
+          416006776,
+          416007176,
+          0,
+          0
+        ],
+        [
+          1486,
+          417411256,
+          417411656,
+          0,
+          0
+        ],
+        [
+          1491,
+          418815736,
+          418816136,
+          0,
+          0
+        ],
+        [
+          1990,
+          558982840,
+          558983240,
+          0,
+          0
+        ],
+        [
+          1995,
+          560387320,
+          560387720,
+          0,
+          0
+        ],
+        [
+          2000,
+          561791800,
+          561792200,
+          0,
+          0
+        ],
+        [
+          2449,
+          687914104,
+          687914504,
+          0,
+          0
+        ],
+        [
+          2454,
+          689318584,
+          689318984,
+          0,
+          0
+        ],
+        [
+          2459,
+          690723064,
+          690723464,
+          0,
+          0
+        ],
+        [
+          2635,
+          740160760,
+          740161160,
+          0,
+          0
+        ],
+        [
+          2640,
+          741565240,
+          741565640,
+          0,
+          0
+        ],
+        [
+          3071,
+          862631416,
+          862631816,
+          0,
+          0
+        ],
+        [
+          3076,
+          864035896,
+          864036296,
+          0,
+          0
+        ],
+        [
+          3246,
+          911788216,
+          911788616,
+          0,
+          0
+        ],
+        [
+          3251,
+          913192696,
+          913193096,
+          0,
+          0
+        ]
+      ],
+      "matching_cpu_windows": 28,
+      "different_cpu_windows": 0,
+      "clock_cpu_comparison": {
+        "common_cycles": 11228,
+        "different_rows": 0,
+        "before_only": 0,
+        "after_only": 0,
+        "first_difference": null
+      },
+      "shared_completed_step_cpu_comparison": {
+        "common_cycles": 252,
+        "different_rows": 0,
+        "before_only": 1106,
+        "after_only": 1109,
+        "first_difference": null
+      },
+      "csv_sha256": {
+        "before": "f4a2dedf23d7714f5f2f7e745c5e09d6acb1679655333c5ccdfdb57c7d0b313e",
+        "after": "9ff3a970e9893092384f77bf6ff144057701d24866f5e9358f01a785764da5d8"
+      },
+      "retirement_index_comparison": {
+        "common_instructions": 248,
+        "before_only": 0,
+        "after_only": 0,
+        "different_fields_count": {},
+        "scope": "Instruction-index alignment is exploratory when loop iteration counts differ; do not drop unmatched instructions to claim equivalence"
+      }
+    },
+    {
+      "game_code": "AMTE",
+      "title": "Metroid Fusion (USA)",
+      "rom_sha256": "a56ce3d7f8f3f4f4d0468d421fff5dd3ee3aec99a58244377e43aae769dc3fe8",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+      "windows": [
+        [
+          271,
+          76122616,
+          76123016,
+          0,
+          0
+        ],
+        [
+          272,
+          76403512,
+          76403912,
+          0,
+          0
+        ],
+        [
+          534,
+          149998264,
+          149998664,
+          0,
+          0
+        ],
+        [
+          722,
+          202806712,
+          202807112,
+          0,
+          0
+        ]
+      ],
+      "matching_cpu_windows": 4,
+      "different_cpu_windows": 0,
+      "clock_cpu_comparison": {
+        "common_cycles": 1604,
+        "different_rows": 0,
+        "before_only": 0,
+        "after_only": 0,
+        "first_difference": null
+      },
+      "shared_completed_step_cpu_comparison": {
+        "common_cycles": 11,
+        "different_rows": 0,
+        "before_only": 428,
+        "after_only": 428,
+        "first_difference": null
+      },
+      "csv_sha256": {
+        "before": "aafa24fc3984a574a86bf620f693b3ed7d00c8a0a48937aec888ab5f9fe20540",
+        "after": "9861866e3cf1832fc9e694b10e231ea666a3dfe054955efffb854cf1f9f029d2"
+      },
+      "retirement_index_comparison": {
+        "common_instructions": 11,
+        "before_only": 0,
+        "after_only": 0,
+        "different_fields_count": {},
+        "scope": "Instruction-index alignment is exploratory when loop iteration counts differ; do not drop unmatched instructions to claim equivalence"
+      }
+    },
+    {
+      "game_code": "AVRE",
+      "title": "V-Rally 3 (USA)",
+      "rom_sha256": "5818fa74fdcacf39b53a1acea99432c4362979dd656c8153fd9861094aca51f7",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+      "windows": [
+        [
+          2507,
+          704206072,
+          704206472,
+          1,
+          0
+        ],
+        [
+          2731,
+          767126776,
+          767127176,
+          1,
+          0
+        ],
+        [
+          2832,
+          795497272,
+          795497672,
+          1,
+          0
+        ],
+        [
+          3153,
+          885664888,
+          885665288,
+          122,
+          0
+        ],
+        [
+          3154,
+          885945784,
+          885946184,
+          362,
+          142
+        ],
+        [
+          3155,
+          886226680,
+          886227080,
+          290,
+          18
+        ],
+        [
+          3156,
+          886507576,
+          886507976,
+          401,
+          0
+        ],
+        [
+          3157,
+          886788472,
+          886788872,
+          401,
+          142
+        ],
+        [
+          3214,
+          902799544,
+          902799944,
+          360,
+          134
+        ],
+        [
+          3215,
+          903080440,
+          903080840,
+          54,
+          18
+        ],
+        [
+          3403,
+          955888888,
+          955889288,
+          1,
+          0
+        ]
+      ],
+      "matching_cpu_windows": 0,
+      "different_cpu_windows": 11,
+      "clock_cpu_comparison": {
+        "common_cycles": 4411,
+        "different_rows": 1994,
+        "before_only": 0,
+        "after_only": 0,
+        "first_difference": {
+          "cycle": 704206294,
+          "fields": {
+            "irq": {
+              "before": "0",
+              "after": "1024"
+            }
+          }
+        }
+      },
+      "shared_completed_step_cpu_comparison": {
+        "common_cycles": 925,
+        "different_rows": 454,
+        "before_only": 394,
+        "after_only": 394,
+        "first_difference": {
+          "cycle": 885945788,
+          "fields": {
+            "pc": {
+              "before": "50347252",
+              "after": "50347244"
+            },
+            "r6": {
+              "before": "340791776",
+              "after": "391123584"
+            },
+            "r9": {
+              "before": "271578357",
+              "after": "3142901"
+            }
+          }
+        }
+      },
+      "csv_sha256": {
+        "before": "532e6d5f450114db74e50d4f9d7c9ac5801c4649e8cfc13b68c694d6959b5d8c",
+        "after": "d2119d5ef3ce160663e00e22d88225e5f226926af5c86ac668ed6306ca683c53"
+      },
+      "retirement_index_comparison": {
+        "common_instructions": 1275,
+        "before_only": 24,
+        "after_only": 24,
+        "different_fields_count": {
+          "cpsr": 43,
+          "cycle": 993,
+          "irq": 6,
+          "pc": 406,
+          "r0": 24,
+          "r1": 21,
+          "r10": 9,
+          "r12": 43,
+          "r13": 15,
+          "r14": 183,
+          "r2": 49,
+          "r3": 78,
+          "r4": 55,
+          "r5": 9,
+          "r6": 136,
+          "r7": 9,
+          "r8": 9,
+          "r9": 173
+        },
+        "scope": "Instruction-index alignment is exploratory when loop iteration counts differ; do not drop unmatched instructions to claim equivalence"
+      },
+      "control_shared_completed_step_cpu_comparison": {
+        "common_cycles": 925,
+        "different_rows": 454,
+        "before_only": 394,
+        "after_only": 394,
+        "first_difference": {
+          "cycle": 885945788,
+          "fields": {
+            "pc": {
+              "before": "50347252",
+              "after": "50347244"
+            },
+            "r6": {
+              "before": "340791776",
+              "after": "391123584"
+            },
+            "r9": {
+              "before": "271578357",
+              "after": "3142901"
+            }
+          }
+        }
+      }
+    },
+    {
+      "game_code": "AWAE",
+      "title": "Wario Land 4 (USA)",
+      "rom_sha256": "d16c7bf6e62bb84049fff1b387108fbd1e6e2cd38ca994ab5310dd9cbf9ba414",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+      "windows": [
+        [
+          271,
+          76122616,
+          76123016,
+          0,
+          0
+        ],
+        [
+          272,
+          76403512,
+          76403912,
+          0,
+          0
+        ],
+        [
+          289,
+          81178744,
+          81179144,
+          0,
+          0
+        ],
+        [
+          534,
+          149998264,
+          149998664,
+          0,
+          0
+        ],
+        [
+          3085,
+          866563960,
+          866564360,
+          0,
+          0
+        ]
+      ],
+      "matching_cpu_windows": 5,
+      "different_cpu_windows": 0,
+      "clock_cpu_comparison": {
+        "common_cycles": 2005,
+        "different_rows": 0,
+        "before_only": 0,
+        "after_only": 0,
+        "first_difference": null
+      },
+      "shared_completed_step_cpu_comparison": {
+        "common_cycles": 0,
+        "different_rows": 0,
+        "before_only": 429,
+        "after_only": 428,
+        "first_difference": null
+      },
+      "csv_sha256": {
+        "before": "eb199b60f44c969f54476792457b331acd635c141cb2c123dd89690c92981f70",
+        "after": "d4efe6aeac54b23b9ca2de22f5628fde297aeb788929a97c5bd55ca10bc01f16"
+      },
+      "retirement_index_comparison": {
+        "common_instructions": 0,
+        "before_only": 0,
+        "after_only": 0,
+        "different_fields_count": {},
+        "scope": "Instruction-index alignment is exploratory when loop iteration counts differ; do not drop unmatched instructions to claim equivalence"
+      }
+    },
+    {
+      "game_code": "AZEE",
+      "title": "Zone of the Enders - The Fist of Mars (USA)",
+      "rom_sha256": "114fff29e5642300a9b3698916ecd86682aa6da0fd821065b7431ba8c059f0f2",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+      "windows": [
+        [
+          271,
+          76122616,
+          76123016,
+          0,
+          0
+        ],
+        [
+          272,
+          76403512,
+          76403912,
+          0,
+          0
+        ],
+        [
+          1083,
+          304210168,
+          304210568,
+          0,
+          0
+        ],
+        [
+          1556,
+          437073976,
+          437074376,
+          283,
+          184
+        ],
+        [
+          2323,
+          652521208,
+          652521608,
+          284,
+          191
+        ],
+        [
+          2580,
+          724711480,
+          724711880,
+          401,
+          173
+        ],
+        [
+          3092,
+          868530232,
+          868530632,
+          401,
+          171
+        ],
+        [
+          3093,
+          868811128,
+          868811528,
+          365,
+          174
+        ]
+      ],
+      "matching_cpu_windows": 3,
+      "different_cpu_windows": 5,
+      "clock_cpu_comparison": {
+        "common_cycles": 3208,
+        "different_rows": 1734,
+        "before_only": 0,
+        "after_only": 0,
+        "first_difference": {
+          "cycle": 437073976,
+          "fields": {
+            "r5": {
+              "before": "50353472",
+              "after": "50353468"
+            }
+          }
+        }
+      },
+      "shared_completed_step_cpu_comparison": {
+        "common_cycles": 893,
+        "different_rows": 893,
+        "before_only": 636,
+        "after_only": 635,
+        "first_difference": {
+          "cycle": 437073976,
+          "fields": {
+            "pc": {
+              "before": "50335108",
+              "after": "50335104"
+            },
+            "r8": {
+              "before": "256",
+              "after": "260"
+            }
+          }
+        }
+      },
+      "csv_sha256": {
+        "before": "ddc8139e5c278312b9acd4e85cc1939e85101cf3448b25959198a4d8ac92ec7b",
+        "after": "c0f52b6a87a5476fbf39a310d093c90b2ff5df6444524d2c1dbd97c58d79aeda"
+      },
+      "retirement_index_comparison": {
+        "common_instructions": 1236,
+        "before_only": 79,
+        "after_only": 77,
+        "different_fields_count": {
+          "cpsr": 1015,
+          "cycle": 1236,
+          "pc": 1192,
+          "r0": 696,
+          "r1": 531,
+          "r12": 293,
+          "r14": 898,
+          "r2": 709,
+          "r3": 712,
+          "r5": 834,
+          "r6": 848,
+          "r7": 862,
+          "r8": 223,
+          "r9": 1074
+        },
+        "scope": "Instruction-index alignment is exploratory when loop iteration counts differ; do not drop unmatched instructions to claim equivalence"
+      },
+      "control_shared_completed_step_cpu_comparison": {
+        "common_cycles": 893,
+        "different_rows": 893,
+        "before_only": 636,
+        "after_only": 635,
+        "first_difference": {
+          "cycle": 437073976,
+          "fields": {
+            "pc": {
+              "before": "50335108",
+              "after": "50335104"
+            },
+            "r8": {
+              "before": "256",
+              "after": "260"
+            }
+          }
+        }
+      }
+    },
+    {
+      "game_code": "B3SE",
+      "title": "Sonic Advance 3 (USA)",
+      "rom_sha256": "f937fa93b97b14b9fb9fce98844c534f936222d21d1fdb5f1af42292bad32c85",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+      "windows": [
+        [
+          1744,
+          489882424,
+          489882824,
+          0,
+          0
+        ],
+        [
+          1748,
+          491006008,
+          491006408,
+          0,
+          0
+        ],
+        [
+          2122,
+          596061112,
+          596061512,
+          245,
+          41
+        ],
+        [
+          2162,
+          607296952,
+          607297352,
+          320,
+          147
+        ],
+        [
+          2663,
+          748025848,
+          748026248,
+          349,
+          21
+        ],
+        [
+          2883,
+          809822968,
+          809823368,
+          401,
+          36
+        ],
+        [
+          2970,
+          834260920,
+          834261320,
+          243,
+          41
+        ],
+        [
+          2980,
+          837069880,
+          837070280,
+          244,
+          42
+        ],
+        [
+          2997,
+          841845112,
+          841845512,
+          401,
+          36
+        ],
+        [
+          3014,
+          846620344,
+          846620744,
+          321,
+          151
+        ],
+        [
+          3069,
+          862069624,
+          862070024,
+          244,
+          42
+        ],
+        [
+          3093,
+          868811128,
+          868811528,
+          245,
+          41
+        ],
+        [
+          3151,
+          885103096,
+          885103496,
+          244,
+          40
+        ],
+        [
+          3233,
+          908136568,
+          908136968,
+          244,
+          40
+        ],
+        [
+          3440,
+          966282040,
+          966282440,
+          244,
+          41
+        ]
+      ],
+      "matching_cpu_windows": 2,
+      "different_cpu_windows": 13,
+      "clock_cpu_comparison": {
+        "common_cycles": 6015,
+        "different_rows": 3745,
+        "before_only": 0,
+        "after_only": 0,
+        "first_difference": {
+          "cycle": 596061112,
+          "fields": {
+            "pc": {
+              "before": "134991050",
+              "after": "134991048"
+            },
+            "r5": {
+              "before": "50346848",
+              "after": "50342720"
+            }
+          }
+        }
+      },
+      "shared_completed_step_cpu_comparison": {
+        "common_cycles": 781,
+        "different_rows": 719,
+        "before_only": 1289,
+        "after_only": 1292,
+        "first_difference": {
+          "cycle": 596061112,
+          "fields": {
+            "pc": {
+              "before": "134991052",
+              "after": "134991050"
+            },
+            "cpsr": {
+              "before": "63",
+              "after": "536870975"
+            },
+            "r6": {
+              "before": "50331648",
+              "after": "1024"
+            }
+          }
+        }
+      },
+      "csv_sha256": {
+        "before": "5b30b869dbaa358be83a297ac71b12a56c867879e806700f53940c1fde2a0864",
+        "after": "6e961f525bdbe9fece08f17efa99a482908efdd43a5454b1621bce2630d73272"
+      },
+      "retirement_index_comparison": {
+        "common_instructions": 1698,
+        "before_only": 84,
+        "after_only": 85,
+        "different_fields_count": {
+          "cpsr": 878,
+          "cycle": 1633,
+          "pc": 1184,
+          "r0": 928,
+          "r1": 651,
+          "r10": 150,
+          "r12": 205,
+          "r13": 111,
+          "r14": 225,
+          "r2": 417,
+          "r3": 297,
+          "r4": 145,
+          "r5": 160,
+          "r6": 265,
+          "r7": 194,
+          "r8": 97,
+          "r9": 283
+        },
+        "scope": "Instruction-index alignment is exploratory when loop iteration counts differ; do not drop unmatched instructions to claim equivalence"
+      },
+      "control_shared_completed_step_cpu_comparison": {
+        "common_cycles": 781,
+        "different_rows": 719,
+        "before_only": 1289,
+        "after_only": 1292,
+        "first_difference": {
+          "cycle": 596061112,
+          "fields": {
+            "pc": {
+              "before": "134991052",
+              "after": "134991050"
+            },
+            "cpsr": {
+              "before": "63",
+              "after": "536870975"
+            },
+            "r6": {
+              "before": "50331648",
+              "after": "1024"
+            }
+          }
+        }
+      }
+    },
+    {
+      "game_code": "BGTE",
+      "title": "Grand Theft Auto Advance (USA)",
+      "rom_sha256": "215c574d5afbda0aadbf89dc76b765cfaaeb35953eab63f7687d8bfe8a8e0f4d",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+      "windows": [
+        [
+          271,
+          76122616,
+          76123016,
+          0,
+          0
+        ],
+        [
+          272,
+          76403512,
+          76403912,
+          0,
+          0
+        ],
+        [
+          275,
+          77246200,
+          77246600,
+          0,
+          0
+        ],
+        [
+          703,
+          197469688,
+          197470088,
+          0,
+          0
+        ]
+      ],
+      "matching_cpu_windows": 4,
+      "different_cpu_windows": 0,
+      "clock_cpu_comparison": {
+        "common_cycles": 1604,
+        "different_rows": 0,
+        "before_only": 0,
+        "after_only": 0,
+        "first_difference": null
+      },
+      "shared_completed_step_cpu_comparison": {
+        "common_cycles": 91,
+        "different_rows": 0,
+        "before_only": 263,
+        "after_only": 262,
+        "first_difference": null
+      },
+      "csv_sha256": {
+        "before": "548365dd25e6e5f9e35cdf50d56668b612aee8d3f8831df977efdf85049ad495",
+        "after": "e1bd482987d223e8f5a6805eac6b384491208d239d54bf5baa8ab38cc1d41912"
+      },
+      "retirement_index_comparison": {
+        "common_instructions": 90,
+        "before_only": 0,
+        "after_only": 0,
+        "different_fields_count": {},
+        "scope": "Instruction-index alignment is exploratory when loop iteration counts differ; do not drop unmatched instructions to claim equivalence"
+      }
+    },
+    {
+      "game_code": "BMXE",
+      "title": "Metroid - Zero Mission (USA)",
+      "rom_sha256": "fc94f65380b65b870a30b9b04b39cca1dc63d6e46a4a373d3904adc0912ebc37",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+      "windows": [
+        [
+          271,
+          76122616,
+          76123016,
+          0,
+          0
+        ],
+        [
+          272,
+          76403512,
+          76403912,
+          0,
+          0
+        ],
+        [
+          296,
+          83145016,
+          83145416,
+          0,
+          0
+        ],
+        [
+          302,
+          84830392,
+          84830792,
+          0,
+          0
+        ],
+        [
+          363,
+          101965048,
+          101965448,
+          0,
+          0
+        ],
+        [
+          498,
+          139886008,
+          139886408,
+          0,
+          0
+        ],
+        [
+          897,
+          251963512,
+          251963912,
+          0,
+          0
+        ]
+      ],
+      "matching_cpu_windows": 7,
+      "different_cpu_windows": 0,
+      "clock_cpu_comparison": {
+        "common_cycles": 2807,
+        "different_rows": 0,
+        "before_only": 0,
+        "after_only": 0,
+        "first_difference": null
+      },
+      "shared_completed_step_cpu_comparison": {
+        "common_cycles": 44,
+        "different_rows": 0,
+        "before_only": 1047,
+        "after_only": 1050,
+        "first_difference": null
+      },
+      "csv_sha256": {
+        "before": "6d3e96d17cc411d151a88e350d6040deb4c5b4a208dbc3af369ffce2428105c9",
+        "after": "0900be5e53e8e1250d45d001a692de6c4201a54ec04cccb7470c3e96e294d2ed"
+      },
+      "retirement_index_comparison": {
+        "common_instructions": 42,
+        "before_only": 0,
+        "after_only": 0,
+        "different_fields_count": {},
+        "scope": "Instruction-index alignment is exploratory when loop iteration counts differ; do not drop unmatched instructions to claim equivalence"
+      }
+    },
+    {
+      "game_code": "BPEE",
+      "title": "Pokemon Emerald Version (USA)",
+      "rom_sha256": "a9dec84dfe7f62ab2220bafaef7479da0929d066ece16a6885f6226db19085af",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+      "windows": [
+        [
+          543,
+          152526328,
+          152526728,
+          0,
+          0
+        ],
+        [
+          683,
+          191851768,
+          191852168,
+          0,
+          0
+        ]
+      ],
+      "matching_cpu_windows": 2,
+      "different_cpu_windows": 0,
+      "clock_cpu_comparison": {
+        "common_cycles": 802,
+        "different_rows": 0,
+        "before_only": 0,
+        "after_only": 0,
+        "first_difference": null
+      },
+      "shared_completed_step_cpu_comparison": {
+        "common_cycles": 0,
+        "different_rows": 0,
+        "before_only": 401,
+        "after_only": 401,
+        "first_difference": null
+      },
+      "csv_sha256": {
+        "before": "8a2793ad1ac50d7ec7d687e70137961892461b1345e4ffb580967ba044894ace",
+        "after": "fc2fd9e6b81853eb2b8321422098c4a5d1dc585b0101eb5f2d269f63cfb2cff5"
+      },
+      "retirement_index_comparison": {
+        "common_instructions": 0,
+        "before_only": 0,
+        "after_only": 0,
+        "different_fields_count": {},
+        "scope": "Instruction-index alignment is exploratory when loop iteration counts differ; do not drop unmatched instructions to claim equivalence"
+      }
+    },
+    {
+      "game_code": "BPGE",
+      "title": "Pokemon LeafGreen Version (USA) (Rev-A)",
+      "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+      "windows": [
+        [
+          733,
+          205896568,
+          205896968,
+          0,
+          0
+        ],
+        [
+          738,
+          207301048,
+          207301448,
+          0,
+          0
+        ]
+      ],
+      "matching_cpu_windows": 2,
+      "different_cpu_windows": 0,
+      "clock_cpu_comparison": {
+        "common_cycles": 802,
+        "different_rows": 0,
+        "before_only": 0,
+        "after_only": 0,
+        "first_difference": null
+      },
+      "shared_completed_step_cpu_comparison": {
+        "common_cycles": 0,
+        "different_rows": 0,
+        "before_only": 400,
+        "after_only": 402,
+        "first_difference": null
+      },
+      "csv_sha256": {
+        "before": "eae76dd622db2d37b29e9f0630b962de0224a61ab009a2d3cc8b579ccca9bff8",
+        "after": "5a5a13f84e6959760186a2697a99c45262b46a9c4993016cc1d692f5cbbc6cc6"
+      },
+      "retirement_index_comparison": {
+        "common_instructions": 0,
+        "before_only": 0,
+        "after_only": 0,
+        "different_fields_count": {},
+        "scope": "Instruction-index alignment is exploratory when loop iteration counts differ; do not drop unmatched instructions to claim equivalence"
+      }
+    }
+  ],
+  "totals": {
+    "games": 11,
+    "windows": 134,
+    "clock_samples_per_variant": 53734,
+    "matching_cpu_windows": 92,
+    "different_cpu_windows": 42,
+    "games_with_different_cpu_windows": [
+      "AGFE",
+      "AVRE",
+      "AZEE",
+      "B3SE"
+    ]
+  },
+  "sampling_controls": [
+    {
+      "game_code": "AGFE",
+      "variants": {
+        "before": {
+          "retire_rows": 3536,
+          "retire_identical": true,
+          "csv_sha256": "a61be43603af0ae6b80e93fb3da649d94cdb78c26b8364ca2dc2bece34d3c9d5"
+        },
+        "after": {
+          "retire_rows": 3532,
+          "retire_identical": true,
+          "csv_sha256": "3b895b7f4f7df30325e4809641861e26e68afa44074ce94ee9407be92cb0c49e"
+        }
+      }
+    },
+    {
+      "game_code": "AVRE",
+      "variants": {
+        "before": {
+          "retire_rows": 1299,
+          "retire_identical": true,
+          "csv_sha256": "5da89aeedd6cf0fd13c4353aa0c117377c961d91085c04c47409c289b81b24d2"
+        },
+        "after": {
+          "retire_rows": 1299,
+          "retire_identical": true,
+          "csv_sha256": "3d7f3d862cecc1a27ba2387dccdebd701822f832baa3e56c5fc28d91aa791ef3"
+        }
+      }
+    },
+    {
+      "game_code": "AZEE",
+      "variants": {
+        "before": {
+          "retire_rows": 1315,
+          "retire_identical": true,
+          "csv_sha256": "3044dda1cfb45438e3eeca0c4f8e7aa8ee0f695970c110c139aa050de59df5a9"
+        },
+        "after": {
+          "retire_rows": 1313,
+          "retire_identical": true,
+          "csv_sha256": "381189df88b3f242a9ee7e8f7bf9848d4767a524c1ae2903c92be22f9a3ef32c"
+        }
+      }
+    },
+    {
+      "game_code": "B3SE",
+      "variants": {
+        "before": {
+          "retire_rows": 1782,
+          "retire_identical": true,
+          "csv_sha256": "43e6f347566e7b098acffeb873351572d0b4464472b16295c16fc8564bef51b0"
+        },
+        "after": {
+          "retire_rows": 1783,
+          "retire_identical": true,
+          "csv_sha256": "ce8fac6949c9ed9a9fa090d27cf2e38c80c3ebe67e8fca1765e9cdfc0652d879"
+        }
+      }
+    }
+  ],
+  "limits": [
+    "Matching bounded CPU/IF observations do not certify memory/peripheral equivalence or full-game accuracy",
+    "Clock samples occur inside bus/CPU operations and add scheduler deadlines; HALT idle steps can be subdivided",
+    "For all four differing games, complete retirement-row lists match controls compiled without sample-event installation, for both DMA variants",
+    "Shared completed-step comparisons are also recorded from the controls without sampling callbacks",
+    "Changed retirement counts invalidate blind instruction-index alignment; unmatched indices are retained",
+    "First observed difference is limited by selected windows; no claim of the first global divergence",
+    "Neither prior nor corrected full CPU execution is an independent hardware oracle; no accuracy gate is closed"
+  ],
+  "first_case": {
+    "game_code": "AGFE",
+    "frame": 322,
+    "clock_samples": 401,
+    "cpu_and_if_differences": 0,
+    "before_endpoint": 90448512,
+    "after_endpoint": 90448518,
+    "retired_instructions_at_both_endpoints": 11733062,
+    "explanation": "Non-final EWRAM-to-IWRAM DMA units end one cycle earlier after the phase correction. Seven-cycle units bracket the frame deadline at 90448512 before and 90448511/90448518 after. No CPU instruction retires in this interval."
+  },
+  "validation": {
+    "new_host_cases": 7,
+    "host_tests": 1384,
+    "console_host_tests": 1384,
+    "exported_core_tests": 1283,
+    "failures": 0,
+    "skipped": 0,
+    "native_sdk_rebuilt": false,
+    "previous_actual_ecj_cldc_core_tests": 1283,
+    "native_scope": "Previous CLDC/RAPC evidence retained; production core unchanged"
+  },
+  "source_files_sha256": {
+    "tools/CpuCheckpointProbe.java": "ce42ae659634cd2e4e4e4a54e5d210710560f3af3c02e019cb0c3a9a090d1de5",
+    "src/test/java/berryboy/build/CpuCheckpointProbeTest.java": "0153144a0d1cf788f81b7729960aeb67caf941557ff5d564f6286bcc0330eec9"
+  },
+  "local_output": "target/cpu-checkpoint-diagnosis",
+  "local_summary_sha256": "15b2e8ae699e6035bafef9fe8bde317a9964fb58447da250d08408b8cf4b3258",
+  "local_controls_sha256": "d0c02d14a2c7344757ccf6cc93f1ac8692929aa4b5657e987655a5e6cadbad4b"
+}

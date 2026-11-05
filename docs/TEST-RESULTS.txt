@@ -1,4 +1,22 @@
-Latest compatibility validation: 2026-10-23 UTC
+Latest host diagnostic validation: 2026-11-05 UTC
+Host: Eclipse Temurin 21.0.8+9, Maven 3.9.11, Linux x86_64
+mvn verify (default profile): 1384 passed; 0 failed/errors/skipped.
+Jupiter console host: 1384 passed; 0 failed/skipped.
+Exported core console: 1283 passed; 0 failed/skipped.
+
+CPU checkpoint diagnosis: all 134 changed-frame windows, 53734 exact-cycle
+samples per DMA variant. CPU/IF state matches in 92 windows; 42 windows in
+Lost Age, V-Rally, Zone of the Enders and Sonic retain differences. Controls
+without sampling events preserve entire observed instruction-retirement lists
+in all four titles, before/after; CPU differences persist at shared completed
+steps. HALT idle-step subdivisions are explicitly excluded from noninterference
+claims. Lost Age frame 322 is explained by a changed DMA-unit observation end;
+frame 735 is already different at the selected window start. Seven new host
+tests validate the adapter, controls, HALT and invalid windows. No production
+change, new native build, independent hardware pass or tolerance adjustment.
+See benchmarks/cpu-checkpoint-diagnosis-2026-11-05.json.
+
+Previous native compatibility validation: 2026-10-23 UTC
 Host: Eclipse Temurin 21.0.8+9, Maven 3.9.11, Linux x86_64
 mvn verify (native bb-sim profile): 1377 passed; 0 failed/errors/skipped.
 Exported core console suite: 1283 passed; 0 failed/skipped.

@@ -41,12 +41,13 @@ as emulator frame drops.
 
 ## Delivery milestones
 
-Roadmap updated on **2026-10-23**, after RGB555 reference qualification and
+Roadmap updated on **2026-11-05**, after equal-cycle CPU checkpoint diagnosis,
+RGB555 reference qualification and
 the Thumb multiply timing and Game Pak DMA source corrections, plus the FIFO
 DMA reference counterexample and independent DMA read/write phase correction. The shared clock, scheduler,
 CPU/bus timing, software renderer, mixer, cartridge devices and capture runner
 are implemented. Their accuracy is still being qualified; implementation does
-not close M1–M4. Latest local validation passed **1377 host tests and 1283
+not close M1–M4. Latest local validation passed **1384 host tests and 1283
 exported-core tests**. Neither test count establishes BlackBerry readiness.
 
 | Milestone | Deliverables | Completion evidence |
@@ -87,6 +88,12 @@ repeats all 39600 frames: RGB/PCM, backups, final cycles and sample counts are
 unchanged, with zero software-buffer losses. Its 134 changed cycle/PC/CPSR
 checkpoint rows require equal-cycle CPU-state comparison; frame traces are not
 classified as equivalent merely because output hashes match.
+The [equal-cycle diagnosis](REFERENCE-VALIDATION.md#equal-cycle-cpu-checkpoint-diagnosis-2026-11-05)
+now finds matching CPU/IF observations throughout 92 selected windows and
+differences in 42 windows across Lost Age, V-Rally, Zone of the Enders and Sonic.
+Controls without sampling events preserve the recorded instruction retirements
+in all four titles. Continue investigating those differences; this does not
+establish full memory/peripheral or hardware equivalence.
 
 | Stage / priority | Work | Exit evidence |
 | --- | --- | --- |
@@ -173,9 +180,14 @@ execution and physical-device access remain separate gates.
    unchanged. Next qualify request activation/CPU continuation and equal-deadline
    IRQ priority, then repeat phase observations for actual FIFO/timer workloads.
    The eleven-game replay preserves full RGB/PCM and backups but changes 134
-   frame checkpoint rows in cycle/PC/CPSR. Compare equal-cycle CPU state and
-   distinguish changed observation endpoints from actual guest-state divergence
-   before treating those traces as equivalent.
+   frame checkpoint rows in cycle/PC/CPSR. Equal-cycle diagnosis now explains
+   Lost Age frame 322 as a DMA-unit endpoint shift, but 42 of 134 selected
+   windows in four titles retain CPU/IF differences, including shared completed
+   steps in controls without sampling events. Trace backwards from those windows
+   into DMA activation/request/IRQ and CPU execution; retain unmatched retirement
+   indices instead of normalizing busy-loop differences away. The Lost Age
+   frame-735 window is already different at its start, so its first recorded
+   discrepancy is not the first global cause.
    A separate
    [ROM DMA source correction](REFERENCE-VALIDATION.md#dma-game-pak-source-addressing-and-next-timing-boundary)
    matches 24 original reference cases and preserves the whole replay's RGB/PCM,
@@ -203,7 +215,8 @@ hashes, RTC/sensor seed, frame/sample coordinates, reference version and outcome
 Use fresh output paths and copies of save files. Commit original input traces
 and metadata; keep ROM, BIOS, save bytes and generated captures outside Git.
 Run `mvn verify` and, for portable-core/export changes,
-`tools/test-with-console.sh`; commit and push each verified update. Do not relax
+`tools/test-with-console.sh`; commit each verified update locally. Pushes are
+suspended by the current user instruction. Do not relax
 pixel tolerances, skip frames or mute audio to turn an unexplained failure green.
 Report regression results separately from exploratory measurements.
 

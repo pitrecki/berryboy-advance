@@ -274,6 +274,64 @@ change. These inputs exercise startup/intro/attract states, not a fixed gameplay
 route. This eleven-title regression does not replace the five-game performance
 qualification protocol.
 
+## CPU checkpoint comparison at equal cycles
+
+`tools/CpuCheckpointProbe.java` replays the fresh-backup regression input and
+copies CPU/IRQ state into bounded host records. It loads no save and writes no
+save. Set `fresh_backup=true` explicitly in a copy of the original scenario
+properties; retain the verified ROM, BIOS and input paths/hashes. This probe
+supports default RTC, no peripherals and automatic backup detection only.
+
+The second argument is a file of inclusive `startCycle endCycle` pairs, sorted,
+nonoverlapping and inside the 3600-frame regression. Each window spans at most
+10000 cycles; the total is bounded to 100000 samples and 256 windows. For the
+first Lost Age case, use `90448312 90448712` (frame 322 +/- 200 cycles).
+
+```bash
+mkdir -p target/cpu-probe/classes
+javac -Xlint:all -Werror -cp target/classes -d target/cpu-probe/classes tools/CpuCheckpointProbe.java
+java -cp target/classes:target/cpu-probe/classes CpuCheckpointProbe \
+  /path/to/fresh.properties /path/to/windows.tsv > target/cpu-probe/after.csv
+```
+
+For the previous DMA model, export only its source to an ignored directory:
+
+```bash
+mkdir -p target/cpu-probe/before-source/berryboy/bus target/cpu-probe/before-classes
+git show '9f45db8^:src/main/java/berryboy/bus/DmaController.java' \
+  > target/cpu-probe/before-source/berryboy/bus/DmaController.java
+javac -cp target/classes -d target/cpu-probe/before-classes \
+  target/cpu-probe/before-source/berryboy/bus/DmaController.java
+java -cp target/cpu-probe/before-classes:target/classes:target/cpu-probe/classes \
+  CpuCheckpointProbe /path/to/fresh.properties /path/to/windows.tsv > target/cpu-probe/before.csv
+```
+
+All other production classes must remain identical to the phase-correction
+revision; otherwise this isolates more than DMA. No checkout, worktree or reset
+is required. `clock` rows copy state from a callback at each requested cycle,
+which may occur inside an instruction or DMA access. `retire` rows follow a
+completed instruction; `step` rows follow other completed CPU steps, including
+DMA, HALT and interrupt handling. Registers r0-r14, PC, CPSR, HALT, IF and the
+retired instruction count are retained. IF is queried through its raw device
+port: a CPU-context memory read would charge cycles and recurse into the clock.
+
+Compare clock rows at equal cycles and completed-step rows at shared cycles.
+Compare retire rows by instruction index separately: different loop iteration
+counts can invalidate that alignment. Keep unmatched keys and differing fields
+explicit. Matching CPU observations do not prove equal memory/peripheral state,
+hardware accuracy or full-game equivalence. The asset-free host tests verify
+window validation and unchanged completed-step records when sample callbacks
+are omitted from a separately compiled control adapter during active CPU
+execution. Sampling deadlines subdivide HALT waits, so idle-step records can
+change. Omit `machine.clock.schedule(sample, windows.getFirst()[0]);` in a
+separately compiled control copy to check retirement-row equality for a game;
+do not require identical idle-step counts. This control was run on both DMA
+variants for all four titles with differing equal-cycle CPU observations.
+The [diagnosis record](../benchmarks/cpu-checkpoint-diagnosis-2026-11-05.json)
+contains every window as `[frame,start,end,differentClockRows,differentSharedStepRows]`.
+Extract the second/third entries for the selected game's `windows` to construct
+its two-column input file. Keep separate files/output paths for each title.
+
 ## Original FIFO DMA timing probes
 
 These probes generate pattern cartridges in memory and require no external ROM,

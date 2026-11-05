@@ -1,4 +1,59 @@
-# Independent reference validation, 2026-10-23
+# Independent reference validation
+
+## Equal-cycle CPU checkpoint diagnosis, 2026-11-05
+
+All 134 changed checkpoint frames now have bounded CPU observations from both
+DMA models: **53734 exact-cycle samples per variant**, in 401-cycle windows.
+Only DMA and its inner classes are replaced on the older classpath. This is a
+before/after diagnosis, not another independent hardware reference. All games
+start with fresh backups and the verified baseline inputs; no save is loaded
+or written by the probe.
+
+**92 windows have identical PC, CPSR, r0-r14, HALT and IF at every sampled cycle.**
+The remaining **42 windows** differ in four titles:
+
+| Game | Matching CPU windows | Differing CPU windows |
+| --- | ---: | ---: |
+| Golden Sun - The Lost Age | 35 | 13 |
+| V-Rally 3 | 0 | 11 |
+| Zone of the Enders | 3 | 5 |
+| Sonic Advance 3 | 2 | 13 |
+
+All selected windows in the other seven titles match. This does not qualify
+unobserved intervals, memory/peripheral equality or full-game correctness.
+
+The first Lost Age checkpoint, frame 322, is an observation-endpoint shift:
+all **401** CPU/IF samples match, and no instruction retires near the boundary.
+The old seven-cycle DMA units end at `90448505/90448512/90448519`; corrected
+units end at `90448504/90448511/90448518`. The frame target is `90448512`, so
+whole-unit execution stops six cycles later with the corrected model. Both
+record 11733062 retired instructions at their respective endpoints.
+
+The other differences cannot all be attributed to endpoint selection. In each
+of the four titles, CPU registers differ even at some shared completed-step
+cycles. The Lost Age window around frame 735 already differs at its start;
+at cycle `206458365`, completed-step PC and r4 differ. This is the first observed
+shared-step difference in these selected windows, not the first global cause.
+Trace backwards into the preceding DMA/request/IRQ and CPU execution before
+choosing another correction. A differing old execution is not proof that the
+corrected model is wrong. Blind retired-instruction-index matching is also
+unsafe when busy-loop iteration counts differ; unmatched indices are retained.
+
+Sampling adds scheduler deadlines and subdivides HALT waits. For **all four
+differing titles and both DMA variants**, separately compiled controls omit
+sample-event installation: their entire observed retirement-row lists match
+the instrumented lists exactly. Shared-step CPU differences persist in those
+controls. HALT step counts themselves are not invariant. Seven asset-free host
+tests cover exact/disjoint windows, invalid bounds, active CPU control equality,
+raw IF observation without clock advancement and the HALT limitation.
+
+Validation: **1384 host tests and 1283 exported-core tests**, no failures or
+skips. Production core is unchanged; the previous native CLDC/RAPC evidence
+remains current and was not rerun for these host tools. R2, independent game
+accuracy, the saved-player LeafGreen frame-930 discrepancy and hardware gates
+remain open. Evidence and all window coordinates:
+[cpu-checkpoint-diagnosis-2026-11-05.json](../benchmarks/cpu-checkpoint-diagnosis-2026-11-05.json).
+Reproduction: [SCENARIOS.md](SCENARIOS.md#cpu-checkpoint-comparison-at-equal-cycles).
 
 ## Eleven-game regression after DMA phase correction
 
