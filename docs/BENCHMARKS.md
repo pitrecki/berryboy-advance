@@ -132,11 +132,17 @@ prefetch and request activation/lifecycle remain separate timing gates.
 Fresh game captures preserve whole RGB/backups and all guest/audio continuity;
 PCM changes in V-Rally/Sonic. The player LeafGreen replay retains RGB/PCM and
 its prior frame-930 mismatch. These do not close the full-stream accuracy gate.
+The [discarded IRQ fetch comparison](REFERENCE-VALIDATION.md#discarded-irq-fetch-wait-state-counterexample-2026-11-05)
+now quantifies the next gap: 6/18 IWRAM controls match, while 12 EWRAM/Game Pak
+rows retain identical guest registers but undercharge source waits. The fixed
+one-cycle cost predates the waiting-fetch correction. Charge that access
+through bus timing and qualify prefetch/page boundaries before delayed DMA
+activation; preserve the accepted IRQ decision.
 
 | Stage / priority | Work | Exit evidence |
 | --- | --- | --- |
 | R1 / P0: LeafGreen menu (three-way model comparison delivered; pixel qualification open) | Menu state matches; NBA agrees with mGBA on its color, while the 2244-case matrix exposes broader disagreement in rounding and palette bit 15 | Establish independently justified expected rounding and palette-bit behavior before correcting the renderer or passing the menu gate; existing arithmetic tests preserve behavior without certifying hardware |
-| R2 / P0: Timing and bus accuracy (waiting-fetch resumption delivered) | All 16 fetch, 120 IRQ-edge, 36 refill, 144 forms, 48 data and 96 earlier normalized rows match NBA on host and actual CLDC classes. Waiting accesses retain IRQ acceptance and bounded DMA progress. Actual activation remains immediate; frame 930 remains open | Qualify discarded IRQ fetch waits/prefetch and scheduled activation cancellation/re-enable/deduplication. Preserve the matrices/budgets; extend opcode latching, IRQ-line latency and timer evidence |
+| R2 / P0: Timing and bus accuracy (waiting-fetch resumption delivered; wider IRQ fetch counterexample recorded) | All six earlier matrices match NBA on host/CLDC. The new discarded-fetch probe matches 6/18 IWRAM controls; 12 EWRAM/Game Pak cases have correct guest registers but wrong cycles, unchanged from the prior CPU. Actual activation remains immediate; frame 930 remains open | Charge discarded IRQ fetch waits through the source bus/width, including DMA sequence interruption; qualify prefetch/page boundaries. Then qualify activation cancellation/re-enable/deduplication while retaining matrices, budgets and IRQ acceptance |
 | R3 / P1: Audio correctness | Start with late Sonic Advance 3 and Wario Land 4 differences; compare timer/DMA FIFO events, PSG state and sample clocks; distinguish guest-state errors from output gain, filter and resampling differences | Repeatable event/sample checkpoints, justified comparison tolerances and listening review; no unexplained divergence in the selected routes and zero software buffer failures |
 | R4 / P1: Gameplay and player saves (second LeafGreen cross-load delivered) | A one-tile indoor route creates generation 2; four cold cross-loads restore the exact room in both emulators. New saves still differ in 667 bytes. Extend routes to levels, races, battles and other titles | Named reference checkpoints for all eleven titles; save-capable games restore latest progress from isolated copies, with explicit strict binary/full-stream outcomes |
 | R5 / P2: Sustained Linux playback | After route correctness passes, profile bottlenecks, optimize one at a time, and run the warmup/measurement protocol below | Three 10-minute runs per qualified scenario after 30-second warmup, actual presentation/audio counters, bounded memory/queues and A/V drift; all acceptance gates below pass |
@@ -265,8 +271,12 @@ execution and physical-device access remain separate gates.
    83 regressions retain HALT/fault handling and four long-DMA frame/audio
    budgets. DMA-only fixtures now call the controller directly without changing
    expected ownership cycles or bytes. Next qualify wider discarded IRQ fetch
-   costs/prefetch and request activation/lifecycle. Keep raw in-flight snapshots
-   distinct from retirement.
+   costs/prefetch and request activation/lifecycle. The 18-case wait-state probe
+   now isolates that cost: all six IWRAM controls match, but EWRAM/Game Pak code
+   undercharges IRQ entry despite identical handler/return state. This predates
+   the waiting-fetch fix. Route the discarded access through bus timing with
+   the original mode, then extend prefetch/page-boundary coverage. Keep raw
+   in-flight snapshots distinct from retirement.
    A separate
    [ROM DMA source correction](REFERENCE-VALIDATION.md#dma-game-pak-source-addressing-and-next-timing-boundary)
    matches 24 original reference cases and preserves the whole replay's RGB/PCM,

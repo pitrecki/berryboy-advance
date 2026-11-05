@@ -556,6 +556,35 @@ starts. This compares acceptance after readiness, not peripheral assertion
 latency/priority. Synthetic handler NOPs replace a supplied BIOS. Full opcode
 latching and wider discarded-fetch/prefetch costs remain unqualified.
 
+## Discarded IRQ fetch wait-state probes
+
+Use the pinned, unmodified NBA source/CMake setup above:
+
+```bash
+cmake --build target/nba-reference --target nba-cpu-irq-fetch-probe --parallel 4
+target/nba-reference/nba-cpu-irq-fetch-probe > target/nba-reference/irq-fetch.csv
+javac -Xlint:all -Werror -cp target/classes -d target/docs-tools tools/CpuIrqFetchProbe.java
+java -cp target/classes:target/docs-tools berryboy.bus.CpuIrqFetchProbe > target/nba-reference/irq-fetch-berryboy.csv
+diff -u target/nba-reference/irq-fetch.csv target/nba-reference/irq-fetch-berryboy.csv
+```
+
+The 18 observations cover ARM/Thumb code in IWRAM/EWRAM/Game Pak, with no DMA
+(`dma_ready=-1`), raw readiness before the discarded fetch (`0`) or during it
+(`1`). IRQ is already accepted at CPU start. The reference primes its real
+pipeline; Java executes a preceding ADD to establish sequential bus state,
+resets its r0 effect and excludes the primer retirement. Warmup is excluded
+and aligned to the asserted reference count. Code PC is region+0x20, away
+from page boundaries. Both sides stop at the first synthetic handler NOP,
+requiring no external BIOS/ROM/save.
+
+Currently all six IWRAM controls match. Twelve wider-memory cases differ only
+in cycles; registers and DMA completion agree. Host/retained CLDC observations
+are identical, as are those on the pre-waiting-fetch-fix CPU. Both adapters
+compile/exit successfully; a nonzero `diff` is the recorded counterexample.
+This measures source wait states after normalized readiness, not activation,
+peripheral IRQ latency, prefetch-enabled behavior or full pipeline latching.
+See [the timing table and next correction](REFERENCE-VALIDATION.md#discarded-irq-fetch-wait-state-counterexample-2026-11-05).
+
 ## Original FIFO DMA timing probes
 
 These probes generate pattern cartridges in memory and require no external ROM,

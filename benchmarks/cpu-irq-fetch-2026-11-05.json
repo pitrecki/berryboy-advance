@@ -1,0 +1,526 @@
+{
+  "date": "2026-11-05",
+  "source_base_commit": "d2ea3937f645fc4b874750a71f18f3da4d520266",
+  "source_dirty": true,
+  "production_change": false,
+  "scope": "Accepted IRQ through first synthetic handler NOP, source fetch wait states for ARM/Thumb IWRAM/EWRAM/Game Pak code away from page boundaries; no external assets",
+  "hardware": "Linux x86_64 cloud host; Temurin 21.0.8+9; pinned unmodified NBA core; no physical GBA/Bold",
+  "reference": {
+    "commit": "55b5cf0ae3d929582ac5bfd486558173502b8354",
+    "tracked_source_unmodified": true,
+    "code_pc": "Region base + 0x20; IRQ return link +4; discarded reference fetch uses original source-mode pipeline",
+    "priming": "Reference original pipeline asserted: ARM IWRAM/EWRAM/ROM 2/12/14 cycles; Thumb via real BX 5/9/11. Java executes preceding ADD to establish sequential bus stream, resets r0 effect/excludes retirement, aligns clock to reference warmup.",
+    "normalization": "IRQ line accepted at CPU start. Optional one-word IWRAM DMA3 raw readiness -1=no DMA, 0=before discarded fetch, 1=during it. Original registered DMA event and Java HBlank readiness; activation/IRQ propagation latency excluded."
+  },
+  "matrix": {
+    "rows": 18,
+    "matching_rows": 6,
+    "iwram_controls": 6,
+    "iwram_control_matches": 6,
+    "wider_memory_rows": 12,
+    "wider_memory_cycle_differences": 12,
+    "guest_register_and_dma_completion_matches": 18,
+    "host_cldc_identical": true,
+    "prior_core_observations_identical": true,
+    "modes": [
+      "ARM",
+      "Thumb"
+    ],
+    "code_regions": [
+      "IWRAM",
+      "EWRAM",
+      "Game Pak ROM"
+    ],
+    "dma_ready": [
+      -1,
+      0,
+      1
+    ]
+  },
+  "cases": [
+    {
+      "reference": {
+        "mode": "arm",
+        "code": "0x03000020",
+        "dma_ready": "-1",
+        "cycle": "4",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x03000024",
+        "r0": "0",
+        "dma_complete": "0"
+      },
+      "berryboy": {
+        "mode": "arm",
+        "code": "0x03000020",
+        "dma_ready": "-1",
+        "cycle": "4",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x03000024",
+        "r0": "0",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "arm",
+        "code": "0x03000020",
+        "dma_ready": "0",
+        "cycle": "8",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x03000024",
+        "r0": "0",
+        "dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "arm",
+        "code": "0x03000020",
+        "dma_ready": "0",
+        "cycle": "8",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x03000024",
+        "r0": "0",
+        "dma_complete": "1"
+      }
+    },
+    {
+      "reference": {
+        "mode": "arm",
+        "code": "0x03000020",
+        "dma_ready": "1",
+        "cycle": "8",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x03000024",
+        "r0": "0",
+        "dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "arm",
+        "code": "0x03000020",
+        "dma_ready": "1",
+        "cycle": "8",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x03000024",
+        "r0": "0",
+        "dma_complete": "1"
+      }
+    },
+    {
+      "reference": {
+        "mode": "arm",
+        "code": "0x02000020",
+        "dma_ready": "-1",
+        "cycle": "9",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x02000024",
+        "r0": "0",
+        "dma_complete": "0"
+      },
+      "berryboy": {
+        "mode": "arm",
+        "code": "0x02000020",
+        "dma_ready": "-1",
+        "cycle": "4",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x02000024",
+        "r0": "0",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "arm",
+        "code": "0x02000020",
+        "dma_ready": "0",
+        "cycle": "13",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x02000024",
+        "r0": "0",
+        "dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "arm",
+        "code": "0x02000020",
+        "dma_ready": "0",
+        "cycle": "8",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x02000024",
+        "r0": "0",
+        "dma_complete": "1"
+      }
+    },
+    {
+      "reference": {
+        "mode": "arm",
+        "code": "0x02000020",
+        "dma_ready": "1",
+        "cycle": "13",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x02000024",
+        "r0": "0",
+        "dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "arm",
+        "code": "0x02000020",
+        "dma_ready": "1",
+        "cycle": "8",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x02000024",
+        "r0": "0",
+        "dma_complete": "1"
+      }
+    },
+    {
+      "reference": {
+        "mode": "arm",
+        "code": "0x08000020",
+        "dma_ready": "-1",
+        "cycle": "9",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x08000024",
+        "r0": "0",
+        "dma_complete": "0"
+      },
+      "berryboy": {
+        "mode": "arm",
+        "code": "0x08000020",
+        "dma_ready": "-1",
+        "cycle": "4",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x08000024",
+        "r0": "0",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "arm",
+        "code": "0x08000020",
+        "dma_ready": "0",
+        "cycle": "15",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x08000024",
+        "r0": "0",
+        "dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "arm",
+        "code": "0x08000020",
+        "dma_ready": "0",
+        "cycle": "8",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x08000024",
+        "r0": "0",
+        "dma_complete": "1"
+      }
+    },
+    {
+      "reference": {
+        "mode": "arm",
+        "code": "0x08000020",
+        "dma_ready": "1",
+        "cycle": "13",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x08000024",
+        "r0": "0",
+        "dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "arm",
+        "code": "0x08000020",
+        "dma_ready": "1",
+        "cycle": "8",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x08000024",
+        "r0": "0",
+        "dma_complete": "1"
+      }
+    },
+    {
+      "reference": {
+        "mode": "thumb",
+        "code": "0x03000020",
+        "dma_ready": "-1",
+        "cycle": "4",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x03000024",
+        "r0": "0",
+        "dma_complete": "0"
+      },
+      "berryboy": {
+        "mode": "thumb",
+        "code": "0x03000020",
+        "dma_ready": "-1",
+        "cycle": "4",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x03000024",
+        "r0": "0",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "thumb",
+        "code": "0x03000020",
+        "dma_ready": "0",
+        "cycle": "8",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x03000024",
+        "r0": "0",
+        "dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "thumb",
+        "code": "0x03000020",
+        "dma_ready": "0",
+        "cycle": "8",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x03000024",
+        "r0": "0",
+        "dma_complete": "1"
+      }
+    },
+    {
+      "reference": {
+        "mode": "thumb",
+        "code": "0x03000020",
+        "dma_ready": "1",
+        "cycle": "8",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x03000024",
+        "r0": "0",
+        "dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "thumb",
+        "code": "0x03000020",
+        "dma_ready": "1",
+        "cycle": "8",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x03000024",
+        "r0": "0",
+        "dma_complete": "1"
+      }
+    },
+    {
+      "reference": {
+        "mode": "thumb",
+        "code": "0x02000020",
+        "dma_ready": "-1",
+        "cycle": "6",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x02000024",
+        "r0": "0",
+        "dma_complete": "0"
+      },
+      "berryboy": {
+        "mode": "thumb",
+        "code": "0x02000020",
+        "dma_ready": "-1",
+        "cycle": "4",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x02000024",
+        "r0": "0",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "thumb",
+        "code": "0x02000020",
+        "dma_ready": "0",
+        "cycle": "10",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x02000024",
+        "r0": "0",
+        "dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "thumb",
+        "code": "0x02000020",
+        "dma_ready": "0",
+        "cycle": "8",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x02000024",
+        "r0": "0",
+        "dma_complete": "1"
+      }
+    },
+    {
+      "reference": {
+        "mode": "thumb",
+        "code": "0x02000020",
+        "dma_ready": "1",
+        "cycle": "10",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x02000024",
+        "r0": "0",
+        "dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "thumb",
+        "code": "0x02000020",
+        "dma_ready": "1",
+        "cycle": "8",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x02000024",
+        "r0": "0",
+        "dma_complete": "1"
+      }
+    },
+    {
+      "reference": {
+        "mode": "thumb",
+        "code": "0x08000020",
+        "dma_ready": "-1",
+        "cycle": "6",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x08000024",
+        "r0": "0",
+        "dma_complete": "0"
+      },
+      "berryboy": {
+        "mode": "thumb",
+        "code": "0x08000020",
+        "dma_ready": "-1",
+        "cycle": "4",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x08000024",
+        "r0": "0",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "thumb",
+        "code": "0x08000020",
+        "dma_ready": "0",
+        "cycle": "12",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x08000024",
+        "r0": "0",
+        "dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "thumb",
+        "code": "0x08000020",
+        "dma_ready": "0",
+        "cycle": "8",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x08000024",
+        "r0": "0",
+        "dma_complete": "1"
+      }
+    },
+    {
+      "reference": {
+        "mode": "thumb",
+        "code": "0x08000020",
+        "dma_ready": "1",
+        "cycle": "10",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x08000024",
+        "r0": "0",
+        "dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "thumb",
+        "code": "0x08000020",
+        "dma_ready": "1",
+        "cycle": "8",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x08000024",
+        "r0": "0",
+        "dma_complete": "1"
+      }
+    }
+  ],
+  "findings": [
+    "Fixed discarded IRQ fetch cost of one cycle undercharges EWRAM/Game Pak source waits",
+    "EWRAM discarded word/halfword takes 6/3; sequential Game Pak takes 6/3; the remaining BIOS refill/handler work takes 3 cycles",
+    "DMA before Game Pak fetch forces N timing 8/5, two more cycles than sequential. DMA at cycle 1 waits until refill, preserving the original sequential read.",
+    "All PC/CPSR/LR/r0/DMA completion observations match; this selected discrepancy is timing only and predates the waiting-fetch correction"
+  ],
+  "next_implementation": [
+    "Charge discarded IRQ fetch via source bus timing with the original mode/width and code sequencing",
+    "Respect DMA invalidation, accepted IRQ decision and bank status/link only after the access",
+    "Add prefetch-enabled and Game Pak page-boundary coverage before general pipeline qualification",
+    "Preserve all six earlier matrices, long-DMA frame/audio budgets and HALT/fault behavior",
+    "Repeat fresh game/player captures before delayed activation/lifecycle work"
+  ],
+  "validation": {
+    "cpp": "Pinned CMake target: -Wall -Wextra -Werror; real priming and final handler assertions pass",
+    "java": "javac -Xlint:all -Werror; sequential primer and final handler assertions pass",
+    "observation_result": "12 cycle mismatches are recorded counterexamples, not passing correctness cases",
+    "production_and_test_sources_unchanged": true,
+    "host_tests": 1593,
+    "console_host_tests": 1593,
+    "exported_core_tests": 1487,
+    "failures": 0,
+    "skipped": 0,
+    "retained_actual_cldc_probe_rows": 18,
+    "reused_actual_cldc_suite_tests": 1487,
+    "prior_core_source_commit": "b1ef97625eb0b195eab452c49de1538b28d71910",
+    "prior_core_query_bridge": "Isolated preceding CPU includes only inert fetchInFlight() query; adapter does not use it",
+    "reused_core_evidence": "benchmarks/cpu-fetch-resume-2026-11-05.json",
+    "reused_core_evidence_sha256": "c6cb0a800676530af3df97646cf8aae2eb8cab51b1c1d22d7953bf5e1a89652b",
+    "new_native_build": false,
+    "new_game_replay": false
+  },
+  "remaining_gates": [
+    "No production wait-state correction in this checkpoint",
+    "Prefetch-enabled, page-boundary and full opcode-latching behavior remain unqualified",
+    "Actual activation/lifecycle, IRQ propagation/mask latency, frame 930, audio fidelity and physical playback remain open"
+  ],
+  "source_files_sha256": {
+    "tools/nba-cpu-irq-fetch-probe.cc": "34d45e0ae9cc1ea42afc4b92174c8b6d63899cee6b0998419b6763759ec38a91",
+    "tools/CpuIrqFetchProbe.java": "3823916f550037e289a811c2b1834fa71c621a7cf735f03d70dd3baa827f6146",
+    "tools/nba-reference/CMakeLists.txt": "a2204f6b417d676187ddf287ee8fd0279d949fee387f5645d39579c0673e0c42",
+    "tools/nba-reference/probe-machine.hh": "652adfc13a9fa5da09d76ec92b931f6e9ad70aa470867d0d7417995dc22cf84a",
+    "src/main/java/berryboy/cpu/Cpu.java": "25c4c050aaa38f5fed7a59b334f6e30e423ed0dc60eaf6a2de1eb1241ad0b3e5",
+    "src/main/java/berryboy/bus/BusTiming.java": "2c5a58b389480ed2d9502c4bd0ce7595957e1fdd61554944d425ddab4002d5c9"
+  },
+  "artifact_sha256": {
+    "reference.csv": "d114e335c6e64d7f5ba6155de8f41c4763dc65219638b75a96d2998561e39850",
+    "berryboy.csv": "4989afb912f7dd059103bdacdc3ec5a8e1540598401bd23c81d0c60def22ca7a",
+    "cldc.csv": "4989afb912f7dd059103bdacdc3ec5a8e1540598401bd23c81d0c60def22ca7a",
+    "prior-core.csv": "4989afb912f7dd059103bdacdc3ec5a8e1540598401bd23c81d0c60def22ca7a"
+  },
+  "local_output": "target/cpu-irq-fetch-diagnosis"
+}

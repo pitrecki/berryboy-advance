@@ -1,5 +1,53 @@
 # Independent reference validation
 
+## Discarded IRQ fetch wait-state counterexample, 2026-11-05
+
+The next [original probe](../tools/nba-cpu-irq-fetch-probe.cc) measures accepted
+IRQ entry through the first synthetic BIOS handler NOP, with code in IWRAM,
+EWRAM or Game Pak. ARM/Thumb each run without DMA, with one-word IWRAM DMA3
+ready before the discarded fetch, or with readiness at cycle 1 during it.
+All code observations start at region+0x20, away from Game Pak page boundaries.
+
+**6/18 rows match**: all IWRAM controls. The other 12 rows differ only in
+cycles; PC/CPSR, LR, r0 and DMA completion agree throughout. The triplets below
+mean **no DMA / DMA ready at 0 / DMA ready at 1**:
+
+| Instruction set / code | NBA cycles | BerryBoy cycles |
+| --- | --- | --- |
+| ARM / IWRAM | 4 / 8 / 8 | 4 / 8 / 8 |
+| Thumb / IWRAM | 4 / 8 / 8 | 4 / 8 / 8 |
+| ARM / EWRAM | 9 / 13 / 13 | 4 / 8 / 8 |
+| Thumb / EWRAM | 6 / 10 / 10 | 4 / 8 / 8 |
+| ARM / Game Pak | 9 / 15 / 13 | 4 / 8 / 8 |
+| Thumb / Game Pak | 6 / 12 / 10 | 4 / 8 / 8 |
+
+BerryBoy still advances a fixed one-cycle discarded IRQ fetch. NBA charges
+the source's word/halfword wait: EWRAM takes 6/3 cycles, and a sequential Game
+Pak fetch also takes 6/3 at default waits. DMA before the Game Pak fetch makes
+it nonsequential (8/5), adding another two cycles. DMA arriving during that
+fetch waits until the subsequent refill access, preserving sequential timing.
+The remaining three cycles are the two BIOS refill accesses and handler NOP.
+
+The reference asserts its real pipeline priming and final handler state. Java
+executes one preceding ADD to establish a real sequential bus stream, resets
+its r0 effect and excludes that retirement; both clocks then align to the
+asserted reference warmup. No private reference hooks or source changes are
+used. Raw DMA readiness is injected through the original registered event;
+activation latency is not qualified. Both adapters compile with warnings
+treated as errors and exit successfully. The same 18 observations occur on
+retained actual CLDC classes and on the isolated pre-correction CPU, confirming
+that this cost gap predates the waiting-fetch fix.
+
+This checkpoint changes tools/docs only. Maven/console reruns pass **1593 host /
+1487 exported tests**; native build, full CLDC suite and game evidence are
+reused from the preceding correction. Next charge the discarded fetch through
+bus timing with the original instruction width, sequential stream and DMA
+invalidation. Preserve accepted IRQ/bank order and all existing matrices;
+extend prefetch-enabled and page-boundary cases before a general pipeline
+accuracy claim. No production wait-state fix is made here.
+Evidence: [cpu-irq-fetch-2026-11-05.json](../benchmarks/cpu-irq-fetch-2026-11-05.json).
+Reproduction: [SCENARIOS.md](SCENARIOS.md#discarded-irq-fetch-wait-state-probes).
+
 ## Resumable opcode fetch and IRQ acceptance, 2026-11-05
 
 The CPU now retains the pending fetch address/mode and the IRQ acceptance

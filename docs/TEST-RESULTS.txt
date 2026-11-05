@@ -1,3 +1,14 @@
+Latest discarded IRQ fetch diagnosis: 2026-11-05 UTC
+Tools/docs only; production/test sources unchanged from d2ea393.
+NBA comparison: 6/18 IWRAM controls match. All 12 EWRAM/Game Pak code rows
+agree on PC/CPSR/LR/r0/DMA completion but undercharge source fetch waits.
+Host, retained actual CLDC and pre-waiting-fetch-fix CPU observations are
+identical, so this gap predates that correction. Both adapters compile with
+warnings treated as errors and exit successfully; the cycle mismatches remain
+open. Maven/console reruns: 1593 host / 1487 exported tests pass, no failures/
+skips. Native/full-CLDC/game evidence below is reused, not rerun here.
+See benchmarks/cpu-irq-fetch-2026-11-05.json.
+
 Latest waiting-fetch/IRQ correction: 2026-11-05 UTC
 Host: Eclipse Temurin 21.0.8+9, Maven 3.9.11, Linux x86_64
 mvn verify (default and native profiles): 1593 passed; 0 failed/errors/skipped.
