@@ -38,6 +38,12 @@
   audio underruns. Validate on the Bold 9900 separately from the Linux host.
 - Documentation captures must come from the application. Label headless component
   captures and keep capture tooling reproducible.
+- Keep documentation focused: README covers usage and the current version;
+  `docs/BENCHMARKS.md` owns current validation, limitations and the next roadmap;
+  CHANGELOG records version highlights. Store detailed measurements in linked
+  machine-readable benchmark records. Do not copy each test count or timing fix
+  into several guides. Update specialist guides when their commands, interfaces
+  or explanations change; preserve earlier evidence through Git history.
 
 ## Design principles
 

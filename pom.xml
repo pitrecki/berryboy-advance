@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>dev.berryboy</groupId>
   <artifactId>berryboy-advance</artifactId>
-  <version>0.6.0-SNAPSHOT</version>
+  <version>0.7.0-SNAPSHOT</version>
   <name>BerryBoy Advance</name>
   <properties>
     <maven.compiler.release>21</maven.compiler.release>
@@ -136,6 +136,8 @@
                   <executable>bash</executable>
                   <arguments>
                     <argument>${project.basedir}/tools/blackberry.sh</argument>
+                    <argument>--version</argument>
+                    <argument>${project.version}</argument>
                     <argument>--sdk</argument>
                     <argument>${bb.sdk}</argument>
                     <argument>--jdk6</argument>

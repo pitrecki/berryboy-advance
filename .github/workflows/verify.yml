@@ -23,6 +23,7 @@ jobs:
         run: tools/test-with-console.sh
       - name: Exercise headless video, PCM output and documentation capture
         run: |
-          java -Djava.awt.headless=true -jar target/berryboy-advance-0.6.0-SNAPSHOT.jar demo --headless
-          java -Djava.awt.headless=true -jar target/berryboy-advance-0.6.0-SNAPSHOT.jar audio-demo --headless
+          app_jar="target/$(mvn -q -ntp -Dstyle.color=never help:evaluate -Dexpression=project.build.finalName -DforceStdout).jar"
+          java -Djava.awt.headless=true -jar "$app_jar" demo --headless
+          java -Djava.awt.headless=true -jar "$app_jar" audio-demo --headless
           tools/capture-docs.sh target/documentation-captures

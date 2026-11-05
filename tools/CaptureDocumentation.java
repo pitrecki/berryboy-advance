@@ -79,7 +79,7 @@ public final class CaptureDocumentation {
         component.getActionMap().get(action).actionPerformed(null);
     }
 
-    private static void layout(Container container) {
+    static void layout(Container container) {
         container.doLayout();
         for (var child : container.getComponents()) {
             if (child instanceof Container nested) {
@@ -88,7 +88,7 @@ public final class CaptureDocumentation {
         }
     }
 
-    private static void capture(JComponent component, Path path) throws Exception {
+    static void capture(JComponent component, Path path) throws Exception {
         var image = new BufferedImage(component.getWidth(), component.getHeight(), BufferedImage.TYPE_INT_RGB);
         var graphics = image.createGraphics();
         try {

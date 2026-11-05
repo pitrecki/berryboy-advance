@@ -1,0 +1,5 @@
+# game_code	title	first_frame	end_frame_exclusive	load_player_save
+B3SE	Sonic Advance 3	3300	3480	false
+AMTE	Metroid Fusion	3300	3480	false
+AGSE	Golden Sun	3300	3480	false
+BPGE	Pokemon LeafGreen	1272	1452	true

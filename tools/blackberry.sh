@@ -9,6 +9,7 @@ bb_compiler=${BB_COMPILER:-jdk6}
 bb_ecj=${BB_ECJ_JAR:-}
 bb_model=9900
 bb_launch=true
+bb_version=
 while (($#)); do
   [[ $# -ge 2 ]] || { echo "Missing value for $1" >&2; exit 2; }
   case "$1" in
@@ -19,10 +20,16 @@ while (($#)); do
     --ecj) bb_ecj=$2;;
     --model) bb_model=$2;;
     --launch) bb_launch=$2;;
+    --version) bb_version=$2;;
     *) echo "Unknown option: $1" >&2; exit 2;;
   esac
   shift 2
 done
+if [[ -z $bb_version ]]; then
+  bb_version=$(sed -n 's#^  <version>\(.*\)</version>$#\1#p' "$project_root/pom.xml")
+fi
+bb_version=${bb_version%-SNAPSHOT}
+[[ $bb_version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo 'Invalid MIDlet version' >&2; exit 2; }
 [[ $bb_model =~ ^[A-Za-z0-9_-]+$ ]] || { echo 'Invalid simulator model/session' >&2; exit 2; }
 [[ $bb_launch == true || $bb_launch == false ]] || { echo '--launch must be true or false' >&2; exit 2; }
 [[ $bb_compiler == jdk6 || $bb_compiler == ecj ]] || { echo '--compiler must be jdk6 or ecj' >&2; exit 2; }
@@ -100,7 +107,7 @@ fi
 jar_size=$(wc -c < "$midlet_jar" | tr -d ' ')
 cat > "$build_root/output/BerryBoyAdvance.jad" <<JAD
 MIDlet-Name: BerryBoy Advance
-MIDlet-Version: 0.6.0
+MIDlet-Version: $bb_version
 MIDlet-Vendor: BerryBoy
 MIDlet-1: BerryBoy Advance,,berryboy.BlackBerryMidlet
 MIDlet-Jar-URL: BerryBoyAdvance.jar
