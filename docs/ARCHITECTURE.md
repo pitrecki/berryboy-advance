@@ -125,8 +125,19 @@ progress through its read-only `ownsBus()` port. IRQ entry and the next
 instruction wait for retirement, while each public step still yields after one
 DMA unit. Between steps, `instructionInFlight()` identifies pending execution;
 registers/PC may already reflect partial work and `instructions()` counts only
-retirements. Scheduled request activation and yield/resume arbitration inside
-branch/IRQ refills remain in R2, alongside broader bus/overlap qualification.
+retirements.
+
+`BusTiming` retains the address, width and progress of a two-access pipeline
+refill. `Cpu` arbitrates before each access and resumes through the same bus
+grant used for data accesses. DMA between refill reads breaks sequential Game
+Pak timing. Branch retirement follows the last refill access; IRQ entry uses
+the same refill path but does not count as an instruction. During a suspended
+IRQ entry, `instructionInFlight()` is false and `BusTiming.refilling()` is true.
+The handler cannot execute or overwrite the banked link/status while refill is
+pending. A DMA unit that completes internal instruction timing can begin the
+refill, then yields before servicing another unit. No per-refill allocation is
+introduced. Actual request activation/lifecycle, broader prefetch and full
+opcode-pipeline latching remain qualification work in R2.
 
 Supported instruction families:
 

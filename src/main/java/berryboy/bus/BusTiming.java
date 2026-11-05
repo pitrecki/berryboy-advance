@@ -17,6 +17,9 @@ public final class BusTiming {
     private int prefetchCredit;
     private int ewramCycles = 3;
     private boolean externalRam = true;
+    private int refillAddress;
+    private int refillWidth;
+    private int refillRemaining;
 
     public BusTiming(CycleScheduler clock) {
         this.clock = clock;
@@ -97,12 +100,32 @@ public final class BusTiming {
         }
     }
 
-    public void refill(int address, int width) {
+    /** Begin two refill accesses; the CPU arbitrates DMA before each one. */
+    public void beginRefill(int address, int width) {
+        if (refilling()) throw new EmulationException("Pipeline refill already pending");
+        if (width != 2 && width != 4) throw new IllegalArgumentException("Invalid refill width");
         invalidateFetch();
-        clock.advance(accessCycles(address, width, false));
-        clock.advance(accessCycles(address + width, width, true));
-        expectedFetch = address;
+        refillAddress = address;
+        refillWidth = width;
+        refillRemaining = 2;
+    }
+
+    public boolean refilling() { return refillRemaining != 0; }
+
+    /** Advance one access, respecting DMA invalidation between the two reads. */
+    public void refillNext() {
+        if (!refilling()) throw new EmulationException("No pending pipeline refill");
+        var second = refillRemaining == 1;
+        var address = refillAddress + (second ? refillWidth : 0);
+        var cycles = accessCycles(address, refillWidth, second && nextFetchSequential);
         nextFetchSequential = true;
+        clock.advance(cycles);
+        if (--refillRemaining == 0) expectedFetch = refillAddress;
+    }
+
+    public void cancelRefill() {
+        refillRemaining = 0;
+        invalidateFetch();
     }
 
     public void invalidateFetch() {

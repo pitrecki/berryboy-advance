@@ -6,7 +6,7 @@ import berryboy.bus.Memory;
 /**
  * ARM7TDMI execution loop. One step services a DMA unit, interrupt, HALT event
  * or instruction phase and advances guest cycles. A decoded instruction can
- * wait for DMA before data accesses or during internal cycles. Prepared data
+ * wait for DMA before data/refill accesses or during internal cycles. Prepared data
  * operations run once, and retirement waits until the instruction completes.
  * The interpreters and register banks are created once and reused for every step.
  */
@@ -35,7 +35,7 @@ public final class Cpu {
     private boolean instructionInFlight;
     private int remainingInternalCycles;
     private boolean dataPhase;
-    private boolean dataBusGranted;
+    private boolean busGranted;
     private int pendingAddress;
     private int pendingOpcode;
 
@@ -50,12 +50,17 @@ public final class Cpu {
     public void step() {
         if (instructionInFlight) {
             try {
-                resumeInstructionTiming();
+                if (memory.busTiming().refilling()) resumeRefill();
+                else resumeInstructionTiming();
             } catch (EmulationException error) {
                 throw instructionFailure(error, pendingAddress, pendingOpcode);
             } finally {
                 memory.finishInstruction();
             }
+            return;
+        }
+        if (memory.busTiming().refilling()) {
+            resumeRefill(); // IRQ entry has no instruction to retire.
             return;
         }
         if (serviceDma(false)) return;
@@ -70,7 +75,8 @@ public final class Cpu {
             if (!memory.hasBios()) throw new EmulationException("IRQ needs a supplied BIOS");
             state.enterIrq();
             memory.clock().advance(1);
-            memory.busTiming().refill(0x18, 4);
+            beginRefill();
+            resumeRefill();
             return;
         }
         var address = state.programCounter();
@@ -81,7 +87,7 @@ public final class Cpu {
             pendingAddress = address;
             pendingOpcode = opcode;
             transfers.reset();
-            dataBusGranted = false;
+            busGranted = false;
             state.beginInstruction(thumbMode ? 2 : 4);
             var execute = thumbMode || state.conditionPassed(opcode >>> 28);
             var internal = execute ? InstructionTiming.internal(opcode, thumbMode, state) : 0;
@@ -106,8 +112,7 @@ public final class Cpu {
     private void resumeInstructionTiming() {
         if (dataPhase) {
             while (transfers.hasNext()) {
-                if (!dataBusGranted && !transfers.busLocked() && serviceDma(false)) return;
-                dataBusGranted = false;
+                if (!transfers.busLocked() && waitForBus()) return;
                 memory.resumeInstructionData();
                 try {
                     transfers.transferNext();
@@ -127,7 +132,31 @@ public final class Cpu {
             memory.busTiming().internal(1, state.branched());
             remainingInternalCycles--;
         }
-        retireInstruction();
+        if (state.branched()) {
+            beginRefill();
+            resumeRefill();
+        } else retireInstruction();
+    }
+
+    private void beginRefill() {
+        busGranted = false;
+        memory.busTiming().beginRefill(state.programCounter(), state.isThumb() ? 2 : 4);
+    }
+
+    private void resumeRefill() {
+        while (memory.busTiming().refilling()) {
+            if (waitForBus()) return;
+            memory.busTiming().refillNext();
+        }
+        if (instructionInFlight) retireInstruction();
+    }
+
+    private boolean waitForBus() {
+        if (busGranted) {
+            busGranted = false;
+            return false;
+        }
+        return serviceDma(false);
     }
 
     private boolean serviceDma(boolean overlapInternal) {
@@ -139,11 +168,17 @@ public final class Cpu {
             var elapsed = memory.clock().now() - before;
             remainingInternalCycles = elapsed >= remainingInternalCycles ? 0
                     : remainingInternalCycles - (int) elapsed;
-            if (!memory.dma().ownsBus() && remainingInternalCycles == 0) retireInstruction();
-        } else if (instructionInFlight && dataPhase && !memory.dma().ownsBus()) {
+            if (!memory.dma().ownsBus() && remainingInternalCycles == 0) {
+                // Start the refill but yield after this DMA unit. Resuming it
+                // here could service a second interval within one public step.
+                if (state.branched()) beginRefill();
+                else retireInstruction();
+            }
+        } else if (((instructionInFlight && dataPhase) || memory.busTiming().refilling())
+                && !memory.dma().ownsBus()) {
             // NBA bus arbitration grants the waiting access after the interval
             // completes, even if a new request arrives during its release.
-            dataBusGranted = true;
+            busGranted = true;
         }
         return true;
     }
@@ -151,18 +186,17 @@ public final class Cpu {
     private EmulationException instructionFailure(EmulationException error, int address, int opcode) {
         // Completed accesses remain visible; never replay them after a fault.
         state.writeRegister(CpuState.PROGRAM_COUNTER, address);
-        memory.busTiming().invalidateFetch();
+        memory.busTiming().cancelRefill();
         instructionInFlight = false;
         remainingInternalCycles = 0;
         dataPhase = false;
-        dataBusGranted = false;
+        busGranted = false;
         transfers.reset();
         return new EmulationException(error.getMessage() + " [opcode=0x" + Integer.toHexString(opcode)
                 + ", pc=0x" + Integer.toHexString(address) + "]");
     }
 
     private void retireInstruction() {
-        if (state.branched()) memory.busTiming().refill(state.programCounter(), state.isThumb() ? 2 : 4);
         instructionInFlight = false;
         instructionCount++;
     }

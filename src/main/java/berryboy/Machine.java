@@ -50,7 +50,7 @@ public final class Machine {
         }
     }
 
-    /** Run whole instructions/events; the final instruction may cross the budget. */
+    /** Run execution phases/events; the final bus operation may cross the budget. */
     public void runCycles(long cycles) {
         if (cycles < 0 || cycles > Long.MAX_VALUE - clock.now()) {
             throw new IllegalArgumentException("Invalid cycle budget");

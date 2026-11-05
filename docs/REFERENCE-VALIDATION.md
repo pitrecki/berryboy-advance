@@ -1,5 +1,63 @@
 # Independent reference validation
 
+## Resumable CPU pipeline refills during DMA, 2026-11-05
+
+The CPU now arbitrates DMA before each of the two refill accesses and retains
+the refill address, width and progress across yields. A DMA interruption makes
+the following Game Pak access nonsequential. A branch retires only after the
+final access; IRQ entry shares that path without counting as an instruction.
+The guest keeps one owner and each public step still services at most one DMA
+unit. A unit that completes internal timing begins the refill, then yields
+before another unit can run. No per-refill objects are allocated.
+
+The earlier **36-row same-mode BX matrix now matches 36/36**, versus 12/36 on
+the preceding committed CPU. Another [original probe](../tools/nba-cpu-refill-forms-probe.cc)
+matches **144/144 observations**, versus 93/144 before. It covers B/BL, both
+state-changing BX directions, ARM LDR/LDM and Thumb POP to PC, Thumb B,
+ARM/Thumb SWI and accepted IRQ, with three DMA source regions and no-DMA/raw
+readiness at 1/2/3. It compares cycles, PC/CPSR, LR, r2, SP and completed DMA.
+The reference core is the same pinned, unmodified NBA revision. The new forms
+probe injects readiness through its registered activation event; this is not
+an activation-delay or request-lifecycle qualification.
+
+NBA's public `Run()` enters IRQ and executes the first handler instruction in
+one call, so both forms adapters stop after that synthetic handler NOP. They
+do not use private hooks or alter the reference source. Portable unit tests
+separately verify that a suspended IRQ refill neither executes the handler nor
+rebanks its return state. `instructionInFlight()` remains false during IRQ
+entry, while `BusTiming.refilling()` exposes its pending timing. Ordinary
+branch instructions retain `instructionInFlight()` until retirement.
+
+All **52 new core cases pass**. The old CPU fails 38 and passes 14 with only a
+constant-false `refilling()` compatibility query added to the isolated old bus;
+its emulation behavior is unchanged. Regressions cover the original timing
+matrix, state-changing ROM targets, SWI banked link, SPSR-restored Thumb refill
+width, release handoff, final-access readiness and internal-DMA completion
+without servicing two units per step. Three 65536-word cases retain frame/PCM
+budgets during BL and IRQ entry, including code overwrite without replay.
+
+Validation passes **1510 host / 1404 exported / 1404 actual new ECJ CLDC-class
+tests** and a fresh native JDE/ECJ/RAPC COD build. All four independent matrices
+(36 refill, 144 forms, 48 data, 96 earlier normalized CPU rows) also match when
+the adapters run on the new actual CLDC classes. The production request matrix
+is unchanged at 24/96 matches. Actual activation/lifecycle, opcode-fetch
+handoff, broader prefetch/full pipeline behavior, peripheral IRQ-line latency
+and hardware qualification remain open. No tolerance has changed.
+
+All eleven fresh-backup games complete **39600 guest frames / 21725550 stereo
+samples**, with zero missing frames or software audio-buffer failures. Whole
+RGB and backup hashes are unchanged in every title; four initialization saves
+are written. PCM changes in Lost Age, V-Rally, Emerald and LeafGreen. Reused
+mGBA RGB888 exact-frame sets remain unchanged, with no gains/losses and no
+whole-stream accuracy pass. The 1272-frame LeafGreen continuation preserves
+full RGB, its three raw video states and the original player save. It ends
+three cycles later with changed PCM; RGB555 remains 1111/1272 exact frames,
+first difference 930. These are boot/intro and limited continuation checks,
+not gameplay or sustained/physical playback qualification.
+
+Evidence: [cpu-refill-resume-2026-11-05.json](../benchmarks/cpu-refill-resume-2026-11-05.json).
+Reproduction: [SCENARIOS.md](SCENARIOS.md#cpu-branch-refill-probes).
+
 ## CPU branch-refill DMA counterexample, 2026-11-05
 
 The next asset-free probe runs same-mode `BX r2` on the corrected data-access

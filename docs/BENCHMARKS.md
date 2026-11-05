@@ -47,7 +47,7 @@ the Thumb multiply timing and Game Pak DMA source corrections, plus the FIFO
 DMA reference counterexample and independent DMA read/write phase correction. The shared clock, scheduler,
 CPU/bus timing, software renderer, mixer, cartridge devices and capture runner
 are implemented. Their accuracy is still being qualified; implementation does
-not close M1–M4. Latest local validation passed **1458 host tests and 1352
+not close M1–M4. Latest local validation passed **1510 host tests and 1404
 exported-core tests**. Neither test count establishes BlackBerry readiness.
 
 | Milestone | Deliverables | Completion evidence |
@@ -111,11 +111,18 @@ The next [branch-refill counterexample](REFERENCE-VALIDATION.md#cpu-branch-refil
 matches all 12 no-DMA controls but exposes premature retirement in all 24
 ready-DMA cases. PC still agrees. The immediate next fix is resumable refill
 arbitration and Game Pak sequencing, with long-transfer budgets retained.
+That [refill correction](REFERENCE-VALIDATION.md#resumable-cpu-pipeline-refills-during-dma-2026-11-05)
+is now delivered: all 36 observations match, as do 144 additional instruction/
+exception observations and the earlier 48 data / 96 CPU rows. Long DMA retains
+frame/audio progress during branch and IRQ refills. Fresh game replays preserve
+all whole RGB/backups and guest/audio continuity; four PCM streams change.
+LeafGreen still first differs at frame 930. Opcode-fetch handoff and request
+activation/lifecycle remain the next timing stage.
 
 | Stage / priority | Work | Exit evidence |
 | --- | --- | --- |
 | R1 / P0: LeafGreen menu (three-way model comparison delivered; pixel qualification open) | Menu state matches; NBA agrees with mGBA on its color, while the 2244-case matrix exposes broader disagreement in rounding and palette bit 15 | Establish independently justified expected rounding and palette-bit behavior before correcting the renderer or passing the menu gate; existing arithmetic tests preserve behavior without certifying hardware |
-| R2 / P0: Timing and bus accuracy (data resumption delivered; refill counterexample recorded) | All 48 data and 96 earlier readiness-normalized rows match NBA; SWP stays locked and Game Pak data bursts restart nonsequentially. The 36-case refill probe exposes premature retirement in all 24 ready-DMA branches; 12 controls match. Actual request activation remains immediate; frame 930 remains open | Fix resumable refill arbitration against the 36 observations; extend B/BX/loaded-PC/SWI/IRQ and long-DMA budgets. Then qualify scheduled activation with cancellation/re-enable/deduplication, preserving retirement and bus/timer ordering |
+| R2 / P0: Timing and bus accuracy (data/internal/refill resumption delivered) | All 36 refill, 144 instruction/exception, 48 data and 96 earlier readiness-normalized rows match NBA, including actual CLDC-class runs. Branch/IRQ refills yield during long DMA; mode, return state and retirement remain ordered. Actual request activation remains immediate; frame 930 remains open | Qualify and implement scheduled activation with cancellation/re-enable/deduplication. Preserve the current matrices and frame/audio budgets; extend opcode-fetch handoff, prefetch, IRQ-line latency and timer workload qualification |
 | R3 / P1: Audio correctness | Start with late Sonic Advance 3 and Wario Land 4 differences; compare timer/DMA FIFO events, PSG state and sample clocks; distinguish guest-state errors from output gain, filter and resampling differences | Repeatable event/sample checkpoints, justified comparison tolerances and listening review; no unexplained divergence in the selected routes and zero software buffer failures |
 | R4 / P1: Gameplay and player saves (second LeafGreen cross-load delivered) | A one-tile indoor route creates generation 2; four cold cross-loads restore the exact room in both emulators. New saves still differ in 667 bytes. Extend routes to levels, races, battles and other titles | Named reference checkpoints for all eleven titles; save-capable games restore latest progress from isolated copies, with explicit strict binary/full-stream outcomes |
 | R5 / P2: Sustained Linux playback | After route correctness passes, profile bottlenecks, optimize one at a time, and run the warmup/measurement protocol below | Three 10-minute runs per qualified scenario after 30-second warmup, actual presentation/audio counters, bounded memory/queues and A/V drift; all acceptance gates below pass |
@@ -229,11 +236,14 @@ execution and physical-device access remain separate gates.
    Data and multi-access suspension is now delivered, with a reusable operation
    sequence and 39 regressions. The expanded 48-row independent matrix also
    catches and corrects a two-cycle Game Pak sequencing error after DMA.
-   The next same-mode BX probe now exposes 24 premature branch retirements
-   while all 12 no-DMA controls and all PCs agree. Correct atomic refill timing
-   with per-access arbitration and Game Pak sequence interruption, then extend
-   to state-changing branches and exception refills before enabling delayed
-   requests. Keep raw in-flight snapshots distinct from retirement.
+   Resumable refill timing now corrects all 24 premature branch retirements and
+   preserves all 12 no-DMA controls. Another 144 normalized observations cover
+   B/BL, state-changing BX, loaded PC, SWI and IRQ entry plus the first handler
+   NOP. Fifty-two regressions cover banked status/link, deferred return width,
+   release handoff and long-DMA budgets. Next qualify scheduled activation with
+   cancellation/re-enable/deduplication; retain these matrices and extend opcode
+   fetch/prefetch/IRQ-line and timer evidence. Keep raw in-flight snapshots
+   distinct from retirement.
    A separate
    [ROM DMA source correction](REFERENCE-VALIDATION.md#dma-game-pak-source-addressing-and-next-timing-boundary)
    matches 24 original reference cases and preserves the whole replay's RGB/PCM,

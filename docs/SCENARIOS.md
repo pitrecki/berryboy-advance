@@ -468,7 +468,7 @@ cmake --build target/nba-reference --target nba-cpu-refill-probe --parallel 4
 target/nba-reference/nba-cpu-refill-probe > target/nba-reference/refill.csv
 javac -Xlint:all -Werror -cp target/classes -d target/docs-tools tools/CpuRefillProbe.java
 java -cp target/classes:target/docs-tools berryboy.bus.CpuRefillProbe > target/nba-reference/refill-berryboy.csv
-diff -u target/nba-reference/refill.csv target/nba-reference/refill-berryboy.csv
+cmp target/nba-reference/refill.csv target/nba-reference/refill-berryboy.csv
 ```
 
 Reconfigure CMake when using an older build directory. Both probes run without
@@ -479,12 +479,34 @@ two-cycle immediate request; BerryBoy injects raw readiness. Cycles exclude
 the asserted NBA priming and optional request age. `pc` is the next instruction
 address; `dma_complete` inspects the second destination word at retirement.
 
-Currently the 12 no-DMA controls match, while all 24 ready-DMA cases retire
-prematurely in BerryBoy. PC agrees throughout. A nonzero `diff` status is the
-recorded counterexample, not an adapter compilation/execution failure. This
-isolates refill arbitration; it does not qualify actual request activation,
-state-changing BX, IRQ entry or full opcode-pipeline latching. See
-[the diagnosis and next correction](REFERENCE-VALIDATION.md#cpu-branch-refill-dma-counterexample-2026-11-05).
+All 36 rows now match. The preceding atomic-refill core matched only the 12
+no-DMA controls and retired prematurely in all 24 ready cases. This isolates
+refill arbitration; it does not qualify actual request activation or full
+opcode-pipeline latching. See [the diagnosis](REFERENCE-VALIDATION.md#cpu-branch-refill-dma-counterexample-2026-11-05)
+and [the correction](REFERENCE-VALIDATION.md#resumable-cpu-pipeline-refills-during-dma-2026-11-05).
+
+Broaden the check to other instruction and exception forms:
+
+```bash
+cmake --build target/nba-reference --target nba-cpu-refill-forms-probe --parallel 4
+target/nba-reference/nba-cpu-refill-forms-probe > target/nba-reference/refill-forms.csv
+javac -Xlint:all -Werror -cp target/classes -d target/docs-tools tools/CpuRefillFormsProbe.java
+java -cp target/classes:target/docs-tools berryboy.bus.CpuRefillFormsProbe > target/nba-reference/refill-forms-berryboy.csv
+cmp target/nba-reference/refill-forms.csv target/nba-reference/refill-forms-berryboy.csv
+```
+
+All 144 rows match: 12 forms, three DMA sources and no-DMA/readiness 1/2/3.
+The forms cover ARM B/BL, ARM/Thumb state-changing BX, ARM LDR/LDM to PC,
+Thumb B/POP to PC, ARM/Thumb SWI and accepted IRQ. This adapter injects raw
+readiness through NBA's original registered DMA activation event and through
+BerryBoy's HBlank request; neither side qualifies production activation latency.
+For IRQ, NBA's public `Run()` enters IRQ and executes the first handler NOP.
+The Java adapter observes the same first-handler-retirement boundary, while
+unit tests separately check suspended entry without handler execution. PC,
+CPSR, LR, r2, SP, cycles and completed DMA are compared. Synthetic zero BIOS
+data plus a handler NOP replace any external BIOS requirement. Peripheral IRQ
+line latency/priority, full pipeline latching and real BIOS services remain
+outside this probe's scope.
 
 ## Original FIFO DMA timing probes
 
