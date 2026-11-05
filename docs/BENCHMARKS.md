@@ -118,11 +118,16 @@ frame/audio progress during branch and IRQ refills. Fresh game replays preserve
 all whole RGB/backups and guest/audio continuity; four PCM streams change.
 LeafGreen still first differs at frame 930. Opcode-fetch handoff and request
 activation/lifecycle remain the next timing stage.
+The new [opcode-fetch counterexample](REFERENCE-VALIDATION.md#opcode-fetch-handoff-and-irq-acceptance-counterexample-2026-11-05)
+now isolates that first boundary: 10/16 rows match, but a release-time request
+delays the waiting ADD and an accompanying IRQ changes the observed registers
+and return link. Fix waiting-fetch handoff and IRQ acceptance before delayed
+activation; later agreement at the same cycle does not close this gate.
 
 | Stage / priority | Work | Exit evidence |
 | --- | --- | --- |
 | R1 / P0: LeafGreen menu (three-way model comparison delivered; pixel qualification open) | Menu state matches; NBA agrees with mGBA on its color, while the 2244-case matrix exposes broader disagreement in rounding and palette bit 15 | Establish independently justified expected rounding and palette-bit behavior before correcting the renderer or passing the menu gate; existing arithmetic tests preserve behavior without certifying hardware |
-| R2 / P0: Timing and bus accuracy (data/internal/refill resumption delivered) | All 36 refill, 144 instruction/exception, 48 data and 96 earlier readiness-normalized rows match NBA, including actual CLDC-class runs. Branch/IRQ refills yield during long DMA; mode, return state and retirement remain ordered. Actual request activation remains immediate; frame 930 remains open | Qualify and implement scheduled activation with cancellation/re-enable/deduplication. Preserve the current matrices and frame/audio budgets; extend opcode-fetch handoff, prefetch, IRQ-line latency and timer workload qualification |
+| R2 / P0: Timing and bus accuracy (refill resumption delivered; waiting-fetch counterexample recorded) | All 36 refill, 144 forms, 48 data and 96 earlier normalized rows match NBA. The new fetch probe matches 10/16 rows; release-time DMA/IRQ exposes different guest registers and return links, also on CLDC. Actual activation remains immediate; frame 930 remains open | Fix waiting opcode-fetch handoff and preserve IRQ acceptance across DMA yields. Then qualify scheduled activation cancellation/re-enable/deduplication; retain the matrices/budgets and extend prefetch, IRQ-line latency and timer evidence |
 | R3 / P1: Audio correctness | Start with late Sonic Advance 3 and Wario Land 4 differences; compare timer/DMA FIFO events, PSG state and sample clocks; distinguish guest-state errors from output gain, filter and resampling differences | Repeatable event/sample checkpoints, justified comparison tolerances and listening review; no unexplained divergence in the selected routes and zero software buffer failures |
 | R4 / P1: Gameplay and player saves (second LeafGreen cross-load delivered) | A one-tile indoor route creates generation 2; four cold cross-loads restore the exact room in both emulators. New saves still differ in 667 bytes. Extend routes to levels, races, battles and other titles | Named reference checkpoints for all eleven titles; save-capable games restore latest progress from isolated copies, with explicit strict binary/full-stream outcomes |
 | R5 / P2: Sustained Linux playback | After route correctness passes, profile bottlenecks, optimize one at a time, and run the warmup/measurement protocol below | Three 10-minute runs per qualified scenario after 30-second warmup, actual presentation/audio counters, bounded memory/queues and A/V drift; all acceptance gates below pass |
@@ -242,8 +247,12 @@ execution and physical-device access remain separate gates.
    NOP. Fifty-two regressions cover banked status/link, deferred return width,
    release handoff and long-DMA budgets. Next qualify scheduled activation with
    cancellation/re-enable/deduplication; retain these matrices and extend opcode
-   fetch/prefetch/IRQ-line and timer evidence. Keep raw in-flight snapshots
-   distinct from retirement.
+   fetch/prefetch/IRQ-line and timer evidence. The next fetch probe now exposes
+   the specific release-time gap: the waiting ADD retires at 5 in NBA but at 9
+   in BerryBoy without IRQ; with IRQ, the handler precedes ADD and changes the
+   equal-cycle guest state/return link. Preserve waiting-fetch context and IRQ
+   acceptance before introducing delayed activation. Keep raw in-flight
+   snapshots distinct from retirement.
    A separate
    [ROM DMA source correction](REFERENCE-VALIDATION.md#dma-game-pak-source-addressing-and-next-timing-boundary)
    matches 24 original reference cases and preserves the whole replay's RGB/PCM,

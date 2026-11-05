@@ -1,3 +1,15 @@
+Latest opcode-fetch/IRQ diagnosis: 2026-11-05 UTC
+Tools/docs only; production and test sources unchanged from f77c4e2.
+NBA comparison: 10/16 rows and 4/8 scenarios match; all eight readiness-5
+control rows match. Requests at DMA release expose six differences. Without
+IRQ: waiting ADD retires at 5 versus 9. With IRQ: BerryBoy enters the handler
+before ADD, changing r0, PC and return link at equal second-retirement cycle 13.
+Both adapters compile with warnings treated as errors and exit successfully.
+All 16 observations are identical on retained actual CLDC classes. Full native,
+CLDC-suite and game evidence below is reused. Maven/console reruns: 1510 host /
+1404 exported tests pass, no failures/skips. No production fix in this checkpoint.
+See benchmarks/cpu-fetch-handoff-2026-11-05.json.
+
 Latest resumable refill validation: 2026-11-05 UTC
 Host: Eclipse Temurin 21.0.8+9, Maven 3.9.11, Linux x86_64
 mvn verify (default and native profiles): 1510 passed; 0 failed/errors/skipped.

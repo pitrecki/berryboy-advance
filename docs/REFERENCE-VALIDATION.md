@@ -1,5 +1,47 @@
 # Independent reference validation
 
+## Opcode-fetch handoff and IRQ acceptance counterexample, 2026-11-05
+
+An [asset-free probe](../tools/nba-cpu-fetch-handoff-probe.cc) now isolates the
+next boundary on the corrected refill core. A ready one-word IWRAM DMA3 owns
+cycles 0–4 while the original NBA CPU waits for its opcode bus access. A second
+one-word DMA1 becomes ready either during release at 4 or at 5, after the
+waiting access starts. Optional IRQ-line assertion uses that same deadline.
+ARM/Thumb ADD streams provide two retirement observations per scenario.
+Raw readiness and IRQ-line updates use the original reference scheduler's
+registered handlers; peripheral activation/IRQ propagation latency is excluded.
+
+**10/16 rows match**, representing **4/8 complete scenarios**. All eight rows
+with readiness 5 match. The four release-boundary scenarios differ in six rows:
+
+- Without IRQ, NBA grants the waiting fetch after the first interval: ADD
+  retires at **5**, with DMA1 still pending. BerryBoy rechecks DMA at the start
+  of every step, drains DMA1 first and retires at **9**. Both reach their second
+  ADD retirement at 10, so later agreement does not explain the earlier gap.
+- With IRQ asserted during release, NBA executes the already-waiting ADD
+  before accepting IRQ. BerryBoy accepts IRQ before that ADD; its first
+  retirement is the handler NOP at **12**, rather than ADD at **5**. At the
+  equal second-retirement cycle **13**, r0 remains **0 rather than 1**, PC is
+  **0x20 rather than 0x1c**, and the saved return link differs. NBA's link is
+  **0x03000008 in ARM / 0x03000006 in Thumb**; BerryBoy records **0x03000004**.
+
+The new diagnostic does not alter production code. Its 16 observations are
+identical on the retained actual CLDC classes. Both adapters compile with
+warnings treated as errors and exit successfully; reference assertions verify
+the waiting ADD and next retirement. Observation mismatches remain open, not
+passing correctness cases. Maven/console reruns pass **1510 host / 1404
+exported tests**. Native build, full CLDC suite and game evidence are reused
+from the refill correction, not rerun here.
+
+Before delayed activation, retain the waiting fetch context and the interrupt
+acceptance decision across DMA yields. Grant the waiting access after an
+ownership interval before arbitrating another interval. Add regressions for
+asserted/deasserted IRQ during the wait, release/end-access boundaries and
+long-DMA budgets, preserving the existing matrices. Full opcode latching,
+self-modifying code and broader IRQ priority remain separate qualification
+work. Evidence: [cpu-fetch-handoff-2026-11-05.json](../benchmarks/cpu-fetch-handoff-2026-11-05.json).
+Reproduction: [SCENARIOS.md](SCENARIOS.md#opcode-fetch-handoff-and-irq-probes).
+
 ## Resumable CPU pipeline refills during DMA, 2026-11-05
 
 The CPU now arbitrates DMA before each of the two refill accesses and retains

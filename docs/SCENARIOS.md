@@ -508,6 +508,33 @@ data plus a handler NOP replace any external BIOS requirement. Peripheral IRQ
 line latency/priority, full pipeline latching and real BIOS services remain
 outside this probe's scope.
 
+## Opcode-fetch handoff and IRQ probes
+
+Use the same pinned, unmodified NBA source/CMake setup:
+
+```bash
+cmake --build target/nba-reference --target nba-cpu-fetch-handoff-probe --parallel 4
+target/nba-reference/nba-cpu-fetch-handoff-probe > target/nba-reference/fetch-handoff.csv
+javac -Xlint:all -Werror -cp target/classes -d target/docs-tools tools/CpuFetchHandoffProbe.java
+java -cp target/classes:target/docs-tools berryboy.bus.CpuFetchHandoffProbe > target/nba-reference/fetch-handoff-berryboy.csv
+diff -u target/nba-reference/fetch-handoff.csv target/nba-reference/fetch-handoff-berryboy.csv
+```
+
+Both probes require no external assets. They observe 16 rows: ARM/Thumb,
+optional IRQ, second request at release cycle 4 or next cycle 5, two retirements.
+The primary one-word IWRAM DMA3 is ready before the CPU fetch starts; DMA1
+becomes ready at `next_ready`. NBA injects original registered DMA-activation
+and IRQ-line-update events; Java injects HBlank/VBlank readiness and IRQ pending
+at the same cycles. The original two/five priming cycles are asserted/excluded.
+IRQ propagation/activation latency is not measured. Synthetic handler NOPs
+make the first-handler retirement observable without a real BIOS.
+
+Currently 10/16 rows and 4/8 complete scenarios match. All readiness-5 controls
+match; release-time requests expose six differing observations, including
+guest state/return links with IRQ. A nonzero `diff` is the recorded diagnostic,
+not an adapter build/execution failure. The reference asserts the intended
+instruction sequence; both adapters exit successfully. See [the diagnosis](REFERENCE-VALIDATION.md#opcode-fetch-handoff-and-irq-acceptance-counterexample-2026-11-05).
+
 ## Original FIFO DMA timing probes
 
 These probes generate pattern cartridges in memory and require no external ROM,

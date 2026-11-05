@@ -1,0 +1,510 @@
+{
+  "date": "2026-11-05",
+  "source_base_commit": "f77c4e2a921b43e66351fbdb11eec5022dfcc353",
+  "source_dirty": true,
+  "production_change": false,
+  "scope": "Waiting opcode fetch after DMA ownership release, normalized IRQ acceptance and two retirement observations; no external BIOS/ROM/save",
+  "hardware": "Linux x86_64 cloud host; Temurin 21.0.8+9; pinned unmodified NBA; no physical GBA/Bold",
+  "reference": {
+    "commit": "55b5cf0ae3d929582ac5bfd486558173502b8354",
+    "tracked_source_unmodified": true,
+    "priming": "Two ARM fetches or real BX plus Thumb refill, 2/5 cycles excluded",
+    "normalization": "NBA original registered DMA activation and IRQ-line update events; Java HBlank/VBlank readiness and enabled pending IRQ at the same clock values. Activation/IRQ propagation latency is excluded.",
+    "initial": "One-word IWRAM DMA3 ready before CPU bus access; ownership 0..4. CPU executes repeated ADD r0,#1; synthetic BIOS contains handler NOPs."
+  },
+  "matrix": {
+    "rows": 16,
+    "scenarios": 8,
+    "matching_rows": 10,
+    "matching_complete_scenarios": 4,
+    "modes": [
+      "ARM",
+      "Thumb"
+    ],
+    "irq": [
+      false,
+      true
+    ],
+    "next_request_ready": [
+      4,
+      5
+    ],
+    "retirement_samples": [
+      1,
+      2
+    ],
+    "ready_5_control_rows": 8,
+    "ready_5_control_matches": 8,
+    "ready_4_rows": 8,
+    "ready_4_differing_rows": 6,
+    "cldc_rows": 16,
+    "cldc_observations_identical_to_host": true
+  },
+  "cases": [
+    {
+      "reference": {
+        "mode": "arm",
+        "irq": "0",
+        "next_ready": "4",
+        "retired": "1",
+        "cycle": "5",
+        "r0": "1",
+        "pc": "0x03000004",
+        "cpsr": "0x000000df",
+        "lr": "0x00000000",
+        "second_dma_complete": "0"
+      },
+      "berryboy": {
+        "mode": "arm",
+        "irq": "0",
+        "next_ready": "4",
+        "retired": "1",
+        "cycle": "9",
+        "r0": "1",
+        "pc": "0x03000004",
+        "cpsr": "0x000000df",
+        "lr": "0x00000000",
+        "second_dma_complete": "1"
+      }
+    },
+    {
+      "reference": {
+        "mode": "arm",
+        "irq": "0",
+        "next_ready": "4",
+        "retired": "2",
+        "cycle": "10",
+        "r0": "2",
+        "pc": "0x03000008",
+        "cpsr": "0x000000df",
+        "lr": "0x00000000",
+        "second_dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "arm",
+        "irq": "0",
+        "next_ready": "4",
+        "retired": "2",
+        "cycle": "10",
+        "r0": "2",
+        "pc": "0x03000008",
+        "cpsr": "0x000000df",
+        "lr": "0x00000000",
+        "second_dma_complete": "1"
+      }
+    },
+    {
+      "reference": {
+        "mode": "arm",
+        "irq": "0",
+        "next_ready": "5",
+        "retired": "1",
+        "cycle": "5",
+        "r0": "1",
+        "pc": "0x03000004",
+        "cpsr": "0x000000df",
+        "lr": "0x00000000",
+        "second_dma_complete": "0"
+      },
+      "berryboy": {
+        "mode": "arm",
+        "irq": "0",
+        "next_ready": "5",
+        "retired": "1",
+        "cycle": "5",
+        "r0": "1",
+        "pc": "0x03000004",
+        "cpsr": "0x000000df",
+        "lr": "0x00000000",
+        "second_dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "arm",
+        "irq": "0",
+        "next_ready": "5",
+        "retired": "2",
+        "cycle": "10",
+        "r0": "2",
+        "pc": "0x03000008",
+        "cpsr": "0x000000df",
+        "lr": "0x00000000",
+        "second_dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "arm",
+        "irq": "0",
+        "next_ready": "5",
+        "retired": "2",
+        "cycle": "10",
+        "r0": "2",
+        "pc": "0x03000008",
+        "cpsr": "0x000000df",
+        "lr": "0x00000000",
+        "second_dma_complete": "1"
+      }
+    },
+    {
+      "reference": {
+        "mode": "arm",
+        "irq": "1",
+        "next_ready": "4",
+        "retired": "1",
+        "cycle": "5",
+        "r0": "1",
+        "pc": "0x03000004",
+        "cpsr": "0x0000005f",
+        "lr": "0x00000000",
+        "second_dma_complete": "0"
+      },
+      "berryboy": {
+        "mode": "arm",
+        "irq": "1",
+        "next_ready": "4",
+        "retired": "1",
+        "cycle": "12",
+        "r0": "0",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x03000004",
+        "second_dma_complete": "1"
+      }
+    },
+    {
+      "reference": {
+        "mode": "arm",
+        "irq": "1",
+        "next_ready": "4",
+        "retired": "2",
+        "cycle": "13",
+        "r0": "1",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x03000008",
+        "second_dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "arm",
+        "irq": "1",
+        "next_ready": "4",
+        "retired": "2",
+        "cycle": "13",
+        "r0": "0",
+        "pc": "0x00000020",
+        "cpsr": "0x000000d2",
+        "lr": "0x03000004",
+        "second_dma_complete": "1"
+      }
+    },
+    {
+      "reference": {
+        "mode": "arm",
+        "irq": "1",
+        "next_ready": "5",
+        "retired": "1",
+        "cycle": "5",
+        "r0": "1",
+        "pc": "0x03000004",
+        "cpsr": "0x0000005f",
+        "lr": "0x00000000",
+        "second_dma_complete": "0"
+      },
+      "berryboy": {
+        "mode": "arm",
+        "irq": "1",
+        "next_ready": "5",
+        "retired": "1",
+        "cycle": "5",
+        "r0": "1",
+        "pc": "0x03000004",
+        "cpsr": "0x0000005f",
+        "lr": "0x00000000",
+        "second_dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "arm",
+        "irq": "1",
+        "next_ready": "5",
+        "retired": "2",
+        "cycle": "13",
+        "r0": "1",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x03000008",
+        "second_dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "arm",
+        "irq": "1",
+        "next_ready": "5",
+        "retired": "2",
+        "cycle": "13",
+        "r0": "1",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x03000008",
+        "second_dma_complete": "1"
+      }
+    },
+    {
+      "reference": {
+        "mode": "thumb",
+        "irq": "0",
+        "next_ready": "4",
+        "retired": "1",
+        "cycle": "5",
+        "r0": "1",
+        "pc": "0x03000002",
+        "cpsr": "0x000000ff",
+        "lr": "0x00000000",
+        "second_dma_complete": "0"
+      },
+      "berryboy": {
+        "mode": "thumb",
+        "irq": "0",
+        "next_ready": "4",
+        "retired": "1",
+        "cycle": "9",
+        "r0": "1",
+        "pc": "0x03000002",
+        "cpsr": "0x000000ff",
+        "lr": "0x00000000",
+        "second_dma_complete": "1"
+      }
+    },
+    {
+      "reference": {
+        "mode": "thumb",
+        "irq": "0",
+        "next_ready": "4",
+        "retired": "2",
+        "cycle": "10",
+        "r0": "2",
+        "pc": "0x03000004",
+        "cpsr": "0x000000ff",
+        "lr": "0x00000000",
+        "second_dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "thumb",
+        "irq": "0",
+        "next_ready": "4",
+        "retired": "2",
+        "cycle": "10",
+        "r0": "2",
+        "pc": "0x03000004",
+        "cpsr": "0x000000ff",
+        "lr": "0x00000000",
+        "second_dma_complete": "1"
+      }
+    },
+    {
+      "reference": {
+        "mode": "thumb",
+        "irq": "0",
+        "next_ready": "5",
+        "retired": "1",
+        "cycle": "5",
+        "r0": "1",
+        "pc": "0x03000002",
+        "cpsr": "0x000000ff",
+        "lr": "0x00000000",
+        "second_dma_complete": "0"
+      },
+      "berryboy": {
+        "mode": "thumb",
+        "irq": "0",
+        "next_ready": "5",
+        "retired": "1",
+        "cycle": "5",
+        "r0": "1",
+        "pc": "0x03000002",
+        "cpsr": "0x000000ff",
+        "lr": "0x00000000",
+        "second_dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "thumb",
+        "irq": "0",
+        "next_ready": "5",
+        "retired": "2",
+        "cycle": "10",
+        "r0": "2",
+        "pc": "0x03000004",
+        "cpsr": "0x000000ff",
+        "lr": "0x00000000",
+        "second_dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "thumb",
+        "irq": "0",
+        "next_ready": "5",
+        "retired": "2",
+        "cycle": "10",
+        "r0": "2",
+        "pc": "0x03000004",
+        "cpsr": "0x000000ff",
+        "lr": "0x00000000",
+        "second_dma_complete": "1"
+      }
+    },
+    {
+      "reference": {
+        "mode": "thumb",
+        "irq": "1",
+        "next_ready": "4",
+        "retired": "1",
+        "cycle": "5",
+        "r0": "1",
+        "pc": "0x03000002",
+        "cpsr": "0x0000007f",
+        "lr": "0x00000000",
+        "second_dma_complete": "0"
+      },
+      "berryboy": {
+        "mode": "thumb",
+        "irq": "1",
+        "next_ready": "4",
+        "retired": "1",
+        "cycle": "12",
+        "r0": "0",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x03000004",
+        "second_dma_complete": "1"
+      }
+    },
+    {
+      "reference": {
+        "mode": "thumb",
+        "irq": "1",
+        "next_ready": "4",
+        "retired": "2",
+        "cycle": "13",
+        "r0": "1",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x03000006",
+        "second_dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "thumb",
+        "irq": "1",
+        "next_ready": "4",
+        "retired": "2",
+        "cycle": "13",
+        "r0": "0",
+        "pc": "0x00000020",
+        "cpsr": "0x000000d2",
+        "lr": "0x03000004",
+        "second_dma_complete": "1"
+      }
+    },
+    {
+      "reference": {
+        "mode": "thumb",
+        "irq": "1",
+        "next_ready": "5",
+        "retired": "1",
+        "cycle": "5",
+        "r0": "1",
+        "pc": "0x03000002",
+        "cpsr": "0x0000007f",
+        "lr": "0x00000000",
+        "second_dma_complete": "0"
+      },
+      "berryboy": {
+        "mode": "thumb",
+        "irq": "1",
+        "next_ready": "5",
+        "retired": "1",
+        "cycle": "5",
+        "r0": "1",
+        "pc": "0x03000002",
+        "cpsr": "0x0000007f",
+        "lr": "0x00000000",
+        "second_dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "thumb",
+        "irq": "1",
+        "next_ready": "5",
+        "retired": "2",
+        "cycle": "13",
+        "r0": "1",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x03000006",
+        "second_dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "thumb",
+        "irq": "1",
+        "next_ready": "5",
+        "retired": "2",
+        "cycle": "13",
+        "r0": "1",
+        "pc": "0x0000001c",
+        "cpsr": "0x000000d2",
+        "lr": "0x03000006",
+        "second_dma_complete": "1"
+      }
+    }
+  ],
+  "findings": [
+    "Ready at release without IRQ: waiting ADD retires at 5 in NBA before DMA1, versus 9 after DMA1 in BerryBoy; both second ADDs retire at 10",
+    "IRQ during release: NBA executes waiting ADD before IRQ; BerryBoy first retires handler NOP at 12 with r0=0 instead of ADD at 5 with r0=1",
+    "At second retirement cycle 13, IRQ cases still differ in r0, PC and return link; NBA LR=0x03000008 ARM/0x03000006 Thumb versus BerryBoy 0x03000004",
+    "New readiness and IRQ at 5 control cases match throughout. The defect concerns the existing waiting bus access and acceptance decision across release, not a universal fixed delay"
+  ],
+  "next_implementation": [
+    "Retain pending opcode-fetch context and IRQ acceptance decision across DMA yields",
+    "Grant one waiting CPU access after the completed ownership interval before arbitrating another interval",
+    "Add IRQ assert/deassert and release/end-access boundary regressions, including long-DMA frame/audio budgets",
+    "Preserve 36 refill, 144 forms, 48 data and 96 earlier normalized observations before scheduled request activation",
+    "Qualify full opcode latching/self-modifying code and cancellation/re-enable/repeated activation separately"
+  ],
+  "validation": {
+    "cpp": "Pinned CMake target: -Wall -Wextra -Werror; priming and first/second retirement assertions pass",
+    "java": "javac -Xlint:all -Werror; bounded adapter exits successfully",
+    "observation_result": "Mismatches are diagnostic observations, not passing correctness cases",
+    "production_and_test_sources_unchanged_from_base": true,
+    "host_tests": 1510,
+    "console_host_tests": 1510,
+    "exported_core_tests": 1404,
+    "failures": 0,
+    "skipped": 0,
+    "retained_actual_ecj_cldc_probe_rows": 16,
+    "reused_actual_ecj_cldc_suite_tests": 1404,
+    "reused_core_evidence": "benchmarks/cpu-refill-resume-2026-11-05.json",
+    "reused_core_evidence_sha256": "b7feb3ebab4b13e6f18391c443c0ac06a7490e42b86b34d5c5d33e3a451fe601",
+    "new_native_build": false,
+    "new_game_replay": false
+  },
+  "remaining_gates": [
+    "No production correction in this checkpoint",
+    "Accepted IRQ-line state is normalized; peripheral propagation/priority is not qualified",
+    "Actual activation/lifecycle, full pipeline, frame-930 offset, audio fidelity and physical playback remain open"
+  ],
+  "source_files_sha256": {
+    "tools/nba-cpu-fetch-handoff-probe.cc": "568d5090bd6be5377021d0d10214eeca00f1cde3caf7012a3cc47840eeeadbd5",
+    "tools/CpuFetchHandoffProbe.java": "45051448f531a1bc715b5e3937e29ce331f95ba5f30878844793c127cf68db0d",
+    "tools/nba-reference/CMakeLists.txt": "eb29a2601b7f106386bbcd95fe5853391320c5133948229b325da7054fe4ed62",
+    "tools/nba-reference/probe-machine.hh": "652adfc13a9fa5da09d76ec92b931f6e9ad70aa470867d0d7417995dc22cf84a",
+    "src/main/java/berryboy/cpu/Cpu.java": "8b3e7232184df9ffb0ea4bc841a11095c58ae47061fc15b41ea141d5384c9b18",
+    "src/main/java/berryboy/bus/BusTiming.java": "2c5a58b389480ed2d9502c4bd0ce7595957e1fdd61554944d425ddab4002d5c9"
+  },
+  "artifact_sha256": {
+    "reference.csv": "a0cf41df61d458884d927ccfac36c76bc86473a1792f4dece98ccc626fc0f19f",
+    "berryboy.csv": "ffc0bd55951b7c2185fcc41a176d4d7e1359f0f2a5edd799571e54d5fab6d263",
+    "cldc.csv": "ffc0bd55951b7c2185fcc41a176d4d7e1359f0f2a5edd799571e54d5fab6d263"
+  },
+  "local_output": "target/cpu-fetch-handoff-diagnosis"
+}
