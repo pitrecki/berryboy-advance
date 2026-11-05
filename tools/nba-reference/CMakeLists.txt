@@ -20,7 +20,7 @@ endif()
 add_subdirectory("${NBA_SOURCE_DIR}/thirdparty/fmt-12.1.0" fmt)
 add_subdirectory("${NBA_SOURCE_DIR}/thirdparty/atom-1.0.1" atom)
 add_subdirectory("${NBA_SOURCE_DIR}/src/nba" nba)
-foreach(probe IN ITEMS nba-dma-probe nba-color-probe nba-dma-phase-probe nba-dma-release-probe nba-dma-activation-probe nba-dma-data-probe)
+foreach(probe IN ITEMS nba-dma-probe nba-color-probe nba-dma-phase-probe nba-dma-release-probe nba-dma-activation-probe nba-dma-data-probe nba-cpu-refill-probe)
   add_executable(${probe} ../${probe}.cc)
   target_include_directories(${probe} SYSTEM PRIVATE
     "${NBA_SOURCE_DIR}/src/nba/src" "${NBA_SOURCE_DIR}/src/nba/include"

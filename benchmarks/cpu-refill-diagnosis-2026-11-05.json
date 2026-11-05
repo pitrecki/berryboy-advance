@@ -1,0 +1,814 @@
+{
+  "date": "2026-11-05",
+  "source_base_commit": "da13295ad9fcad4739b78693e2803ee5d673d28f",
+  "source_dirty": true,
+  "production_change": false,
+  "scope": "Readiness-normalized same-instruction-set BX retirement across two refill accesses; no BIOS, commercial ROM or save required",
+  "hardware": "Linux x86_64 cloud host; Temurin 21.0.8+9; original unmodified NBA core; no physical GBA/Bold",
+  "reference": {
+    "commit": "55b5cf0ae3d929582ac5bfd486558173502b8354",
+    "tracked_source_unmodified": true,
+    "entry": "Original ARM7TDMI.Run after two/five priming cycles; Thumb entered through real BX",
+    "normalization": "Normal DMA3 immediate enable has original two-cycle activation. For readiness 1, age by one before observing. Java injects HBlank raw readiness at 1/2. ready=0 means no DMA control, not immediate readiness."
+  },
+  "matrix": {
+    "rows": 36,
+    "modes": [
+      "ARM",
+      "Thumb"
+    ],
+    "operation": "BX r2 preserving the instruction set",
+    "targets": [
+      "IWRAM",
+      "Game Pak ROM"
+    ],
+    "dma_sources": [
+      "IWRAM",
+      "EWRAM",
+      "Game Pak ROM"
+    ],
+    "dma_words": 2,
+    "ready": [
+      0,
+      1,
+      2
+    ],
+    "matching_rows": 12,
+    "no_dma_control_rows": 12,
+    "no_dma_control_matches": 12,
+    "ready_rows": 24,
+    "ready_matches": 0,
+    "pc_matches": 36,
+    "reference_dma_complete_rows": 24,
+    "berryboy_dma_complete_rows": 0
+  },
+  "cases": [
+    {
+      "reference": {
+        "mode": "arm",
+        "target": "0x03000400",
+        "source": "0x03000000",
+        "ready": "0",
+        "cycle": "3",
+        "pc": "0x03000400",
+        "dma_complete": "0"
+      },
+      "berryboy": {
+        "mode": "arm",
+        "target": "0x03000400",
+        "source": "0x03000000",
+        "ready": "0",
+        "cycle": "3",
+        "pc": "0x03000400",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "arm",
+        "target": "0x03000400",
+        "source": "0x03000000",
+        "ready": "1",
+        "cycle": "9",
+        "pc": "0x03000400",
+        "dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "arm",
+        "target": "0x03000400",
+        "source": "0x03000000",
+        "ready": "1",
+        "cycle": "3",
+        "pc": "0x03000400",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "arm",
+        "target": "0x03000400",
+        "source": "0x03000000",
+        "ready": "2",
+        "cycle": "9",
+        "pc": "0x03000400",
+        "dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "arm",
+        "target": "0x03000400",
+        "source": "0x03000000",
+        "ready": "2",
+        "cycle": "3",
+        "pc": "0x03000400",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "arm",
+        "target": "0x03000400",
+        "source": "0x02000000",
+        "ready": "0",
+        "cycle": "3",
+        "pc": "0x03000400",
+        "dma_complete": "0"
+      },
+      "berryboy": {
+        "mode": "arm",
+        "target": "0x03000400",
+        "source": "0x02000000",
+        "ready": "0",
+        "cycle": "3",
+        "pc": "0x03000400",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "arm",
+        "target": "0x03000400",
+        "source": "0x02000000",
+        "ready": "1",
+        "cycle": "19",
+        "pc": "0x03000400",
+        "dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "arm",
+        "target": "0x03000400",
+        "source": "0x02000000",
+        "ready": "1",
+        "cycle": "3",
+        "pc": "0x03000400",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "arm",
+        "target": "0x03000400",
+        "source": "0x02000000",
+        "ready": "2",
+        "cycle": "19",
+        "pc": "0x03000400",
+        "dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "arm",
+        "target": "0x03000400",
+        "source": "0x02000000",
+        "ready": "2",
+        "cycle": "3",
+        "pc": "0x03000400",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "arm",
+        "target": "0x03000400",
+        "source": "0x08000000",
+        "ready": "0",
+        "cycle": "3",
+        "pc": "0x03000400",
+        "dma_complete": "0"
+      },
+      "berryboy": {
+        "mode": "arm",
+        "target": "0x03000400",
+        "source": "0x08000000",
+        "ready": "0",
+        "cycle": "3",
+        "pc": "0x03000400",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "arm",
+        "target": "0x03000400",
+        "source": "0x08000000",
+        "ready": "1",
+        "cycle": "21",
+        "pc": "0x03000400",
+        "dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "arm",
+        "target": "0x03000400",
+        "source": "0x08000000",
+        "ready": "1",
+        "cycle": "3",
+        "pc": "0x03000400",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "arm",
+        "target": "0x03000400",
+        "source": "0x08000000",
+        "ready": "2",
+        "cycle": "21",
+        "pc": "0x03000400",
+        "dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "arm",
+        "target": "0x03000400",
+        "source": "0x08000000",
+        "ready": "2",
+        "cycle": "3",
+        "pc": "0x03000400",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "arm",
+        "target": "0x08000100",
+        "source": "0x03000000",
+        "ready": "0",
+        "cycle": "15",
+        "pc": "0x08000100",
+        "dma_complete": "0"
+      },
+      "berryboy": {
+        "mode": "arm",
+        "target": "0x08000100",
+        "source": "0x03000000",
+        "ready": "0",
+        "cycle": "15",
+        "pc": "0x08000100",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "arm",
+        "target": "0x08000100",
+        "source": "0x03000000",
+        "ready": "1",
+        "cycle": "21",
+        "pc": "0x08000100",
+        "dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "arm",
+        "target": "0x08000100",
+        "source": "0x03000000",
+        "ready": "1",
+        "cycle": "15",
+        "pc": "0x08000100",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "arm",
+        "target": "0x08000100",
+        "source": "0x03000000",
+        "ready": "2",
+        "cycle": "23",
+        "pc": "0x08000100",
+        "dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "arm",
+        "target": "0x08000100",
+        "source": "0x03000000",
+        "ready": "2",
+        "cycle": "15",
+        "pc": "0x08000100",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "arm",
+        "target": "0x08000100",
+        "source": "0x02000000",
+        "ready": "0",
+        "cycle": "15",
+        "pc": "0x08000100",
+        "dma_complete": "0"
+      },
+      "berryboy": {
+        "mode": "arm",
+        "target": "0x08000100",
+        "source": "0x02000000",
+        "ready": "0",
+        "cycle": "15",
+        "pc": "0x08000100",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "arm",
+        "target": "0x08000100",
+        "source": "0x02000000",
+        "ready": "1",
+        "cycle": "31",
+        "pc": "0x08000100",
+        "dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "arm",
+        "target": "0x08000100",
+        "source": "0x02000000",
+        "ready": "1",
+        "cycle": "15",
+        "pc": "0x08000100",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "arm",
+        "target": "0x08000100",
+        "source": "0x02000000",
+        "ready": "2",
+        "cycle": "33",
+        "pc": "0x08000100",
+        "dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "arm",
+        "target": "0x08000100",
+        "source": "0x02000000",
+        "ready": "2",
+        "cycle": "15",
+        "pc": "0x08000100",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "arm",
+        "target": "0x08000100",
+        "source": "0x08000000",
+        "ready": "0",
+        "cycle": "15",
+        "pc": "0x08000100",
+        "dma_complete": "0"
+      },
+      "berryboy": {
+        "mode": "arm",
+        "target": "0x08000100",
+        "source": "0x08000000",
+        "ready": "0",
+        "cycle": "15",
+        "pc": "0x08000100",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "arm",
+        "target": "0x08000100",
+        "source": "0x08000000",
+        "ready": "1",
+        "cycle": "33",
+        "pc": "0x08000100",
+        "dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "arm",
+        "target": "0x08000100",
+        "source": "0x08000000",
+        "ready": "1",
+        "cycle": "15",
+        "pc": "0x08000100",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "arm",
+        "target": "0x08000100",
+        "source": "0x08000000",
+        "ready": "2",
+        "cycle": "35",
+        "pc": "0x08000100",
+        "dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "arm",
+        "target": "0x08000100",
+        "source": "0x08000000",
+        "ready": "2",
+        "cycle": "15",
+        "pc": "0x08000100",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "thumb",
+        "target": "0x03000400",
+        "source": "0x03000000",
+        "ready": "0",
+        "cycle": "3",
+        "pc": "0x03000400",
+        "dma_complete": "0"
+      },
+      "berryboy": {
+        "mode": "thumb",
+        "target": "0x03000400",
+        "source": "0x03000000",
+        "ready": "0",
+        "cycle": "3",
+        "pc": "0x03000400",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "thumb",
+        "target": "0x03000400",
+        "source": "0x03000000",
+        "ready": "1",
+        "cycle": "9",
+        "pc": "0x03000400",
+        "dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "thumb",
+        "target": "0x03000400",
+        "source": "0x03000000",
+        "ready": "1",
+        "cycle": "3",
+        "pc": "0x03000400",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "thumb",
+        "target": "0x03000400",
+        "source": "0x03000000",
+        "ready": "2",
+        "cycle": "9",
+        "pc": "0x03000400",
+        "dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "thumb",
+        "target": "0x03000400",
+        "source": "0x03000000",
+        "ready": "2",
+        "cycle": "3",
+        "pc": "0x03000400",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "thumb",
+        "target": "0x03000400",
+        "source": "0x02000000",
+        "ready": "0",
+        "cycle": "3",
+        "pc": "0x03000400",
+        "dma_complete": "0"
+      },
+      "berryboy": {
+        "mode": "thumb",
+        "target": "0x03000400",
+        "source": "0x02000000",
+        "ready": "0",
+        "cycle": "3",
+        "pc": "0x03000400",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "thumb",
+        "target": "0x03000400",
+        "source": "0x02000000",
+        "ready": "1",
+        "cycle": "19",
+        "pc": "0x03000400",
+        "dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "thumb",
+        "target": "0x03000400",
+        "source": "0x02000000",
+        "ready": "1",
+        "cycle": "3",
+        "pc": "0x03000400",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "thumb",
+        "target": "0x03000400",
+        "source": "0x02000000",
+        "ready": "2",
+        "cycle": "19",
+        "pc": "0x03000400",
+        "dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "thumb",
+        "target": "0x03000400",
+        "source": "0x02000000",
+        "ready": "2",
+        "cycle": "3",
+        "pc": "0x03000400",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "thumb",
+        "target": "0x03000400",
+        "source": "0x08000000",
+        "ready": "0",
+        "cycle": "3",
+        "pc": "0x03000400",
+        "dma_complete": "0"
+      },
+      "berryboy": {
+        "mode": "thumb",
+        "target": "0x03000400",
+        "source": "0x08000000",
+        "ready": "0",
+        "cycle": "3",
+        "pc": "0x03000400",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "thumb",
+        "target": "0x03000400",
+        "source": "0x08000000",
+        "ready": "1",
+        "cycle": "21",
+        "pc": "0x03000400",
+        "dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "thumb",
+        "target": "0x03000400",
+        "source": "0x08000000",
+        "ready": "1",
+        "cycle": "3",
+        "pc": "0x03000400",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "thumb",
+        "target": "0x03000400",
+        "source": "0x08000000",
+        "ready": "2",
+        "cycle": "21",
+        "pc": "0x03000400",
+        "dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "thumb",
+        "target": "0x03000400",
+        "source": "0x08000000",
+        "ready": "2",
+        "cycle": "3",
+        "pc": "0x03000400",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "thumb",
+        "target": "0x08000100",
+        "source": "0x03000000",
+        "ready": "0",
+        "cycle": "9",
+        "pc": "0x08000100",
+        "dma_complete": "0"
+      },
+      "berryboy": {
+        "mode": "thumb",
+        "target": "0x08000100",
+        "source": "0x03000000",
+        "ready": "0",
+        "cycle": "9",
+        "pc": "0x08000100",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "thumb",
+        "target": "0x08000100",
+        "source": "0x03000000",
+        "ready": "1",
+        "cycle": "15",
+        "pc": "0x08000100",
+        "dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "thumb",
+        "target": "0x08000100",
+        "source": "0x03000000",
+        "ready": "1",
+        "cycle": "9",
+        "pc": "0x08000100",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "thumb",
+        "target": "0x08000100",
+        "source": "0x03000000",
+        "ready": "2",
+        "cycle": "17",
+        "pc": "0x08000100",
+        "dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "thumb",
+        "target": "0x08000100",
+        "source": "0x03000000",
+        "ready": "2",
+        "cycle": "9",
+        "pc": "0x08000100",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "thumb",
+        "target": "0x08000100",
+        "source": "0x02000000",
+        "ready": "0",
+        "cycle": "9",
+        "pc": "0x08000100",
+        "dma_complete": "0"
+      },
+      "berryboy": {
+        "mode": "thumb",
+        "target": "0x08000100",
+        "source": "0x02000000",
+        "ready": "0",
+        "cycle": "9",
+        "pc": "0x08000100",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "thumb",
+        "target": "0x08000100",
+        "source": "0x02000000",
+        "ready": "1",
+        "cycle": "25",
+        "pc": "0x08000100",
+        "dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "thumb",
+        "target": "0x08000100",
+        "source": "0x02000000",
+        "ready": "1",
+        "cycle": "9",
+        "pc": "0x08000100",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "thumb",
+        "target": "0x08000100",
+        "source": "0x02000000",
+        "ready": "2",
+        "cycle": "27",
+        "pc": "0x08000100",
+        "dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "thumb",
+        "target": "0x08000100",
+        "source": "0x02000000",
+        "ready": "2",
+        "cycle": "9",
+        "pc": "0x08000100",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "thumb",
+        "target": "0x08000100",
+        "source": "0x08000000",
+        "ready": "0",
+        "cycle": "9",
+        "pc": "0x08000100",
+        "dma_complete": "0"
+      },
+      "berryboy": {
+        "mode": "thumb",
+        "target": "0x08000100",
+        "source": "0x08000000",
+        "ready": "0",
+        "cycle": "9",
+        "pc": "0x08000100",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "thumb",
+        "target": "0x08000100",
+        "source": "0x08000000",
+        "ready": "1",
+        "cycle": "27",
+        "pc": "0x08000100",
+        "dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "thumb",
+        "target": "0x08000100",
+        "source": "0x08000000",
+        "ready": "1",
+        "cycle": "9",
+        "pc": "0x08000100",
+        "dma_complete": "0"
+      }
+    },
+    {
+      "reference": {
+        "mode": "thumb",
+        "target": "0x08000100",
+        "source": "0x08000000",
+        "ready": "2",
+        "cycle": "29",
+        "pc": "0x08000100",
+        "dma_complete": "1"
+      },
+      "berryboy": {
+        "mode": "thumb",
+        "target": "0x08000100",
+        "source": "0x08000000",
+        "ready": "2",
+        "cycle": "9",
+        "pc": "0x08000100",
+        "dma_complete": "0"
+      }
+    }
+  ],
+  "finding": "Atomic BusTiming.refill advances both accesses without DMA arbitration. CPU retires all 24 ready cases before DMA completes; NBA completes the burst before branch retirement.",
+  "timing": {
+    "iwram_target": "No DMA: 3 cycles in both. With two-word IWRAM DMA: NBA 9 at readiness 1/2; BerryBoy 3.",
+    "arm_rom_target": "No DMA: 15 both. IWRAM DMA ready 1: NBA 21 versus 15; ready 2: NBA 23 versus 15. DMA between refill reads forces the second ROM read nonsequential.",
+    "thumb_rom_target": "No DMA: 9 both. IWRAM DMA ready 1: NBA 15 versus 9; ready 2: NBA 17 versus 9."
+  },
+  "next_implementation": [
+    "Retain refill progress and arbitrate before each access, yielding after each DMA unit",
+    "Preserve request-during-release handoff, Game Pak N/S sequencing and branch retirement ordering",
+    "Add regressions for long-DMA frame/audio budgets and broaden to B, state-changing BX, loaded PC, SWI and IRQ entry/refill",
+    "Run existing 48 data and 96 activation-normalized rows plus fresh game/player captures before changing request activation",
+    "Qualify delayed activation cancellation/re-enable and duplicate requests independently"
+  ],
+  "validation": {
+    "cpp": "Pinned CMake target built with -Wall -Wextra -Werror; adapter assertions pass",
+    "java": "javac -Xlint:all -Werror; branch/mode assertions pass",
+    "observation_result": "Both adapters exit successfully; mismatches are intentional diagnostic observations, not passing correctness cases",
+    "production_and_test_sources_unchanged_from_base": true,
+    "reused_core_evidence": "benchmarks/dma-data-resume-2026-11-05.json",
+    "reused_actual_ecj_cldc_tests": 1352,
+    "new_game_replay": false,
+    "host_tests": 1458,
+    "console_host_tests": 1458,
+    "exported_core_tests": 1352,
+    "failures": 0,
+    "skipped": 0,
+    "new_full_suite_run": true,
+    "new_native_build": false
+  },
+  "remaining_gates": [
+    "General opcode-fetch latching and full pipeline behavior are not qualified by retirement timing",
+    "Same-mode BX only; mode changes, B/BL, SWI/IRQ and loaded-PC refills require coverage",
+    "Actual request activation/lifecycle, hardware behavior and sustained playback remain open"
+  ],
+  "source_files_sha256": {
+    "tools/nba-cpu-refill-probe.cc": "249e3fe46ec32f0db84ca1b0bbc25e8b8265f1df6b112f6f0a3d03b50a142e77",
+    "tools/CpuRefillProbe.java": "96574de40a9f618d542e246e3980ae450ef53650df75cd585e469dbae1f6f700",
+    "tools/nba-reference/CMakeLists.txt": "c7ffce2a65bdc9915f57bf4dc4615cf4f642218fc1a778e477a9d641203a79af",
+    "tools/nba-reference/probe-machine.hh": "652adfc13a9fa5da09d76ec92b931f6e9ad70aa470867d0d7417995dc22cf84a",
+    "src/main/java/berryboy/cpu/Cpu.java": "1b1374a1bc14d5e7ffb0f97e47f519baa0feb9d2dac27d9696a04b98353fa7df",
+    "src/main/java/berryboy/bus/BusTiming.java": "d7790447545e89685a23e7210bdf285226d6dfa8bbeec691137343c34092a87d"
+  },
+  "artifact_sha256": {
+    "reference.csv": "7bc34560d28819d07336f03eeaa5a6b31281075983cc6dcf813c00e4828394dd",
+    "berryboy.csv": "aa8efbbad7f5125246ff5fb7cee8485cc5473e65b7ef9bf1f57ff9edd3ed3e1a"
+  },
+  "local_output": "target/cpu-refill-diagnosis"
+}

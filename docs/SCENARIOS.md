@@ -459,6 +459,33 @@ between LDM reads forces the next ROM read to be nonsequential (eight rather
 than six cycles). These selected observations are model comparison evidence,
 not a hardware or full-pipeline qualification.
 
+## CPU branch-refill probes
+
+Use the pinned, unmodified NBA checkout and CMake configuration above:
+
+```bash
+cmake --build target/nba-reference --target nba-cpu-refill-probe --parallel 4
+target/nba-reference/nba-cpu-refill-probe > target/nba-reference/refill.csv
+javac -Xlint:all -Werror -cp target/classes -d target/docs-tools tools/CpuRefillProbe.java
+java -cp target/classes:target/docs-tools berryboy.bus.CpuRefillProbe > target/nba-reference/refill-berryboy.csv
+diff -u target/nba-reference/refill.csv target/nba-reference/refill-berryboy.csv
+```
+
+Reconfigure CMake when using an older build directory. Both probes run without
+external assets. The 36 rows execute same-mode BX in ARM/Thumb, two refill
+target regions and three two-word DMA3 source regions. `ready=0` means a no-DMA
+control, not readiness at cycle zero. For `ready=1/2`, NBA ages its original
+two-cycle immediate request; BerryBoy injects raw readiness. Cycles exclude
+the asserted NBA priming and optional request age. `pc` is the next instruction
+address; `dma_complete` inspects the second destination word at retirement.
+
+Currently the 12 no-DMA controls match, while all 24 ready-DMA cases retire
+prematurely in BerryBoy. PC agrees throughout. A nonzero `diff` status is the
+recorded counterexample, not an adapter compilation/execution failure. This
+isolates refill arbitration; it does not qualify actual request activation,
+state-changing BX, IRQ entry or full opcode-pipeline latching. See
+[the diagnosis and next correction](REFERENCE-VALIDATION.md#cpu-branch-refill-dma-counterexample-2026-11-05).
+
 ## Original FIFO DMA timing probes
 
 These probes generate pattern cartridges in memory and require no external ROM,

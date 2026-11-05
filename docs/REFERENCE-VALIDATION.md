@@ -1,5 +1,49 @@
 # Independent reference validation
 
+## CPU branch-refill DMA counterexample, 2026-11-05
+
+The next asset-free probe runs same-mode `BX r2` on the corrected data-access
+core and the pinned, unmodified NBA CPU. Its 36 observations cover ARM/Thumb,
+IWRAM/Game Pak targets, three two-word DMA3 source regions and no-DMA controls
+or raw readiness at cycle 1/2. The reference asserts pipeline priming; both
+adapters verify branch state and exit successfully. Both inspect completion
+of the second DMA destination word at retirement without advancing the clock.
+
+All **12 no-DMA controls match**. All **24 ready cases differ**: NBA completes
+DMA before the branch retires; BerryBoy retires with the transfer incomplete.
+PC agrees in all 36 rows. For an IWRAM DMA source, the cycle triplets below
+mean **no DMA / readiness 1 / readiness 2**:
+
+| Instruction set / target | NBA | BerryBoy |
+| --- | --- | --- |
+| ARM / IWRAM | 3 / 9 / 9 | 3 / 3 / 3 |
+| Thumb / IWRAM | 3 / 9 / 9 | 3 / 3 / 3 |
+| ARM / Game Pak | 15 / 21 / 23 | 15 / 15 / 15 |
+| Thumb / Game Pak | 9 / 15 / 17 | 9 / 9 / 9 |
+
+`BusTiming.refill` currently advances both accesses atomically. Readiness at
+1 must stall before the first refill access; at 2 it can interrupt the two
+accesses. For a Game Pak target, the resumed second access must also lose its
+sequential status, accounting for the additional two cycles. NBA uses its real
+immediate-request activation with optional request age; BerryBoy injects raw
+readiness. These measurements do not qualify actual production activation.
+
+The next correction needs resumable refill progress, arbitration before each
+access and one-unit DMA yields, with retirement and IRQ boundaries preserved.
+Extend the checks to B/BL, state-changing BX, loaded PC, SWI and IRQ refills,
+plus long-DMA frame/audio budgets. Retain the exact 48 data and 96 earlier
+normalized observations before implementing delayed request activation and
+its cancellation/re-enable/deduplication rules. Timing-only refill comparisons
+do not establish general opcode latching or full pipeline correctness.
+
+This checkpoint changes diagnostic tools/docs only. Both adapters compile
+with warnings treated as errors; production/test sources remain identical to
+the preceding verified commit. Maven and console checks again pass 1458 host /
+1352 exported tests. The preceding 1352 actual CLDC-class passes, native build
+and game captures are reused. No production correction, new game capture or
+hardware claim is made here. Evidence: [cpu-refill-diagnosis-2026-11-05.json](../benchmarks/cpu-refill-diagnosis-2026-11-05.json).
+Reproduction: [SCENARIOS.md](SCENARIOS.md#cpu-branch-refill-probes).
+
 ## Resumable CPU data accesses during DMA, 2026-11-05
 
 ARM/Thumb decoders now prepare a fixed, reusable data-operation sequence rather

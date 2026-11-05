@@ -1,3 +1,13 @@
+Latest branch-refill diagnosis: 2026-11-05 UTC
+Tools/docs only; production and test sources unchanged from da13295.
+Independent same-mode BX matrix: 36 rows; 12/12 no-DMA controls match;
+0/24 ready-DMA cases match. NBA completes DMA before retirement; BerryBoy
+retires prematurely. PC matches all 36. Both adapters compile with warnings
+treated as errors and exit successfully; comparison mismatches remain open.
+Maven/console rerun: 1458 host / 1352 exported tests pass, no failures/skips.
+Actual CLDC-class/native/game evidence below is reused, not rerun here.
+See benchmarks/cpu-refill-diagnosis-2026-11-05.json.
+
 Latest data-access resumption validation: 2026-11-05 UTC
 Host: Eclipse Temurin 21.0.8+9, Maven 3.9.11, Linux x86_64
 mvn verify (default and native profiles): 1458 passed; 0 failed/errors/skipped.
