@@ -15,9 +15,9 @@
 - Use Git history as the primary source review and delivery channel. Do not
   generate HTML source summaries or ZIP archives unless explicitly requested.
 - After each completed and verified project update, commit the relevant changes
-  locally as Piotr Nowak <piotr_nowak@outlook.com>. The user temporarily suspended
-  pushes until the environment issue is resolved; queue verified commits locally
-  in the meantime. Preserve unrelated work and do not
+  as Piotr Nowak <piotr_nowak@outlook.com>, then push to the configured repository.
+  The user has restored push authorization. Verify the remote commit after
+  delivery. Preserve unrelated work and do not
   rewrite published history. If the remote or write access is missing, finish the
   local work and report the missing destination or access; never claim a push
   succeeded without verifying it.
@@ -76,12 +76,12 @@ principles. Treat them as design constraints, not a quota of patterns to add.
 
 - Continue roadmap work directly in the active session. The user withdrew the
   external Codex loop-runner approach; do not add coding-loop runners or schedulers.
-- The user authorizes successive roadmap steps, verification and local commits
+- The user authorizes successive roadmap steps, verification, commits and pushes
   without requesting a new "follow-up" after each delivery. Within an active
   session, a completed commit is a checkpoint, not a default stopping condition.
 - Read the current evidence and next actions in `docs/BENCHMARKS.md`; implement
   the next eligible small step, run the appropriate checks, update its evidence,
-  commit locally, then continue with the next eligible step. Keep pushes suspended.
+  commit and push, then continue with the next eligible step.
 - Report progress in commentary. If a gate needs unavailable hardware or an
   independent expected result, record the specific dependency and continue other
   authorized work that does not depend on it. Do not bypass correctness gates.

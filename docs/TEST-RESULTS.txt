@@ -1,9 +1,18 @@
 Latest host diagnostic validation: 2026-11-05 UTC
 Host: Eclipse Temurin 21.0.8+9, Maven 3.9.11, Linux x86_64
-mvn verify (default profile): 1390 passed; 0 failed/errors/skipped.
-Jupiter console host: 1390 passed; 0 failed/skipped.
-Exported core console: 1284 passed; 0 failed/skipped.
-Retained actual ECJ CLDC classes: 1284 passed; 0 failed/skipped.
+mvn verify (default profile): 1402 passed; 0 failed/errors/skipped.
+Jupiter console host: 1402 passed; 0 failed/skipped.
+Exported core console: 1296 passed; 0 failed/skipped.
+Retained actual ECJ CLDC classes: 1296 passed; 0 failed/skipped.
+
+Real-CPU FIFO activation: 24 ARM/Thumb ADD/LDR scenarios, 96 retirements against
+unmodified NBA. Production matches 24/96 rows; a delay-only host experiment
+matches all 48 ADD rows but none of the 48 LDR rows. At first load retirement,
+twelve new core cases require complete FIFO contents; production passes, the
+rejected experiment fails all twelve. Activation must be implemented together
+with resumable data/internal-cycle bus arbitration and preserved long-DMA
+yields. No production correction, new COD, game replay or accuracy pass here.
+See benchmarks/dma-activation-2026-11-05.json.
 
 Lost Age retirement-prefix diagnosis: 12587 identical 4096-instruction SHA-256
 blocks plus 2527 matching detailed states; first timing difference at retirement

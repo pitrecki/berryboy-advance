@@ -47,7 +47,7 @@ the Thumb multiply timing and Game Pak DMA source corrections, plus the FIFO
 DMA reference counterexample and independent DMA read/write phase correction. The shared clock, scheduler,
 CPU/bus timing, software renderer, mixer, cartridge devices and capture runner
 are implemented. Their accuracy is still being qualified; implementation does
-not close M1–M4. Latest local validation passed **1390 host tests and 1284
+not close M1–M4. Latest local validation passed **1402 host tests and 1296
 exported-core tests**. Neither test count establishes BlackBerry readiness.
 
 | Milestone | Deliverables | Completion evidence |
@@ -98,7 +98,7 @@ establish full memory/peripheral or hardware equivalence.
 | Stage / priority | Work | Exit evidence |
 | --- | --- | --- |
 | R1 / P0: LeafGreen menu (three-way model comparison delivered; pixel qualification open) | Menu state matches; NBA agrees with mGBA on its color, while the 2244-case matrix exposes broader disagreement in rounding and palette bit 15 | Establish independently justified expected rounding and palette-bit behavior before correcting the renderer or passing the menu gate; existing arithmetic tests preserve behavior without certifying hardware |
-| R2 / P0: Timing and bus accuracy (MUL, ROM addressing, ownership and read/write phases corrected) | NBA matches all 96 ownership cases and 144 activated-transfer phase scenarios; mGBA count-dependent event timing is isolated; frame 930 initialization offset remains open | Qualify request activation/CPU continuation, equal-deadline IRQ priority and FIFO/timer workloads using independent evidence; land demonstrated defects with regressions and traces, preserving DMA deadlines, open-bus handling and saves |
+| R2 / P0: Timing and bus accuracy (activation/CPU arbitration now isolated) | Ownership/read-write fixes retain independent evidence; the new 96-row real-CPU matrix exposes immediate FIFO activation and load/internal-cycle arbitration gaps; frame 930 remains open | Implement scheduled activation together with resumable CPU fetch/data/internal arbitration; preserve FIFO-before-load retirement ordering, word-level yields and frame/audio deadlines; qualify request lifecycle, IRQ priority and timer workloads |
 | R3 / P1: Audio correctness | Start with late Sonic Advance 3 and Wario Land 4 differences; compare timer/DMA FIFO events, PSG state and sample clocks; distinguish guest-state errors from output gain, filter and resampling differences | Repeatable event/sample checkpoints, justified comparison tolerances and listening review; no unexplained divergence in the selected routes and zero software buffer failures |
 | R4 / P1: Gameplay and player saves (second LeafGreen cross-load delivered) | A one-tile indoor route creates generation 2; four cold cross-loads restore the exact room in both emulators. New saves still differ in 667 bytes. Extend routes to levels, races, battles and other titles | Named reference checkpoints for all eleven titles; save-capable games restore latest progress from isolated copies, with explicit strict binary/full-stream outcomes |
 | R5 / P2: Sustained Linux playback | After route correctness passes, profile bottlenecks, optimize one at a time, and run the warmup/measurement protocol below | Three 10-minute runs per qualified scenario after 30-second warmup, actual presentation/audio counters, bounded memory/queues and A/V drift; all acceptance gates below pass |
@@ -196,6 +196,14 @@ execution and physical-device access remain separate gates.
    timing change without changing production code; request activation, later
    register/loop effects and the other three games still require qualification.
    See [the release diagnosis](REFERENCE-VALIDATION.md#lost-age-first-retirement-divergence-and-dma-release-2026-11-05).
+   The [real-CPU activation comparison](REFERENCE-VALIDATION.md#fifo-activation-and-cpu-load-ordering-2026-11-05)
+   now shows that production stalls ADDs immediately, while NBA permits two
+   before DMA. A delay-only experiment fixes all ADD rows but prematurely
+   retires LDR before FIFO service; all twelve new load-ordering tests reject it.
+   Next implement activation and resumable CPU fetch/data/internal arbitration
+   together, retaining per-word DMA yields for long-transfer capture budgets.
+   Add request cancellation/re-enable/deduplication cases and extend independent
+   instruction/timer coverage. No production activation correction is yet landed.
    A separate
    [ROM DMA source correction](REFERENCE-VALIDATION.md#dma-game-pak-source-addressing-and-next-timing-boundary)
    matches 24 original reference cases and preserves the whole replay's RGB/PCM,
@@ -223,8 +231,8 @@ hashes, RTC/sensor seed, frame/sample coordinates, reference version and outcome
 Use fresh output paths and copies of save files. Commit original input traces
 and metadata; keep ROM, BIOS, save bytes and generated captures outside Git.
 Run `mvn verify` and, for portable-core/export changes,
-`tools/test-with-console.sh`; commit each verified update locally. Pushes are
-suspended by the current user instruction. Do not relax
+`tools/test-with-console.sh`; commit and push each verified update under the
+restored user authorization. Do not relax
 pixel tolerances, skip frames or mute audio to turn an unexplained failure green.
 Report regression results separately from exploratory measurements.
 

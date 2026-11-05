@@ -1,0 +1,746 @@
+{
+  "date": "2026-11-05",
+  "source_base_commit": "809333d4016a4e00e0ffe8421552bcaa13a4b0e7",
+  "source_dirty": true,
+  "production_change": false,
+  "scope": "Asset-free CPU/DMA activation and first-load retirement comparison; independent-model discrepancy and rejected delay-only prototype; not a production latency fix",
+  "hardware": "Linux x86_64 cloud host; Temurin 21.0.8+9; Maven 3.9.11; no physical GBA/Bold",
+  "reference": {
+    "project": "NanoBoyAdvance",
+    "commit": "55b5cf0ae3d929582ac5bfd486558173502b8354",
+    "core_modified": false,
+    "cpu_executed": true,
+    "priming": "Two ARM reset-pipeline fetches; real BX plus Thumb refill for Thumb. Reference asserts 2/5 warmup cycles; those cycles are excluded from observations.",
+    "first_load_guard": "Every FIFO source latch has advanced 16 bytes when the first load retires, for all load cases"
+  },
+  "matrix": {
+    "scenarios": 24,
+    "retirements_per_scenario": 4,
+    "rows": 96,
+    "modes": [
+      "arm",
+      "thumb"
+    ],
+    "programs": [
+      "add r0,#1",
+      "ldr r0,[r2]"
+    ],
+    "code_region": "IWRAM",
+    "load_data_region": "IWRAM",
+    "load_data": "0x12345678",
+    "dma_sources": [
+      "IWRAM",
+      "EWRAM",
+      "Game Pak ROM"
+    ],
+    "fifo_channels": [
+      1,
+      2
+    ],
+    "requested_words": 4,
+    "bios_or_external_assets": false
+  },
+  "comparisons": {
+    "before": {
+      "add": {
+        "rows": 48,
+        "exact_matches": 24,
+        "timing_differences": 24,
+        "r0_differences": 0,
+        "pc_differences": 0
+      },
+      "load": {
+        "rows": 48,
+        "exact_matches": 0,
+        "timing_differences": 48,
+        "r0_differences": 0,
+        "pc_differences": 0
+      }
+    },
+    "delay-only": {
+      "add": {
+        "rows": 48,
+        "exact_matches": 48,
+        "timing_differences": 0,
+        "r0_differences": 0,
+        "pc_differences": 0
+      },
+      "load": {
+        "rows": 48,
+        "exact_matches": 0,
+        "timing_differences": 48,
+        "r0_differences": 0,
+        "pc_differences": 0
+      }
+    }
+  },
+  "cases": [
+    {
+      "mode": "arm",
+      "program": "add",
+      "source": "0x03000000",
+      "channels": "1",
+      "reference_cycles": [
+        1,
+        2,
+        13,
+        14
+      ],
+      "production_cycles": [
+        11,
+        12,
+        13,
+        14
+      ],
+      "delay_only_cycles": [
+        1,
+        2,
+        13,
+        14
+      ]
+    },
+    {
+      "mode": "arm",
+      "program": "add",
+      "source": "0x03000000",
+      "channels": "2",
+      "reference_cycles": [
+        1,
+        2,
+        21,
+        22
+      ],
+      "production_cycles": [
+        19,
+        20,
+        21,
+        22
+      ],
+      "delay_only_cycles": [
+        1,
+        2,
+        21,
+        22
+      ]
+    },
+    {
+      "mode": "arm",
+      "program": "add",
+      "source": "0x02000000",
+      "channels": "1",
+      "reference_cycles": [
+        1,
+        2,
+        33,
+        34
+      ],
+      "production_cycles": [
+        31,
+        32,
+        33,
+        34
+      ],
+      "delay_only_cycles": [
+        1,
+        2,
+        33,
+        34
+      ]
+    },
+    {
+      "mode": "arm",
+      "program": "add",
+      "source": "0x02000000",
+      "channels": "2",
+      "reference_cycles": [
+        1,
+        2,
+        61,
+        62
+      ],
+      "production_cycles": [
+        59,
+        60,
+        61,
+        62
+      ],
+      "delay_only_cycles": [
+        1,
+        2,
+        61,
+        62
+      ]
+    },
+    {
+      "mode": "arm",
+      "program": "add",
+      "source": "0x08000000",
+      "channels": "1",
+      "reference_cycles": [
+        1,
+        2,
+        35,
+        36
+      ],
+      "production_cycles": [
+        33,
+        34,
+        35,
+        36
+      ],
+      "delay_only_cycles": [
+        1,
+        2,
+        35,
+        36
+      ]
+    },
+    {
+      "mode": "arm",
+      "program": "add",
+      "source": "0x08000000",
+      "channels": "2",
+      "reference_cycles": [
+        1,
+        2,
+        65,
+        66
+      ],
+      "production_cycles": [
+        63,
+        64,
+        65,
+        66
+      ],
+      "delay_only_cycles": [
+        1,
+        2,
+        65,
+        66
+      ]
+    },
+    {
+      "mode": "arm",
+      "program": "load",
+      "source": "0x03000000",
+      "channels": "1",
+      "reference_cycles": [
+        12,
+        15,
+        18,
+        21
+      ],
+      "production_cycles": [
+        13,
+        16,
+        19,
+        22
+      ],
+      "delay_only_cycles": [
+        3,
+        16,
+        19,
+        22
+      ]
+    },
+    {
+      "mode": "arm",
+      "program": "load",
+      "source": "0x03000000",
+      "channels": "2",
+      "reference_cycles": [
+        20,
+        23,
+        26,
+        29
+      ],
+      "production_cycles": [
+        21,
+        24,
+        27,
+        30
+      ],
+      "delay_only_cycles": [
+        3,
+        24,
+        27,
+        30
+      ]
+    },
+    {
+      "mode": "arm",
+      "program": "load",
+      "source": "0x02000000",
+      "channels": "1",
+      "reference_cycles": [
+        32,
+        35,
+        38,
+        41
+      ],
+      "production_cycles": [
+        33,
+        36,
+        39,
+        42
+      ],
+      "delay_only_cycles": [
+        3,
+        36,
+        39,
+        42
+      ]
+    },
+    {
+      "mode": "arm",
+      "program": "load",
+      "source": "0x02000000",
+      "channels": "2",
+      "reference_cycles": [
+        60,
+        63,
+        66,
+        69
+      ],
+      "production_cycles": [
+        61,
+        64,
+        67,
+        70
+      ],
+      "delay_only_cycles": [
+        3,
+        64,
+        67,
+        70
+      ]
+    },
+    {
+      "mode": "arm",
+      "program": "load",
+      "source": "0x08000000",
+      "channels": "1",
+      "reference_cycles": [
+        34,
+        37,
+        40,
+        43
+      ],
+      "production_cycles": [
+        35,
+        38,
+        41,
+        44
+      ],
+      "delay_only_cycles": [
+        3,
+        38,
+        41,
+        44
+      ]
+    },
+    {
+      "mode": "arm",
+      "program": "load",
+      "source": "0x08000000",
+      "channels": "2",
+      "reference_cycles": [
+        64,
+        67,
+        70,
+        73
+      ],
+      "production_cycles": [
+        65,
+        68,
+        71,
+        74
+      ],
+      "delay_only_cycles": [
+        3,
+        68,
+        71,
+        74
+      ]
+    },
+    {
+      "mode": "thumb",
+      "program": "add",
+      "source": "0x03000000",
+      "channels": "1",
+      "reference_cycles": [
+        1,
+        2,
+        13,
+        14
+      ],
+      "production_cycles": [
+        11,
+        12,
+        13,
+        14
+      ],
+      "delay_only_cycles": [
+        1,
+        2,
+        13,
+        14
+      ]
+    },
+    {
+      "mode": "thumb",
+      "program": "add",
+      "source": "0x03000000",
+      "channels": "2",
+      "reference_cycles": [
+        1,
+        2,
+        21,
+        22
+      ],
+      "production_cycles": [
+        19,
+        20,
+        21,
+        22
+      ],
+      "delay_only_cycles": [
+        1,
+        2,
+        21,
+        22
+      ]
+    },
+    {
+      "mode": "thumb",
+      "program": "add",
+      "source": "0x02000000",
+      "channels": "1",
+      "reference_cycles": [
+        1,
+        2,
+        33,
+        34
+      ],
+      "production_cycles": [
+        31,
+        32,
+        33,
+        34
+      ],
+      "delay_only_cycles": [
+        1,
+        2,
+        33,
+        34
+      ]
+    },
+    {
+      "mode": "thumb",
+      "program": "add",
+      "source": "0x02000000",
+      "channels": "2",
+      "reference_cycles": [
+        1,
+        2,
+        61,
+        62
+      ],
+      "production_cycles": [
+        59,
+        60,
+        61,
+        62
+      ],
+      "delay_only_cycles": [
+        1,
+        2,
+        61,
+        62
+      ]
+    },
+    {
+      "mode": "thumb",
+      "program": "add",
+      "source": "0x08000000",
+      "channels": "1",
+      "reference_cycles": [
+        1,
+        2,
+        35,
+        36
+      ],
+      "production_cycles": [
+        33,
+        34,
+        35,
+        36
+      ],
+      "delay_only_cycles": [
+        1,
+        2,
+        35,
+        36
+      ]
+    },
+    {
+      "mode": "thumb",
+      "program": "add",
+      "source": "0x08000000",
+      "channels": "2",
+      "reference_cycles": [
+        1,
+        2,
+        65,
+        66
+      ],
+      "production_cycles": [
+        63,
+        64,
+        65,
+        66
+      ],
+      "delay_only_cycles": [
+        1,
+        2,
+        65,
+        66
+      ]
+    },
+    {
+      "mode": "thumb",
+      "program": "load",
+      "source": "0x03000000",
+      "channels": "1",
+      "reference_cycles": [
+        12,
+        15,
+        18,
+        21
+      ],
+      "production_cycles": [
+        13,
+        16,
+        19,
+        22
+      ],
+      "delay_only_cycles": [
+        3,
+        16,
+        19,
+        22
+      ]
+    },
+    {
+      "mode": "thumb",
+      "program": "load",
+      "source": "0x03000000",
+      "channels": "2",
+      "reference_cycles": [
+        20,
+        23,
+        26,
+        29
+      ],
+      "production_cycles": [
+        21,
+        24,
+        27,
+        30
+      ],
+      "delay_only_cycles": [
+        3,
+        24,
+        27,
+        30
+      ]
+    },
+    {
+      "mode": "thumb",
+      "program": "load",
+      "source": "0x02000000",
+      "channels": "1",
+      "reference_cycles": [
+        32,
+        35,
+        38,
+        41
+      ],
+      "production_cycles": [
+        33,
+        36,
+        39,
+        42
+      ],
+      "delay_only_cycles": [
+        3,
+        36,
+        39,
+        42
+      ]
+    },
+    {
+      "mode": "thumb",
+      "program": "load",
+      "source": "0x02000000",
+      "channels": "2",
+      "reference_cycles": [
+        60,
+        63,
+        66,
+        69
+      ],
+      "production_cycles": [
+        61,
+        64,
+        67,
+        70
+      ],
+      "delay_only_cycles": [
+        3,
+        64,
+        67,
+        70
+      ]
+    },
+    {
+      "mode": "thumb",
+      "program": "load",
+      "source": "0x08000000",
+      "channels": "1",
+      "reference_cycles": [
+        34,
+        37,
+        40,
+        43
+      ],
+      "production_cycles": [
+        35,
+        38,
+        41,
+        44
+      ],
+      "delay_only_cycles": [
+        3,
+        38,
+        41,
+        44
+      ]
+    },
+    {
+      "mode": "thumb",
+      "program": "load",
+      "source": "0x08000000",
+      "channels": "2",
+      "reference_cycles": [
+        64,
+        67,
+        70,
+        73
+      ],
+      "production_cycles": [
+        65,
+        68,
+        71,
+        74
+      ],
+      "delay_only_cycles": [
+        3,
+        68,
+        71,
+        74
+      ]
+    }
+  ],
+  "first_iwram_case": {
+    "add": {
+      "reference": [
+        1,
+        2,
+        13,
+        14
+      ],
+      "production": [
+        11,
+        12,
+        13,
+        14
+      ],
+      "delay_only": [
+        1,
+        2,
+        13,
+        14
+      ]
+    },
+    "load": {
+      "reference": [
+        12,
+        15,
+        18,
+        21
+      ],
+      "production": [
+        13,
+        16,
+        19,
+        22
+      ],
+      "delay_only": [
+        3,
+        16,
+        19,
+        22
+      ]
+    },
+    "interpretation": "Reference retires two one-cycle ADDs during request activation. LDR requires DMA/internal-cycle arbitration: reference completes FIFO transfer before first retirement. Merely scheduling readiness two cycles later wrongly retires LDR at cycle 3 before DMA; its later loads also retain a one-cycle mismatch."
+  },
+  "delay_only_experiment": {
+    "shipped": false,
+    "source_path": "target/dma-activation-diagnosis/delay-only-source/berryboy/bus/DmaController.java",
+    "source_sha256": "fc58f39a3971b7b2c5b8f1202547f2a6a84ba64df05a96e47bd8ccd4914b20b8",
+    "patch": "--- production/DmaController.java\n+++ ignored-delay-only/DmaController.java\n@@ -51,7 +51,7 @@\n         for (var i = 0; i < 4; i++) {\n             var channel = channels[i];\n             if ((channel.control & 0x8000) != 0 && ((channel.control >>> 12) & 3) == timing) {\n-                channel.pending = true;\n+                memory.clock().schedule(() -> channel.pending = true, memory.clock().now() + 2);\n             }\n         }\n     }\n@@ -60,7 +60,7 @@\n         for (var i = 1; i <= 2; i++) {\n             var channel = channels[i];\n             if ((channel.control & 0xb000) == 0xb000 && (channel.currentDestination & ~3) == address) {\n-                channel.pending = true;\n+                memory.clock().schedule(() -> channel.pending = true, memory.clock().now() + 2);\n             }\n         }\n     }\n@@ -135,7 +135,7 @@\n             remaining = initialCount;\n             memory.prepareEepromDma(currentDestination, initialCount);\n             first = true;\n-            pending = ((control >>> 12) & 3) == 0;\n+            pending = false; if (((control >>> 12) & 3) == 0) memory.clock().schedule(() -> pending = true, memory.clock().now() + 2);\n         }\n \n         void transfer() {\n",
+    "limits": "Host-only experiment, no cancellation/deduplication lifecycle guarantees and no CPU data/internal bus arbitration; intentionally rejected, not an implementation proposal"
+  },
+  "validation": {
+    "host_tests": 1402,
+    "console_host_tests": 1402,
+    "exported_core_tests": 1296,
+    "retained_actual_ecj_cldc_core_tests": 1296,
+    "failures": 0,
+    "skipped": 0,
+    "new_core_ordering_cases": 12,
+    "production_ordering_cases_pass": 12,
+    "delay_only_ordering_cases_fail": 12,
+    "reference_and_java_adapters": "Compiled with warnings as errors; every case validates r0 and PC progression; NBA additionally validates completed FIFO source progress at first LDR retirement",
+    "native_sdk_rebuilt": false,
+    "game_captures_repeated": false
+  },
+  "next_implementation": {
+    "requirement": "Implement activation scheduling together with resumable CPU fetch/data/internal-cycle bus arbitration; do not land the delay-only experiment",
+    "constraints": [
+      "Preserve per-word DMA yields so long DMA does not skip frame/audio capture deadlines",
+      "Retire loads after the required FIFO burst, as enforced by the 12 portable ordering tests",
+      "Cover disable/re-enable and repeated requests without postponing or duplicating pending activation",
+      "Keep actual request timing distinct from readiness-normalized ownership probes",
+      "Extend independently justified tests to further instruction forms and actual timer workloads before broader claims"
+    ]
+  },
+  "remaining_gates": [
+    "All 24 activation scenarios remain unmatched by production as whole four-retirement sequences; 24/96 individual rows match. No activation gate closed.",
+    "Physical hardware, saved-player LeafGreen frame 930, audio and gameplay qualification remain open"
+  ],
+  "source_files_sha256": {
+    "tools/nba-dma-activation-probe.cc": "db9286768aa39ccdb186a9f1bac47c7bddf474318d070fe8893643491a8e9149",
+    "tools/DmaActivationProbe.java": "1676bf937b66b75dc64baad43e8e825ab5546019a7bbb3bab55e0e10b9341fa5",
+    "src/test/java/berryboy/bus/DmaCpuLoadOrderingTest.java": "d59e437871a38fa193e2a053904bcba3b7f446b50d65cfc1527a9c9069af75dc",
+    "tools/nba-reference/CMakeLists.txt": "4d7b1a5a9cc546a4882c10450361e4d823f0039918cc946952fc7f43958b14ed"
+  },
+  "artifact_sha256": {
+    "reference": "96e83c59c0dd4c50414f1608d119bf188736926b1c3528994005d3167413ff10",
+    "before": "2aa4a8f747ec03ee32b5a3b57859455d1b10a865243bcd01f283793027687379",
+    "delay-only": "b8a2a10e041c2c5bc06f7b4d5359431fa6aafd549632839a5e6f4693e38bf9c1"
+  },
+  "local_output": "target/dma-activation-diagnosis",
+  "expected_failure_log": "/workspace/scratch/dma-activation-delay-only.log"
+}

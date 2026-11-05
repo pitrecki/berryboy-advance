@@ -383,6 +383,38 @@ not absolute request/CPU latency. The reference DMA, bus and scheduler are
 unmodified. This single asset-free case supports the release split, not full
 hardware or gameplay qualification.
 
+## FIFO activation and CPU probes
+
+Use the pinned, unmodified NBA checkout/CMake configuration from the independent
+ownership section. This probe executes the original CPU rather than borrowing
+its event slot. It fills the ARM pipeline first, and enters Thumb through a
+real BX/refill. Two/five warmup cycles are asserted and excluded from all
+reported cycles. No BIOS, game ROM or save is required.
+
+```bash
+cmake --build target/nba-reference --target nba-dma-activation-probe --parallel 4
+target/nba-reference/nba-dma-activation-probe > target/nba-reference/activation.csv
+mkdir -p target/docs-tools
+javac -Xlint:all -Werror -cp target/classes -d target/docs-tools tools/DmaActivationProbe.java
+java -cp target/classes:target/docs-tools berryboy.bus.DmaActivationProbe > target/nba-reference/activation-berryboy.csv
+```
+
+Reconfigure CMake when using an older build directory. Each CSV has 96 rows:
+ARM/Thumb, ADD/LDR, three DMA sources, one/two channels and four retirements.
+Code/data use IWRAM. `cycle` is relative to the FIFO request after priming;
+`pc` is the next instruction address, normalized from NBA's pipeline r15.
+Both adapters validate r0 and PC progression. The reference checks complete
+FIFO source progress before the first load retires. A CSV mismatch is an
+observed model difference, not an adapter process failure or a physical pass.
+
+Production timing remains unmatched. The evidence contains an exact patch for
+an ignored, host-only delay experiment. It demonstrates why adding two cycles
+to pending-request scheduling alone is insufficient: all twelve first-load
+ordering regressions fail. Do not install that experiment into production or
+treat its ADD matches as complete CPU/DMA qualification. The next fix must
+preserve cooperative long-DMA yields while arbitrating data/internal CPU work.
+See [the comparison and constraints](REFERENCE-VALIDATION.md#fifo-activation-and-cpu-load-ordering-2026-11-05).
+
 ## Original FIFO DMA timing probes
 
 These probes generate pattern cartridges in memory and require no external ROM,

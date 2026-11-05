@@ -1,5 +1,54 @@
 # Independent reference validation
 
+## FIFO activation and CPU load ordering, 2026-11-05
+
+The original [NBA CPU probe](../tools/nba-dma-activation-probe.cc) now executes
+real ARM/Thumb instructions against its unmodified DMA, bus and scheduler.
+Twenty-four asset-free scenarios cover repeated ADD/LDR instructions in IWRAM,
+three FIFO source regions and one/two channels, with four retirements each.
+ARM pipeline priming and the real BX/Thumb refill occur before observation;
+both adapters assert the warmup and instruction progression. NBA additionally
+checks that every FIFO source advances 16 bytes before the first LDR retires.
+
+The **96-row matrix exposes two coupled discrepancies**. For one IWRAM FIFO:
+
+| Program | NBA retirement cycles | Production BerryBoy | Delay-only experiment |
+| --- | --- | --- | --- |
+| ADD r0,#1 | 1, 2, 13, 14 | 11, 12, 13, 14 | 1, 2, 13, 14 |
+| LDR r0,[r2] | 12, 15, 18, 21 | 13, 16, 19, 22 | 3, 16, 19, 22 |
+
+NBA permits the two one-cycle ADDs during FIFO request activation. Production
+BerryBoy services the FIFO immediately. Merely delaying readiness by two cycles
+matches **48/48 ADD observations** but still matches **0/48 LDR observations**:
+it retires the first load before the FIFO transfer is serviced. NBA arbitrates
+bus accesses and internal CPU cycles, including overlap of internal work with
+DMA. Production matches only **24/96 individual rows**, and none of the 24
+complete four-retirement scenarios. r0 and PC progression agree; these are
+timing/ordering observations, not full-state or hardware certification.
+
+Twelve new portable ordering cases exercise both instruction sets, all three
+sources and both channel counts. At the first LDR retirement they inspect the
+complete 16-byte FIFO stream per channel. They pass in production and **all
+twelve fail** against the ignored delay-only experiment, preserving a useful
+ordering property without freezing production's unqualified activation latency.
+The experiment is recorded with its exact patch/hash but is not shipped.
+
+**No production activation fix is delivered here.** The next implementation
+must combine scheduled activation with CPU fetch/data/internal-cycle arbitration
+and resumable instruction handling. Preserve word-level DMA yields and frame/
+audio deadlines; draining a long DMA inside an atomic CPU instruction would
+break the existing capture-budget guarantees. Qualify disable/re-enable and
+repeated requests alongside the CPU cases. Further instruction forms, actual
+timer workloads and hardware remain separate gates.
+
+Validation: **1402 host tests, 1296 exported-core tests and 1296 retained actual
+ECJ CLDC-class tests** pass without failures/skips. Both adapters compile with
+warnings treated as errors. The deliberately rejected experiment's twelve
+failures are separate from those passing suites. No new SDK/COD build, game
+capture, tolerance change or activation gate closure is claimed.
+Evidence: [dma-activation-2026-11-05.json](../benchmarks/dma-activation-2026-11-05.json).
+Reproduction: [SCENARIOS.md](SCENARIOS.md#fifo-activation-and-cpu-probes).
+
 ## Lost Age first retirement divergence and DMA release, 2026-11-05
 
 The earlier frame-735 window started after the executions already differed.
