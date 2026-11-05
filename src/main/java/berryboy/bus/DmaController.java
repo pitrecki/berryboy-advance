@@ -81,7 +81,7 @@ public final class DmaController {
             // One acquisition cycle and one release cycle bracket the shared
             // interval. Charging both up front delays every read/write by one
             // cycle despite preserving the total (tools/nba-dma-phase-probe.cc).
-            memory.clock().advance(OWNERSHIP_EDGE_CYCLES);
+            memory.busTiming().dmaIdle(OWNERSHIP_EDGE_CYCLES);
         }
         // Device callbacks during acquisition may change runnable priorities.
         for (var i = 0; i < 4; i++) {
@@ -99,7 +99,7 @@ public final class DmaController {
     private void releaseBus() {
         // Requests arriving during release start a new ownership interval.
         ownsBus = false;
-        memory.clock().advance(OWNERSHIP_EDGE_CYCLES);
+        memory.busTiming().dmaIdle(OWNERSHIP_EDGE_CYCLES);
     }
 
     /** Whether the current word belongs to an unfinished ownership interval. */
@@ -152,9 +152,9 @@ public final class DmaController {
             // Game Pak ROM forces incrementing source addresses, including its
             // wait-state mirrors. Keep the programmed control bits unchanged.
             if (sourceAddress >= GAME_PAK_ROM_START && sourceAddress < GAME_PAK_ROM_END) sourceMode = 0;
-            memory.clock().advance(memory.busTiming().accessCycles(sourceAddress, width, !first && sourceMode == 0));
+            memory.busTiming().dmaAccess(sourceAddress, width, !first && sourceMode == 0);
             var value = width == 4 ? memory.read32(sourceAddress) : memory.read16(sourceAddress);
-            memory.clock().advance(memory.busTiming().accessCycles(destinationAddress, width, !first && destinationMode != 1 && destinationMode != 2));
+            memory.busTiming().dmaAccess(destinationAddress, width, !first && destinationMode != 1 && destinationMode != 2);
             if (width == 4) memory.write32(destinationAddress, value);
             else memory.write16(destinationAddress, value);
             currentSource += sourceMode == 0 ? width : sourceMode == 1 ? -width : 0;

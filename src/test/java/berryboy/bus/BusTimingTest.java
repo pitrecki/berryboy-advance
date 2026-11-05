@@ -13,6 +13,18 @@ import org.junit.jupiter.api.Test;
 @Tag("core")
 class BusTimingTest {
     @Test
+    void discardedFetchLeavingGamePakDoesNotConsumeItsRomPrefetchBuffer() {
+        var clock = new CycleScheduler();
+        var bus = new BusTiming(clock);
+        bus.setWaitControl(0x4000);
+        bus.fetch(0x0dfffff8, 4);
+        bus.internal(24, false);
+        var before = clock.now();
+        bus.discardedFetch(0x0dfffffc, 4); // Physical pipeline read reaches SRAM at 0x0e000004.
+        assertThat(clock.now() - before).isEqualTo(5);
+    }
+
+    @Test
     void modelsBusWidthsAndDefaultGamePakWaits() {
         var timing = new BusTiming(new CycleScheduler());
         assertSoftly(s -> {

@@ -15,6 +15,7 @@ public final class BusTiming {
     private boolean dataWrite;
     private int prefetched;
     private int prefetchCredit;
+    private boolean prefetchActive;
     private int ewramCycles = 3;
     private boolean externalRam = true;
     private int refillAddress;
@@ -40,7 +41,7 @@ public final class BusTiming {
             var bank = (region - 8) / 2;
             var shift = 2 + bank * 3;
             var first = FIRST_WAIT[(waitControl >>> shift) & 3];
-            var second = (waitControl & (1 << (shift + 2))) != 0 ? 2 : (2 << bank) + 1;
+            var second = sequentialRomCycles(address);
             // Each 128 KiB Game Pak boundary starts a nonsequential access.
             if ((address & 0x1ffff) == 0) sequential = false;
             return (sequential ? second : first) + (width == 4 ? second : 0);
@@ -58,23 +59,33 @@ public final class BusTiming {
     }
 
     public void fetch(int address, int width) {
+        fetch(address, address, width);
+    }
+
+    /** IRQ discards a pipeline fetch two instruction slots beyond logical PC. */
+    public void discardedFetch(int address, int width) {
+        fetch(address, address + width * 2, width);
+    }
+
+    private void fetch(int address, int busAddress, int width) {
         var sequential = nextFetchSequential && address == expectedFetch;
-        var cost = accessCycles(address, width, sequential);
+        var cost = accessCycles(busAddress, width, sequential);
         var hit = false;
-        if (prefetchEnabled() && gamePakRom(address) && sequential) {
+        if (prefetchEnabled() && gamePakRom(busAddress) && prefetchActive && address == expectedFetch) {
             var halfwords = width / 2;
             if (prefetched >= halfwords) { prefetched -= halfwords; cost = 1; hit = true; }
             else {
-                var missingAddress = address + prefetched * 2;
                 var missing = halfwords - prefetched;
-                cost = -prefetchCredit;
-                for (var i = 0; i < missing; i++) cost += accessCycles(missingAddress + i * 2, 2, true);
+                // An active prefetch stream retains its sequential duty even
+                // across a Game Pak page boundary or an off-cartridge DMA.
+                cost = missing * sequentialRomCycles(busAddress) - prefetchCredit;
                 if (cost < 1) cost = 1;
                 prefetched = 0; prefetchCredit = 0;
             }
-        } else { prefetched = 0; prefetchCredit = 0; }
+        } else clearPrefetch();
         expectedFetch = address + width;
         nextFetchSequential = true;
+        prefetchActive = prefetchEnabled() && gamePakRom(busAddress);
         dataRegion = -1;
         clock.advance(cost);
         if (hit) fillPrefetch(1);
@@ -130,25 +141,48 @@ public final class BusTiming {
 
     public void invalidateFetch() {
         nextFetchSequential = false;
+        clearPrefetch();
+    }
+
+    private void clearPrefetch() {
+        prefetchActive = false;
         prefetched = 0;
         prefetchCredit = 0;
     }
 
-    /** DMA interrupts both opcode prefetch and the CPU's data-access sequence. */
+    /** DMA interrupts CPU sequencing; off-cartridge DMA leaves prefetch running. */
     public void invalidateCpuSequence() {
-        invalidateFetch();
+        nextFetchSequential = false;
         dataRegion = -1;
+    }
+
+    /** Time a DMA access while the independent Game Pak prefetch unit can run. */
+    public void dmaAccess(int address, int width, boolean sequential) {
+        if ((address >>> 24) >= 8) clearPrefetch();
+        var cycles = accessCycles(address, width, sequential);
+        clock.advance(cycles);
+        fillPrefetch(cycles);
+    }
+
+    public void dmaIdle(int cycles) {
+        clock.advance(cycles);
+        fillPrefetch(cycles);
     }
 
     private boolean prefetchEnabled() { return (waitControl & 0x4000) != 0; }
 
     private static boolean gamePakRom(int address) { return (address >>> 24) >= 8 && (address >>> 24) <= 13; }
 
+    private int sequentialRomCycles(int address) {
+        var bank = ((address >>> 24) - 8) / 2;
+        return (waitControl & (1 << (4 + bank * 3))) != 0 ? 2 : (2 << bank) + 1;
+    }
+
     private void fillPrefetch(int freeCycles) {
-        if (!nextFetchSequential || !gamePakRom(expectedFetch)) return;
+        if (!prefetchActive || !gamePakRom(expectedFetch)) return;
         prefetchCredit += freeCycles;
         while (prefetched < 8) {
-            var cost = accessCycles(expectedFetch + prefetched * 2, 2, true);
+            var cost = sequentialRomCycles(expectedFetch);
             if (prefetchCredit < cost) break;
             prefetchCredit -= cost;
             prefetched++;

@@ -92,9 +92,7 @@ public final class Cpu {
             fetchPending = false;
             if (pendingIrq) {
                 if (!memory.hasBios()) throw new EmulationException("IRQ needs a supplied BIOS");
-                // Preserve the existing discarded-fetch cost. Its wider bus/
-                // pipeline timing is qualified separately from acceptance.
-                memory.clock().advance(1);
+                memory.busTiming().discardedFetch(address, thumbMode ? 2 : 4);
                 state.enterIrq();
                 beginRefill();
                 resumeRefill();
