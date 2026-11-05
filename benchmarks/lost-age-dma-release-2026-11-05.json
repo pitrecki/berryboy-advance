@@ -1,0 +1,278 @@
+{
+  "date": "2026-11-05",
+  "source_base_commit": "3bd8c520886be840ddcc2fb7a448081ac609ce27",
+  "source_dirty": true,
+  "production_change": false,
+  "hardware": "Linux x86_64 cloud host; Temurin 21.0.8+9; Maven 3.9.11; no physical GBA/Bold",
+  "game": {
+    "game_code": "AGFE",
+    "title": "Golden Sun - The Lost Age (USA)",
+    "rom_sha256": "4199d82f845edf3e2e92f3783bca00190b5bc102d7c8aa339b951de280b1e6cc",
+    "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+    "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9"
+  },
+  "scenario": "Same verified fresh-backup Start/A route; no save loaded/written; no diagnostic clock events in retirement/handoff probes",
+  "before_core": "b1a7f253e54ed932315626071eae1c8dc5a438ed",
+  "after_core": "9f45db89759c400698f23ab13e48e6e9e8fab923",
+  "comparison": "Only DmaController and its inner classes replaced; remaining production classes identical",
+  "retirement_prefix": {
+    "block_size": 4096,
+    "requested_end_cycle": 206458760,
+    "digest_state_format": "81 bytes per retirement: little-endian cycle u64, PC u32, CPSR u32, r0-r14 u32, IF u32, HALT u8; independent SHA-256 per block",
+    "matching_full_blocks": 12587,
+    "matching_hashed_retirements": 51556352,
+    "matching_detailed_retirements_in_first_different_block": 2527,
+    "matching_retirement_states_from_reset": 51558879,
+    "first_different_block": {
+      "before": {
+        "first": "51556353",
+        "last": "51560448",
+        "cycle": "206404808",
+        "sha256": "846a6525fda15e70d5d978a5fe672f2172502dcfe6d22ae690fccfe93b42352f"
+      },
+      "after": {
+        "first": "51556353",
+        "last": "51560448",
+        "cycle": "206404810",
+        "sha256": "2d21fb32f8e21a68338fcc8e38386c9207038f34208072357a24dfade0d3b7e5"
+      }
+    },
+    "first_difference": {
+      "instruction": 51558880,
+      "before": {
+        "instruction": "51558880",
+        "cycle": "206402097",
+        "pc": "50334020",
+        "cpsr": "2147483679",
+        "r0": "118",
+        "r1": "136093876",
+        "r2": "7356",
+        "r3": "50363388",
+        "r4": "4293968434",
+        "r5": "50360256",
+        "r6": "4294967206",
+        "r7": "7582176",
+        "r8": "528",
+        "r9": "67109076",
+        "r10": "136094342",
+        "r11": "1245203",
+        "r12": "0",
+        "r13": "50363388",
+        "r14": "2214592630",
+        "irq": "0",
+        "halted": "false"
+      },
+      "after": {
+        "instruction": "51558880",
+        "cycle": "206402099",
+        "pc": "50334020",
+        "cpsr": "2147483679",
+        "r0": "118",
+        "r1": "136093876",
+        "r2": "7356",
+        "r3": "50363388",
+        "r4": "4293968434",
+        "r5": "50360256",
+        "r6": "4294967206",
+        "r7": "7582176",
+        "r8": "528",
+        "r9": "67109076",
+        "r10": "136094342",
+        "r11": "1245203",
+        "r12": "0",
+        "r13": "50363388",
+        "r14": "2214592630",
+        "irq": "0",
+        "halted": "false"
+      },
+      "changed_fields": [
+        "cycle"
+      ]
+    },
+    "detail_rows_per_variant": 4096,
+    "different_register_flag_pc_irq_halt_rows_in_detail": 0,
+    "final_probe_recompile_preserved_digest_files": true
+  },
+  "handoff": {
+    "last_equal_retirement": {
+      "instruction": 51558879,
+      "cycle": 206401446
+    },
+    "timer_callback_cycle": 206402040,
+    "events_at_boundary": {
+      "before": [
+        {
+          "kind": "before:berryboy.timing.TimerUnit$Timer",
+          "cycle": "206402040",
+          "instructions": "51558879",
+          "pc": "50334016",
+          "owns_bus": "true",
+          "ch1_pending": "false",
+          "ch1_remaining": "4",
+          "ch1_first": "true",
+          "ch2_pending": "false",
+          "ch2_remaining": "4",
+          "ch2_first": "true",
+          "ch3_pending": "true",
+          "ch3_remaining": "1",
+          "ch3_first": "false"
+        },
+        {
+          "kind": "after:berryboy.timing.TimerUnit$Timer",
+          "cycle": "206402040",
+          "instructions": "51558879",
+          "pc": "50334016",
+          "owns_bus": "true",
+          "ch1_pending": "true",
+          "ch1_remaining": "4",
+          "ch1_first": "true",
+          "ch2_pending": "true",
+          "ch2_remaining": "4",
+          "ch2_first": "true",
+          "ch3_pending": "true",
+          "ch3_remaining": "1",
+          "ch3_first": "false"
+        },
+        {
+          "kind": "step",
+          "cycle": "206402040",
+          "instructions": "51558879",
+          "pc": "50334016",
+          "owns_bus": "true",
+          "ch1_pending": "true",
+          "ch1_remaining": "4",
+          "ch1_first": "true",
+          "ch2_pending": "true",
+          "ch2_remaining": "4",
+          "ch2_first": "true",
+          "ch3_pending": "false",
+          "ch3_remaining": "0",
+          "ch3_first": "false"
+        }
+      ],
+      "after": [
+        {
+          "kind": "before:berryboy.timing.TimerUnit$Timer",
+          "cycle": "206402040",
+          "instructions": "51558879",
+          "pc": "50334016",
+          "owns_bus": "false",
+          "ch1_pending": "false",
+          "ch1_remaining": "4",
+          "ch1_first": "true",
+          "ch2_pending": "false",
+          "ch2_remaining": "4",
+          "ch2_first": "true",
+          "ch3_pending": "false",
+          "ch3_remaining": "0",
+          "ch3_first": "false"
+        },
+        {
+          "kind": "after:berryboy.timing.TimerUnit$Timer",
+          "cycle": "206402040",
+          "instructions": "51558879",
+          "pc": "50334016",
+          "owns_bus": "false",
+          "ch1_pending": "true",
+          "ch1_remaining": "4",
+          "ch1_first": "true",
+          "ch2_pending": "true",
+          "ch2_remaining": "4",
+          "ch2_first": "true",
+          "ch3_pending": "false",
+          "ch3_remaining": "0",
+          "ch3_first": "false"
+        },
+        {
+          "kind": "step",
+          "cycle": "206402040",
+          "instructions": "51558879",
+          "pc": "50334016",
+          "owns_bus": "false",
+          "ch1_pending": "true",
+          "ch1_remaining": "4",
+          "ch1_first": "true",
+          "ch2_pending": "true",
+          "ch2_remaining": "4",
+          "ch2_first": "true",
+          "ch3_pending": "false",
+          "ch3_remaining": "0",
+          "ch3_first": "false"
+        }
+      ]
+    },
+    "old_final_dma_step_cycle": 206402096,
+    "corrected_final_dma_step_cycle": 206402098,
+    "first_cpu_retirement_before": 206402097,
+    "first_cpu_retirement_after": 206402099,
+    "interpretation": "Corrected DMA3 completes its final write at 206402039, before timer FIFO readiness at 206402040 in release. Old DMA3 writes at 206402040 and shares continuous ownership with both new FIFOs. Corrected FIFOs start a new ownership interval and pay two cycles. No CPU instruction retires during the handoff.",
+    "passive_observer_controls": {
+      "before": {
+        "identical": true,
+        "completed_steps": 140
+      },
+      "after": {
+        "identical": true,
+        "completed_steps": 139
+      }
+    }
+  },
+  "independent_minimal_case": {
+    "reference": "Unmodified NanoBoyAdvance",
+    "reference_commit": "55b5cf0ae3d929582ac5bfd486558173502b8354",
+    "probe": "tools/nba-dma-release-probe.cc",
+    "primary": "One EWRAM halfword to IWRAM via DMA3",
+    "secondary": "IWRAM FIFO A/B pair via DMA1/2",
+    "request_timestamp_nba": 6,
+    "ready_timestamp_both": 8,
+    "service_start": 2,
+    "first_ownership_cycles": 6,
+    "next_ownership_cycles": 18,
+    "total_ownership_cycles": 24,
+    "old_berryboy_total_cycles": 22,
+    "corrected_berryboy_total_cycles": 24,
+    "reference_csv_sha256": "2dd40d00c4a4e2786b16978c51fffead447c6df94fe631d5c6868ad79c22cbb1",
+    "scope": "Readiness-normalized boundary only: NBA requests activate after 2 cycles; BerryBoy readiness is injected directly at 8. CPU continuation/request activation and full game hardware accuracy remain unqualified."
+  },
+  "validation": {
+    "host_tests": 1390,
+    "console_host_tests": 1390,
+    "exported_core_tests": 1284,
+    "actual_ecj_cldc_core_tests": 1284,
+    "failures": 0,
+    "skipped": 0,
+    "new_host_tool_cases": 5,
+    "new_core_regressions": 1,
+    "new_core_regression_before": "1 selected test fails, expected clock 26 but old core gives 24",
+    "new_core_regression_after": "passes on host/exported/retained CLDC classes",
+    "native_sdk_rebuilt": false,
+    "native_scope": "Retained actual CLDC core classes reused because production code is unchanged; no new COD or BBOS runtime claim"
+  },
+  "remaining_work": [
+    "Qualify actual request activation and CPU continuation independently; no absolute activation fix established here",
+    "Trace later register/loop changes separately; first 4096 detailed retirements differ only in time",
+    "Repeat prefix localization for V-Rally, Zone of the Enders and Sonic; no general closure of 42 prior differing windows",
+    "LeafGreen player-save frame-930 gate and physical-device qualification remain open"
+  ],
+  "source_files_sha256": {
+    "tools/CpuCheckpointProbe.java": "cfd4afa596cd8ebf4bb14a873f1e98f08e4ca3f60ac1f0849fe5223fa2aaeafb",
+    "tools/CpuRetirementProbe.java": "876bb781408b2d1f34ca18e6a1536a26505dc93bcf29679a00f900e9a1873e4e",
+    "tools/DmaHandoffProbe.java": "cd8dbe6e3f6c3b0d0c485395b8f4fb2695503deb4914f6a52cfa6c7268a92257",
+    "tools/nba-dma-release-probe.cc": "43052eea32e6f2aaae26a5cee7f7c211de174c6c55a6150841404ea86698bc82",
+    "tools/nba-reference/CMakeLists.txt": "5084708cad4160055a7ab3fbae1e1de84dcda8689881a72df6c54860be3b7593",
+    "src/test/java/berryboy/build/CpuCheckpointProbeTest.java": "8028454762d7df510e1b125745af13287ddd0f30be58543e6f7eeb012b223908",
+    "src/test/java/berryboy/bus/DmaTransferPhaseTest.java": "5051035585615b03a85bc71621db75a161589aaad2f367ab1d7332ed2dd19af8"
+  },
+  "artifact_sha256": {
+    "before.csv": "6a3444a388ec6d330225ef069f7cbae07fbfd9efb8f89365fa0285fde7e87484",
+    "after.csv": "fdd4339cee2b824603c8626a48f069597ca026fa04f11f298a7a8e09b788c475",
+    "before-detail.csv": "d54d515ec8bd11c7e1b77b75db19ab2f1bf23b630290b177edb523e7706861a2",
+    "after-detail.csv": "0f5fd36be58acb81cef0f541b344d7d6f91a0394d5ac7eda3e05d9834044d892",
+    "before-handoff.csv": "1c1fad7b9e79eb9c1c56fafb3875d59d4a20666e60d84e6166fd0fb283a2686b",
+    "after-handoff.csv": "8915767350da8ea62130d5680fa6a426d755cf5a21cc7507a3f1491e50d14146",
+    "before-dma.csv": "601a3c716d0c5803c52d706456b3f9e042792aabbf5a14ef2e25aaa4bd81ec1b",
+    "after-dma.csv": "97e061018676165ca90da5f4265a73e056f2650df5815f07519226383c9bcfc2",
+    "nba-release.csv": "2dd40d00c4a4e2786b16978c51fffead447c6df94fe631d5c6868ad79c22cbb1"
+  },
+  "local_output": "target/cpu-retirement-diagnosis"
+}

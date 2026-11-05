@@ -1,8 +1,20 @@
 Latest host diagnostic validation: 2026-11-05 UTC
 Host: Eclipse Temurin 21.0.8+9, Maven 3.9.11, Linux x86_64
-mvn verify (default profile): 1384 passed; 0 failed/errors/skipped.
-Jupiter console host: 1384 passed; 0 failed/skipped.
-Exported core console: 1283 passed; 0 failed/skipped.
+mvn verify (default profile): 1390 passed; 0 failed/errors/skipped.
+Jupiter console host: 1390 passed; 0 failed/skipped.
+Exported core console: 1284 passed; 0 failed/skipped.
+Retained actual ECJ CLDC classes: 1284 passed; 0 failed/skipped.
+
+Lost Age retirement-prefix diagnosis: 12587 identical 4096-instruction SHA-256
+blocks plus 2527 matching detailed states; first timing difference at retirement
+51558880, two cycles later after a FIFO pair becomes ready during DMA3 release.
+All 4096 detailed register/flag/IRQ/HALT states remain identical by retirement
+index. Passive DMA observations preserve CPU steps against controls. Original
+NBA readiness-normalized case confirms ownership 6+18=24; old model takes 22.
+New portable regression fails with old DMA and passes on host/export/retained
+CLDC classes. Five new host-tool cases pass. No production change or native COD
+rebuild; activation/CPU latency, later loop effects and other titles remain open.
+See benchmarks/lost-age-dma-release-2026-11-05.json.
 
 CPU checkpoint diagnosis: all 134 changed-frame windows, 53734 exact-cycle
 samples per DMA variant. CPU/IF state matches in 92 windows; 42 windows in

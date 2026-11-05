@@ -13,13 +13,6 @@ public final class CpuCheckpointProbe {
     public static void main(String[] args) throws Exception {
         if (args.length != 2) throw new IllegalArgumentException("Usage: CpuCheckpointProbe fresh.properties windows.tsv");
         var path = Path.of(args[0]).toAbsolutePath();
-        var config = new Properties();
-        try (var reader = Files.newBufferedReader(path)) { config.load(reader); }
-        if (!config.getProperty("fresh_backup", "false").equals("true")
-                || Integer.parseInt(config.getProperty("devices", "0")) != 0
-                || !config.getProperty("rtc", "2000-01-01T00:00:00").equals("2000-01-01T00:00:00")) {
-            throw new IllegalArgumentException("Requires explicit fresh_backup=true, default RTC and no peripherals");
-        }
         var windows = new ArrayList<long[]>();
         long samples = 0, previousEnd = -1;
         for (var line : Files.readAllLines(Path.of(args[1]))) {
@@ -37,6 +30,19 @@ public final class CpuCheckpointProbe {
             previousEnd = end;
         }
         if (windows.isEmpty()) throw new IllegalArgumentException("At least one window required");
+        var machine = loadFreshMachine(path);
+        capture(machine, windows);
+    }
+
+    /** Shared verified setup for the two concrete fresh-backup CPU probes. */
+    static Machine loadFreshMachine(Path path) throws Exception {
+        var config = new Properties();
+        try (var reader = Files.newBufferedReader(path)) { config.load(reader); }
+        if (!config.getProperty("fresh_backup", "false").equals("true")
+                || Integer.parseInt(config.getProperty("devices", "0")) != 0
+                || !config.getProperty("rtc", "2000-01-01T00:00:00").equals("2000-01-01T00:00:00")) {
+            throw new IllegalArgumentException("Requires explicit fresh_backup=true, default RTC and no peripherals");
+        }
         var machine = new Machine(verified(path.getParent(), config, "rom"), verified(path.getParent(), config, "bios"));
         if (config.containsKey("backup")) throw new IllegalArgumentException("Explicit backup overrides are outside this probe's scope");
         var input = verified(path.getParent(), config, "input");
@@ -59,6 +65,10 @@ public final class CpuCheckpointProbe {
                 machine.memory.gpio().setSensors(x, y, gyro, solar);
             }, cycle);
         }
+        return machine;
+    }
+
+    private static void capture(Machine machine, ArrayList<long[]> windows) {
         var rows = new ArrayList<String>();
         CycleEvent sample = new CycleEvent() {
             private int window;

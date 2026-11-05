@@ -10,6 +10,7 @@ import java.nio.ByteOrder;
 import java.security.MessageDigest;
 import java.util.HexFormat;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import javax.tools.ToolProvider;
@@ -120,21 +121,63 @@ class CpuCheckpointProbeTest {
         });
     }
 
+    @Test
+    void retirementDigestMatchesTheExplicitTraceWithoutClockSamples() throws Exception {
+        var trace = execute(classes, "CpuRetirementProbe", "trace", properties.toString(), "1", "32");
+        var digest = execute(classes, "CpuRetirementProbe", "digest", properties.toString(), "32");
+        assertSoftly(softly -> {
+            softly.assertThat(trace.exit()).as(trace.output()).isZero();
+            softly.assertThat(digest.exit()).as(digest.output()).isZero();
+        });
+        var expected = MessageDigest.getInstance("SHA-256");
+        var rows = trace.output().lines().skip(1).toList();
+        assertThat(rows).hasSize(32);
+        for (var line : rows) {
+            var values = line.split(",");
+            var state = ByteBuffer.allocate(81).order(ByteOrder.LITTLE_ENDIAN);
+            state.putLong(Long.parseLong(values[1]));
+            for (var index = 2; index <= 19; index++) state.putInt((int) Long.parseLong(values[index]));
+            state.put((byte) (Boolean.parseBoolean(values[20]) ? 1 : 0));
+            expected.update(state.array());
+        }
+        assertThat(digest.output().lines().skip(1).toList())
+                .containsExactly("1,32,32," + HexFormat.of().formatHex(expected.digest()));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"trace 0 1", "trace 1 4097", "digest 0", "digest 1011225601"})
+    void retirementProbeRejectsUnsafeBounds(String setting) throws Exception {
+        var parts = setting.split(" ");
+        var arguments = new ArrayList<>(List.of(parts[0], properties.toString()));
+        arguments.addAll(List.of(parts).subList(1, parts.length));
+        var result = execute(classes, "CpuRetirementProbe", arguments.toArray(String[]::new));
+        assertSoftly(softly -> {
+            softly.assertThat(result.exit()).isNotZero();
+            softly.assertThat(result.output()).contains("Invalid cycle/instruction bound");
+        });
+    }
+
     private Path compile(String name, String source) throws Exception {
         var directory = Files.createDirectory(temporary.resolve(name));
         var file = Files.writeString(directory.resolve("CpuCheckpointProbe.java"), source);
+        var retirement = Files.writeString(directory.resolve("CpuRetirementProbe.java"), Files.readString(ROOT.resolve("tools/CpuRetirementProbe.java")));
         var result = ToolProvider.getSystemJavaCompiler().run(null, null, null,
                 "--release", "21", "-cp", ROOT.resolve("target/classes").toString(),
-                "-d", directory.toString(), file.toString());
+                "-d", directory.toString(), file.toString(), retirement.toString());
         assertThat(result).as("Compile diagnostic adapter").isZero();
         return directory;
     }
 
     private Result run(Path compiled) throws Exception {
+        return execute(compiled, "CpuCheckpointProbe", properties.toString(), windows.toString());
+    }
+
+    private Result execute(Path compiled, String tool, String... arguments) throws Exception {
         var output = temporary.resolve("run-" + runs++ + ".log");
-        var process = new ProcessBuilder(Path.of(System.getProperty("java.home"), "bin/java").toString(),
-                "-cp", compiled + ":" + ROOT.resolve("target/classes"), "CpuCheckpointProbe",
-                properties.toString(), windows.toString()).redirectErrorStream(true).redirectOutput(output.toFile()).start();
+        var command = new ArrayList<>(List.of(Path.of(System.getProperty("java.home"), "bin/java").toString(),
+                "-cp", compiled + ":" + ROOT.resolve("target/classes"), tool));
+        command.addAll(List.of(arguments));
+        var process = new ProcessBuilder(command).redirectErrorStream(true).redirectOutput(output.toFile()).start();
         if (!process.waitFor(20, TimeUnit.SECONDS)) {
             process.destroyForcibly();
             throw new IllegalStateException("Diagnostic adapter timed out");

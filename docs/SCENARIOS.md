@@ -332,6 +332,57 @@ contains every window as `[frame,start,end,differentClockRows,differentSharedSte
 Extract the second/third entries for the selected game's `windows` to construct
 its two-column input file. Keep separate files/output paths for each title.
 
+## Retirement prefix and release-boundary probes
+
+Use the same verified `fresh_backup=true` scenario and before-DMA classpath as
+the CPU checkpoint comparison. These probes share its validated fresh-machine
+loader. Compile all three host tools:
+
+```bash
+mkdir -p target/retirement-probe/classes
+javac -Xlint:all -Werror -cp target/classes -d target/retirement-probe/classes \
+  tools/CpuCheckpointProbe.java tools/CpuRetirementProbe.java tools/DmaHandoffProbe.java
+java -cp target/classes:target/retirement-probe/classes CpuRetirementProbe \
+  digest /path/to/fresh.properties 206458760 > target/retirement-probe/after.csv
+java -cp target/cpu-probe/before-classes:target/classes:target/retirement-probe/classes \
+  CpuRetirementProbe digest /path/to/fresh.properties 206458760 > target/retirement-probe/before.csv
+```
+
+Each row hashes an independent block of 4096 completed instructions; the final
+row may be partial. Each retirement contributes 81 bytes: little-endian cycle
+u64, PC/CPSR u32, r0-r14 u32, IF u32 and HALT u8. `cycle` is the last retirement
+in that block. A whole CPU step can cross the requested cycle budget. No sample
+events or wall-clock timing enter the digest. Find the first differing block,
+then expand at most 4096 instruction indices:
+
+```bash
+java -cp target/classes:target/retirement-probe/classes CpuRetirementProbe \
+  trace /path/to/fresh.properties 51556353 51560448 > target/retirement-probe/after-detail.csv
+java -cp target/classes:target/retirement-probe/classes DmaHandoffProbe \
+  /path/to/fresh.properties 206401440 206402110 > target/retirement-probe/after-dma.csv
+```
+
+Repeat with the old-DMA classpath. The handoff adapter reads private DMA fields
+through a host-only reflection adapter and copies state at existing callbacks
+and completed CPU steps. It never writes fields, schedules events or reads
+through the CPU bus. An incompatible field layout fails explicitly. Its window
+is limited to 10000 cycles. Retirement tracing has a 3600-frame cycle safety
+limit; reaching it before the requested retirement fails.
+
+For the independent minimal release case, reconfigure/build the pinned NBA core:
+
+```bash
+cmake --build target/nba-reference --target nba-dma-release-probe --parallel 4
+target/nba-reference/nba-dma-release-probe
+```
+
+Expected CSV is `6,18,24,1`: primary ownership, next ownership, total ownership,
+FIFO ready after release. NBA FIFO requests at cycle 6 activate at 8; the
+BerryBoy regression injects readiness at 8. Compare ownership after readiness,
+not absolute request/CPU latency. The reference DMA, bus and scheduler are
+unmodified. This single asset-free case supports the release split, not full
+hardware or gameplay qualification.
+
 ## Original FIFO DMA timing probes
 
 These probes generate pattern cartridges in memory and require no external ROM,

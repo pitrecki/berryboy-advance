@@ -47,7 +47,7 @@ mvn -Dgroups=desktop test
 | `build/LegacyExportTest` | Local `var`, returned switches, rejected APIs and host-class isolation |
 | `build/LegacyExportOutputTest` | Stale files, validation failures, ownership, overlaps and symlinks |
 | `build/LegacyCoreTest` | Whole-core export, compilation and isolated execution |
-| `build/CpuCheckpointProbeTest` | Exact-cycle CPU observations, disjoint/invalid windows and a control without sampling callbacks |
+| `build/CpuCheckpointProbeTest` | Exact-cycle observations, window bounds, sampling controls/HALT, retirement SHA serialization and bounded traces |
 | `desktop/LaunchCommandTest` | Typed CLI commands and invalid argument rejection |
 | `desktop/KeyboardInputTest` | Actual Swing key actions, simultaneous keys, repeat and release |
 | `desktop/PcmAudioTest` | WAV format, sample bytes and deterministic tone, without a sound device |

@@ -47,7 +47,7 @@ the Thumb multiply timing and Game Pak DMA source corrections, plus the FIFO
 DMA reference counterexample and independent DMA read/write phase correction. The shared clock, scheduler,
 CPU/bus timing, software renderer, mixer, cartridge devices and capture runner
 are implemented. Their accuracy is still being qualified; implementation does
-not close M1–M4. Latest local validation passed **1384 host tests and 1283
+not close M1–M4. Latest local validation passed **1390 host tests and 1284
 exported-core tests**. Neither test count establishes BlackBerry readiness.
 
 | Milestone | Deliverables | Completion evidence |
@@ -188,6 +188,14 @@ execution and physical-device access remain separate gates.
    indices instead of normalizing busy-loop differences away. The Lost Age
    frame-735 window is already different at its start, so its first recorded
    discrepancy is not the first global cause.
+   Retirement-prefix diagnosis now localizes the first Lost Age timing change
+   to instruction 51558880, after 51558879 matching retirement states. A timer
+   makes both FIFOs ready during DMA3 release; the corrected model starts a
+   new interval and pays two cycles. An original readiness-normalized NBA case
+   confirms 6+18=24 cycles, versus the old model's 22. This explains that first
+   timing change without changing production code; request activation, later
+   register/loop effects and the other three games still require qualification.
+   See [the release diagnosis](REFERENCE-VALIDATION.md#lost-age-first-retirement-divergence-and-dma-release-2026-11-05).
    A separate
    [ROM DMA source correction](REFERENCE-VALIDATION.md#dma-game-pak-source-addressing-and-next-timing-boundary)
    matches 24 original reference cases and preserves the whole replay's RGB/PCM,

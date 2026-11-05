@@ -1,5 +1,49 @@
 # Independent reference validation
 
+## Lost Age first retirement divergence and DMA release, 2026-11-05
+
+The earlier frame-735 window started after the executions already differed.
+New retirement digests cover the execution from reset, without diagnostic
+clock events. **12587 complete blocks of 4096 retirements** have identical
+SHA-256 records, including cycles, PC/CPSR, r0-r14, IF and HALT. Expanding the
+first differing block adds 2527 identical states: the first differing completed
+instruction is **51558880**, after **51558879 matching retirement states**.
+
+That instruction ends at **206402097 before / 206402099 after**. Only time
+differs; all 4096 detailed records retain identical register/flag/IRQ/HALT values
+at the same retirement index. This localizes the first timing change, not the
+first difference in every memory or peripheral state, nor later loop divergence.
+
+A passive, read-only DMA adapter identifies the boundary. Both executions last
+retire instruction 51558879 at cycle 206401446, then service DMA3. At timer
+callback **206402040**, the old model still has DMA3 pending with one unit left
+and owns the bus. The callback makes DMA1/2 FIFO transfers ready; they join
+continuous ownership. In the corrected model, DMA3's last write completed at
+206402039 and the callback occurs during release, with ownership cleared.
+The FIFO pair starts another interval. Its two-cycle overhead moves the final
+DMA step from 206402096 to 206402098, then CPU execution resumes. The observer
+adds no deadlines; all 140 old / 139 corrected completed CPU-step observations
+match the controls without the observer.
+
+An original, asset-free [NBA release probe](../tools/nba-dma-release-probe.cc)
+confirms the boundary cost independently: one EWRAM halfword to IWRAM takes
+**6 ownership cycles**, then the IWRAM FIFO pair takes **18**, total **24**.
+The new portable regression gets 24 from the corrected model; the old model
+gets 22 and fails. Both readiness timestamps are normalized to cycle 8. NBA
+requests at 6 activate after two cycles; BerryBoy readiness is injected at 8.
+This does **not** qualify BerryBoy request activation or CPU continuation during
+activation, and is not a whole-game hardware oracle.
+
+No production timing is changed in this delivery: the existing correction is
+supported by this minimal independent case. Later register/loop differences,
+the other three titles, request activation and the saved-player LeafGreen
+frame-930 gate remain open. Do not normalize later retirement indices to make
+them match. Validation: **1390 host, 1284 exported-core and 1284 retained actual
+ECJ CLDC-class tests** pass. Five new host-tool cases and one new core case;
+no new native SDK/COD build or BBOS runtime claim.
+Evidence: [lost-age-dma-release-2026-11-05.json](../benchmarks/lost-age-dma-release-2026-11-05.json).
+Reproduction: [SCENARIOS.md](SCENARIOS.md#retirement-prefix-and-release-boundary-probes).
+
 ## Equal-cycle CPU checkpoint diagnosis, 2026-11-05
 
 All 134 changed checkpoint frames now have bounded CPU observations from both

@@ -118,6 +118,31 @@ class DmaTransferPhaseTest {
     }
 
     @Test
+    void fifoPairBecomingReadyDuringReleasePaysForANewOwnershipInterval() {
+        // Independent NBA observation: tools/nba-dma-release-probe.cc.
+        // Normalize readiness, not request time; activation remains separate.
+        var machine = createMachine();
+        configure(machine, 3, 0x02000100, 0x03001000, 1, 0x8000);
+        configure(machine, 1, 0x03000100, 0x040000a0, 4, 0xb640);
+        configure(machine, 2, 0x03000100, 0x040000a4, 4, 0xb640);
+        machine.clock.advance(2);
+        machine.clock.schedule(() -> {
+            machine.memory.dma().requestFifo(0x040000a0);
+            machine.memory.dma().requestFifo(0x040000a4);
+        }, 8);
+        machine.cpu.step();
+        var firstEnd = machine.clock.now();
+        for (var word = 0; word < 8; word++) machine.cpu.step();
+        assertSoftly(softly -> {
+            softly.assertThat(firstEnd).isEqualTo(8); // Service at 2, first ownership = 6.
+            softly.assertThat(machine.clock.now()).isEqualTo(26); // FIFO ownership = 18, total = 24.
+            softly.assertThat(machine.cpu.instructions()).isZero();
+            softly.assertThat(machine.memory.read16(0x03001000)).isEqualTo(0x0201);
+            softly.assertThat(machine.memory.dma().runPending()).isFalse();
+        });
+    }
+
+    @Test
     void acquisitionRechecksPriorityAfterADeviceCallback() {
         var machine = createMachine();
         configure(machine, 3, 0x03000100, 0x03001000, 1, 0x8000);
