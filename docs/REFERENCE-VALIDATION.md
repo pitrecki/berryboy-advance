@@ -1,5 +1,60 @@
 # Independent reference validation
 
+## Resumable opcode fetch and IRQ acceptance, 2026-11-05
+
+The CPU now retains the pending fetch address/mode and the IRQ acceptance
+decision before waiting for DMA. A later IRQ cannot overtake that waiting
+instruction; deasserting an already accepted IRQ cannot cancel its entry.
+After one ownership interval, a waiting fetch receives one access before a
+new interval is arbitrated, sharing the existing data/refill grant mechanism.
+No per-fetch objects are allocated and each public step still yields after
+one DMA unit. IRQ banks its link/status after the discarded fetch completes.
+`fetchInFlight()` identifies this pre-decode phase separately from
+`instructionInFlight()`. HALT starts no fetch before wakeup; a fetch diagnostic
+clears pending state and CPU memory context without replaying completed DMA.
+
+The original **16-row handoff matrix now matches 16/16**, versus 10/16 before.
+An [additional original probe](../tools/nba-cpu-fetch-irq-probe.cc) matches
+**120/120 observations**, versus 48/120 on the preceding CPU. It covers ARM/
+Thumb, three one-word DMA source regions, IRQ assertion/deassertion, five
+edge deadlines and two retirements. Code stays in IWRAM. The reference uses
+the original registered DMA-activation/IRQ-line callbacks; Java normalizes
+readiness and enabled IF at the same deadlines. Neither side certifies
+peripheral propagation latency or request activation behavior.
+
+All **83 new core cases pass**. The prior CPU fails 47 and passes 36 with only
+an inert false `fetchInFlight()` query added to isolated old classes so the
+tests can load. Four 65536-word EWRAM-to-EWRAM transfers retain frame/PCM
+budgets while the pending decision survives IRQ assertion or deassertion.
+Code remains outside that DMA destination, so these cases do not freeze an
+unqualified self-modifying opcode-latch rule. DMA-only repeated-transfer
+fixtures now call `DmaController.runPending()` directly: their literal cycle,
+byte/FIFO and EEPROM expectations are unchanged. CPU arbitration is qualified
+by the new probes instead of assuming every `Cpu.step()` is a DMA word.
+
+Validation passes **1593 host / 1487 exported / 1487 actual new ECJ CLDC-class
+tests**, plus a fresh native JDE/ECJ/RAPC COD build. All six matrices (16 fetch,
+120 IRQ edges, 36 refill, 144 forms, 48 data, 96 earlier normalized CPU rows)
+match on both host and actual new CLDC classes. The production request matrix
+remains unchanged at 24/96 matches. The discarded IRQ fetch retains its
+existing one-cycle cost; wider memory waits/prefetch, full opcode latching,
+IRQ-line latency, activation/lifecycle and hardware remain separate gates.
+No comparison tolerance has changed.
+
+All eleven fresh-backup scenarios complete **39600 guest frames / 21725550
+stereo samples**, with zero missing frames or software audio-buffer failures.
+Whole RGB and backup hashes remain unchanged in every title; four
+initialization saves are written. PCM changes only in V-Rally and Sonic.
+Reused mGBA RGB888 exact-frame sets have no gains/losses and full streams
+remain unmatched. The separate 1272-frame LeafGreen continuation preserves
+full RGB/PCM, final cycles/sample counts, all three raw video states and its
+original player save. RGB555 remains 1111/1272 exact frames, first difference
+930. These are boot/intro and limited continuation results, not gameplay or
+sustained/physical playback qualification.
+
+Evidence: [cpu-fetch-resume-2026-11-05.json](../benchmarks/cpu-fetch-resume-2026-11-05.json).
+Reproduction: [SCENARIOS.md](SCENARIOS.md#opcode-fetch-handoff-and-irq-probes).
+
 ## Opcode-fetch handoff and IRQ acceptance counterexample, 2026-11-05
 
 An [asset-free probe](../tools/nba-cpu-fetch-handoff-probe.cc) now isolates the

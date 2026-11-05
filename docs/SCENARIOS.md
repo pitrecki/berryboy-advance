@@ -517,7 +517,7 @@ cmake --build target/nba-reference --target nba-cpu-fetch-handoff-probe --parall
 target/nba-reference/nba-cpu-fetch-handoff-probe > target/nba-reference/fetch-handoff.csv
 javac -Xlint:all -Werror -cp target/classes -d target/docs-tools tools/CpuFetchHandoffProbe.java
 java -cp target/classes:target/docs-tools berryboy.bus.CpuFetchHandoffProbe > target/nba-reference/fetch-handoff-berryboy.csv
-diff -u target/nba-reference/fetch-handoff.csv target/nba-reference/fetch-handoff-berryboy.csv
+cmp target/nba-reference/fetch-handoff.csv target/nba-reference/fetch-handoff-berryboy.csv
 ```
 
 Both probes require no external assets. They observe 16 rows: ARM/Thumb,
@@ -529,11 +529,32 @@ at the same cycles. The original two/five priming cycles are asserted/excluded.
 IRQ propagation/activation latency is not measured. Synthetic handler NOPs
 make the first-handler retirement observable without a real BIOS.
 
-Currently 10/16 rows and 4/8 complete scenarios match. All readiness-5 controls
-match; release-time requests expose six differing observations, including
-guest state/return links with IRQ. A nonzero `diff` is the recorded diagnostic,
-not an adapter build/execution failure. The reference asserts the intended
-instruction sequence; both adapters exit successfully. See [the diagnosis](REFERENCE-VALIDATION.md#opcode-fetch-handoff-and-irq-acceptance-counterexample-2026-11-05).
+All 16 rows now match. The preceding CPU matched 10/16 rows and 4/8 complete
+scenarios; release-time requests exposed six differences, including guest
+state/return links with IRQ. The reference asserts the intended instruction
+sequence; both adapters exit successfully. See [the diagnosis](REFERENCE-VALIDATION.md#opcode-fetch-handoff-and-irq-acceptance-counterexample-2026-11-05)
+and [the correction](REFERENCE-VALIDATION.md#resumable-opcode-fetch-and-irq-acceptance-2026-11-05).
+
+Compare accepted IRQ decisions while a fetch waits for DMA:
+
+```bash
+cmake --build target/nba-reference --target nba-cpu-fetch-irq-probe --parallel 4
+target/nba-reference/nba-cpu-fetch-irq-probe > target/nba-reference/fetch-irq.csv
+javac -Xlint:all -Werror -cp target/classes -d target/docs-tools tools/CpuFetchIrqProbe.java
+java -cp target/classes:target/docs-tools berryboy.bus.CpuFetchIrqProbe > target/nba-reference/fetch-irq-berryboy.csv
+cmp target/nba-reference/fetch-irq.csv target/nba-reference/fetch-irq-berryboy.csv
+```
+
+All 120 rows match: ARM/Thumb, three DMA sources, IRQ assertion/deassertion,
+five deadlines and two retirements. The one-word DMA3 starts ready at cycle 0.
+Deadlines are 0, 1, the cycle before release, release, and the following cycle;
+ownership takes 4/9/11 cycles for IWRAM/EWRAM/Game Pak sources. Code stays in
+IWRAM. Initial IRQ line is clear for assertion cases, set for deassertion.
+NBA's original registered IRQ-line callback and Java's enabled IF state change
+at the same deadline, with current-deadline events dispatched before the CPU
+starts. This compares acceptance after readiness, not peripheral assertion
+latency/priority. Synthetic handler NOPs replace a supplied BIOS. Full opcode
+latching and wider discarded-fetch/prefetch costs remain unqualified.
 
 ## Original FIFO DMA timing probes
 

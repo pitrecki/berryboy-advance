@@ -1,6 +1,7 @@
 package berryboy.bus;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import berryboy.EmulatorFixtures;
 import berryboy.Machine;
@@ -105,9 +106,11 @@ class DmaTransferPhaseTest {
         // IWRAM halfword write at 3, release at 4. A newly enabled immediate
         // channel during release belongs to a fresh ownership interval.
         machine.clock.schedule(() -> configure(machine, 0, 0x03000102, 0x03001002, 1, 0x8000), 4);
-        machine.cpu.step();
+        // These are controller ownership intervals; a CPU caller would receive
+        // one waiting fetch between them, qualified by the fetch probe.
+        assertThat(machine.memory.dma().runPending()).isTrue();
         var afterFirst = machine.clock.now();
-        machine.cpu.step();
+        assertThat(machine.memory.dma().runPending()).isTrue();
         assertSoftly(softly -> {
             softly.assertThat(afterFirst).isEqualTo(4);
             softly.assertThat(machine.clock.now()).isEqualTo(8);
@@ -130,9 +133,9 @@ class DmaTransferPhaseTest {
             machine.memory.dma().requestFifo(0x040000a0);
             machine.memory.dma().requestFifo(0x040000a4);
         }, 8);
-        machine.cpu.step();
+        assertThat(machine.memory.dma().runPending()).isTrue();
         var firstEnd = machine.clock.now();
-        for (var word = 0; word < 8; word++) machine.cpu.step();
+        for (var word = 0; word < 8; word++) assertThat(machine.memory.dma().runPending()).isTrue();
         assertSoftly(softly -> {
             softly.assertThat(firstEnd).isEqualTo(8); // Service at 2, first ownership = 6.
             softly.assertThat(machine.clock.now()).isEqualTo(26); // FIFO ownership = 18, total = 24.

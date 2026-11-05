@@ -38,6 +38,9 @@ public final class Cpu {
     private boolean busGranted;
     private int pendingAddress;
     private int pendingOpcode;
+    private boolean fetchPending;
+    private boolean pendingThumb;
+    private boolean pendingIrq;
 
     public Cpu(Memory memory) {
         this.memory = memory;
@@ -63,28 +66,41 @@ public final class Cpu {
             resumeRefill(); // IRQ entry has no instruction to retire.
             return;
         }
-        if (serviceDma(false)) return;
-        if (memory.halted()) {
-            if (!memory.interrupts().wakePending()) {
-                memory.clock().advanceTo(memory.clock().nextDeadline());
-                return;
+        if (!fetchPending) {
+            if (memory.halted()) {
+                if (serviceDma(false)) return;
+                if (!memory.interrupts().wakePending()) {
+                    memory.clock().advanceTo(memory.clock().nextDeadline());
+                    return;
+                }
+                memory.wake();
             }
-            memory.wake();
+            // The bus operation has started even if DMA must finish first.
+            // IRQ acceptance belongs here, not after every yielded DMA unit.
+            pendingAddress = state.programCounter();
+            pendingThumb = state.isThumb();
+            pendingIrq = memory.interrupts().irqPending() && (state.status() & 0x80) == 0;
+            pendingOpcode = 0;
+            busGranted = false;
+            fetchPending = true;
         }
-        if (memory.interrupts().irqPending() && (state.status() & 0x80) == 0) {
-            if (!memory.hasBios()) throw new EmulationException("IRQ needs a supplied BIOS");
-            state.enterIrq();
-            memory.clock().advance(1);
-            beginRefill();
-            resumeRefill();
-            return;
-        }
-        var address = state.programCounter();
-        var thumbMode = state.isThumb();
+        var address = pendingAddress;
+        var thumbMode = pendingThumb;
         int opcode = 0;
         try {
+            if (waitForBus()) return;
+            fetchPending = false;
+            if (pendingIrq) {
+                if (!memory.hasBios()) throw new EmulationException("IRQ needs a supplied BIOS");
+                // Preserve the existing discarded-fetch cost. Its wider bus/
+                // pipeline timing is qualified separately from acceptance.
+                memory.clock().advance(1);
+                state.enterIrq();
+                beginRefill();
+                resumeRefill();
+                return;
+            }
             opcode = memory.fetch(address, thumbMode);
-            pendingAddress = address;
             pendingOpcode = opcode;
             transfers.reset();
             busGranted = false;
@@ -174,7 +190,7 @@ public final class Cpu {
                 if (state.branched()) beginRefill();
                 else retireInstruction();
             }
-        } else if (((instructionInFlight && dataPhase) || memory.busTiming().refilling())
+        } else if ((fetchPending || (instructionInFlight && dataPhase) || memory.busTiming().refilling())
                 && !memory.dma().ownsBus()) {
             // NBA bus arbitration grants the waiting access after the interval
             // completes, even if a new request arrives during its release.
@@ -188,6 +204,8 @@ public final class Cpu {
         state.writeRegister(CpuState.PROGRAM_COUNTER, address);
         memory.busTiming().cancelRefill();
         instructionInFlight = false;
+        fetchPending = false;
+        pendingIrq = false;
         remainingInternalCycles = 0;
         dataPhase = false;
         busGranted = false;
@@ -203,6 +221,9 @@ public final class Cpu {
 
     /** Registers/PC can reflect executed work before the instruction retires. */
     public boolean instructionInFlight() { return instructionInFlight; }
+
+    /** Waiting for an opcode/discarded IRQ fetch; no decoded instruction yet. */
+    public boolean fetchInFlight() { return fetchPending; }
 
     public int register(int index) {
         return state.register(index);

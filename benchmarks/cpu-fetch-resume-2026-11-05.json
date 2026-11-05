@@ -1,0 +1,2355 @@
+{
+  "date": "2026-11-05",
+  "source_base_commit": "b1ef97625eb0b195eab452c49de1538b28d71910",
+  "source_dirty": true,
+  "change": "Retain pending opcode/discarded-IRQ fetch address/mode and accepted IRQ across bounded DMA units; grant one waiting access after ownership release; bank IRQ after discarded fetch",
+  "hardware": "Linux x86_64 cloud host; Temurin 21.0.8+9; Maven 3.9.11; no physical GBA/Bold",
+  "independent_comparison": {
+    "reference_commit": "55b5cf0ae3d929582ac5bfd486558173502b8354",
+    "reference_tracked_source_unmodified": true,
+    "fetch_handoff": {
+      "rows": 16,
+      "matching_before": 10,
+      "matching_after": 16,
+      "prior_evidence": "benchmarks/cpu-fetch-handoff-2026-11-05.json",
+      "normalization": "Original registered NBA DMA activation and IRQ-line update events; Java enabled IF and HBlank/VBlank readiness at matching deadlines"
+    },
+    "irq_assertion_deassertion": {
+      "rows": 120,
+      "matching_before": 48,
+      "matching_after": 120,
+      "code_region": "IWRAM",
+      "dma_sources": [
+        "IWRAM",
+        "EWRAM",
+        "Game Pak ROM"
+      ],
+      "dma_words": 1,
+      "irq_changes": [
+        "assert",
+        "deassert"
+      ],
+      "deadlines": "0, 1, ownership end-1, ownership end, ownership end+1",
+      "ownership_cycles": [
+        4,
+        9,
+        11
+      ],
+      "observations_per_scenario": 2,
+      "normalization": "Raw NBA registered DMA-activation/IRQ-line callbacks and Java enabled IF/readiness. Current-deadline events run before CPU start; peripheral propagation latency is excluded.",
+      "reference_csv": "mode,source,change,edge,retired,cycle,r0,pc,cpsr,lr,dma_complete\narm,0x03000000,assert,0,1,8,0,0x0000001c,0x000000d2,0x03000004,1\narm,0x03000000,assert,0,2,9,0,0x00000020,0x000000d2,0x03000004,1\narm,0x03000000,assert,1,1,5,1,0x03000004,0x0000005f,0x00000000,1\narm,0x03000000,assert,1,2,9,1,0x0000001c,0x000000d2,0x03000008,1\narm,0x03000000,assert,3,1,5,1,0x03000004,0x0000005f,0x00000000,1\narm,0x03000000,assert,3,2,9,1,0x0000001c,0x000000d2,0x03000008,1\narm,0x03000000,assert,4,1,5,1,0x03000004,0x0000005f,0x00000000,1\narm,0x03000000,assert,4,2,9,1,0x0000001c,0x000000d2,0x03000008,1\narm,0x03000000,assert,5,1,5,1,0x03000004,0x0000005f,0x00000000,1\narm,0x03000000,assert,5,2,9,1,0x0000001c,0x000000d2,0x03000008,1\narm,0x03000000,deassert,0,1,5,1,0x03000004,0x0000005f,0x00000000,1\narm,0x03000000,deassert,0,2,6,2,0x03000008,0x0000005f,0x00000000,1\narm,0x03000000,deassert,1,1,8,0,0x0000001c,0x000000d2,0x03000004,1\narm,0x03000000,deassert,1,2,9,0,0x00000020,0x000000d2,0x03000004,1\narm,0x03000000,deassert,3,1,8,0,0x0000001c,0x000000d2,0x03000004,1\narm,0x03000000,deassert,3,2,9,0,0x00000020,0x000000d2,0x03000004,1\narm,0x03000000,deassert,4,1,8,0,0x0000001c,0x000000d2,0x03000004,1\narm,0x03000000,deassert,4,2,9,0,0x00000020,0x000000d2,0x03000004,1\narm,0x03000000,deassert,5,1,8,0,0x0000001c,0x000000d2,0x03000004,1\narm,0x03000000,deassert,5,2,9,0,0x00000020,0x000000d2,0x03000004,1\narm,0x02000000,assert,0,1,13,0,0x0000001c,0x000000d2,0x03000004,1\narm,0x02000000,assert,0,2,14,0,0x00000020,0x000000d2,0x03000004,1\narm,0x02000000,assert,1,1,10,1,0x03000004,0x0000005f,0x00000000,1\narm,0x02000000,assert,1,2,14,1,0x0000001c,0x000000d2,0x03000008,1\narm,0x02000000,assert,8,1,10,1,0x03000004,0x0000005f,0x00000000,1\narm,0x02000000,assert,8,2,14,1,0x0000001c,0x000000d2,0x03000008,1\narm,0x02000000,assert,9,1,10,1,0x03000004,0x0000005f,0x00000000,1\narm,0x02000000,assert,9,2,14,1,0x0000001c,0x000000d2,0x03000008,1\narm,0x02000000,assert,10,1,10,1,0x03000004,0x0000005f,0x00000000,1\narm,0x02000000,assert,10,2,14,1,0x0000001c,0x000000d2,0x03000008,1\narm,0x02000000,deassert,0,1,10,1,0x03000004,0x0000005f,0x00000000,1\narm,0x02000000,deassert,0,2,11,2,0x03000008,0x0000005f,0x00000000,1\narm,0x02000000,deassert,1,1,13,0,0x0000001c,0x000000d2,0x03000004,1\narm,0x02000000,deassert,1,2,14,0,0x00000020,0x000000d2,0x03000004,1\narm,0x02000000,deassert,8,1,13,0,0x0000001c,0x000000d2,0x03000004,1\narm,0x02000000,deassert,8,2,14,0,0x00000020,0x000000d2,0x03000004,1\narm,0x02000000,deassert,9,1,13,0,0x0000001c,0x000000d2,0x03000004,1\narm,0x02000000,deassert,9,2,14,0,0x00000020,0x000000d2,0x03000004,1\narm,0x02000000,deassert,10,1,13,0,0x0000001c,0x000000d2,0x03000004,1\narm,0x02000000,deassert,10,2,14,0,0x00000020,0x000000d2,0x03000004,1\narm,0x08000000,assert,0,1,15,0,0x0000001c,0x000000d2,0x03000004,1\narm,0x08000000,assert,0,2,16,0,0x00000020,0x000000d2,0x03000004,1\narm,0x08000000,assert,1,1,12,1,0x03000004,0x0000005f,0x00000000,1\narm,0x08000000,assert,1,2,16,1,0x0000001c,0x000000d2,0x03000008,1\narm,0x08000000,assert,10,1,12,1,0x03000004,0x0000005f,0x00000000,1\narm,0x08000000,assert,10,2,16,1,0x0000001c,0x000000d2,0x03000008,1\narm,0x08000000,assert,11,1,12,1,0x03000004,0x0000005f,0x00000000,1\narm,0x08000000,assert,11,2,16,1,0x0000001c,0x000000d2,0x03000008,1\narm,0x08000000,assert,12,1,12,1,0x03000004,0x0000005f,0x00000000,1\narm,0x08000000,assert,12,2,16,1,0x0000001c,0x000000d2,0x03000008,1\narm,0x08000000,deassert,0,1,12,1,0x03000004,0x0000005f,0x00000000,1\narm,0x08000000,deassert,0,2,13,2,0x03000008,0x0000005f,0x00000000,1\narm,0x08000000,deassert,1,1,15,0,0x0000001c,0x000000d2,0x03000004,1\narm,0x08000000,deassert,1,2,16,0,0x00000020,0x000000d2,0x03000004,1\narm,0x08000000,deassert,10,1,15,0,0x0000001c,0x000000d2,0x03000004,1\narm,0x08000000,deassert,10,2,16,0,0x00000020,0x000000d2,0x03000004,1\narm,0x08000000,deassert,11,1,15,0,0x0000001c,0x000000d2,0x03000004,1\narm,0x08000000,deassert,11,2,16,0,0x00000020,0x000000d2,0x03000004,1\narm,0x08000000,deassert,12,1,15,0,0x0000001c,0x000000d2,0x03000004,1\narm,0x08000000,deassert,12,2,16,0,0x00000020,0x000000d2,0x03000004,1\nthumb,0x03000000,assert,0,1,8,0,0x0000001c,0x000000d2,0x03000004,1\nthumb,0x03000000,assert,0,2,9,0,0x00000020,0x000000d2,0x03000004,1\nthumb,0x03000000,assert,1,1,5,1,0x03000002,0x0000007f,0x00000000,1\nthumb,0x03000000,assert,1,2,9,1,0x0000001c,0x000000d2,0x03000006,1\nthumb,0x03000000,assert,3,1,5,1,0x03000002,0x0000007f,0x00000000,1\nthumb,0x03000000,assert,3,2,9,1,0x0000001c,0x000000d2,0x03000006,1\nthumb,0x03000000,assert,4,1,5,1,0x03000002,0x0000007f,0x00000000,1\nthumb,0x03000000,assert,4,2,9,1,0x0000001c,0x000000d2,0x03000006,1\nthumb,0x03000000,assert,5,1,5,1,0x03000002,0x0000007f,0x00000000,1\nthumb,0x03000000,assert,5,2,9,1,0x0000001c,0x000000d2,0x03000006,1\nthumb,0x03000000,deassert,0,1,5,1,0x03000002,0x0000007f,0x00000000,1\nthumb,0x03000000,deassert,0,2,6,2,0x03000004,0x0000007f,0x00000000,1\nthumb,0x03000000,deassert,1,1,8,0,0x0000001c,0x000000d2,0x03000004,1\nthumb,0x03000000,deassert,1,2,9,0,0x00000020,0x000000d2,0x03000004,1\nthumb,0x03000000,deassert,3,1,8,0,0x0000001c,0x000000d2,0x03000004,1\nthumb,0x03000000,deassert,3,2,9,0,0x00000020,0x000000d2,0x03000004,1\nthumb,0x03000000,deassert,4,1,8,0,0x0000001c,0x000000d2,0x03000004,1\nthumb,0x03000000,deassert,4,2,9,0,0x00000020,0x000000d2,0x03000004,1\nthumb,0x03000000,deassert,5,1,8,0,0x0000001c,0x000000d2,0x03000004,1\nthumb,0x03000000,deassert,5,2,9,0,0x00000020,0x000000d2,0x03000004,1\nthumb,0x02000000,assert,0,1,13,0,0x0000001c,0x000000d2,0x03000004,1\nthumb,0x02000000,assert,0,2,14,0,0x00000020,0x000000d2,0x03000004,1\nthumb,0x02000000,assert,1,1,10,1,0x03000002,0x0000007f,0x00000000,1\nthumb,0x02000000,assert,1,2,14,1,0x0000001c,0x000000d2,0x03000006,1\nthumb,0x02000000,assert,8,1,10,1,0x03000002,0x0000007f,0x00000000,1\nthumb,0x02000000,assert,8,2,14,1,0x0000001c,0x000000d2,0x03000006,1\nthumb,0x02000000,assert,9,1,10,1,0x03000002,0x0000007f,0x00000000,1\nthumb,0x02000000,assert,9,2,14,1,0x0000001c,0x000000d2,0x03000006,1\nthumb,0x02000000,assert,10,1,10,1,0x03000002,0x0000007f,0x00000000,1\nthumb,0x02000000,assert,10,2,14,1,0x0000001c,0x000000d2,0x03000006,1\nthumb,0x02000000,deassert,0,1,10,1,0x03000002,0x0000007f,0x00000000,1\nthumb,0x02000000,deassert,0,2,11,2,0x03000004,0x0000007f,0x00000000,1\nthumb,0x02000000,deassert,1,1,13,0,0x0000001c,0x000000d2,0x03000004,1\nthumb,0x02000000,deassert,1,2,14,0,0x00000020,0x000000d2,0x03000004,1\nthumb,0x02000000,deassert,8,1,13,0,0x0000001c,0x000000d2,0x03000004,1\nthumb,0x02000000,deassert,8,2,14,0,0x00000020,0x000000d2,0x03000004,1\nthumb,0x02000000,deassert,9,1,13,0,0x0000001c,0x000000d2,0x03000004,1\nthumb,0x02000000,deassert,9,2,14,0,0x00000020,0x000000d2,0x03000004,1\nthumb,0x02000000,deassert,10,1,13,0,0x0000001c,0x000000d2,0x03000004,1\nthumb,0x02000000,deassert,10,2,14,0,0x00000020,0x000000d2,0x03000004,1\nthumb,0x08000000,assert,0,1,15,0,0x0000001c,0x000000d2,0x03000004,1\nthumb,0x08000000,assert,0,2,16,0,0x00000020,0x000000d2,0x03000004,1\nthumb,0x08000000,assert,1,1,12,1,0x03000002,0x0000007f,0x00000000,1\nthumb,0x08000000,assert,1,2,16,1,0x0000001c,0x000000d2,0x03000006,1\nthumb,0x08000000,assert,10,1,12,1,0x03000002,0x0000007f,0x00000000,1\nthumb,0x08000000,assert,10,2,16,1,0x0000001c,0x000000d2,0x03000006,1\nthumb,0x08000000,assert,11,1,12,1,0x03000002,0x0000007f,0x00000000,1\nthumb,0x08000000,assert,11,2,16,1,0x0000001c,0x000000d2,0x03000006,1\nthumb,0x08000000,assert,12,1,12,1,0x03000002,0x0000007f,0x00000000,1\nthumb,0x08000000,assert,12,2,16,1,0x0000001c,0x000000d2,0x03000006,1\nthumb,0x08000000,deassert,0,1,12,1,0x03000002,0x0000007f,0x00000000,1\nthumb,0x08000000,deassert,0,2,13,2,0x03000004,0x0000007f,0x00000000,1\nthumb,0x08000000,deassert,1,1,15,0,0x0000001c,0x000000d2,0x03000004,1\nthumb,0x08000000,deassert,1,2,16,0,0x00000020,0x000000d2,0x03000004,1\nthumb,0x08000000,deassert,10,1,15,0,0x0000001c,0x000000d2,0x03000004,1\nthumb,0x08000000,deassert,10,2,16,0,0x00000020,0x000000d2,0x03000004,1\nthumb,0x08000000,deassert,11,1,15,0,0x0000001c,0x000000d2,0x03000004,1\nthumb,0x08000000,deassert,11,2,16,0,0x00000020,0x000000d2,0x03000004,1\nthumb,0x08000000,deassert,12,1,15,0,0x0000001c,0x000000d2,0x03000004,1\nthumb,0x08000000,deassert,12,2,16,0,0x00000020,0x000000d2,0x03000004,1\n",
+      "before_differences": [
+        {
+          "reference": {
+            "mode": "arm",
+            "source": "0x03000000",
+            "change": "assert",
+            "edge": "1",
+            "retired": "1",
+            "cycle": "5",
+            "r0": "1",
+            "pc": "0x03000004",
+            "cpsr": "0x0000005f",
+            "lr": "0x00000000",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "8",
+            "r0": "0",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004"
+          }
+        },
+        {
+          "reference": {
+            "mode": "arm",
+            "source": "0x03000000",
+            "change": "assert",
+            "edge": "1",
+            "retired": "2",
+            "cycle": "9",
+            "r0": "1",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000008",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "r0": "0",
+            "pc": "0x00000020",
+            "lr": "0x03000004"
+          }
+        },
+        {
+          "reference": {
+            "mode": "arm",
+            "source": "0x03000000",
+            "change": "assert",
+            "edge": "3",
+            "retired": "1",
+            "cycle": "5",
+            "r0": "1",
+            "pc": "0x03000004",
+            "cpsr": "0x0000005f",
+            "lr": "0x00000000",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "8",
+            "r0": "0",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004"
+          }
+        },
+        {
+          "reference": {
+            "mode": "arm",
+            "source": "0x03000000",
+            "change": "assert",
+            "edge": "3",
+            "retired": "2",
+            "cycle": "9",
+            "r0": "1",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000008",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "r0": "0",
+            "pc": "0x00000020",
+            "lr": "0x03000004"
+          }
+        },
+        {
+          "reference": {
+            "mode": "arm",
+            "source": "0x03000000",
+            "change": "assert",
+            "edge": "4",
+            "retired": "1",
+            "cycle": "5",
+            "r0": "1",
+            "pc": "0x03000004",
+            "cpsr": "0x0000005f",
+            "lr": "0x00000000",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "8",
+            "r0": "0",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004"
+          }
+        },
+        {
+          "reference": {
+            "mode": "arm",
+            "source": "0x03000000",
+            "change": "assert",
+            "edge": "4",
+            "retired": "2",
+            "cycle": "9",
+            "r0": "1",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000008",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "r0": "0",
+            "pc": "0x00000020",
+            "lr": "0x03000004"
+          }
+        },
+        {
+          "reference": {
+            "mode": "arm",
+            "source": "0x03000000",
+            "change": "deassert",
+            "edge": "1",
+            "retired": "1",
+            "cycle": "8",
+            "r0": "0",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "5",
+            "r0": "1",
+            "pc": "0x03000004",
+            "cpsr": "0x0000005f",
+            "lr": "0x00000000"
+          }
+        },
+        {
+          "reference": {
+            "mode": "arm",
+            "source": "0x03000000",
+            "change": "deassert",
+            "edge": "1",
+            "retired": "2",
+            "cycle": "9",
+            "r0": "0",
+            "pc": "0x00000020",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "6",
+            "r0": "2",
+            "pc": "0x03000008",
+            "cpsr": "0x0000005f",
+            "lr": "0x00000000"
+          }
+        },
+        {
+          "reference": {
+            "mode": "arm",
+            "source": "0x03000000",
+            "change": "deassert",
+            "edge": "3",
+            "retired": "1",
+            "cycle": "8",
+            "r0": "0",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "5",
+            "r0": "1",
+            "pc": "0x03000004",
+            "cpsr": "0x0000005f",
+            "lr": "0x00000000"
+          }
+        },
+        {
+          "reference": {
+            "mode": "arm",
+            "source": "0x03000000",
+            "change": "deassert",
+            "edge": "3",
+            "retired": "2",
+            "cycle": "9",
+            "r0": "0",
+            "pc": "0x00000020",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "6",
+            "r0": "2",
+            "pc": "0x03000008",
+            "cpsr": "0x0000005f",
+            "lr": "0x00000000"
+          }
+        },
+        {
+          "reference": {
+            "mode": "arm",
+            "source": "0x03000000",
+            "change": "deassert",
+            "edge": "4",
+            "retired": "1",
+            "cycle": "8",
+            "r0": "0",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "5",
+            "r0": "1",
+            "pc": "0x03000004",
+            "cpsr": "0x0000005f",
+            "lr": "0x00000000"
+          }
+        },
+        {
+          "reference": {
+            "mode": "arm",
+            "source": "0x03000000",
+            "change": "deassert",
+            "edge": "4",
+            "retired": "2",
+            "cycle": "9",
+            "r0": "0",
+            "pc": "0x00000020",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "6",
+            "r0": "2",
+            "pc": "0x03000008",
+            "cpsr": "0x0000005f",
+            "lr": "0x00000000"
+          }
+        },
+        {
+          "reference": {
+            "mode": "arm",
+            "source": "0x02000000",
+            "change": "assert",
+            "edge": "1",
+            "retired": "1",
+            "cycle": "10",
+            "r0": "1",
+            "pc": "0x03000004",
+            "cpsr": "0x0000005f",
+            "lr": "0x00000000",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "13",
+            "r0": "0",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004"
+          }
+        },
+        {
+          "reference": {
+            "mode": "arm",
+            "source": "0x02000000",
+            "change": "assert",
+            "edge": "1",
+            "retired": "2",
+            "cycle": "14",
+            "r0": "1",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000008",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "r0": "0",
+            "pc": "0x00000020",
+            "lr": "0x03000004"
+          }
+        },
+        {
+          "reference": {
+            "mode": "arm",
+            "source": "0x02000000",
+            "change": "assert",
+            "edge": "8",
+            "retired": "1",
+            "cycle": "10",
+            "r0": "1",
+            "pc": "0x03000004",
+            "cpsr": "0x0000005f",
+            "lr": "0x00000000",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "13",
+            "r0": "0",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004"
+          }
+        },
+        {
+          "reference": {
+            "mode": "arm",
+            "source": "0x02000000",
+            "change": "assert",
+            "edge": "8",
+            "retired": "2",
+            "cycle": "14",
+            "r0": "1",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000008",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "r0": "0",
+            "pc": "0x00000020",
+            "lr": "0x03000004"
+          }
+        },
+        {
+          "reference": {
+            "mode": "arm",
+            "source": "0x02000000",
+            "change": "assert",
+            "edge": "9",
+            "retired": "1",
+            "cycle": "10",
+            "r0": "1",
+            "pc": "0x03000004",
+            "cpsr": "0x0000005f",
+            "lr": "0x00000000",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "13",
+            "r0": "0",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004"
+          }
+        },
+        {
+          "reference": {
+            "mode": "arm",
+            "source": "0x02000000",
+            "change": "assert",
+            "edge": "9",
+            "retired": "2",
+            "cycle": "14",
+            "r0": "1",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000008",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "r0": "0",
+            "pc": "0x00000020",
+            "lr": "0x03000004"
+          }
+        },
+        {
+          "reference": {
+            "mode": "arm",
+            "source": "0x02000000",
+            "change": "deassert",
+            "edge": "1",
+            "retired": "1",
+            "cycle": "13",
+            "r0": "0",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "10",
+            "r0": "1",
+            "pc": "0x03000004",
+            "cpsr": "0x0000005f",
+            "lr": "0x00000000"
+          }
+        },
+        {
+          "reference": {
+            "mode": "arm",
+            "source": "0x02000000",
+            "change": "deassert",
+            "edge": "1",
+            "retired": "2",
+            "cycle": "14",
+            "r0": "0",
+            "pc": "0x00000020",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "11",
+            "r0": "2",
+            "pc": "0x03000008",
+            "cpsr": "0x0000005f",
+            "lr": "0x00000000"
+          }
+        },
+        {
+          "reference": {
+            "mode": "arm",
+            "source": "0x02000000",
+            "change": "deassert",
+            "edge": "8",
+            "retired": "1",
+            "cycle": "13",
+            "r0": "0",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "10",
+            "r0": "1",
+            "pc": "0x03000004",
+            "cpsr": "0x0000005f",
+            "lr": "0x00000000"
+          }
+        },
+        {
+          "reference": {
+            "mode": "arm",
+            "source": "0x02000000",
+            "change": "deassert",
+            "edge": "8",
+            "retired": "2",
+            "cycle": "14",
+            "r0": "0",
+            "pc": "0x00000020",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "11",
+            "r0": "2",
+            "pc": "0x03000008",
+            "cpsr": "0x0000005f",
+            "lr": "0x00000000"
+          }
+        },
+        {
+          "reference": {
+            "mode": "arm",
+            "source": "0x02000000",
+            "change": "deassert",
+            "edge": "9",
+            "retired": "1",
+            "cycle": "13",
+            "r0": "0",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "10",
+            "r0": "1",
+            "pc": "0x03000004",
+            "cpsr": "0x0000005f",
+            "lr": "0x00000000"
+          }
+        },
+        {
+          "reference": {
+            "mode": "arm",
+            "source": "0x02000000",
+            "change": "deassert",
+            "edge": "9",
+            "retired": "2",
+            "cycle": "14",
+            "r0": "0",
+            "pc": "0x00000020",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "11",
+            "r0": "2",
+            "pc": "0x03000008",
+            "cpsr": "0x0000005f",
+            "lr": "0x00000000"
+          }
+        },
+        {
+          "reference": {
+            "mode": "arm",
+            "source": "0x08000000",
+            "change": "assert",
+            "edge": "1",
+            "retired": "1",
+            "cycle": "12",
+            "r0": "1",
+            "pc": "0x03000004",
+            "cpsr": "0x0000005f",
+            "lr": "0x00000000",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "15",
+            "r0": "0",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004"
+          }
+        },
+        {
+          "reference": {
+            "mode": "arm",
+            "source": "0x08000000",
+            "change": "assert",
+            "edge": "1",
+            "retired": "2",
+            "cycle": "16",
+            "r0": "1",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000008",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "r0": "0",
+            "pc": "0x00000020",
+            "lr": "0x03000004"
+          }
+        },
+        {
+          "reference": {
+            "mode": "arm",
+            "source": "0x08000000",
+            "change": "assert",
+            "edge": "10",
+            "retired": "1",
+            "cycle": "12",
+            "r0": "1",
+            "pc": "0x03000004",
+            "cpsr": "0x0000005f",
+            "lr": "0x00000000",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "15",
+            "r0": "0",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004"
+          }
+        },
+        {
+          "reference": {
+            "mode": "arm",
+            "source": "0x08000000",
+            "change": "assert",
+            "edge": "10",
+            "retired": "2",
+            "cycle": "16",
+            "r0": "1",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000008",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "r0": "0",
+            "pc": "0x00000020",
+            "lr": "0x03000004"
+          }
+        },
+        {
+          "reference": {
+            "mode": "arm",
+            "source": "0x08000000",
+            "change": "assert",
+            "edge": "11",
+            "retired": "1",
+            "cycle": "12",
+            "r0": "1",
+            "pc": "0x03000004",
+            "cpsr": "0x0000005f",
+            "lr": "0x00000000",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "15",
+            "r0": "0",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004"
+          }
+        },
+        {
+          "reference": {
+            "mode": "arm",
+            "source": "0x08000000",
+            "change": "assert",
+            "edge": "11",
+            "retired": "2",
+            "cycle": "16",
+            "r0": "1",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000008",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "r0": "0",
+            "pc": "0x00000020",
+            "lr": "0x03000004"
+          }
+        },
+        {
+          "reference": {
+            "mode": "arm",
+            "source": "0x08000000",
+            "change": "deassert",
+            "edge": "1",
+            "retired": "1",
+            "cycle": "15",
+            "r0": "0",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "12",
+            "r0": "1",
+            "pc": "0x03000004",
+            "cpsr": "0x0000005f",
+            "lr": "0x00000000"
+          }
+        },
+        {
+          "reference": {
+            "mode": "arm",
+            "source": "0x08000000",
+            "change": "deassert",
+            "edge": "1",
+            "retired": "2",
+            "cycle": "16",
+            "r0": "0",
+            "pc": "0x00000020",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "13",
+            "r0": "2",
+            "pc": "0x03000008",
+            "cpsr": "0x0000005f",
+            "lr": "0x00000000"
+          }
+        },
+        {
+          "reference": {
+            "mode": "arm",
+            "source": "0x08000000",
+            "change": "deassert",
+            "edge": "10",
+            "retired": "1",
+            "cycle": "15",
+            "r0": "0",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "12",
+            "r0": "1",
+            "pc": "0x03000004",
+            "cpsr": "0x0000005f",
+            "lr": "0x00000000"
+          }
+        },
+        {
+          "reference": {
+            "mode": "arm",
+            "source": "0x08000000",
+            "change": "deassert",
+            "edge": "10",
+            "retired": "2",
+            "cycle": "16",
+            "r0": "0",
+            "pc": "0x00000020",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "13",
+            "r0": "2",
+            "pc": "0x03000008",
+            "cpsr": "0x0000005f",
+            "lr": "0x00000000"
+          }
+        },
+        {
+          "reference": {
+            "mode": "arm",
+            "source": "0x08000000",
+            "change": "deassert",
+            "edge": "11",
+            "retired": "1",
+            "cycle": "15",
+            "r0": "0",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "12",
+            "r0": "1",
+            "pc": "0x03000004",
+            "cpsr": "0x0000005f",
+            "lr": "0x00000000"
+          }
+        },
+        {
+          "reference": {
+            "mode": "arm",
+            "source": "0x08000000",
+            "change": "deassert",
+            "edge": "11",
+            "retired": "2",
+            "cycle": "16",
+            "r0": "0",
+            "pc": "0x00000020",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "13",
+            "r0": "2",
+            "pc": "0x03000008",
+            "cpsr": "0x0000005f",
+            "lr": "0x00000000"
+          }
+        },
+        {
+          "reference": {
+            "mode": "thumb",
+            "source": "0x03000000",
+            "change": "assert",
+            "edge": "1",
+            "retired": "1",
+            "cycle": "5",
+            "r0": "1",
+            "pc": "0x03000002",
+            "cpsr": "0x0000007f",
+            "lr": "0x00000000",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "8",
+            "r0": "0",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004"
+          }
+        },
+        {
+          "reference": {
+            "mode": "thumb",
+            "source": "0x03000000",
+            "change": "assert",
+            "edge": "1",
+            "retired": "2",
+            "cycle": "9",
+            "r0": "1",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000006",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "r0": "0",
+            "pc": "0x00000020",
+            "lr": "0x03000004"
+          }
+        },
+        {
+          "reference": {
+            "mode": "thumb",
+            "source": "0x03000000",
+            "change": "assert",
+            "edge": "3",
+            "retired": "1",
+            "cycle": "5",
+            "r0": "1",
+            "pc": "0x03000002",
+            "cpsr": "0x0000007f",
+            "lr": "0x00000000",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "8",
+            "r0": "0",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004"
+          }
+        },
+        {
+          "reference": {
+            "mode": "thumb",
+            "source": "0x03000000",
+            "change": "assert",
+            "edge": "3",
+            "retired": "2",
+            "cycle": "9",
+            "r0": "1",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000006",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "r0": "0",
+            "pc": "0x00000020",
+            "lr": "0x03000004"
+          }
+        },
+        {
+          "reference": {
+            "mode": "thumb",
+            "source": "0x03000000",
+            "change": "assert",
+            "edge": "4",
+            "retired": "1",
+            "cycle": "5",
+            "r0": "1",
+            "pc": "0x03000002",
+            "cpsr": "0x0000007f",
+            "lr": "0x00000000",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "8",
+            "r0": "0",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004"
+          }
+        },
+        {
+          "reference": {
+            "mode": "thumb",
+            "source": "0x03000000",
+            "change": "assert",
+            "edge": "4",
+            "retired": "2",
+            "cycle": "9",
+            "r0": "1",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000006",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "r0": "0",
+            "pc": "0x00000020",
+            "lr": "0x03000004"
+          }
+        },
+        {
+          "reference": {
+            "mode": "thumb",
+            "source": "0x03000000",
+            "change": "deassert",
+            "edge": "1",
+            "retired": "1",
+            "cycle": "8",
+            "r0": "0",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "5",
+            "r0": "1",
+            "pc": "0x03000002",
+            "cpsr": "0x0000007f",
+            "lr": "0x00000000"
+          }
+        },
+        {
+          "reference": {
+            "mode": "thumb",
+            "source": "0x03000000",
+            "change": "deassert",
+            "edge": "1",
+            "retired": "2",
+            "cycle": "9",
+            "r0": "0",
+            "pc": "0x00000020",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "6",
+            "r0": "2",
+            "pc": "0x03000004",
+            "cpsr": "0x0000007f",
+            "lr": "0x00000000"
+          }
+        },
+        {
+          "reference": {
+            "mode": "thumb",
+            "source": "0x03000000",
+            "change": "deassert",
+            "edge": "3",
+            "retired": "1",
+            "cycle": "8",
+            "r0": "0",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "5",
+            "r0": "1",
+            "pc": "0x03000002",
+            "cpsr": "0x0000007f",
+            "lr": "0x00000000"
+          }
+        },
+        {
+          "reference": {
+            "mode": "thumb",
+            "source": "0x03000000",
+            "change": "deassert",
+            "edge": "3",
+            "retired": "2",
+            "cycle": "9",
+            "r0": "0",
+            "pc": "0x00000020",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "6",
+            "r0": "2",
+            "pc": "0x03000004",
+            "cpsr": "0x0000007f",
+            "lr": "0x00000000"
+          }
+        },
+        {
+          "reference": {
+            "mode": "thumb",
+            "source": "0x03000000",
+            "change": "deassert",
+            "edge": "4",
+            "retired": "1",
+            "cycle": "8",
+            "r0": "0",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "5",
+            "r0": "1",
+            "pc": "0x03000002",
+            "cpsr": "0x0000007f",
+            "lr": "0x00000000"
+          }
+        },
+        {
+          "reference": {
+            "mode": "thumb",
+            "source": "0x03000000",
+            "change": "deassert",
+            "edge": "4",
+            "retired": "2",
+            "cycle": "9",
+            "r0": "0",
+            "pc": "0x00000020",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "6",
+            "r0": "2",
+            "pc": "0x03000004",
+            "cpsr": "0x0000007f",
+            "lr": "0x00000000"
+          }
+        },
+        {
+          "reference": {
+            "mode": "thumb",
+            "source": "0x02000000",
+            "change": "assert",
+            "edge": "1",
+            "retired": "1",
+            "cycle": "10",
+            "r0": "1",
+            "pc": "0x03000002",
+            "cpsr": "0x0000007f",
+            "lr": "0x00000000",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "13",
+            "r0": "0",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004"
+          }
+        },
+        {
+          "reference": {
+            "mode": "thumb",
+            "source": "0x02000000",
+            "change": "assert",
+            "edge": "1",
+            "retired": "2",
+            "cycle": "14",
+            "r0": "1",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000006",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "r0": "0",
+            "pc": "0x00000020",
+            "lr": "0x03000004"
+          }
+        },
+        {
+          "reference": {
+            "mode": "thumb",
+            "source": "0x02000000",
+            "change": "assert",
+            "edge": "8",
+            "retired": "1",
+            "cycle": "10",
+            "r0": "1",
+            "pc": "0x03000002",
+            "cpsr": "0x0000007f",
+            "lr": "0x00000000",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "13",
+            "r0": "0",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004"
+          }
+        },
+        {
+          "reference": {
+            "mode": "thumb",
+            "source": "0x02000000",
+            "change": "assert",
+            "edge": "8",
+            "retired": "2",
+            "cycle": "14",
+            "r0": "1",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000006",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "r0": "0",
+            "pc": "0x00000020",
+            "lr": "0x03000004"
+          }
+        },
+        {
+          "reference": {
+            "mode": "thumb",
+            "source": "0x02000000",
+            "change": "assert",
+            "edge": "9",
+            "retired": "1",
+            "cycle": "10",
+            "r0": "1",
+            "pc": "0x03000002",
+            "cpsr": "0x0000007f",
+            "lr": "0x00000000",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "13",
+            "r0": "0",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004"
+          }
+        },
+        {
+          "reference": {
+            "mode": "thumb",
+            "source": "0x02000000",
+            "change": "assert",
+            "edge": "9",
+            "retired": "2",
+            "cycle": "14",
+            "r0": "1",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000006",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "r0": "0",
+            "pc": "0x00000020",
+            "lr": "0x03000004"
+          }
+        },
+        {
+          "reference": {
+            "mode": "thumb",
+            "source": "0x02000000",
+            "change": "deassert",
+            "edge": "1",
+            "retired": "1",
+            "cycle": "13",
+            "r0": "0",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "10",
+            "r0": "1",
+            "pc": "0x03000002",
+            "cpsr": "0x0000007f",
+            "lr": "0x00000000"
+          }
+        },
+        {
+          "reference": {
+            "mode": "thumb",
+            "source": "0x02000000",
+            "change": "deassert",
+            "edge": "1",
+            "retired": "2",
+            "cycle": "14",
+            "r0": "0",
+            "pc": "0x00000020",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "11",
+            "r0": "2",
+            "pc": "0x03000004",
+            "cpsr": "0x0000007f",
+            "lr": "0x00000000"
+          }
+        },
+        {
+          "reference": {
+            "mode": "thumb",
+            "source": "0x02000000",
+            "change": "deassert",
+            "edge": "8",
+            "retired": "1",
+            "cycle": "13",
+            "r0": "0",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "10",
+            "r0": "1",
+            "pc": "0x03000002",
+            "cpsr": "0x0000007f",
+            "lr": "0x00000000"
+          }
+        },
+        {
+          "reference": {
+            "mode": "thumb",
+            "source": "0x02000000",
+            "change": "deassert",
+            "edge": "8",
+            "retired": "2",
+            "cycle": "14",
+            "r0": "0",
+            "pc": "0x00000020",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "11",
+            "r0": "2",
+            "pc": "0x03000004",
+            "cpsr": "0x0000007f",
+            "lr": "0x00000000"
+          }
+        },
+        {
+          "reference": {
+            "mode": "thumb",
+            "source": "0x02000000",
+            "change": "deassert",
+            "edge": "9",
+            "retired": "1",
+            "cycle": "13",
+            "r0": "0",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "10",
+            "r0": "1",
+            "pc": "0x03000002",
+            "cpsr": "0x0000007f",
+            "lr": "0x00000000"
+          }
+        },
+        {
+          "reference": {
+            "mode": "thumb",
+            "source": "0x02000000",
+            "change": "deassert",
+            "edge": "9",
+            "retired": "2",
+            "cycle": "14",
+            "r0": "0",
+            "pc": "0x00000020",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "11",
+            "r0": "2",
+            "pc": "0x03000004",
+            "cpsr": "0x0000007f",
+            "lr": "0x00000000"
+          }
+        },
+        {
+          "reference": {
+            "mode": "thumb",
+            "source": "0x08000000",
+            "change": "assert",
+            "edge": "1",
+            "retired": "1",
+            "cycle": "12",
+            "r0": "1",
+            "pc": "0x03000002",
+            "cpsr": "0x0000007f",
+            "lr": "0x00000000",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "15",
+            "r0": "0",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004"
+          }
+        },
+        {
+          "reference": {
+            "mode": "thumb",
+            "source": "0x08000000",
+            "change": "assert",
+            "edge": "1",
+            "retired": "2",
+            "cycle": "16",
+            "r0": "1",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000006",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "r0": "0",
+            "pc": "0x00000020",
+            "lr": "0x03000004"
+          }
+        },
+        {
+          "reference": {
+            "mode": "thumb",
+            "source": "0x08000000",
+            "change": "assert",
+            "edge": "10",
+            "retired": "1",
+            "cycle": "12",
+            "r0": "1",
+            "pc": "0x03000002",
+            "cpsr": "0x0000007f",
+            "lr": "0x00000000",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "15",
+            "r0": "0",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004"
+          }
+        },
+        {
+          "reference": {
+            "mode": "thumb",
+            "source": "0x08000000",
+            "change": "assert",
+            "edge": "10",
+            "retired": "2",
+            "cycle": "16",
+            "r0": "1",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000006",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "r0": "0",
+            "pc": "0x00000020",
+            "lr": "0x03000004"
+          }
+        },
+        {
+          "reference": {
+            "mode": "thumb",
+            "source": "0x08000000",
+            "change": "assert",
+            "edge": "11",
+            "retired": "1",
+            "cycle": "12",
+            "r0": "1",
+            "pc": "0x03000002",
+            "cpsr": "0x0000007f",
+            "lr": "0x00000000",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "15",
+            "r0": "0",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004"
+          }
+        },
+        {
+          "reference": {
+            "mode": "thumb",
+            "source": "0x08000000",
+            "change": "assert",
+            "edge": "11",
+            "retired": "2",
+            "cycle": "16",
+            "r0": "1",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000006",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "r0": "0",
+            "pc": "0x00000020",
+            "lr": "0x03000004"
+          }
+        },
+        {
+          "reference": {
+            "mode": "thumb",
+            "source": "0x08000000",
+            "change": "deassert",
+            "edge": "1",
+            "retired": "1",
+            "cycle": "15",
+            "r0": "0",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "12",
+            "r0": "1",
+            "pc": "0x03000002",
+            "cpsr": "0x0000007f",
+            "lr": "0x00000000"
+          }
+        },
+        {
+          "reference": {
+            "mode": "thumb",
+            "source": "0x08000000",
+            "change": "deassert",
+            "edge": "1",
+            "retired": "2",
+            "cycle": "16",
+            "r0": "0",
+            "pc": "0x00000020",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "13",
+            "r0": "2",
+            "pc": "0x03000004",
+            "cpsr": "0x0000007f",
+            "lr": "0x00000000"
+          }
+        },
+        {
+          "reference": {
+            "mode": "thumb",
+            "source": "0x08000000",
+            "change": "deassert",
+            "edge": "10",
+            "retired": "1",
+            "cycle": "15",
+            "r0": "0",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "12",
+            "r0": "1",
+            "pc": "0x03000002",
+            "cpsr": "0x0000007f",
+            "lr": "0x00000000"
+          }
+        },
+        {
+          "reference": {
+            "mode": "thumb",
+            "source": "0x08000000",
+            "change": "deassert",
+            "edge": "10",
+            "retired": "2",
+            "cycle": "16",
+            "r0": "0",
+            "pc": "0x00000020",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "13",
+            "r0": "2",
+            "pc": "0x03000004",
+            "cpsr": "0x0000007f",
+            "lr": "0x00000000"
+          }
+        },
+        {
+          "reference": {
+            "mode": "thumb",
+            "source": "0x08000000",
+            "change": "deassert",
+            "edge": "11",
+            "retired": "1",
+            "cycle": "15",
+            "r0": "0",
+            "pc": "0x0000001c",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "12",
+            "r0": "1",
+            "pc": "0x03000002",
+            "cpsr": "0x0000007f",
+            "lr": "0x00000000"
+          }
+        },
+        {
+          "reference": {
+            "mode": "thumb",
+            "source": "0x08000000",
+            "change": "deassert",
+            "edge": "11",
+            "retired": "2",
+            "cycle": "16",
+            "r0": "0",
+            "pc": "0x00000020",
+            "cpsr": "0x000000d2",
+            "lr": "0x03000004",
+            "dma_complete": "1"
+          },
+          "actual_differences": {
+            "cycle": "13",
+            "r0": "2",
+            "pc": "0x03000004",
+            "cpsr": "0x0000007f",
+            "lr": "0x00000000"
+          }
+        }
+      ]
+    },
+    "retained_matches": {
+      "refill": 36,
+      "forms": 144,
+      "data": 48,
+      "normalized_cpu": 96
+    },
+    "actual_new_cldc_matrix_matches": {
+      "fetch_handoff": 16,
+      "irq_edges": 120,
+      "refill": 36,
+      "forms": 144,
+      "data": 48,
+      "normalized_cpu": 96
+    },
+    "production_activation_unchanged": true,
+    "production_request_matches": 24,
+    "production_request_rows": 96,
+    "scope": "Selected readiness-normalized fetch/retirement/accepted-IRQ observations; not full pipeline, propagation/activation or physical hardware qualification"
+  },
+  "regressions": {
+    "new_core_cases": 83,
+    "before_failures": 47,
+    "before_passes": 36,
+    "after_passes": 83,
+    "before_bridge": "Constant-false public Cpu.fetchInFlight() query added only to isolated old classes to load new tests; no emulation changes",
+    "before_bridge_source_sha256": "e5f74a592aae8c262e65682c2bb3b4bd344e9a91000d7ffdb856f630f06cba77",
+    "coverage": [
+      "16 original fetch-handoff observations",
+      "60 IRQ assertion/deassertion cases with two retirement states each",
+      "Four 65536-word EWRAM-to-EWRAM transfers keep fetch/IRQ decisions across frame/audio budgets without overwriting code",
+      "HALT starts no fetch before wakeup",
+      "Deferred fetch fault clears pending state and CPU access context",
+      "IRQ banks status/link after the discarded fetch finishes"
+    ]
+  },
+  "fixture_updates": {
+    "files": [
+      "src/test/java/berryboy/bus/DmaControllerTest.java",
+      "src/test/java/berryboy/bus/DmaFifoInvariantTest.java",
+      "src/test/java/berryboy/bus/DmaOwnershipTimingTest.java",
+      "src/test/java/berryboy/bus/DmaTransferPhaseTest.java",
+      "src/test/java/berryboy/cartridge/CartridgeBackupTest.java"
+    ],
+    "reason": "DMA-only repeated-transfer fixtures used Cpu.step as a controller operation. A waiting CPU now correctly receives one access between ownership intervals; these fixtures call runPending directly.",
+    "expected_cycles_and_fifo_eeprom_bytes_unchanged": true,
+    "added_controller_progress_assertions": true,
+    "cpu_integration_qualified_separately_by_new_cases": true
+  },
+  "validation": {
+    "host_tests": 1593,
+    "console_host_tests": 1593,
+    "exported_core_tests": 1487,
+    "actual_new_ecj_cldc_core_tests": 1487,
+    "failures": 0,
+    "skipped": 0,
+    "syntax_rewrites": 475,
+    "native_ecj_rapc": "BUILD SUCCESS; No errors; new COD emitted"
+  },
+  "game_regression": {
+    "input": "benchmarks/inputs/eleven-game-start-a.tsv",
+    "comparison_baseline": "benchmarks/cpu-refill-resume-2026-11-05.json",
+    "comparison_baseline_sha256": "b7feb3ebab4b13e6f18391c443c0ac06a7490e42b86b34d5c5d33e3a451fe601",
+    "games": 11,
+    "frames_per_game": 3600,
+    "total_frames": 39600,
+    "total_stereo_samples": 21725550,
+    "missing_guest_frames": 0,
+    "audio_overruns": 0,
+    "audio_underruns": 0,
+    "changed_rgb_titles": [],
+    "changed_pcm_titles": [
+      "AVRE",
+      "B3SE"
+    ],
+    "all_backups_unchanged": true,
+    "game_written_save_files": 4,
+    "runs": [
+      {
+        "game_code": "AGFE",
+        "title": "Golden Sun - The Lost Age (USA)",
+        "rom_sha256": "4199d82f845edf3e2e92f3783bca00190b5bc102d7c8aa339b951de280b1e6cc",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "rtc_seed": "2000-01-01T00:00:00",
+        "frames": 3600,
+        "warmup_frames": 0,
+        "guest_cycles": 1011225611,
+        "audio_frames": 1975050,
+        "initial_save_sha256": null,
+        "video_sha256": "01e95c082118cc1d48fd0783359816fc98e0bf6a0806361d7e4cbc78fe0b4d99",
+        "audio_sha256": "bc63be850e158f0c5fe672fdef295947b519c5afbf15c7108549da3bc77b7b0c",
+        "backup_sha256": "71189f7fb6aed638640078fba3a35fda6c39c8962e74dcc75935aac948da9063",
+        "save_written": false,
+        "dropped_guest_frames": 0,
+        "audio_overruns": 0,
+        "audio_underruns": 0,
+        "previous_video_unchanged": true,
+        "previous_audio_unchanged": true,
+        "previous_backup_unchanged": true,
+        "reference_rgb888_comparison": {
+          "before": {
+            "status": "mismatch",
+            "exact_video_frames": 2133,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975052,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "after": {
+            "status": "mismatch",
+            "exact_video_frames": 2133,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975052,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "reference_pixel_format": "RGB888",
+          "gained_exact_frame_ids": [],
+          "lost_exact_frame_ids": [],
+          "reference_report_sha256": "927aa0599efbacade5c250ba6daa16b0c6d4c7f1f64ef53145fa541c0814c883"
+        }
+      },
+      {
+        "game_code": "AGSE",
+        "title": "Golden Sun (USA)",
+        "rom_sha256": "c14f1151897e8d73f25ffdd67e21eebb6dc57973ff2458872ee89fa9060aaca1",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "rtc_seed": "2000-01-01T00:00:00",
+        "frames": 3600,
+        "warmup_frames": 0,
+        "guest_cycles": 1011225600,
+        "audio_frames": 1975050,
+        "initial_save_sha256": null,
+        "video_sha256": "988bc197cbd1d5013bb9d2e4ab098a0b755723bcd96f4998b6ea950b4c661dc3",
+        "audio_sha256": "d6be2e47e18884c9112df8f6f681220d7323a358e5e53661c9256800af112b66",
+        "backup_sha256": "71189f7fb6aed638640078fba3a35fda6c39c8962e74dcc75935aac948da9063",
+        "save_written": false,
+        "dropped_guest_frames": 0,
+        "audio_overruns": 0,
+        "audio_underruns": 0,
+        "previous_video_unchanged": true,
+        "previous_audio_unchanged": true,
+        "previous_backup_unchanged": true,
+        "reference_rgb888_comparison": {
+          "before": {
+            "status": "mismatch",
+            "exact_video_frames": 911,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975052,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "after": {
+            "status": "mismatch",
+            "exact_video_frames": 911,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975052,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "reference_pixel_format": "RGB888",
+          "gained_exact_frame_ids": [],
+          "lost_exact_frame_ids": [],
+          "reference_report_sha256": "7dbf2c53c725fe163482c4322c9d526b4e91e7207450b0d4b5d75c10b334e57f"
+        }
+      },
+      {
+        "game_code": "AMTE",
+        "title": "Metroid Fusion (USA)",
+        "rom_sha256": "a56ce3d7f8f3f4f4d0468d421fff5dd3ee3aec99a58244377e43aae769dc3fe8",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "rtc_seed": "2000-01-01T00:00:00",
+        "frames": 3600,
+        "warmup_frames": 0,
+        "guest_cycles": 1011225600,
+        "audio_frames": 1975050,
+        "initial_save_sha256": null,
+        "video_sha256": "7c63270973194cc973b139295f1e1a313954184941e7f9378f3d9d4cefe54759",
+        "audio_sha256": "0dfca2dcd145643058d4b13878df5b4544a6041dbbd15f52a96e24b8832b926f",
+        "backup_sha256": "5b7becd1c51999f6f13359f1515672056849788383af8a2834a6ce69b94aa4f0",
+        "save_written": true,
+        "dropped_guest_frames": 0,
+        "audio_overruns": 0,
+        "audio_underruns": 0,
+        "previous_video_unchanged": true,
+        "previous_audio_unchanged": true,
+        "previous_backup_unchanged": true,
+        "reference_rgb888_comparison": {
+          "before": {
+            "status": "mismatch",
+            "exact_video_frames": 699,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975052,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "after": {
+            "status": "mismatch",
+            "exact_video_frames": 699,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975052,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "reference_pixel_format": "RGB888",
+          "gained_exact_frame_ids": [],
+          "lost_exact_frame_ids": [],
+          "reference_report_sha256": "67c2631e995adf79655f57c7f8e55d47dbfd9abcec94aa1b5bd800b495ab5e3b"
+        }
+      },
+      {
+        "game_code": "AVRE",
+        "title": "V-Rally 3 (USA)",
+        "rom_sha256": "5818fa74fdcacf39b53a1acea99432c4362979dd656c8153fd9861094aca51f7",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "rtc_seed": "2000-01-01T00:00:00",
+        "frames": 3600,
+        "warmup_frames": 0,
+        "guest_cycles": 1011225602,
+        "audio_frames": 1975050,
+        "initial_save_sha256": null,
+        "video_sha256": "0201bafe4bc96886d8f09641193d3b76045e219d7833b6886d6fb9ea07e992c2",
+        "audio_sha256": "73386d15f2930d1f63d19c3f428832bb4d16944f26e3fa19e147e523a7d97416",
+        "backup_sha256": "7d2c7ac4888bfd75cd5f56e8d61f69595121183afc81556c876732fd3782c62f",
+        "save_written": false,
+        "dropped_guest_frames": 0,
+        "audio_overruns": 0,
+        "audio_underruns": 0,
+        "previous_video_unchanged": true,
+        "previous_audio_unchanged": false,
+        "previous_backup_unchanged": true,
+        "reference_rgb888_comparison": {
+          "before": {
+            "status": "mismatch",
+            "exact_video_frames": 3231,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975048,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "after": {
+            "status": "mismatch",
+            "exact_video_frames": 3231,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975048,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "reference_pixel_format": "RGB888",
+          "gained_exact_frame_ids": [],
+          "lost_exact_frame_ids": [],
+          "reference_report_sha256": "92b192a9bddc979bba7b967f00076b2440701d502e3e0548b7ecf1064c6f1979"
+        }
+      },
+      {
+        "game_code": "AWAE",
+        "title": "Wario Land 4 (USA)",
+        "rom_sha256": "d16c7bf6e62bb84049fff1b387108fbd1e6e2cd38ca994ab5310dd9cbf9ba414",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "rtc_seed": "2000-01-01T00:00:00",
+        "frames": 3600,
+        "warmup_frames": 0,
+        "guest_cycles": 1011225600,
+        "audio_frames": 1975050,
+        "initial_save_sha256": null,
+        "video_sha256": "607471de81655b1834b765c46f268ca4adca4943db7e0f818745ca85b2e9a00d",
+        "audio_sha256": "b0fd4236a1604dbf48df3d3b3401864b78cbd6888f9dfaa78d321fa33dca4dff",
+        "backup_sha256": "fe405055a8c4a9d22ae94d03f6ee4f851b7869ac4f76eb3254c7888398b37903",
+        "save_written": true,
+        "dropped_guest_frames": 0,
+        "audio_overruns": 0,
+        "audio_underruns": 0,
+        "previous_video_unchanged": true,
+        "previous_audio_unchanged": true,
+        "previous_backup_unchanged": true,
+        "reference_rgb888_comparison": {
+          "before": {
+            "status": "mismatch",
+            "exact_video_frames": 2144,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975052,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "after": {
+            "status": "mismatch",
+            "exact_video_frames": 2144,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975052,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "reference_pixel_format": "RGB888",
+          "gained_exact_frame_ids": [],
+          "lost_exact_frame_ids": [],
+          "reference_report_sha256": "f72ef5ca64743acb4ebf322dc7f227dee7120da379efc71614c10781269eb4be"
+        }
+      },
+      {
+        "game_code": "AZEE",
+        "title": "Zone of the Enders - The Fist of Mars (USA)",
+        "rom_sha256": "114fff29e5642300a9b3698916ecd86682aa6da0fd821065b7431ba8c059f0f2",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "rtc_seed": "2000-01-01T00:00:00",
+        "frames": 3600,
+        "warmup_frames": 0,
+        "guest_cycles": 1011225600,
+        "audio_frames": 1975050,
+        "initial_save_sha256": null,
+        "video_sha256": "941434e3c27502c2a4970cb580dad9806c3f01c1d8057f2f8bb578cd13bdb6db",
+        "audio_sha256": "851fc9a5f4f3473d7e6d57b852bcbe54395bdfb22f0a3a0fc4b0d18274fb9c0b",
+        "backup_sha256": "71189f7fb6aed638640078fba3a35fda6c39c8962e74dcc75935aac948da9063",
+        "save_written": false,
+        "dropped_guest_frames": 0,
+        "audio_overruns": 0,
+        "audio_underruns": 0,
+        "previous_video_unchanged": true,
+        "previous_audio_unchanged": true,
+        "previous_backup_unchanged": true,
+        "reference_rgb888_comparison": {
+          "before": {
+            "status": "mismatch",
+            "exact_video_frames": 578,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975048,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "after": {
+            "status": "mismatch",
+            "exact_video_frames": 578,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975048,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "reference_pixel_format": "RGB888",
+          "gained_exact_frame_ids": [],
+          "lost_exact_frame_ids": [],
+          "reference_report_sha256": "c4a9f503d66428480243bb77a53a52568e8ee839bb1d438a45f29ef3e35c7da5"
+        }
+      },
+      {
+        "game_code": "B3SE",
+        "title": "Sonic Advance 3 (USA)",
+        "rom_sha256": "f937fa93b97b14b9fb9fce98844c534f936222d21d1fdb5f1af42292bad32c85",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "rtc_seed": "2000-01-01T00:00:00",
+        "frames": 3600,
+        "warmup_frames": 0,
+        "guest_cycles": 1011225600,
+        "audio_frames": 1975050,
+        "initial_save_sha256": null,
+        "video_sha256": "44b6c8460d04cd3f76042ebc861987711d540f5273382a822e36bcd4517cc505",
+        "audio_sha256": "e6967f805dd22bc570d7cca8567a1cbc992dcd7a11e1183da8e3aa5da0fceeeb",
+        "backup_sha256": "9d900aa5fddfccd3d528a98d7bf2aa44cb9613640cfb900c6c100e0606318d90",
+        "save_written": true,
+        "dropped_guest_frames": 0,
+        "audio_overruns": 0,
+        "audio_underruns": 0,
+        "previous_video_unchanged": true,
+        "previous_audio_unchanged": false,
+        "previous_backup_unchanged": true,
+        "reference_rgb888_comparison": {
+          "before": {
+            "status": "mismatch",
+            "exact_video_frames": 2812,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975048,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "after": {
+            "status": "mismatch",
+            "exact_video_frames": 2812,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975048,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "reference_pixel_format": "RGB888",
+          "gained_exact_frame_ids": [],
+          "lost_exact_frame_ids": [],
+          "reference_report_sha256": "50ae02d110d33148b297296bea70dc1c360475cc8f66061553f3bb2b4e854f38"
+        }
+      },
+      {
+        "game_code": "BGTE",
+        "title": "Grand Theft Auto Advance (USA)",
+        "rom_sha256": "215c574d5afbda0aadbf89dc76b765cfaaeb35953eab63f7687d8bfe8a8e0f4d",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "rtc_seed": "2000-01-01T00:00:00",
+        "frames": 3600,
+        "warmup_frames": 0,
+        "guest_cycles": 1011225600,
+        "audio_frames": 1975050,
+        "initial_save_sha256": null,
+        "video_sha256": "1ac108b912baf4fdfafbed542572dba0ca1cdb6a223f4084dacc3f2a73c3c04a",
+        "audio_sha256": "3d4193ae962eae1dea27a91e1577765ba7f5c4b08afd3250fe43eff0209fef82",
+        "backup_sha256": "9f56cda75fefeab90f6fa5d5ddc9601544b121732c5ecccab32e631060453a5d",
+        "save_written": false,
+        "dropped_guest_frames": 0,
+        "audio_overruns": 0,
+        "audio_underruns": 0,
+        "previous_video_unchanged": true,
+        "previous_audio_unchanged": true,
+        "previous_backup_unchanged": true,
+        "reference_rgb888_comparison": {
+          "before": {
+            "status": "mismatch",
+            "exact_video_frames": 3409,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975052,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "after": {
+            "status": "mismatch",
+            "exact_video_frames": 3409,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975052,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "reference_pixel_format": "RGB888",
+          "gained_exact_frame_ids": [],
+          "lost_exact_frame_ids": [],
+          "reference_report_sha256": "e4781c429f7de3a103332c7436676522ecd2e2ca34912602e0947824bc412be7"
+        }
+      },
+      {
+        "game_code": "BMXE",
+        "title": "Metroid - Zero Mission (USA)",
+        "rom_sha256": "fc94f65380b65b870a30b9b04b39cca1dc63d6e46a4a373d3904adc0912ebc37",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "rtc_seed": "2000-01-01T00:00:00",
+        "frames": 3600,
+        "warmup_frames": 0,
+        "guest_cycles": 1011225600,
+        "audio_frames": 1975050,
+        "initial_save_sha256": null,
+        "video_sha256": "b94a1673deb442521e935055b975db807068b042a4ed8acab76cfa4aaf8a7f84",
+        "audio_sha256": "79b846733d2b26ca2fe9bcac7b1ea09c48bee59c2cfe1e6777b32363aa7bd88a",
+        "backup_sha256": "e7ef5933b70b4e5866829363eeb0fa4799f43c152c3b39f3e9ca0e1ffe53df89",
+        "save_written": true,
+        "dropped_guest_frames": 0,
+        "audio_overruns": 0,
+        "audio_underruns": 0,
+        "previous_video_unchanged": true,
+        "previous_audio_unchanged": true,
+        "previous_backup_unchanged": true,
+        "reference_rgb888_comparison": {
+          "before": {
+            "status": "mismatch",
+            "exact_video_frames": 3196,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975048,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "after": {
+            "status": "mismatch",
+            "exact_video_frames": 3196,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975048,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "reference_pixel_format": "RGB888",
+          "gained_exact_frame_ids": [],
+          "lost_exact_frame_ids": [],
+          "reference_report_sha256": "ecd87dcd7efd1cc33fa69c0199eeff83ce20181807832cb81e6ccd3c057eadf8"
+        }
+      },
+      {
+        "game_code": "BPEE",
+        "title": "Pokemon Emerald Version (USA)",
+        "rom_sha256": "a9dec84dfe7f62ab2220bafaef7479da0929d066ece16a6885f6226db19085af",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "rtc_seed": "2000-01-01T00:00:00",
+        "frames": 3600,
+        "warmup_frames": 0,
+        "guest_cycles": 1011225600,
+        "audio_frames": 1975050,
+        "initial_save_sha256": null,
+        "video_sha256": "5dcd5d4b1ead03da7ac0bd4514374ec64cdccff9d63739aa89046710ce944d1e",
+        "audio_sha256": "e9130cc9951dcb796705ffdf0ca7e95464998e79540cb4f3baeea61eeb3a10af",
+        "backup_sha256": "b5a41c3758763bbec72769fab4a2533bf2db0b6312d93d25a695f9e4b9e02260",
+        "save_written": false,
+        "dropped_guest_frames": 0,
+        "audio_overruns": 0,
+        "audio_underruns": 0,
+        "previous_video_unchanged": true,
+        "previous_audio_unchanged": true,
+        "previous_backup_unchanged": true,
+        "reference_rgb888_comparison": {
+          "before": {
+            "status": "mismatch",
+            "exact_video_frames": 2971,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975052,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "after": {
+            "status": "mismatch",
+            "exact_video_frames": 2971,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975052,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "reference_pixel_format": "RGB888",
+          "gained_exact_frame_ids": [],
+          "lost_exact_frame_ids": [],
+          "reference_report_sha256": "8d54023a3d5434403474c32d980ff5e46c2cf3913cbfaa59c4b89f1574ac0be2"
+        }
+      },
+      {
+        "game_code": "BPGE",
+        "title": "Pokemon LeafGreen Version (USA) (Rev-A)",
+        "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "rtc_seed": "2000-01-01T00:00:00",
+        "frames": 3600,
+        "warmup_frames": 0,
+        "guest_cycles": 1011225601,
+        "audio_frames": 1975050,
+        "initial_save_sha256": null,
+        "video_sha256": "d49919c30dab14080db1057861ea66c8ad5ae104d868fd66de2c4f41b0799945",
+        "audio_sha256": "0f339d124ce989cfd7eb8b1078b6735340223821c923bb750037326eec3f44a5",
+        "backup_sha256": "b5a41c3758763bbec72769fab4a2533bf2db0b6312d93d25a695f9e4b9e02260",
+        "save_written": false,
+        "dropped_guest_frames": 0,
+        "audio_overruns": 0,
+        "audio_underruns": 0,
+        "previous_video_unchanged": true,
+        "previous_audio_unchanged": true,
+        "previous_backup_unchanged": true,
+        "reference_rgb888_comparison": {
+          "before": {
+            "status": "mismatch",
+            "exact_video_frames": 3475,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975052,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "after": {
+            "status": "mismatch",
+            "exact_video_frames": 3475,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975052,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "reference_pixel_format": "RGB888",
+          "gained_exact_frame_ids": [],
+          "lost_exact_frame_ids": [],
+          "reference_report_sha256": "371f828f0536f63ce78e0a9c0d21c54e8651ada19ab895e4fe726ec65316c768"
+        }
+      }
+    ],
+    "reference_scope": "Reused independent mGBA RGB888/blip_buf captures, matched ROM/BIOS/input/RTC/fresh backups. Color/filter/timing gaps remain; exact-frame sets are diagnostics, not scores.",
+    "qualification": "Headless boot/intro smoke only, not gameplay or sustained/physical playback"
+  },
+  "player_replay": {
+    "report": {
+      "status": "captured",
+      "correctness": "unverified",
+      "qualification": "headless-only; physical presentation and playback unverified",
+      "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "83fbaacb4b6c7707e367959540da80dc4494abef89265bff4d345f0981b0e96d",
+      "rtc_seed": "2000-01-01T00:00:00",
+      "initial_save_sha256": "fd44f0a2d5348f7ea91c1e3c50a9b2b794023be9bb86787a32bcb9d90c9aa8a9",
+      "backup_sha256": "fd44f0a2d5348f7ea91c1e3c50a9b2b794023be9bb86787a32bcb9d90c9aa8a9",
+      "backup_type": 2,
+      "backup_bytes": 131072,
+      "save_written": false,
+      "devices": 0,
+      "rumble_active": false,
+      "commit": "b1ef97625eb0b195eab452c49de1538b28d71910",
+      "source_dirty": "true",
+      "frames": 1272,
+      "warmup_frames": 0,
+      "guest_cycles": 357299718,
+      "audio_frames": 697851,
+      "audio_overruns": 0,
+      "audio_underruns": 0,
+      "produced_audio_frames": 697851,
+      "consumed_audio_frames": 697851,
+      "dropped_guest_frames": 0,
+      "video_sha256": "3e68811368e5316113a752e2543ac7e2429ef1b132091b1d072729cf449023a0",
+      "audio_sha256": "561b59b5a99ea7a672da3a43eae4a4c10c574fef17f7c46ff1320259ad2e46ac",
+      "work_p50_ns": 11163065,
+      "work_p95_ns": 20632392,
+      "work_p99_ns": 27964757,
+      "work_max_ns": 80620413,
+      "work_deadline_misses": 197,
+      "physically_presented_frames": null,
+      "physical_audio_underruns": null,
+      "java": "21.0.8+9-LTS",
+      "os": "Linux",
+      "architecture": "amd64",
+      "hardware": "x86_64 Linux cloud host; headless smoke only",
+      "os_version": "6.18.57"
+    },
+    "previous_video_unchanged": true,
+    "previous_audio_unchanged": true,
+    "previous_guest_cycles": 357299718,
+    "original_and_copy_save_sha256": "fd44f0a2d5348f7ea91c1e3c50a9b2b794023be9bb86787a32bcb9d90c9aa8a9",
+    "video_states": {
+      "930": {
+        "sha256": "447a04c96ee7f6fce46ddf6ef852e5f3766bbfa6e5a3e30f344151658785e070",
+        "previous_unchanged": true
+      },
+      "1029": {
+        "sha256": "aa25e236b718c70345899a48b2fb12311d725df77a6017254904c81fef819c12",
+        "previous_unchanged": true
+      },
+      "1272": {
+        "sha256": "5ca10dbb41d50800102a5046eaa83cfbe83051594da058bca11e67a4034e6883",
+        "previous_unchanged": true
+      }
+    },
+    "rgb555_comparison": {
+      "status": "mismatch",
+      "exact_video_frames": 1111,
+      "total_video_frames": 1272,
+      "first_video_mismatch": 930,
+      "whole_video_hash_match": false,
+      "whole_audio_hash_match": false,
+      "reference_audio_frames": 697852,
+      "berryboy_audio_frames": 697851,
+      "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+    },
+    "reused_reference_report_sha256": "3b5b7ec9ab504d0b43e8d9df7b4d5976532405cf60c3f2a3ec2ef50afc7c724d"
+  },
+  "remaining_gates": [
+    "Discarded IRQ fetch still uses the existing one-cycle cost; wider code-memory waits/prefetch remain unqualified",
+    "Pending context holds address/mode/acceptance, not opcode bytes; full latching/self-modifying pipeline behavior remains open",
+    "Actual scheduled activation, cancellation/re-enable and duplicate requests remain unchanged/unqualified",
+    "IRQ-line propagation/mask latency, timer workloads, frame 930, audio fidelity and physical BBOS/Bold qualification remain open"
+  ],
+  "source_files_sha256": {
+    "src/main/java/berryboy/cpu/Cpu.java": "25c4c050aaa38f5fed7a59b334f6e30e423ed0dc60eaf6a2de1eb1241ad0b3e5",
+    "src/main/java/berryboy/bus/BusTiming.java": "2c5a58b389480ed2d9502c4bd0ce7595957e1fdd61554944d425ddab4002d5c9",
+    "src/main/java/berryboy/bus/DmaController.java": "1289473e076752b097ca3e184f5cdc4bad2e9da0588b5207e07b5e126336ba3d",
+    "src/test/java/berryboy/bus/CpuDmaFetchTest.java": "5c3ba3a77f3ecc7b47f9d3dede1ae0d864955768c34d52a23bcc222cf57f8fc9",
+    "tools/CpuFetchIrqProbe.java": "64767c08451d4e7afcdc6a6eb4c34d6ab09c03155b43ff28cdd2c18065de6a1a",
+    "tools/nba-cpu-fetch-irq-probe.cc": "62222e99132fdeb23af151bb9265ca9220c3f9dd87b5d8600a0db98ce90800a4",
+    "tools/CpuFetchHandoffProbe.java": "45051448f531a1bc715b5e3937e29ce331f95ba5f30878844793c127cf68db0d",
+    "tools/nba-cpu-fetch-handoff-probe.cc": "568d5090bd6be5377021d0d10214eeca00f1cde3caf7012a3cc47840eeeadbd5",
+    "tools/nba-reference/CMakeLists.txt": "b6fbd31bb9a5fb4f175f02077bd1269486142608d97362dce75031dda4a2b484",
+    "tools/nba-reference/probe-machine.hh": "652adfc13a9fa5da09d76ec92b931f6e9ad70aa470867d0d7417995dc22cf84a",
+    "src/test/java/berryboy/bus/DmaControllerTest.java": "eb58a967ace524e5869ece79a7c319dea7c2f23adae490b86d8bfd1d65ab064f",
+    "src/test/java/berryboy/bus/DmaFifoInvariantTest.java": "d85089830cfb119ee6bbb7bea6c25e623d3752c4a6d3f74bfed8ee7b206c067a",
+    "src/test/java/berryboy/bus/DmaOwnershipTimingTest.java": "571126893d56975640014cb38abe062a7a48a011b8b992f6c2e563da0ceb66ac",
+    "src/test/java/berryboy/bus/DmaTransferPhaseTest.java": "dd1074b0e3d6cfc6ccb7a67ea336771019b1e82260cd049936c95ebddfcd3e53",
+    "src/test/java/berryboy/cartridge/CartridgeBackupTest.java": "4d013f965470fd0bdeb98cf9256808d32b5e09e9c68d5ffc7a6c6345cb691779"
+  },
+  "cod": {
+    "bytes": 48988,
+    "sha256": "ebde811eae6096f6608aefcb9eac2e7c079a54a6f2cab6da631e504a413091c6"
+  },
+  "artifact_sha256": {
+    "before.csv": "ffc0bd55951b7c2185fcc41a176d4d7e1359f0f2a5edd799571e54d5fab6d263",
+    "after.csv": "a0cf41df61d458884d927ccfac36c76bc86473a1792f4dece98ccc626fc0f19f",
+    "irq-reference.csv": "c1cd2aad3cbddbfac5d0ff00ed77bc07862659e9d54bd2981b57a938864aa483",
+    "irq-before.csv": "a15994afdc75919c00a8cd1caf03712f16f3db3fa1ad24620493ceb1b00d5fe3",
+    "irq-after.csv": "c1cd2aad3cbddbfac5d0ff00ed77bc07862659e9d54bd2981b57a938864aa483",
+    "refill.csv": "7bc34560d28819d07336f03eeaa5a6b31281075983cc6dcf813c00e4828394dd",
+    "forms.csv": "58f1e2bb3d2f12beae27fc9f1ee7c115147f1f1b465ec0e7d3d88144119620e6",
+    "data.csv": "771c3a0565fe1c016841c5df387a6b80b29bad6e4a5654b3138b376148b0d3e6",
+    "activation-normalized.csv": "96e83c59c0dd4c50414f1608d119bf188736926b1c3528994005d3167413ff10",
+    "activation-production.csv": "2aa4a8f747ec03ee32b5a3b57859455d1b10a865243bcd01f283793027687379",
+    "cldc-after.csv": "a0cf41df61d458884d927ccfac36c76bc86473a1792f4dece98ccc626fc0f19f",
+    "cldc-irq-after.csv": "c1cd2aad3cbddbfac5d0ff00ed77bc07862659e9d54bd2981b57a938864aa483",
+    "cldc-refill.csv": "7bc34560d28819d07336f03eeaa5a6b31281075983cc6dcf813c00e4828394dd",
+    "cldc-forms.csv": "58f1e2bb3d2f12beae27fc9f1ee7c115147f1f1b465ec0e7d3d88144119620e6",
+    "cldc-data.csv": "771c3a0565fe1c016841c5df387a6b80b29bad6e4a5654b3138b376148b0d3e6",
+    "cldc-activation-normalized.csv": "96e83c59c0dd4c50414f1608d119bf188736926b1c3528994005d3167413ff10"
+  },
+  "local_output": "target/cpu-fetch-resume",
+  "local_game_output": "target/cpu-fetch-game-regression-2026-11-05",
+  "game_summary_sha256": "d5166d6850e0d7397efb4b6ac1896b5415012bcfc13a110f5d30bd535718e822"
+}

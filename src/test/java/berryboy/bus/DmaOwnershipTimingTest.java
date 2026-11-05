@@ -8,6 +8,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("core")
 class DmaOwnershipTimingTest {
@@ -32,7 +33,10 @@ class DmaOwnershipTimingTest {
                 machine.memory.dma().requestFifo(FIFO_A + (channel - 1) * 4);
             }
             var before = machine.clock.now();
-            for (var word = 0; word < channels * 4; word++) machine.cpu.step();
+            // Ownership totals exclude a waiting CPU access between groups.
+            for (var word = 0; word < channels * 4; word++) {
+                assertThat(machine.memory.dma().runPending()).isTrue();
+            }
             assertSoftly(softly -> {
                 softly.assertThat(machine.clock.now() - before).isEqualTo(cycles);
                 softly.assertThat(machine.cpu.instructions()).isZero();

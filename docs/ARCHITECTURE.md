@@ -120,6 +120,16 @@ Completed accesses are never replayed. `Memory` restores CPU timing/protection
 context from the original fetch only for the actual data operation; DMA runs
 outside that context. No per-instruction objects are allocated.
 
+Before waiting for an opcode bus access, `Cpu` captures the fetch address/mode
+and whether IRQ was accepted. That decision survives DMA yields: a later IRQ
+does not preempt the waiting instruction, and clearing IF does not cancel an
+already accepted IRQ. The waiting access receives one grant after the current
+ownership interval, before a new interval can start. `fetchInFlight()` reports
+this pre-decode phase; it does not mean the opcode bytes have been latched.
+HALT begins no fetch until wakeup. IRQ banks its state after the discarded
+fetch completes. Its existing one-cycle cost is retained; wider memory waits,
+prefetch and complete opcode-pipeline latching still need qualification.
+
 The CPU also keeps its remaining internal-cycle budget; DMA returns ownership
 progress through its read-only `ownsBus()` port. IRQ entry and the next
 instruction wait for retirement, while each public step still yields after one
@@ -136,8 +146,9 @@ IRQ entry, `instructionInFlight()` is false and `BusTiming.refilling()` is true.
 The handler cannot execute or overwrite the banked link/status while refill is
 pending. A DMA unit that completes internal instruction timing can begin the
 refill, then yields before servicing another unit. No per-refill allocation is
-introduced. Actual request activation/lifecycle, broader prefetch and full
-opcode-pipeline latching remain qualification work in R2.
+introduced. Actual request activation/lifecycle, wider discarded IRQ fetches,
+broader prefetch and full opcode-pipeline latching remain qualification work
+in R2.
 
 Supported instruction families:
 

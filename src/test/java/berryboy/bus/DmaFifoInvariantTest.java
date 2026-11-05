@@ -11,6 +11,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("core")
 class DmaFifoInvariantTest {
@@ -79,7 +80,11 @@ class DmaFifoInvariantTest {
             }, requestAt);
             machine.clock.advanceTo(requestAt + late);
             var before = machine.clock.now();
-            for (var word = 0; word < channels * 4; word++) machine.cpu.step();
+            // Measure the controller, without granting a waiting CPU fetch
+            // between bursts. CPU handoff is covered by CpuDmaFetchTest.
+            for (var word = 0; word < channels * 4; word++) {
+                assertThat(machine.memory.dma().runPending()).isTrue();
+            }
             latency[burst] = machine.clock.now() - before;
             assertSoftly(softly -> {
                 softly.assertThat(machine.cpu.instructions()).isZero();

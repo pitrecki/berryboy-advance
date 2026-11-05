@@ -47,7 +47,7 @@ the Thumb multiply timing and Game Pak DMA source corrections, plus the FIFO
 DMA reference counterexample and independent DMA read/write phase correction. The shared clock, scheduler,
 CPU/bus timing, software renderer, mixer, cartridge devices and capture runner
 are implemented. Their accuracy is still being qualified; implementation does
-not close M1–M4. Latest local validation passed **1510 host tests and 1404
+not close M1–M4. Latest local validation passed **1593 host tests and 1487
 exported-core tests**. Neither test count establishes BlackBerry readiness.
 
 | Milestone | Deliverables | Completion evidence |
@@ -123,11 +123,20 @@ now isolates that first boundary: 10/16 rows match, but a release-time request
 delays the waiting ADD and an accompanying IRQ changes the observed registers
 and return link. Fix waiting-fetch handoff and IRQ acceptance before delayed
 activation; later agreement at the same cycle does not close this gate.
+The [waiting-fetch correction](REFERENCE-VALIDATION.md#resumable-opcode-fetch-and-irq-acceptance-2026-11-05)
+now matches all 16 rows, plus 120 new IRQ assertion/deassertion observations.
+Address/mode and IRQ acceptance survive DMA yields; a new interval cannot
+overtake the waiting access. The prior four matrices also remain exact on host
+and actual CLDC classes. Discarded IRQ fetch waits outside IWRAM, broader
+prefetch and request activation/lifecycle remain separate timing gates.
+Fresh game captures preserve whole RGB/backups and all guest/audio continuity;
+PCM changes in V-Rally/Sonic. The player LeafGreen replay retains RGB/PCM and
+its prior frame-930 mismatch. These do not close the full-stream accuracy gate.
 
 | Stage / priority | Work | Exit evidence |
 | --- | --- | --- |
 | R1 / P0: LeafGreen menu (three-way model comparison delivered; pixel qualification open) | Menu state matches; NBA agrees with mGBA on its color, while the 2244-case matrix exposes broader disagreement in rounding and palette bit 15 | Establish independently justified expected rounding and palette-bit behavior before correcting the renderer or passing the menu gate; existing arithmetic tests preserve behavior without certifying hardware |
-| R2 / P0: Timing and bus accuracy (refill resumption delivered; waiting-fetch counterexample recorded) | All 36 refill, 144 forms, 48 data and 96 earlier normalized rows match NBA. The new fetch probe matches 10/16 rows; release-time DMA/IRQ exposes different guest registers and return links, also on CLDC. Actual activation remains immediate; frame 930 remains open | Fix waiting opcode-fetch handoff and preserve IRQ acceptance across DMA yields. Then qualify scheduled activation cancellation/re-enable/deduplication; retain the matrices/budgets and extend prefetch, IRQ-line latency and timer evidence |
+| R2 / P0: Timing and bus accuracy (waiting-fetch resumption delivered) | All 16 fetch, 120 IRQ-edge, 36 refill, 144 forms, 48 data and 96 earlier normalized rows match NBA on host and actual CLDC classes. Waiting accesses retain IRQ acceptance and bounded DMA progress. Actual activation remains immediate; frame 930 remains open | Qualify discarded IRQ fetch waits/prefetch and scheduled activation cancellation/re-enable/deduplication. Preserve the matrices/budgets; extend opcode latching, IRQ-line latency and timer evidence |
 | R3 / P1: Audio correctness | Start with late Sonic Advance 3 and Wario Land 4 differences; compare timer/DMA FIFO events, PSG state and sample clocks; distinguish guest-state errors from output gain, filter and resampling differences | Repeatable event/sample checkpoints, justified comparison tolerances and listening review; no unexplained divergence in the selected routes and zero software buffer failures |
 | R4 / P1: Gameplay and player saves (second LeafGreen cross-load delivered) | A one-tile indoor route creates generation 2; four cold cross-loads restore the exact room in both emulators. New saves still differ in 667 bytes. Extend routes to levels, races, battles and other titles | Named reference checkpoints for all eleven titles; save-capable games restore latest progress from isolated copies, with explicit strict binary/full-stream outcomes |
 | R5 / P2: Sustained Linux playback | After route correctness passes, profile bottlenecks, optimize one at a time, and run the warmup/measurement protocol below | Three 10-minute runs per qualified scenario after 30-second warmup, actual presentation/audio counters, bounded memory/queues and A/V drift; all acceptance gates below pass |
@@ -251,8 +260,13 @@ execution and physical-device access remain separate gates.
    the specific release-time gap: the waiting ADD retires at 5 in NBA but at 9
    in BerryBoy without IRQ; with IRQ, the handler precedes ADD and changes the
    equal-cycle guest state/return link. Preserve waiting-fetch context and IRQ
-   acceptance before introducing delayed activation. Keep raw in-flight
-   snapshots distinct from retirement.
+   acceptance before introducing delayed activation. That correction is now
+   delivered: all 16 rows match, plus 120 assertion/deassertion observations;
+   83 regressions retain HALT/fault handling and four long-DMA frame/audio
+   budgets. DMA-only fixtures now call the controller directly without changing
+   expected ownership cycles or bytes. Next qualify wider discarded IRQ fetch
+   costs/prefetch and request activation/lifecycle. Keep raw in-flight snapshots
+   distinct from retirement.
    A separate
    [ROM DMA source correction](REFERENCE-VALIDATION.md#dma-game-pak-source-addressing-and-next-timing-boundary)
    matches 24 original reference cases and preserves the whole replay's RGB/PCM,

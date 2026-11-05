@@ -40,10 +40,10 @@ class DmaControllerTest {
         m.clock.advanceTo(959);
         assertThat(m.memory.dma().runPending()).isFalse();
         m.clock.advanceTo(960);
-        m.cpu.step();
+        assertThat(m.memory.dma().runPending()).isTrue();
         assertThat(m.memory.read16(0x03000000)).isEqualTo(0x1111);
         m.clock.advanceTo(1232 + 960);
-        m.cpu.step();
+        assertThat(m.memory.dma().runPending()).isTrue();
         assertThat(m.memory.read16(0x03000000)).isEqualTo(0x2222);
         assertThat(m.memory.read16(DMA + 12 + 10) & 0x8000).isEqualTo(0x8000);
     }

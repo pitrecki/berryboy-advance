@@ -1,4 +1,32 @@
-Latest opcode-fetch/IRQ diagnosis: 2026-11-05 UTC
+Latest waiting-fetch/IRQ correction: 2026-11-05 UTC
+Host: Eclipse Temurin 21.0.8+9, Maven 3.9.11, Linux x86_64
+mvn verify (default and native profiles): 1593 passed; 0 failed/errors/skipped.
+Jupiter console host: 1593 passed; 0 failed/skipped.
+Exported core console: 1487 passed; 0 failed/skipped.
+Actual new ECJ CLDC classes: 1487 passed; 0 failed/skipped.
+Native JDE/ECJ/RAPC build: passed; new COD emitted; 475 syntax rewrites.
+
+Waiting opcode/discarded-IRQ fetches retain address/mode and IRQ acceptance
+across DMA yields, then receive one access after the completed interval. The
+16-row matrix improves 10 -> 16; the new 120-row IRQ assertion/deassertion
+matrix improves 48 -> 120. Existing 36 refill/144 forms/48 data/96 normalized
+CPU rows remain exact; all six matrices match on actual new CLDC classes too.
+All 83 new core cases pass. Prior CPU fails 47, passes 36 with an inert false
+fetchInFlight() compatibility query, without emulation changes. Four 65536-word
+transfers preserve frame/audio budgets and accepted IRQ decisions. HALT,
+deferred fetch faults and bank timing are checked. DMA-only repeated-transfer
+fixtures now use the controller port; expected timing, FIFO and EEPROM bytes
+are unchanged. No production activation/lifecycle correction is claimed.
+Eleven-game replay: 39600 guest frames / 21725550 stereo samples, zero missing
+frames/software-buffer failures. Whole RGB/backups unchanged; four initialization
+saves written. PCM changes only in V-Rally/Sonic. Reused RGB888 exact-frame sets
+unchanged, no gains/losses; full streams remain unmatched. Player LeafGreen
+preserves RGB/PCM, final cycles/samples, three video states and original save;
+still 1111/1272 exact RGB555 frames, first difference 930. No gameplay/physical
+playback pass.
+See benchmarks/cpu-fetch-resume-2026-11-05.json.
+
+Previous opcode-fetch/IRQ diagnosis: 2026-11-05 UTC
 Tools/docs only; production and test sources unchanged from f77c4e2.
 NBA comparison: 10/16 rows and 4/8 scenarios match; all eight readiness-5
 control rows match. Requests at DMA release expose six differences. Without
