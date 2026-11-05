@@ -1,0 +1,1698 @@
+{
+  "date": "2026-11-05",
+  "source_base_commit": "1f490d9a2c97b440a7b05551fd2338f9c8d07003",
+  "source_dirty": true,
+  "change": "Prepare reusable CPU data operations; arbitrate and resume before each access without replay; preserve SWP lock and final writeback/status/PC; break CPU Game Pak data sequencing after DMA",
+  "hardware": "Linux x86_64 cloud host; Temurin 21.0.8+9; Maven 3.9.11; no physical GBA/Bold",
+  "independent_comparison": {
+    "reference_commit": "55b5cf0ae3d929582ac5bfd486558173502b8354",
+    "reference_tracked_source_unmodified": true,
+    "normalization": "NBA immediate normal DMA3 enables two cycles before readiness; age request by one for readiness 1. Java injects raw readiness 1/2 through HBlank DMA3; production activation unchanged.",
+    "rows": 48,
+    "matching_before": 12,
+    "matching_without_data_sequence_reset": 42,
+    "matching_after": 48,
+    "programs": [
+      "ARM/Thumb LDR",
+      "ARM/Thumb two-register LDM with writeback"
+    ],
+    "data_regions": [
+      "IWRAM",
+      "Game Pak ROM"
+    ],
+    "dma_sources": [
+      "IWRAM",
+      "EWRAM",
+      "Game Pak ROM"
+    ],
+    "readiness_cycles": [
+      1,
+      2
+    ],
+    "dma_words": 2,
+    "compared_fields": [
+      "cycle",
+      "r0",
+      "r3",
+      "r2",
+      "pc"
+    ],
+    "cases": [
+      {
+        "reference": {
+          "mode": "arm",
+          "program": "ldr",
+          "data": "0x03000200",
+          "source": "0x03000000",
+          "ready": "1",
+          "cycle": "9",
+          "r0": "67305985",
+          "r3": "0",
+          "r2": "0x03000200",
+          "pc": "0x03000004"
+        },
+        "before_differences": {
+          "cycle": "8",
+          "r0": "305419896"
+        },
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "arm",
+          "program": "ldr",
+          "data": "0x03000200",
+          "source": "0x03000000",
+          "ready": "2",
+          "cycle": "8",
+          "r0": "305419896",
+          "r3": "0",
+          "r2": "0x03000200",
+          "pc": "0x03000004"
+        },
+        "before_differences": {},
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "arm",
+          "program": "ldr",
+          "data": "0x03000200",
+          "source": "0x02000000",
+          "ready": "1",
+          "cycle": "19",
+          "r0": "67305985",
+          "r3": "0",
+          "r2": "0x03000200",
+          "pc": "0x03000004"
+        },
+        "before_differences": {
+          "cycle": "18",
+          "r0": "305419896"
+        },
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "arm",
+          "program": "ldr",
+          "data": "0x03000200",
+          "source": "0x02000000",
+          "ready": "2",
+          "cycle": "18",
+          "r0": "305419896",
+          "r3": "0",
+          "r2": "0x03000200",
+          "pc": "0x03000004"
+        },
+        "before_differences": {},
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "arm",
+          "program": "ldr",
+          "data": "0x03000200",
+          "source": "0x08000000",
+          "ready": "1",
+          "cycle": "21",
+          "r0": "67305985",
+          "r3": "0",
+          "r2": "0x03000200",
+          "pc": "0x03000004"
+        },
+        "before_differences": {
+          "cycle": "20",
+          "r0": "305419896"
+        },
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "arm",
+          "program": "ldr",
+          "data": "0x03000200",
+          "source": "0x08000000",
+          "ready": "2",
+          "cycle": "20",
+          "r0": "305419896",
+          "r3": "0",
+          "r2": "0x03000200",
+          "pc": "0x03000004"
+        },
+        "before_differences": {},
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "arm",
+          "program": "ldr",
+          "data": "0x08000100",
+          "source": "0x03000000",
+          "ready": "1",
+          "cycle": "16",
+          "r0": "67305985",
+          "r3": "0",
+          "r2": "0x08000100",
+          "pc": "0x03000004"
+        },
+        "before_differences": {
+          "cycle": "15"
+        },
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "arm",
+          "program": "ldr",
+          "data": "0x08000100",
+          "source": "0x03000000",
+          "ready": "2",
+          "cycle": "15",
+          "r0": "67305985",
+          "r3": "0",
+          "r2": "0x08000100",
+          "pc": "0x03000004"
+        },
+        "before_differences": {},
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "arm",
+          "program": "ldr",
+          "data": "0x08000100",
+          "source": "0x02000000",
+          "ready": "1",
+          "cycle": "26",
+          "r0": "67305985",
+          "r3": "0",
+          "r2": "0x08000100",
+          "pc": "0x03000004"
+        },
+        "before_differences": {
+          "cycle": "25"
+        },
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "arm",
+          "program": "ldr",
+          "data": "0x08000100",
+          "source": "0x02000000",
+          "ready": "2",
+          "cycle": "25",
+          "r0": "67305985",
+          "r3": "0",
+          "r2": "0x08000100",
+          "pc": "0x03000004"
+        },
+        "before_differences": {},
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "arm",
+          "program": "ldr",
+          "data": "0x08000100",
+          "source": "0x08000000",
+          "ready": "1",
+          "cycle": "28",
+          "r0": "67305985",
+          "r3": "0",
+          "r2": "0x08000100",
+          "pc": "0x03000004"
+        },
+        "before_differences": {
+          "cycle": "27"
+        },
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "arm",
+          "program": "ldr",
+          "data": "0x08000100",
+          "source": "0x08000000",
+          "ready": "2",
+          "cycle": "27",
+          "r0": "67305985",
+          "r3": "0",
+          "r2": "0x08000100",
+          "pc": "0x03000004"
+        },
+        "before_differences": {},
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "arm",
+          "program": "ldm",
+          "data": "0x03000200",
+          "source": "0x03000000",
+          "ready": "1",
+          "cycle": "10",
+          "r0": "67305985",
+          "r3": "134678021",
+          "r2": "0x03000208",
+          "pc": "0x03000004"
+        },
+        "before_differences": {
+          "cycle": "9",
+          "r0": "305419896",
+          "r3": "305419897"
+        },
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "arm",
+          "program": "ldm",
+          "data": "0x03000200",
+          "source": "0x03000000",
+          "ready": "2",
+          "cycle": "10",
+          "r0": "305419896",
+          "r3": "134678021",
+          "r2": "0x03000208",
+          "pc": "0x03000004"
+        },
+        "before_differences": {
+          "cycle": "9",
+          "r3": "305419897"
+        },
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "arm",
+          "program": "ldm",
+          "data": "0x03000200",
+          "source": "0x02000000",
+          "ready": "1",
+          "cycle": "20",
+          "r0": "67305985",
+          "r3": "134678021",
+          "r2": "0x03000208",
+          "pc": "0x03000004"
+        },
+        "before_differences": {
+          "cycle": "19",
+          "r0": "305419896",
+          "r3": "305419897"
+        },
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "arm",
+          "program": "ldm",
+          "data": "0x03000200",
+          "source": "0x02000000",
+          "ready": "2",
+          "cycle": "20",
+          "r0": "305419896",
+          "r3": "134678021",
+          "r2": "0x03000208",
+          "pc": "0x03000004"
+        },
+        "before_differences": {
+          "cycle": "19",
+          "r3": "305419897"
+        },
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "arm",
+          "program": "ldm",
+          "data": "0x03000200",
+          "source": "0x08000000",
+          "ready": "1",
+          "cycle": "22",
+          "r0": "67305985",
+          "r3": "134678021",
+          "r2": "0x03000208",
+          "pc": "0x03000004"
+        },
+        "before_differences": {
+          "cycle": "21",
+          "r0": "305419896",
+          "r3": "305419897"
+        },
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "arm",
+          "program": "ldm",
+          "data": "0x03000200",
+          "source": "0x08000000",
+          "ready": "2",
+          "cycle": "22",
+          "r0": "305419896",
+          "r3": "134678021",
+          "r2": "0x03000208",
+          "pc": "0x03000004"
+        },
+        "before_differences": {
+          "cycle": "21",
+          "r3": "305419897"
+        },
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "arm",
+          "program": "ldm",
+          "data": "0x08000100",
+          "source": "0x03000000",
+          "ready": "1",
+          "cycle": "22",
+          "r0": "67305985",
+          "r3": "134678021",
+          "r2": "0x08000108",
+          "pc": "0x03000004"
+        },
+        "before_differences": {
+          "cycle": "21"
+        },
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "arm",
+          "program": "ldm",
+          "data": "0x08000100",
+          "source": "0x03000000",
+          "ready": "2",
+          "cycle": "24",
+          "r0": "67305985",
+          "r3": "134678021",
+          "r2": "0x08000108",
+          "pc": "0x03000004"
+        },
+        "before_differences": {
+          "cycle": "21"
+        },
+        "before_sequence_reset_differences": {
+          "cycle": "22"
+        },
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "arm",
+          "program": "ldm",
+          "data": "0x08000100",
+          "source": "0x02000000",
+          "ready": "1",
+          "cycle": "32",
+          "r0": "67305985",
+          "r3": "134678021",
+          "r2": "0x08000108",
+          "pc": "0x03000004"
+        },
+        "before_differences": {
+          "cycle": "31"
+        },
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "arm",
+          "program": "ldm",
+          "data": "0x08000100",
+          "source": "0x02000000",
+          "ready": "2",
+          "cycle": "34",
+          "r0": "67305985",
+          "r3": "134678021",
+          "r2": "0x08000108",
+          "pc": "0x03000004"
+        },
+        "before_differences": {
+          "cycle": "31"
+        },
+        "before_sequence_reset_differences": {
+          "cycle": "32"
+        },
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "arm",
+          "program": "ldm",
+          "data": "0x08000100",
+          "source": "0x08000000",
+          "ready": "1",
+          "cycle": "34",
+          "r0": "67305985",
+          "r3": "134678021",
+          "r2": "0x08000108",
+          "pc": "0x03000004"
+        },
+        "before_differences": {
+          "cycle": "33"
+        },
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "arm",
+          "program": "ldm",
+          "data": "0x08000100",
+          "source": "0x08000000",
+          "ready": "2",
+          "cycle": "36",
+          "r0": "67305985",
+          "r3": "134678021",
+          "r2": "0x08000108",
+          "pc": "0x03000004"
+        },
+        "before_differences": {
+          "cycle": "33"
+        },
+        "before_sequence_reset_differences": {
+          "cycle": "34"
+        },
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "thumb",
+          "program": "ldr",
+          "data": "0x03000200",
+          "source": "0x03000000",
+          "ready": "1",
+          "cycle": "9",
+          "r0": "67305985",
+          "r3": "0",
+          "r2": "0x03000200",
+          "pc": "0x03000002"
+        },
+        "before_differences": {
+          "cycle": "8",
+          "r0": "305419896"
+        },
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "thumb",
+          "program": "ldr",
+          "data": "0x03000200",
+          "source": "0x03000000",
+          "ready": "2",
+          "cycle": "8",
+          "r0": "305419896",
+          "r3": "0",
+          "r2": "0x03000200",
+          "pc": "0x03000002"
+        },
+        "before_differences": {},
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "thumb",
+          "program": "ldr",
+          "data": "0x03000200",
+          "source": "0x02000000",
+          "ready": "1",
+          "cycle": "19",
+          "r0": "67305985",
+          "r3": "0",
+          "r2": "0x03000200",
+          "pc": "0x03000002"
+        },
+        "before_differences": {
+          "cycle": "18",
+          "r0": "305419896"
+        },
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "thumb",
+          "program": "ldr",
+          "data": "0x03000200",
+          "source": "0x02000000",
+          "ready": "2",
+          "cycle": "18",
+          "r0": "305419896",
+          "r3": "0",
+          "r2": "0x03000200",
+          "pc": "0x03000002"
+        },
+        "before_differences": {},
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "thumb",
+          "program": "ldr",
+          "data": "0x03000200",
+          "source": "0x08000000",
+          "ready": "1",
+          "cycle": "21",
+          "r0": "67305985",
+          "r3": "0",
+          "r2": "0x03000200",
+          "pc": "0x03000002"
+        },
+        "before_differences": {
+          "cycle": "20",
+          "r0": "305419896"
+        },
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "thumb",
+          "program": "ldr",
+          "data": "0x03000200",
+          "source": "0x08000000",
+          "ready": "2",
+          "cycle": "20",
+          "r0": "305419896",
+          "r3": "0",
+          "r2": "0x03000200",
+          "pc": "0x03000002"
+        },
+        "before_differences": {},
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "thumb",
+          "program": "ldr",
+          "data": "0x08000100",
+          "source": "0x03000000",
+          "ready": "1",
+          "cycle": "16",
+          "r0": "67305985",
+          "r3": "0",
+          "r2": "0x08000100",
+          "pc": "0x03000002"
+        },
+        "before_differences": {
+          "cycle": "15"
+        },
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "thumb",
+          "program": "ldr",
+          "data": "0x08000100",
+          "source": "0x03000000",
+          "ready": "2",
+          "cycle": "15",
+          "r0": "67305985",
+          "r3": "0",
+          "r2": "0x08000100",
+          "pc": "0x03000002"
+        },
+        "before_differences": {},
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "thumb",
+          "program": "ldr",
+          "data": "0x08000100",
+          "source": "0x02000000",
+          "ready": "1",
+          "cycle": "26",
+          "r0": "67305985",
+          "r3": "0",
+          "r2": "0x08000100",
+          "pc": "0x03000002"
+        },
+        "before_differences": {
+          "cycle": "25"
+        },
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "thumb",
+          "program": "ldr",
+          "data": "0x08000100",
+          "source": "0x02000000",
+          "ready": "2",
+          "cycle": "25",
+          "r0": "67305985",
+          "r3": "0",
+          "r2": "0x08000100",
+          "pc": "0x03000002"
+        },
+        "before_differences": {},
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "thumb",
+          "program": "ldr",
+          "data": "0x08000100",
+          "source": "0x08000000",
+          "ready": "1",
+          "cycle": "28",
+          "r0": "67305985",
+          "r3": "0",
+          "r2": "0x08000100",
+          "pc": "0x03000002"
+        },
+        "before_differences": {
+          "cycle": "27"
+        },
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "thumb",
+          "program": "ldr",
+          "data": "0x08000100",
+          "source": "0x08000000",
+          "ready": "2",
+          "cycle": "27",
+          "r0": "67305985",
+          "r3": "0",
+          "r2": "0x08000100",
+          "pc": "0x03000002"
+        },
+        "before_differences": {},
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "thumb",
+          "program": "ldm",
+          "data": "0x03000200",
+          "source": "0x03000000",
+          "ready": "1",
+          "cycle": "10",
+          "r0": "67305985",
+          "r3": "134678021",
+          "r2": "0x03000208",
+          "pc": "0x03000002"
+        },
+        "before_differences": {
+          "cycle": "9",
+          "r0": "305419896",
+          "r3": "305419897"
+        },
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "thumb",
+          "program": "ldm",
+          "data": "0x03000200",
+          "source": "0x03000000",
+          "ready": "2",
+          "cycle": "10",
+          "r0": "305419896",
+          "r3": "134678021",
+          "r2": "0x03000208",
+          "pc": "0x03000002"
+        },
+        "before_differences": {
+          "cycle": "9",
+          "r3": "305419897"
+        },
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "thumb",
+          "program": "ldm",
+          "data": "0x03000200",
+          "source": "0x02000000",
+          "ready": "1",
+          "cycle": "20",
+          "r0": "67305985",
+          "r3": "134678021",
+          "r2": "0x03000208",
+          "pc": "0x03000002"
+        },
+        "before_differences": {
+          "cycle": "19",
+          "r0": "305419896",
+          "r3": "305419897"
+        },
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "thumb",
+          "program": "ldm",
+          "data": "0x03000200",
+          "source": "0x02000000",
+          "ready": "2",
+          "cycle": "20",
+          "r0": "305419896",
+          "r3": "134678021",
+          "r2": "0x03000208",
+          "pc": "0x03000002"
+        },
+        "before_differences": {
+          "cycle": "19",
+          "r3": "305419897"
+        },
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "thumb",
+          "program": "ldm",
+          "data": "0x03000200",
+          "source": "0x08000000",
+          "ready": "1",
+          "cycle": "22",
+          "r0": "67305985",
+          "r3": "134678021",
+          "r2": "0x03000208",
+          "pc": "0x03000002"
+        },
+        "before_differences": {
+          "cycle": "21",
+          "r0": "305419896",
+          "r3": "305419897"
+        },
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "thumb",
+          "program": "ldm",
+          "data": "0x03000200",
+          "source": "0x08000000",
+          "ready": "2",
+          "cycle": "22",
+          "r0": "305419896",
+          "r3": "134678021",
+          "r2": "0x03000208",
+          "pc": "0x03000002"
+        },
+        "before_differences": {
+          "cycle": "21",
+          "r3": "305419897"
+        },
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "thumb",
+          "program": "ldm",
+          "data": "0x08000100",
+          "source": "0x03000000",
+          "ready": "1",
+          "cycle": "22",
+          "r0": "67305985",
+          "r3": "134678021",
+          "r2": "0x08000108",
+          "pc": "0x03000002"
+        },
+        "before_differences": {
+          "cycle": "21"
+        },
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "thumb",
+          "program": "ldm",
+          "data": "0x08000100",
+          "source": "0x03000000",
+          "ready": "2",
+          "cycle": "24",
+          "r0": "67305985",
+          "r3": "134678021",
+          "r2": "0x08000108",
+          "pc": "0x03000002"
+        },
+        "before_differences": {
+          "cycle": "21"
+        },
+        "before_sequence_reset_differences": {
+          "cycle": "22"
+        },
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "thumb",
+          "program": "ldm",
+          "data": "0x08000100",
+          "source": "0x02000000",
+          "ready": "1",
+          "cycle": "32",
+          "r0": "67305985",
+          "r3": "134678021",
+          "r2": "0x08000108",
+          "pc": "0x03000002"
+        },
+        "before_differences": {
+          "cycle": "31"
+        },
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "thumb",
+          "program": "ldm",
+          "data": "0x08000100",
+          "source": "0x02000000",
+          "ready": "2",
+          "cycle": "34",
+          "r0": "67305985",
+          "r3": "134678021",
+          "r2": "0x08000108",
+          "pc": "0x03000002"
+        },
+        "before_differences": {
+          "cycle": "31"
+        },
+        "before_sequence_reset_differences": {
+          "cycle": "32"
+        },
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "thumb",
+          "program": "ldm",
+          "data": "0x08000100",
+          "source": "0x08000000",
+          "ready": "1",
+          "cycle": "34",
+          "r0": "67305985",
+          "r3": "134678021",
+          "r2": "0x08000108",
+          "pc": "0x03000002"
+        },
+        "before_differences": {
+          "cycle": "33"
+        },
+        "before_sequence_reset_differences": {},
+        "after_matches_reference": true
+      },
+      {
+        "reference": {
+          "mode": "thumb",
+          "program": "ldm",
+          "data": "0x08000100",
+          "source": "0x08000000",
+          "ready": "2",
+          "cycle": "36",
+          "r0": "67305985",
+          "r3": "134678021",
+          "r2": "0x08000108",
+          "pc": "0x03000002"
+        },
+        "before_differences": {
+          "cycle": "33"
+        },
+        "before_sequence_reset_differences": {
+          "cycle": "34"
+        },
+        "after_matches_reference": true
+      }
+    ],
+    "existing_ready_normalized_rows": 96,
+    "existing_ready_normalized_matches": 96,
+    "production_request_matrix_unchanged": true,
+    "production_request_matches": 24,
+    "scope": "Selected data-bus and retirement observations only; no general hardware/pipeline or activation qualification"
+  },
+  "regressions": {
+    "new_core_cases": 39,
+    "before_failures": 32,
+    "before_passes": 7,
+    "after_passes": 39,
+    "intermediate_sequence_failures": 6,
+    "coverage": [
+      "24 IWRAM single/multiple loads with per-access readiness and no replay",
+      "6 Game Pak LDM sequence-reset cases",
+      "W1C interrupt acknowledge is not replayed by resumed ARM/Thumb STM",
+      "SWP arbitrates before read and locks paired write",
+      "PUSH/POP resume between accesses, keep stack/PC semantics",
+      "DMA release grants one waiting access before a new interval",
+      "SPSR restore and original-bank writeback follow final LDM read",
+      "65536-word DMA yields at frame/audio budget and preserves decoded opcode after code overwrite"
+    ]
+  },
+  "validation": {
+    "host_tests": 1458,
+    "console_host_tests": 1458,
+    "exported_core_tests": 1352,
+    "actual_new_ecj_cldc_core_tests": 1352,
+    "failures": 0,
+    "skipped": 0,
+    "syntax_rewrites": 472,
+    "native_ecj_rapc": "BUILD SUCCESS; No errors; new COD emitted"
+  },
+  "game_regression": {
+    "input": "benchmarks/inputs/eleven-game-start-a.tsv",
+    "comparison_baseline": "benchmarks/dma-internal-resume-2026-11-05.json",
+    "comparison_baseline_sha256": "2a5f349d98b694e4729511b9c2ac78bbaf7b62af48d221f99993b83c02763b53",
+    "games": 11,
+    "frames_per_game": 3600,
+    "total_frames": 39600,
+    "total_stereo_samples": 21725550,
+    "missing_guest_frames": 0,
+    "audio_overruns": 0,
+    "audio_underruns": 0,
+    "changed_rgb_titles": [
+      "AGFE",
+      "B3SE"
+    ],
+    "changed_pcm_titles": [
+      "AVRE",
+      "B3SE",
+      "BPEE",
+      "BPGE"
+    ],
+    "all_backups_unchanged": true,
+    "game_written_save_files": 4,
+    "runs": [
+      {
+        "game_code": "AGFE",
+        "title": "Golden Sun - The Lost Age (USA)",
+        "rom_sha256": "4199d82f845edf3e2e92f3783bca00190b5bc102d7c8aa339b951de280b1e6cc",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "rtc_seed": "2000-01-01T00:00:00",
+        "frames": 3600,
+        "warmup_frames": 0,
+        "guest_cycles": 1011225609,
+        "audio_frames": 1975050,
+        "initial_save_sha256": null,
+        "video_sha256": "01e95c082118cc1d48fd0783359816fc98e0bf6a0806361d7e4cbc78fe0b4d99",
+        "audio_sha256": "e1215c0291a0e138b319ca9b3b9d50728ba8c049ba1bc9382f686cdf4b8e959a",
+        "backup_sha256": "71189f7fb6aed638640078fba3a35fda6c39c8962e74dcc75935aac948da9063",
+        "save_written": false,
+        "dropped_guest_frames": 0,
+        "audio_overruns": 0,
+        "audio_underruns": 0,
+        "previous_video_unchanged": false,
+        "previous_audio_unchanged": true,
+        "previous_backup_unchanged": true,
+        "reference_rgb888_comparison": {
+          "before": {
+            "status": "mismatch",
+            "exact_video_frames": 2133,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975052,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "after": {
+            "status": "mismatch",
+            "exact_video_frames": 2133,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975052,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "reference_pixel_format": "RGB888",
+          "gained_exact_frame_ids": [],
+          "lost_exact_frame_ids": [],
+          "reference_report_sha256": "927aa0599efbacade5c250ba6daa16b0c6d4c7f1f64ef53145fa541c0814c883"
+        }
+      },
+      {
+        "game_code": "AGSE",
+        "title": "Golden Sun (USA)",
+        "rom_sha256": "c14f1151897e8d73f25ffdd67e21eebb6dc57973ff2458872ee89fa9060aaca1",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "rtc_seed": "2000-01-01T00:00:00",
+        "frames": 3600,
+        "warmup_frames": 0,
+        "guest_cycles": 1011225600,
+        "audio_frames": 1975050,
+        "initial_save_sha256": null,
+        "video_sha256": "988bc197cbd1d5013bb9d2e4ab098a0b755723bcd96f4998b6ea950b4c661dc3",
+        "audio_sha256": "d6be2e47e18884c9112df8f6f681220d7323a358e5e53661c9256800af112b66",
+        "backup_sha256": "71189f7fb6aed638640078fba3a35fda6c39c8962e74dcc75935aac948da9063",
+        "save_written": false,
+        "dropped_guest_frames": 0,
+        "audio_overruns": 0,
+        "audio_underruns": 0,
+        "previous_video_unchanged": true,
+        "previous_audio_unchanged": true,
+        "previous_backup_unchanged": true,
+        "reference_rgb888_comparison": {
+          "before": {
+            "status": "mismatch",
+            "exact_video_frames": 911,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975052,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "after": {
+            "status": "mismatch",
+            "exact_video_frames": 911,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975052,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "reference_pixel_format": "RGB888",
+          "gained_exact_frame_ids": [],
+          "lost_exact_frame_ids": [],
+          "reference_report_sha256": "7dbf2c53c725fe163482c4322c9d526b4e91e7207450b0d4b5d75c10b334e57f"
+        }
+      },
+      {
+        "game_code": "AMTE",
+        "title": "Metroid Fusion (USA)",
+        "rom_sha256": "a56ce3d7f8f3f4f4d0468d421fff5dd3ee3aec99a58244377e43aae769dc3fe8",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "rtc_seed": "2000-01-01T00:00:00",
+        "frames": 3600,
+        "warmup_frames": 0,
+        "guest_cycles": 1011225600,
+        "audio_frames": 1975050,
+        "initial_save_sha256": null,
+        "video_sha256": "7c63270973194cc973b139295f1e1a313954184941e7f9378f3d9d4cefe54759",
+        "audio_sha256": "0dfca2dcd145643058d4b13878df5b4544a6041dbbd15f52a96e24b8832b926f",
+        "backup_sha256": "5b7becd1c51999f6f13359f1515672056849788383af8a2834a6ce69b94aa4f0",
+        "save_written": true,
+        "dropped_guest_frames": 0,
+        "audio_overruns": 0,
+        "audio_underruns": 0,
+        "previous_video_unchanged": true,
+        "previous_audio_unchanged": true,
+        "previous_backup_unchanged": true,
+        "reference_rgb888_comparison": {
+          "before": {
+            "status": "mismatch",
+            "exact_video_frames": 699,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975052,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "after": {
+            "status": "mismatch",
+            "exact_video_frames": 699,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975052,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "reference_pixel_format": "RGB888",
+          "gained_exact_frame_ids": [],
+          "lost_exact_frame_ids": [],
+          "reference_report_sha256": "67c2631e995adf79655f57c7f8e55d47dbfd9abcec94aa1b5bd800b495ab5e3b"
+        }
+      },
+      {
+        "game_code": "AVRE",
+        "title": "V-Rally 3 (USA)",
+        "rom_sha256": "5818fa74fdcacf39b53a1acea99432c4362979dd656c8153fd9861094aca51f7",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "rtc_seed": "2000-01-01T00:00:00",
+        "frames": 3600,
+        "warmup_frames": 0,
+        "guest_cycles": 1011225654,
+        "audio_frames": 1975050,
+        "initial_save_sha256": null,
+        "video_sha256": "0201bafe4bc96886d8f09641193d3b76045e219d7833b6886d6fb9ea07e992c2",
+        "audio_sha256": "0286f2a027579f18ce2c6f816b86b13778c21774570bcfe3756a89d54c929e8c",
+        "backup_sha256": "7d2c7ac4888bfd75cd5f56e8d61f69595121183afc81556c876732fd3782c62f",
+        "save_written": false,
+        "dropped_guest_frames": 0,
+        "audio_overruns": 0,
+        "audio_underruns": 0,
+        "previous_video_unchanged": true,
+        "previous_audio_unchanged": false,
+        "previous_backup_unchanged": true,
+        "reference_rgb888_comparison": {
+          "before": {
+            "status": "mismatch",
+            "exact_video_frames": 3231,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975048,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "after": {
+            "status": "mismatch",
+            "exact_video_frames": 3231,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975048,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "reference_pixel_format": "RGB888",
+          "gained_exact_frame_ids": [],
+          "lost_exact_frame_ids": [],
+          "reference_report_sha256": "92b192a9bddc979bba7b967f00076b2440701d502e3e0548b7ecf1064c6f1979"
+        }
+      },
+      {
+        "game_code": "AWAE",
+        "title": "Wario Land 4 (USA)",
+        "rom_sha256": "d16c7bf6e62bb84049fff1b387108fbd1e6e2cd38ca994ab5310dd9cbf9ba414",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "rtc_seed": "2000-01-01T00:00:00",
+        "frames": 3600,
+        "warmup_frames": 0,
+        "guest_cycles": 1011225600,
+        "audio_frames": 1975050,
+        "initial_save_sha256": null,
+        "video_sha256": "607471de81655b1834b765c46f268ca4adca4943db7e0f818745ca85b2e9a00d",
+        "audio_sha256": "b0fd4236a1604dbf48df3d3b3401864b78cbd6888f9dfaa78d321fa33dca4dff",
+        "backup_sha256": "fe405055a8c4a9d22ae94d03f6ee4f851b7869ac4f76eb3254c7888398b37903",
+        "save_written": true,
+        "dropped_guest_frames": 0,
+        "audio_overruns": 0,
+        "audio_underruns": 0,
+        "previous_video_unchanged": true,
+        "previous_audio_unchanged": true,
+        "previous_backup_unchanged": true,
+        "reference_rgb888_comparison": {
+          "before": {
+            "status": "mismatch",
+            "exact_video_frames": 2144,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975052,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "after": {
+            "status": "mismatch",
+            "exact_video_frames": 2144,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975052,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "reference_pixel_format": "RGB888",
+          "gained_exact_frame_ids": [],
+          "lost_exact_frame_ids": [],
+          "reference_report_sha256": "f72ef5ca64743acb4ebf322dc7f227dee7120da379efc71614c10781269eb4be"
+        }
+      },
+      {
+        "game_code": "AZEE",
+        "title": "Zone of the Enders - The Fist of Mars (USA)",
+        "rom_sha256": "114fff29e5642300a9b3698916ecd86682aa6da0fd821065b7431ba8c059f0f2",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "rtc_seed": "2000-01-01T00:00:00",
+        "frames": 3600,
+        "warmup_frames": 0,
+        "guest_cycles": 1011225600,
+        "audio_frames": 1975050,
+        "initial_save_sha256": null,
+        "video_sha256": "941434e3c27502c2a4970cb580dad9806c3f01c1d8057f2f8bb578cd13bdb6db",
+        "audio_sha256": "851fc9a5f4f3473d7e6d57b852bcbe54395bdfb22f0a3a0fc4b0d18274fb9c0b",
+        "backup_sha256": "71189f7fb6aed638640078fba3a35fda6c39c8962e74dcc75935aac948da9063",
+        "save_written": false,
+        "dropped_guest_frames": 0,
+        "audio_overruns": 0,
+        "audio_underruns": 0,
+        "previous_video_unchanged": true,
+        "previous_audio_unchanged": true,
+        "previous_backup_unchanged": true,
+        "reference_rgb888_comparison": {
+          "before": {
+            "status": "mismatch",
+            "exact_video_frames": 578,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975048,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "after": {
+            "status": "mismatch",
+            "exact_video_frames": 578,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975048,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "reference_pixel_format": "RGB888",
+          "gained_exact_frame_ids": [],
+          "lost_exact_frame_ids": [],
+          "reference_report_sha256": "c4a9f503d66428480243bb77a53a52568e8ee839bb1d438a45f29ef3e35c7da5"
+        }
+      },
+      {
+        "game_code": "B3SE",
+        "title": "Sonic Advance 3 (USA)",
+        "rom_sha256": "f937fa93b97b14b9fb9fce98844c534f936222d21d1fdb5f1af42292bad32c85",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "rtc_seed": "2000-01-01T00:00:00",
+        "frames": 3600,
+        "warmup_frames": 0,
+        "guest_cycles": 1011225600,
+        "audio_frames": 1975050,
+        "initial_save_sha256": null,
+        "video_sha256": "44b6c8460d04cd3f76042ebc861987711d540f5273382a822e36bcd4517cc505",
+        "audio_sha256": "75262a962ca1871bc91c7e34d9707a9e09e47470387020f01c51d3f1b2c98c6b",
+        "backup_sha256": "9d900aa5fddfccd3d528a98d7bf2aa44cb9613640cfb900c6c100e0606318d90",
+        "save_written": true,
+        "dropped_guest_frames": 0,
+        "audio_overruns": 0,
+        "audio_underruns": 0,
+        "previous_video_unchanged": false,
+        "previous_audio_unchanged": false,
+        "previous_backup_unchanged": true,
+        "reference_rgb888_comparison": {
+          "before": {
+            "status": "mismatch",
+            "exact_video_frames": 2812,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975048,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "after": {
+            "status": "mismatch",
+            "exact_video_frames": 2812,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975048,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "reference_pixel_format": "RGB888",
+          "gained_exact_frame_ids": [],
+          "lost_exact_frame_ids": [],
+          "reference_report_sha256": "50ae02d110d33148b297296bea70dc1c360475cc8f66061553f3bb2b4e854f38"
+        }
+      },
+      {
+        "game_code": "BGTE",
+        "title": "Grand Theft Auto Advance (USA)",
+        "rom_sha256": "215c574d5afbda0aadbf89dc76b765cfaaeb35953eab63f7687d8bfe8a8e0f4d",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "rtc_seed": "2000-01-01T00:00:00",
+        "frames": 3600,
+        "warmup_frames": 0,
+        "guest_cycles": 1011225600,
+        "audio_frames": 1975050,
+        "initial_save_sha256": null,
+        "video_sha256": "1ac108b912baf4fdfafbed542572dba0ca1cdb6a223f4084dacc3f2a73c3c04a",
+        "audio_sha256": "3d4193ae962eae1dea27a91e1577765ba7f5c4b08afd3250fe43eff0209fef82",
+        "backup_sha256": "9f56cda75fefeab90f6fa5d5ddc9601544b121732c5ecccab32e631060453a5d",
+        "save_written": false,
+        "dropped_guest_frames": 0,
+        "audio_overruns": 0,
+        "audio_underruns": 0,
+        "previous_video_unchanged": true,
+        "previous_audio_unchanged": true,
+        "previous_backup_unchanged": true,
+        "reference_rgb888_comparison": {
+          "before": {
+            "status": "mismatch",
+            "exact_video_frames": 3409,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975052,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "after": {
+            "status": "mismatch",
+            "exact_video_frames": 3409,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975052,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "reference_pixel_format": "RGB888",
+          "gained_exact_frame_ids": [],
+          "lost_exact_frame_ids": [],
+          "reference_report_sha256": "e4781c429f7de3a103332c7436676522ecd2e2ca34912602e0947824bc412be7"
+        }
+      },
+      {
+        "game_code": "BMXE",
+        "title": "Metroid - Zero Mission (USA)",
+        "rom_sha256": "fc94f65380b65b870a30b9b04b39cca1dc63d6e46a4a373d3904adc0912ebc37",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "rtc_seed": "2000-01-01T00:00:00",
+        "frames": 3600,
+        "warmup_frames": 0,
+        "guest_cycles": 1011225600,
+        "audio_frames": 1975050,
+        "initial_save_sha256": null,
+        "video_sha256": "b94a1673deb442521e935055b975db807068b042a4ed8acab76cfa4aaf8a7f84",
+        "audio_sha256": "79b846733d2b26ca2fe9bcac7b1ea09c48bee59c2cfe1e6777b32363aa7bd88a",
+        "backup_sha256": "e7ef5933b70b4e5866829363eeb0fa4799f43c152c3b39f3e9ca0e1ffe53df89",
+        "save_written": true,
+        "dropped_guest_frames": 0,
+        "audio_overruns": 0,
+        "audio_underruns": 0,
+        "previous_video_unchanged": true,
+        "previous_audio_unchanged": true,
+        "previous_backup_unchanged": true,
+        "reference_rgb888_comparison": {
+          "before": {
+            "status": "mismatch",
+            "exact_video_frames": 3196,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975048,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "after": {
+            "status": "mismatch",
+            "exact_video_frames": 3196,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975048,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "reference_pixel_format": "RGB888",
+          "gained_exact_frame_ids": [],
+          "lost_exact_frame_ids": [],
+          "reference_report_sha256": "ecd87dcd7efd1cc33fa69c0199eeff83ce20181807832cb81e6ccd3c057eadf8"
+        }
+      },
+      {
+        "game_code": "BPEE",
+        "title": "Pokemon Emerald Version (USA)",
+        "rom_sha256": "a9dec84dfe7f62ab2220bafaef7479da0929d066ece16a6885f6226db19085af",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "rtc_seed": "2000-01-01T00:00:00",
+        "frames": 3600,
+        "warmup_frames": 0,
+        "guest_cycles": 1011225603,
+        "audio_frames": 1975050,
+        "initial_save_sha256": null,
+        "video_sha256": "5dcd5d4b1ead03da7ac0bd4514374ec64cdccff9d63739aa89046710ce944d1e",
+        "audio_sha256": "227ba62bd995608ca1042e8fdaf57b50d32bdc8c452c3b1b5541b95ba381c92b",
+        "backup_sha256": "b5a41c3758763bbec72769fab4a2533bf2db0b6312d93d25a695f9e4b9e02260",
+        "save_written": false,
+        "dropped_guest_frames": 0,
+        "audio_overruns": 0,
+        "audio_underruns": 0,
+        "previous_video_unchanged": true,
+        "previous_audio_unchanged": false,
+        "previous_backup_unchanged": true,
+        "reference_rgb888_comparison": {
+          "before": {
+            "status": "mismatch",
+            "exact_video_frames": 2971,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975052,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "after": {
+            "status": "mismatch",
+            "exact_video_frames": 2971,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975052,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "reference_pixel_format": "RGB888",
+          "gained_exact_frame_ids": [],
+          "lost_exact_frame_ids": [],
+          "reference_report_sha256": "8d54023a3d5434403474c32d980ff5e46c2cf3913cbfaa59c4b89f1574ac0be2"
+        }
+      },
+      {
+        "game_code": "BPGE",
+        "title": "Pokemon LeafGreen Version (USA) (Rev-A)",
+        "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "rtc_seed": "2000-01-01T00:00:00",
+        "frames": 3600,
+        "warmup_frames": 0,
+        "guest_cycles": 1011225600,
+        "audio_frames": 1975050,
+        "initial_save_sha256": null,
+        "video_sha256": "d49919c30dab14080db1057861ea66c8ad5ae104d868fd66de2c4f41b0799945",
+        "audio_sha256": "b4f2000e7fd0864f324875d9793cedd5354224265484bfea1b15254d39aabcb0",
+        "backup_sha256": "b5a41c3758763bbec72769fab4a2533bf2db0b6312d93d25a695f9e4b9e02260",
+        "save_written": false,
+        "dropped_guest_frames": 0,
+        "audio_overruns": 0,
+        "audio_underruns": 0,
+        "previous_video_unchanged": true,
+        "previous_audio_unchanged": false,
+        "previous_backup_unchanged": true,
+        "reference_rgb888_comparison": {
+          "before": {
+            "status": "mismatch",
+            "exact_video_frames": 3475,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975052,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "after": {
+            "status": "mismatch",
+            "exact_video_frames": 3475,
+            "total_video_frames": 3600,
+            "first_video_mismatch": 10,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 1975052,
+            "berryboy_audio_frames": 1975050,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "reference_pixel_format": "RGB888",
+          "gained_exact_frame_ids": [],
+          "lost_exact_frame_ids": [],
+          "reference_report_sha256": "371f828f0536f63ce78e0a9c0d21c54e8651ada19ab895e4fe726ec65316c768"
+        }
+      }
+    ],
+    "reference_scope": "Reused independent mGBA RGB888/blip_buf captures, matched ROM/BIOS/input/RTC/fresh backups. Precision/filter/timing gaps remain; exact-frame counts are diagnostics, not scores.",
+    "qualification": "Headless boot/intro smoke only, not gameplay or sustained/physical playback"
+  },
+  "player_replay": {
+    "report": {
+      "status": "captured",
+      "correctness": "unverified",
+      "qualification": "headless-only; physical presentation and playback unverified",
+      "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "83fbaacb4b6c7707e367959540da80dc4494abef89265bff4d345f0981b0e96d",
+      "rtc_seed": "2000-01-01T00:00:00",
+      "initial_save_sha256": "fd44f0a2d5348f7ea91c1e3c50a9b2b794023be9bb86787a32bcb9d90c9aa8a9",
+      "backup_sha256": "fd44f0a2d5348f7ea91c1e3c50a9b2b794023be9bb86787a32bcb9d90c9aa8a9",
+      "backup_type": 2,
+      "backup_bytes": 131072,
+      "save_written": false,
+      "devices": 0,
+      "rumble_active": false,
+      "commit": "1f490d9a2c97b440a7b05551fd2338f9c8d07003",
+      "source_dirty": "true",
+      "frames": 1272,
+      "warmup_frames": 0,
+      "guest_cycles": 357299715,
+      "audio_frames": 697851,
+      "audio_overruns": 0,
+      "audio_underruns": 0,
+      "produced_audio_frames": 697851,
+      "consumed_audio_frames": 697851,
+      "dropped_guest_frames": 0,
+      "video_sha256": "3e68811368e5316113a752e2543ac7e2429ef1b132091b1d072729cf449023a0",
+      "audio_sha256": "91527205cba5febedba13313d071d6568be4a28243b6f815d7d966d8db8c6a72",
+      "work_p50_ns": 13622738,
+      "work_p95_ns": 36209738,
+      "work_p99_ns": 54227194,
+      "work_max_ns": 140749514,
+      "work_deadline_misses": 435,
+      "physically_presented_frames": null,
+      "physical_audio_underruns": null,
+      "java": "21.0.8+9-LTS",
+      "os": "Linux",
+      "architecture": "amd64",
+      "hardware": "x86_64 Linux cloud host; headless smoke only",
+      "os_version": "6.18.57"
+    },
+    "previous_video_unchanged": true,
+    "previous_audio_unchanged": false,
+    "previous_guest_cycles": 357299713,
+    "original_and_copy_save_sha256": "fd44f0a2d5348f7ea91c1e3c50a9b2b794023be9bb86787a32bcb9d90c9aa8a9",
+    "video_states": {
+      "930": {
+        "sha256": "447a04c96ee7f6fce46ddf6ef852e5f3766bbfa6e5a3e30f344151658785e070",
+        "previous_unchanged": true
+      },
+      "1029": {
+        "sha256": "aa25e236b718c70345899a48b2fb12311d725df77a6017254904c81fef819c12",
+        "previous_unchanged": true
+      },
+      "1272": {
+        "sha256": "5ca10dbb41d50800102a5046eaa83cfbe83051594da058bca11e67a4034e6883",
+        "previous_unchanged": true
+      }
+    },
+    "rgb555_comparison": {
+      "status": "mismatch",
+      "exact_video_frames": 1111,
+      "total_video_frames": 1272,
+      "first_video_mismatch": 930,
+      "whole_video_hash_match": false,
+      "whole_audio_hash_match": false,
+      "reference_audio_frames": 697852,
+      "berryboy_audio_frames": 697851,
+      "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+    },
+    "reused_reference_report_sha256": "3b5b7ec9ab504d0b43e8d9df7b4d5976532405cf60c3f2a3ec2ef50afc7c724d"
+  },
+  "remaining_gates": [
+    "Yield/resume arbitration during branch/IRQ refills and request-during-release handoff before opcode fetch remain open",
+    "Actual scheduled activation, cancellation/re-enable and repeated-request deduplication remain unchanged/unqualified",
+    "Broader memory widths, prefetch and instruction/timer workloads need independent qualification",
+    "In-flight PC/register snapshots can reflect partial execution; instructions() counts retirement",
+    "LeafGreen frame 930, audio fidelity, gameplay routes and physical BBOS/Bold qualification remain open"
+  ],
+  "source_files_sha256": {
+    "src/main/java/berryboy/cpu/Cpu.java": "1b1374a1bc14d5e7ffb0f97e47f519baa0feb9d2dac27d9696a04b98353fa7df",
+    "src/main/java/berryboy/cpu/CpuDataTransfers.java": "bdaeed34986548997ad1a2a3d7ab9554ca37f0b4d710abf813ad774789a0f915",
+    "src/main/java/berryboy/cpu/ArmInterpreter.java": "8680842a47887e8cb73e8744bd686f340d7139df5fc1026607f6e6f4565f6e6f",
+    "src/main/java/berryboy/cpu/ThumbInterpreter.java": "23c752a08b5a972c52d24d0a3f34651f1a2e7fba3814197d44b2009d3d5820da",
+    "src/main/java/berryboy/cpu/InstructionInterpreter.java": "6092ce00cd74a54140ec0bc20fc4059a80f9849de961cf3d3339870bd6012981",
+    "src/main/java/berryboy/bus/Memory.java": "349c2ee0f389057dcc2592eb61de9883d5ecaf4b64b29874d18c53eb32f9ddab",
+    "src/main/java/berryboy/bus/BusTiming.java": "d7790447545e89685a23e7210bdf285226d6dfa8bbeec691137343c34092a87d",
+    "src/main/java/berryboy/bus/DmaController.java": "1289473e076752b097ca3e184f5cdc4bad2e9da0588b5207e07b5e126336ba3d",
+    "src/test/java/berryboy/bus/CpuDmaDataAccessTest.java": "b954eeb72034435b1c0893dc587f5de18fb25ac9d1e12875b9ba4e20147e6e93",
+    "tools/DmaDataProbe.java": "8244daf15d93b4ee91c93110d66db25e3ba8a772a039f3dac8f931331d280e9d",
+    "tools/nba-dma-data-probe.cc": "d33afaa080da7dfbaceb3b9d3972da8905baf656b709a75fef05d20f796abb99",
+    "tools/nba-reference/CMakeLists.txt": "4555be1edee6c5adcfb593d2145a97121b8a89311b2b805bda7ff91b0427e5f8",
+    "tools/nba-reference/probe-machine.hh": "652adfc13a9fa5da09d76ec92b931f6e9ad70aa470867d0d7417995dc22cf84a"
+  },
+  "cod": {
+    "bytes": 48340,
+    "sha256": "861ce5bef7a3f0cfb9e85ae34a0109fdf1aca5b79a777b600cd108017ea9be9b"
+  },
+  "artifact_sha256": {
+    "reference.csv": "771c3a0565fe1c016841c5df387a6b80b29bad6e4a5654b3138b376148b0d3e6",
+    "before.csv": "7d37272c90e9a5ffa0010e3853c71f9aee876ac2cd06d39a085ec45cc2e2ad80",
+    "before-rom-sequence.csv": "fa626b21be3f8adff306966e51c6fa4ac41d73722aa8bfb1d52d2b76be8e830e",
+    "after.csv": "771c3a0565fe1c016841c5df387a6b80b29bad6e4a5654b3138b376148b0d3e6",
+    "activation-normalized.csv": "96e83c59c0dd4c50414f1608d119bf188736926b1c3528994005d3167413ff10",
+    "activation-production.csv": "2aa4a8f747ec03ee32b5a3b57859455d1b10a865243bcd01f283793027687379"
+  },
+  "local_output": "target/dma-data-resume",
+  "local_game_output": "target/dma-data-final-game-regression-2026-11-05",
+  "game_summary_sha256": "81b8bd5fdbb83c0eb58c289c5880db96090d50f1b0245a6eca5df603f08f4d11"
+}

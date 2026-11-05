@@ -80,13 +80,14 @@ portable BlackBerry export.
 
 | Class | Responsibility |
 | --- | --- |
-| `Cpu` | Fetches instructions, chooses ARM/Thumb and adds failure diagnostics |
+| `Cpu` | Fetches/dispatches instructions, resumes execution across DMA and reports faults |
 | `CpuState` | Stores registers and flags, switches banks and handles CPSR/SPSR |
+| `CpuDataTransfers` | Retains and executes prepared data accesses, alignment and final register actions |
 | `ArmInterpreter` | Decodes ARM encodings and dispatches instruction families |
 | `ThumbInterpreter` | Decodes and executes Thumb instruction families |
 | `ArithmeticLogicUnit` | Calculates results and NZCV flags |
 | `BarrelShifter` | Calculates shifts, rotations and carry-out |
-| `InstructionInterpreter` | Shares unaligned-read, BX and SWI rules |
+| `InstructionInterpreter` | Shares architectural helpers, BX and SWI rules |
 | `Keypad` | Stores the ten pressed-button bits and exposes active-low input |
 | `AudioUnit`, `ClockedAudio` | Decode PSG/FIFO registers and produce cycle-driven stereo samples |
 
@@ -109,15 +110,23 @@ hardware-cycle accuracy across games. Internally,
 `r15` holds the next instruction address; operand reads add the pipeline offset.
 ARM reads use PC+8, or PC+12 for register shifts and STR. Thumb reads use PC+4.
 
-Internal execution timing can suspend retirement across DMA units. `Cpu` keeps
-the pending cycle budget and decoded instruction result; DMA returns ownership
-progress through its read-only `ownsBus()` port. CPU work is not reexecuted on
-resume. IRQ entry and the next instruction wait for retirement, while each
-public step still yields after one DMA unit. Between steps,
-`instructionInFlight()` identifies pending timing; registers/PC may already
-reflect executed work and `instructions()` counts only retirements. This stage
-does not yet add scheduled request activation or preempt execution before every
-fetch/data access. Those boundaries and broader overlap cases remain in R2.
+Data accesses and internal execution timing can suspend retirement across DMA
+units. The decoder prepares a reusable `CpuDataTransfers` sequence with at most
+16 accesses, captured addresses/store values and deferred final writeback/status/
+PC updates. `Cpu` arbitrates before each access, including LDM/STM and PUSH/POP,
+and preserves the cursor across yields. SWP locks its paired read/write. DMA
+breaks CPU data sequencing, so a resumed Game Pak burst starts nonsequentially.
+Completed accesses are never replayed. `Memory` restores CPU timing/protection
+context from the original fetch only for the actual data operation; DMA runs
+outside that context. No per-instruction objects are allocated.
+
+The CPU also keeps its remaining internal-cycle budget; DMA returns ownership
+progress through its read-only `ownsBus()` port. IRQ entry and the next
+instruction wait for retirement, while each public step still yields after one
+DMA unit. Between steps, `instructionInFlight()` identifies pending execution;
+registers/PC may already reflect partial work and `instructions()` counts only
+retirements. Scheduled request activation and yield/resume arbitration inside
+branch/IRQ refills remain in R2, alongside broader bus/overlap qualification.
 
 Supported instruction families:
 

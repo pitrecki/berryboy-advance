@@ -7,8 +7,8 @@ final class ThumbInterpreter extends InstructionInterpreter {
     private static final int LOAD = 0x0800;
     private static final int INCLUDE_LINK_OR_PC = 0x0100;
 
-    ThumbInterpreter(CpuState state, Memory memory) {
-        super(state, memory);
+    ThumbInterpreter(CpuState state, Memory memory, CpuDataTransfers transfers) {
+        super(state, memory, transfers);
     }
 
     void execute(int opcode) {
@@ -195,7 +195,7 @@ final class ThumbInterpreter extends InstructionInterpreter {
         var destination = (opcode >>> 8) & 7;
         var base = (state.instructionAddress() + 4) & ~3;
         var offset = (opcode & 0xff) << 2;
-        state.writeRegister(destination, loadWord(base + offset));
+        transfers.load(CpuDataTransfers.WORD, base + offset, destination);
     }
 
     private void transferRegisterOffset(int opcode) {
@@ -206,28 +206,28 @@ final class ThumbInterpreter extends InstructionInterpreter {
 
         switch ((opcode >>> 9) & 7) {
             case 0: // STR
-                memory.write32(address, state.register(destination));
+                transfers.store(CpuDataTransfers.WORD, address, state.register(destination));
                 break;
             case 1: // STRH
-                memory.write16(address, state.register(destination));
+                transfers.store(CpuDataTransfers.HALFWORD, address, state.register(destination));
                 break;
             case 2: // STRB
-                memory.write8(address, state.register(destination));
+                transfers.store(CpuDataTransfers.BYTE, address, state.register(destination));
                 break;
             case 3: // LDSB
-                state.writeRegister(destination, (byte) memory.read8(address));
+                transfers.load(CpuDataTransfers.SIGNED_BYTE, address, destination);
                 break;
             case 4: // LDR
-                state.writeRegister(destination, loadWord(address));
+                transfers.load(CpuDataTransfers.WORD, address, destination);
                 break;
             case 5: // LDRH
-                state.writeRegister(destination, loadHalfword(address));
+                transfers.load(CpuDataTransfers.HALFWORD, address, destination);
                 break;
             case 6: // LDRB
-                state.writeRegister(destination, memory.read8(address));
+                transfers.load(CpuDataTransfers.BYTE, address, destination);
                 break;
             default: // LDSH
-                state.writeRegister(destination, loadSignedHalfword(address));
+                transfers.load(CpuDataTransfers.SIGNED_HALFWORD, address, destination);
                 break;
         }
     }
@@ -240,12 +240,11 @@ final class ThumbInterpreter extends InstructionInterpreter {
         var address = state.register(baseRegister) + offset;
 
         if (bitSet(opcode, LOAD)) {
-            var value = byteTransfer ? memory.read8(address) : loadWord(address);
-            state.writeRegister(destination, value);
+            transfers.load(byteTransfer ? CpuDataTransfers.BYTE : CpuDataTransfers.WORD, address, destination);
         } else if (byteTransfer) {
-            memory.write8(address, state.register(destination));
+            transfers.store(CpuDataTransfers.BYTE, address, state.register(destination));
         } else {
-            memory.write32(address, state.register(destination));
+            transfers.store(CpuDataTransfers.WORD, address, state.register(destination));
         }
     }
 
@@ -256,9 +255,9 @@ final class ThumbInterpreter extends InstructionInterpreter {
         var address = state.register(baseRegister) + offset;
 
         if (bitSet(opcode, LOAD)) {
-            state.writeRegister(destination, loadHalfword(address));
+            transfers.load(CpuDataTransfers.HALFWORD, address, destination);
         } else {
-            memory.write16(address, state.register(destination));
+            transfers.store(CpuDataTransfers.HALFWORD, address, state.register(destination));
         }
     }
 
@@ -268,9 +267,9 @@ final class ThumbInterpreter extends InstructionInterpreter {
         var address = state.register(CpuState.STACK_POINTER) + offset;
 
         if (bitSet(opcode, LOAD)) {
-            state.writeRegister(destination, loadWord(address));
+            transfers.load(CpuDataTransfers.WORD, address, destination);
         } else {
-            memory.write32(address, state.register(destination));
+            transfers.store(CpuDataTransfers.WORD, address, state.register(destination));
         }
     }
 
@@ -310,9 +309,9 @@ final class ThumbInterpreter extends InstructionInterpreter {
                 continue;
             }
             if (pop) {
-                state.writeRegister(register, memory.read32(address & ~3));
+                transfers.load(CpuDataTransfers.ALIGNED_WORD, address, register);
             } else {
-                memory.write32(address, state.register(register));
+                transfers.store(CpuDataTransfers.WORD, address, state.register(register));
             }
             address += 4;
         }
@@ -320,14 +319,14 @@ final class ThumbInterpreter extends InstructionInterpreter {
         if (includeLinkOrPc) {
             if (pop) {
                 // ARMv4 POP writes PC without changing the Thumb state.
-                state.writeRegister(CpuState.PROGRAM_COUNTER, memory.read32(address & ~3));
+                transfers.load(CpuDataTransfers.ALIGNED_WORD, address, CpuState.PROGRAM_COUNTER);
             } else {
-                memory.write32(address, state.register(CpuState.LINK_REGISTER));
+                transfers.store(CpuDataTransfers.WORD, address, state.register(CpuState.LINK_REGISTER));
             }
             address += 4;
         }
         if (pop) {
-            state.writeRegister(CpuState.STACK_POINTER, address);
+            transfers.writeBack(CpuState.STACK_POINTER, address);
         }
     }
 
@@ -348,19 +347,19 @@ final class ThumbInterpreter extends InstructionInterpreter {
                 continue;
             }
             if (load) {
-                state.writeRegister(register, memory.read32(address & ~3));
+                transfers.load(CpuDataTransfers.ALIGNED_WORD, address, register);
             } else {
                 var value = register == baseRegister && register != first
                         ? updatedBase
                         : state.register(register);
-                memory.write32(address, value);
+                transfers.store(CpuDataTransfers.WORD, address, value);
             }
             address += 4;
         }
 
         // A loaded base register keeps the value read from memory.
         if (!(load && bitSet(registerList, 1 << baseRegister))) {
-            state.writeRegister(baseRegister, updatedBase);
+            transfers.writeBack(baseRegister, updatedBase);
         }
     }
 

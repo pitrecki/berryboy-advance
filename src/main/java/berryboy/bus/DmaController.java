@@ -169,7 +169,7 @@ public final class DmaController {
                     if (destinationMode == 3) currentDestination = destination & (index == 3 ? 0x0fffffff : 0x07ffffff);
                 } else control &= ~0x8000;
             }
-            memory.busTiming().invalidateFetch();
+            memory.busTiming().invalidateCpuSequence();
         }
     }
 }

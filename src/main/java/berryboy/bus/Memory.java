@@ -179,6 +179,9 @@ public final class Memory implements VideoBus {
 
     public void finishInstruction() { cpuAccess = false; }
 
+    /** Resume data accesses using the metadata retained by the original fetch. */
+    public void resumeInstructionData() { cpuAccess = true; }
+
     public int read8(int address) {
         if (cpuAccess) bus.data(address, 1, false);
         return rawRead8(address);

@@ -111,6 +111,12 @@ public final class BusTiming {
         prefetchCredit = 0;
     }
 
+    /** DMA interrupts both opcode prefetch and the CPU's data-access sequence. */
+    public void invalidateCpuSequence() {
+        invalidateFetch();
+        dataRegion = -1;
+    }
+
     private boolean prefetchEnabled() { return (waitControl & 0x4000) != 0; }
 
     private static boolean gamePakRom(int address) { return (address >>> 24) >= 8 && (address >>> 24) <= 13; }

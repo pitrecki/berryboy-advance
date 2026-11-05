@@ -13,8 +13,8 @@ final class ArmInterpreter extends InstructionInterpreter {
     private static final int UPDATE_FLAGS = 1 << 20;
     private static final int SAVED_STATUS = 1 << 22;
 
-    ArmInterpreter(CpuState state, Memory memory) {
-        super(state, memory);
+    ArmInterpreter(CpuState state, Memory memory, CpuDataTransfers transfers) {
+        super(state, memory, transfers);
     }
 
     void execute(int opcode) {
@@ -123,15 +123,14 @@ final class ArmInterpreter extends InstructionInterpreter {
         var address = preIndexed ? updatedBase : base;
 
         if (load) {
-            var value = byteAccess ? memory.read8(address) : loadWord(address);
-            state.writeRegister(destination, value);
+            transfers.load(byteAccess ? CpuDataTransfers.BYTE : CpuDataTransfers.WORD, address, destination);
         } else if (byteAccess) {
-            memory.write8(address, state.register(destination));
+            transfers.store(CpuDataTransfers.BYTE, address, state.register(destination));
         } else {
-            memory.write32(address, state.operand(destination, 12));
+            transfers.store(CpuDataTransfers.WORD, address, state.operand(destination, 12));
         }
         if (writeBack) {
-            state.writeRegister(baseRegister, updatedBase);
+            transfers.writeBack(baseRegister, updatedBase);
         }
     }
 
@@ -168,12 +167,14 @@ final class ArmInterpreter extends InstructionInterpreter {
         var address = preIndexed ? updatedBase : base;
 
         if (load) {
-            state.writeRegister(destination, readHalfwordTransfer(address, accessType));
+            transfers.load(accessType == 1 ? CpuDataTransfers.HALFWORD
+                    : accessType == 2 ? CpuDataTransfers.SIGNED_BYTE : CpuDataTransfers.SIGNED_HALFWORD,
+                    address, destination);
         } else {
-            memory.write16(address, state.register(destination));
+            transfers.store(CpuDataTransfers.HALFWORD, address, state.register(destination));
         }
         if (writeBack) {
-            state.writeRegister(baseRegister, updatedBase);
+            transfers.writeBack(baseRegister, updatedBase);
         }
     }
 
@@ -185,14 +186,6 @@ final class ArmInterpreter extends InstructionInterpreter {
             reject("Invalid halfword register offset");
         }
         return state.register(opcode & 15);
-    }
-
-    private int readHalfwordTransfer(int address, int accessType) {
-        return switch (accessType) {
-            case 1 -> loadHalfword(address);
-            case 2 -> (byte) memory.read8(address);
-            default -> loadSignedHalfword(address);
-        };
     }
 
     private static void validateTransfer(int base, int destination, boolean load, boolean writeBack) {
@@ -222,40 +215,29 @@ final class ArmInterpreter extends InstructionInterpreter {
         var updatedBase = base + (increment ? count * 4 : -count * 4);
         var address = increment ? base + (preIndexed ? 4 : 0) : base - count * 4 + (preIndexed ? 0 : 4);
         var first = firstRegister(registerList);
-        var loadedPc = 0;
 
         for (var register = 0; register < 16; register++) {
             if (!bitSet(registerList, 1 << register)) {
                 continue;
             }
             if (load) {
-                var value = memory.read32(address & ~3);
-                if (register == CpuState.PROGRAM_COUNTER) {
-                    loadedPc = value;
-                } else if (userBank) {
-                    state.writeUserRegister(register, value);
-                } else {
-                    state.writeRegister(register, value);
-                }
+                transfers.load(CpuDataTransfers.ALIGNED_WORD, address, register, userBank);
             } else {
                 var value = userBank ? state.userRegister(register) : state.operand(register, 12);
                 if (writeBack && register == baseRegister && register != first) {
                     value = updatedBase;
                 }
-                memory.write32(address, value);
+                transfers.store(CpuDataTransfers.WORD, address, value);
             }
             address += 4;
         }
 
         var baseWasLoaded = load && bitSet(registerList, 1 << baseRegister);
         if (writeBack && !baseWasLoaded) {
-            state.writeRegister(baseRegister, updatedBase);
+            transfers.writeBack(baseRegister, updatedBase);
         }
         if (restoreStatus) {
-            state.restoreSavedStatus();
-        }
-        if (load && includesPc) {
-            state.writeRegister(CpuState.PROGRAM_COUNTER, loadedPc);
+            transfers.restoreStatus();
         }
     }
 
@@ -334,13 +316,7 @@ final class ArmInterpreter extends InstructionInterpreter {
         var address = state.register(baseRegister);
         var value = state.register(source);
         var byteAccess = bitSet(opcode, BYTE_TRANSFER);
-        var previous = byteAccess ? memory.read8(address) : loadWord(address);
-        if (byteAccess) {
-            memory.write8(address, value);
-        } else {
-            memory.write32(address, value);
-        }
-        state.writeRegister(destination, previous);
+        transfers.swap(byteAccess ? CpuDataTransfers.BYTE : CpuDataTransfers.WORD, address, value, destination);
     }
 
     private void readStatus(int opcode) {

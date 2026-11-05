@@ -1,5 +1,64 @@
 # Independent reference validation
 
+## Resumable CPU data accesses during DMA, 2026-11-05
+
+ARM/Thumb decoders now prepare a fixed, reusable data-operation sequence rather
+than performing memory operations atomically. CPU arbitration runs before each
+access, and a suspended instruction retains its cursor, addresses, store values
+and final writeback/status/PC actions. This covers single loads/stores, LDM/STM,
+PUSH/POP and SWP. Completed accesses run once; SWP keeps its read/write bus lock.
+CPU data timing and BIOS/open-bus context come from the original fetch and are
+restored only while executing that access, never while servicing DMA. The
+guest still has one owner and no per-instruction allocation is introduced.
+
+The new [independent data probe](../tools/nba-dma-data-probe.cc) executes the
+unmodified NBA CPU with normal two-word DMA3, two readiness times, three source
+regions, two instruction sets and IWRAM/Game Pak data. The 48-row comparison
+improves from **12/48 before to 48/48**. NBA uses its real two-cycle request
+activation, with an optional one-cycle request age; BerryBoy injects matching
+raw readiness. This isolates data arbitration, not production request timing.
+
+When DMA becomes ready at the end of the opcode fetch, LDR reads the overwritten
+IWRAM value. When readiness occurs during LDM's first access, that read stays
+latched while its second access follows DMA. Extending the probe to ROM data
+exposed another defect: retaining the CPU's sequential burst after DMA saved
+two cycles. The intermediate implementation matched **42/48**. DMA now
+invalidates both opcode and data sequencing, restoring an eight-cycle
+nonsequential Game Pak read; all six counterexamples pass. This command is
+separate from ordinary fetch invalidation, so uninterrupted ROM bursts keep
+their sequential timing.
+
+Thirty-nine new core cases pass; the preceding committed CPU fails **32**, with
+seven already-passing cases. Coverage includes the independent load timings,
+writeback and banked SPSR/PC restoration, interrupt-acknowledge side effects,
+SWP locks, stack operations and a new request during DMA release. A 65536-word
+transfer yields at a frame budget, produces/drains PCM and resumes the already
+decoded LDR after DMA overwrites its code. The data read occurs only after DMA;
+this complements the prior internal-cycle test that preserves data read before
+DMA. IRQ and next-instruction handling remain behind retirement.
+
+Validation passes **1458 host / 1352 exported / 1352 actual new ECJ CLDC-class
+tests**, plus a fresh JDE/ECJ/RAPC COD build. The earlier readiness-normalized
+96-row matrix remains exact. The production request matrix remains byte-for-byte
+unchanged at 24/96 matches: activation is still immediate. Branch/IRQ refill
+arbitration, scheduled activation/lifecycle, broader prefetch/bus workloads and
+hardware qualification remain open. No comparison tolerance has changed.
+
+All eleven fresh-backup scenarios complete **39600 guest frames / 21725550
+stereo samples**, with zero missing guest frames or software audio-buffer
+failures. RGB changes in Lost Age/Sonic; PCM changes in V-Rally, Sonic, Emerald
+and LeafGreen. All backup hashes remain unchanged; four initialization saves
+are written. Against reused mGBA RGB888 captures, every exact-frame set remains
+unchanged, with no gains/losses; full streams still differ. The separate
+1272-frame LeafGreen continuation preserves full RGB, all three raw video
+states and the original player save. It ends two cycles later with changed
+PCM; RGB555 still matches 1111/1272 frames, first difference 930. These are
+headless boot/intro and limited continuation checks, not gameplay or sustained
+physical playback passes. Prior CPU-window results describe earlier cores.
+
+Evidence: [dma-data-resume-2026-11-05.json](../benchmarks/dma-data-resume-2026-11-05.json).
+Reproduction: [SCENARIOS.md](SCENARIOS.md#cpu-data-arbitration-probes).
+
 ## Resumable CPU internal cycles during DMA, 2026-11-05
 
 CPU retirement can now wait across DMA units during internal execution cycles.

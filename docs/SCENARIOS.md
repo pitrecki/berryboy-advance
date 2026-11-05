@@ -428,10 +428,36 @@ revision, adding two cycles to pending scheduling alone fails all twelve
 first-load ordering regressions. Reproduce it with the source revision recorded
 in that evidence; mixing historical DMA classes with the current CPU's new
 ownership-query dependency is unsupported. The internal-cycle stage now
-preserves readiness-normalized ordering, but pre-fetch/data arbitration and
-actual activation scheduling still require implementation. Do not install the
+preserves readiness-normalized ordering. Data arbitration is now implemented;
+fetch/refill boundaries and actual activation scheduling remain open. Do not install the
 old experiment or treat ADD matches as complete CPU/DMA qualification.
 See [the comparison and constraints](REFERENCE-VALIDATION.md#fifo-activation-and-cpu-load-ordering-2026-11-05).
+
+## CPU data arbitration probes
+
+Use the same pinned, unmodified NBA source and CMake configuration. These
+asset-free adapters execute LDR or two-register LDM in ARM/Thumb, with data in
+IWRAM or Game Pak ROM, three DMA source regions and readiness at cycle 1 or 2.
+
+```bash
+cmake --build target/nba-reference --target nba-dma-data-probe --parallel 4
+target/nba-reference/nba-dma-data-probe > target/nba-reference/data.csv
+javac -Xlint:all -Werror -cp target/classes -d target/docs-tools tools/DmaDataProbe.java
+java -cp target/classes:target/docs-tools berryboy.bus.DmaDataProbe > target/nba-reference/data-berryboy.csv
+cmp target/nba-reference/data.csv target/nba-reference/data-berryboy.csv
+```
+
+All 48 rows must match, including cycles, loaded registers, writeback and PC.
+NBA's normal two-word DMA3 request uses its original two-cycle activation;
+aging that request one cycle puts readiness at the end of the opcode fetch.
+BerryBoy explicitly injects raw readiness at the same relative cycle. This
+isolates data arbitration and does not qualify production activation timing.
+DMA overwrites the IWRAM load target: readiness at 1 changes the first load;
+readiness at 2 preserves the completed first read and changes LDM's second.
+For ROM data, readiness at 2 occurs during the first eight-cycle read. DMA
+between LDM reads forces the next ROM read to be nonsequential (eight rather
+than six cycles). These selected observations are model comparison evidence,
+not a hardware or full-pipeline qualification.
 
 ## Original FIFO DMA timing probes
 

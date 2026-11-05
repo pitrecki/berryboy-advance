@@ -179,17 +179,17 @@ preserves feature directories and excludes the desktop/build packages.
 
 ## Verification
 
-- `mvn verify`: **1419 passing tests** on Linux, JDK 21 and Maven 3.9.11 (2026-11-05).
-- **1313 core tests** repeated against the exported classes through Jupiter.
+- `mvn verify`: **1458 passing tests** on Linux, JDK 21 and Maven 3.9.11 (2026-11-05).
+- **1352 core tests** repeated against the exported classes through Jupiter.
 - Test counts include individual parameterized invocations, not assertion counts.
-- The exporter performs 475 syntax rewrites. Generated sources compile with
+- The exporter performs 472 syntax rewrites. Generated sources compile with
   `--release 8` and run on the host JVM.
 - The CLI uses Java 21 without preview features. JDK 17 is not a supported build target.
 - JUnit and AssertJ are excluded from the application JAR and BlackBerry export.
 - Headless demo, WAV encoding, Swing key actions and documentation captures pass.
 - Physical audio output, native window interaction and sustained frame/audio timing remain unverified.
 - Native ECJ/CLDC compilation against JDE 7.1 and vendor RAPC conversion pass;
-  1313 tests also pass on actual CLDC classes from the current native build.
+  1352 tests also pass on actual CLDC classes from the current native build.
 - Windows JDK 6, simulator application execution and a physical Bold remain unqualified.
 - These are project regression tests, not ARM certification or external test-ROM results.
 

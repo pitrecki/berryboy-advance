@@ -6,7 +6,8 @@ import berryboy.bus.Memory;
 /**
  * ARM7TDMI execution loop. One step services a DMA unit, interrupt, HALT event
  * or instruction phase and advances guest cycles. A decoded instruction can
- * wait for DMA during internal cycles; it retires only after that interval.
+ * wait for DMA before data accesses or during internal cycles. Prepared data
+ * operations run once, and retirement waits until the instruction completes.
  * The interpreters and register banks are created once and reused for every step.
  */
 public final class Cpu {
@@ -29,23 +30,35 @@ public final class Cpu {
     private final CpuState state;
     private final ArmInterpreter arm;
     private final ThumbInterpreter thumb;
+    private final CpuDataTransfers transfers;
     private long instructionCount;
     private boolean instructionInFlight;
     private int remainingInternalCycles;
+    private boolean dataPhase;
+    private boolean dataBusGranted;
+    private int pendingAddress;
+    private int pendingOpcode;
 
     public Cpu(Memory memory) {
         this.memory = memory;
         this.state = new CpuState();
-        this.arm = new ArmInterpreter(state, memory);
-        this.thumb = new ThumbInterpreter(state, memory);
+        this.transfers = new CpuDataTransfers(state, memory);
+        this.arm = new ArmInterpreter(state, memory, transfers);
+        this.thumb = new ThumbInterpreter(state, memory, transfers);
     }
 
     public void step() {
-        if (serviceDma()) return;
         if (instructionInFlight) {
-            resumeInstructionTiming();
+            try {
+                resumeInstructionTiming();
+            } catch (EmulationException error) {
+                throw instructionFailure(error, pendingAddress, pendingOpcode);
+            } finally {
+                memory.finishInstruction();
+            }
             return;
         }
+        if (serviceDma(false)) return;
         if (memory.halted()) {
             if (!memory.interrupts().wakePending()) {
                 memory.clock().advanceTo(memory.clock().nextDeadline());
@@ -65,6 +78,10 @@ public final class Cpu {
         int opcode = 0;
         try {
             opcode = memory.fetch(address, thumbMode);
+            pendingAddress = address;
+            pendingOpcode = opcode;
+            transfers.reset();
+            dataBusGranted = false;
             state.beginInstruction(thumbMode ? 2 : 4);
             var execute = thumbMode || state.conditionPassed(opcode >>> 28);
             var internal = execute ? InstructionTiming.internal(opcode, thumbMode, state) : 0;
@@ -74,48 +91,74 @@ public final class Cpu {
                 arm.execute(opcode);
             }
             remainingInternalCycles = internal;
+            dataPhase = true;
             instructionInFlight = true;
             // DMA accesses must not inherit the CPU's timed-data context.
             memory.finishInstruction();
             resumeInstructionTiming();
         } catch (EmulationException error) {
-            // A diagnostic stop restores PC, but does not roll back memory side effects.
-            state.writeRegister(CpuState.PROGRAM_COUNTER, address);
-            memory.busTiming().invalidateFetch();
-            instructionInFlight = false;
-            remainingInternalCycles = 0;
-            throw new EmulationException(error.getMessage() + " [opcode=0x" + Integer.toHexString(opcode)
-                    + ", pc=0x" + Integer.toHexString(address) + "]");
+            throw instructionFailure(error, address, opcode);
         } finally {
             memory.finishInstruction();
         }
     }
 
     private void resumeInstructionTiming() {
+        if (dataPhase) {
+            while (transfers.hasNext()) {
+                if (!dataBusGranted && !transfers.busLocked() && serviceDma(false)) return;
+                dataBusGranted = false;
+                memory.resumeInstructionData();
+                try {
+                    transfers.transferNext();
+                } finally {
+                    memory.finishInstruction();
+                }
+            }
+            transfers.finish();
+            dataPhase = false;
+        }
         // Preserve dispatch of zero-delay device writes even for instructions
         // with no internal cycles. Readiness at the end of the final cycle
         // belongs to the next bus operation, not to an extra retirement stall.
         memory.busTiming().internal(0, state.branched());
-        while (remainingInternalCycles > 0) {
-            if (serviceDma()) return; // At most one DMA unit per public step.
+        while (remainingInternalCycles > 0 || memory.dma().ownsBus()) {
+            if (serviceDma(true)) return; // At most one DMA unit per public step.
             memory.busTiming().internal(1, state.branched());
             remainingInternalCycles--;
         }
         retireInstruction();
     }
 
-    private boolean serviceDma() {
+    private boolean serviceDma(boolean overlapInternal) {
         var before = memory.clock().now();
         if (!memory.dma().runPending()) return false;
-        if (instructionInFlight) {
+        if (instructionInFlight && overlapInternal) {
             // Internal CPU work overlaps this DMA interval. Keep retirement
             // blocked until ownership ends, even when its cycle budget is used.
             var elapsed = memory.clock().now() - before;
             remainingInternalCycles = elapsed >= remainingInternalCycles ? 0
                     : remainingInternalCycles - (int) elapsed;
             if (!memory.dma().ownsBus() && remainingInternalCycles == 0) retireInstruction();
+        } else if (instructionInFlight && dataPhase && !memory.dma().ownsBus()) {
+            // NBA bus arbitration grants the waiting access after the interval
+            // completes, even if a new request arrives during its release.
+            dataBusGranted = true;
         }
         return true;
+    }
+
+    private EmulationException instructionFailure(EmulationException error, int address, int opcode) {
+        // Completed accesses remain visible; never replay them after a fault.
+        state.writeRegister(CpuState.PROGRAM_COUNTER, address);
+        memory.busTiming().invalidateFetch();
+        instructionInFlight = false;
+        remainingInternalCycles = 0;
+        dataPhase = false;
+        dataBusGranted = false;
+        transfers.reset();
+        return new EmulationException(error.getMessage() + " [opcode=0x" + Integer.toHexString(opcode)
+                + ", pc=0x" + Integer.toHexString(address) + "]");
     }
 
     private void retireInstruction() {

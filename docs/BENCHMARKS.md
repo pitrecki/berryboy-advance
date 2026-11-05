@@ -47,7 +47,7 @@ the Thumb multiply timing and Game Pak DMA source corrections, plus the FIFO
 DMA reference counterexample and independent DMA read/write phase correction. The shared clock, scheduler,
 CPU/bus timing, software renderer, mixer, cartridge devices and capture runner
 are implemented. Their accuracy is still being qualified; implementation does
-not close M1–M4. Latest local validation passed **1419 host tests and 1313
+not close M1–M4. Latest local validation passed **1458 host tests and 1352
 exported-core tests**. Neither test count establishes BlackBerry readiness.
 
 | Milestone | Deliverables | Completion evidence |
@@ -99,11 +99,19 @@ Those window counts describe the pre-resumption core. The
 now matches all 96 readiness-normalized CPU observations and retains word-level
 yields. Its new game baseline preserves guest frame/audio continuity; the
 request-timing and full-game accuracy gates remain open.
+The [data-access resumption](REFERENCE-VALIDATION.md#resumable-cpu-data-accesses-during-dma-2026-11-05)
+adds per-access arbitration and preserves decoded operations across multi-access
+instructions. All 48 new readiness-normalized data rows match NBA, including
+Game Pak sequence interruption; the existing 96-row matrix remains exact.
+Its eleven fresh-backup game replays again retain 39600 frames and 21725550
+stereo samples without guest/software-buffer losses. Existing independent
+exact-frame sets and the saved-player LeafGreen frame-930 boundary are
+unchanged; RGB/PCM changes are recorded without an accuracy-pass claim.
 
 | Stage / priority | Work | Exit evidence |
 | --- | --- | --- |
 | R1 / P0: LeafGreen menu (three-way model comparison delivered; pixel qualification open) | Menu state matches; NBA agrees with mGBA on its color, while the 2244-case matrix exposes broader disagreement in rounding and palette bit 15 | Establish independently justified expected rounding and palette-bit behavior before correcting the renderer or passing the menu gate; existing arithmetic tests preserve behavior without certifying hardware |
-| R2 / P0: Timing and bus accuracy (internal-cycle resumption delivered) | All 96 readiness-normalized CPU rows match NBA; long DMA yields across frame/audio budgets and resumes retirement without replay. Actual request activation remains immediate; frame 930 remains open | Add yield/resume boundaries before fetch/data and inside multi-access instructions, then scheduled activation with cancellation/re-enable/deduplication. Preserve retirement/IRQ ordering and bounded frame/audio progress; extend independent bus/refill/timer qualification |
+| R2 / P0: Timing and bus accuracy (data/internal-cycle resumption delivered) | All 48 data and 96 earlier readiness-normalized rows match NBA; DMA interrupts LDM/STM and PUSH/POP without replay, SWP stays locked, and Game Pak bursts restart nonsequentially. Actual request activation remains immediate; frame 930 remains open | Qualify and add resumable fetch/branch/IRQ refill arbitration, then scheduled activation with cancellation/re-enable/deduplication. Preserve retirement ordering and bounded frame/audio progress; extend independent bus/timer qualification |
 | R3 / P1: Audio correctness | Start with late Sonic Advance 3 and Wario Land 4 differences; compare timer/DMA FIFO events, PSG state and sample clocks; distinguish guest-state errors from output gain, filter and resampling differences | Repeatable event/sample checkpoints, justified comparison tolerances and listening review; no unexplained divergence in the selected routes and zero software buffer failures |
 | R4 / P1: Gameplay and player saves (second LeafGreen cross-load delivered) | A one-tile indoor route creates generation 2; four cold cross-loads restore the exact room in both emulators. New saves still differ in 667 bytes. Extend routes to levels, races, battles and other titles | Named reference checkpoints for all eleven titles; save-capable games restore latest progress from isolated copies, with explicit strict binary/full-stream outcomes |
 | R5 / P2: Sustained Linux playback | After route correctness passes, profile bottlenecks, optimize one at a time, and run the warmup/measurement protocol below | Three 10-minute runs per qualified scenario after 30-second warmup, actual presentation/audio counters, bounded memory/queues and A/V drift; all acceptance gates below pass |
@@ -214,8 +222,11 @@ execution and physical-device access remain separate gates.
    match NBA. Seventeen regressions retain long-DMA frame/audio progress, latched
    values after code/data overwrite and IRQ boundaries. Eleven-game and player
    continuation evidence is linked above. Actual activation timing is unchanged;
-   next add pre-fetch/data and multi-access suspension boundaries before enabling
-   delayed requests. Keep raw in-flight snapshots distinct from retirement.
+   Data and multi-access suspension is now delivered, with a reusable operation
+   sequence and 39 regressions. The expanded 48-row independent matrix also
+   catches and corrects a two-cycle Game Pak sequencing error after DMA.
+   Next qualify the fetch/branch/IRQ refill boundaries before enabling delayed
+   requests. Keep raw in-flight snapshots distinct from retirement.
    A separate
    [ROM DMA source correction](REFERENCE-VALIDATION.md#dma-game-pak-source-addressing-and-next-timing-boundary)
    matches 24 original reference cases and preserves the whole replay's RGB/PCM,
