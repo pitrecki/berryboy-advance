@@ -1,9 +1,30 @@
-Latest host diagnostic validation: 2026-11-05 UTC
+Latest internal-cycle resumption validation: 2026-11-05 UTC
 Host: Eclipse Temurin 21.0.8+9, Maven 3.9.11, Linux x86_64
-mvn verify (default profile): 1402 passed; 0 failed/errors/skipped.
-Jupiter console host: 1402 passed; 0 failed/skipped.
-Exported core console: 1296 passed; 0 failed/skipped.
-Retained actual ECJ CLDC classes: 1296 passed; 0 failed/skipped.
+mvn verify (default profile): 1419 passed; 0 failed/errors/skipped.
+Jupiter console host: 1419 passed; 0 failed/skipped.
+Exported core console: 1313 passed; 0 failed/skipped.
+Actual new ECJ CLDC classes: 1313 passed; 0 failed/skipped.
+Native JDE/ECJ/RAPC build: passed; new COD emitted; 475 syntax rewrites.
+
+CPU retirement now suspends during DMA/internal-cycle overlap, yielding one
+DMA unit per step and resuming without repeated instruction/memory effects.
+The readiness-normalized CPU matrix matches 96/96 NBA rows, versus 48/96 before.
+Seventeen new cases pass; old CPU with an inert query-compatibility bridge
+fails 16, with one preserved boundary already passing. Tests cover long-DMA
+frame/PCM budgets, code/data overwrite, multiply tail cycles and IRQ/release.
+Production activation and fetch/data arbitration remain unchanged/unqualified.
+
+Eleven-game regression: 39600 frames / 21725550 stereo samples, no missing
+guest frames or software audio-buffer failures. RGB changes in Lost Age/Sonic;
+PCM also changes in V-Rally/Emerald/LeafGreen. Backup hashes all unchanged, four
+initialization files written. Reused RGB888 reference exact-frame sets remain
+identical, with no gains/losses; full-stream comparisons remain unmatched.
+The 1272-frame player LeafGreen replay preserves full RGB, three video states
+and the original save; PCM changes, still 1111/1272 exact RGB555 frames, first
+difference 930. No gameplay, sustained playback or physical-device pass.
+See benchmarks/dma-internal-resume-2026-11-05.json.
+
+Previous activation diagnosis (pre-resumption core):
 
 Real-CPU FIFO activation: 24 ARM/Thumb ADD/LDR scenarios, 96 retirements against
 unmodified NBA. Production matches 24/96 rows; a delay-only host experiment

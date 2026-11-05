@@ -109,6 +109,16 @@ hardware-cycle accuracy across games. Internally,
 `r15` holds the next instruction address; operand reads add the pipeline offset.
 ARM reads use PC+8, or PC+12 for register shifts and STR. Thumb reads use PC+4.
 
+Internal execution timing can suspend retirement across DMA units. `Cpu` keeps
+the pending cycle budget and decoded instruction result; DMA returns ownership
+progress through its read-only `ownsBus()` port. CPU work is not reexecuted on
+resume. IRQ entry and the next instruction wait for retirement, while each
+public step still yields after one DMA unit. Between steps,
+`instructionInFlight()` identifies pending timing; registers/PC may already
+reflect executed work and `instructions()` counts only retirements. This stage
+does not yet add scheduled request activation or preempt execution before every
+fetch/data access. Those boundaries and broader overlap cases remain in R2.
+
 Supported instruction families:
 
 - ARM: all 16 ALU operations, NZCV flags, conditions, the barrel shifter, B/BL/BX,

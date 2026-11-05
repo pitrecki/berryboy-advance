@@ -47,7 +47,7 @@ the Thumb multiply timing and Game Pak DMA source corrections, plus the FIFO
 DMA reference counterexample and independent DMA read/write phase correction. The shared clock, scheduler,
 CPU/bus timing, software renderer, mixer, cartridge devices and capture runner
 are implemented. Their accuracy is still being qualified; implementation does
-not close M1–M4. Latest local validation passed **1402 host tests and 1296
+not close M1–M4. Latest local validation passed **1419 host tests and 1313
 exported-core tests**. Neither test count establishes BlackBerry readiness.
 
 | Milestone | Deliverables | Completion evidence |
@@ -94,11 +94,16 @@ differences in 42 windows across Lost Age, V-Rally, Zone of the Enders and Sonic
 Controls without sampling events preserve the recorded instruction retirements
 in all four titles. Continue investigating those differences; this does not
 establish full memory/peripheral or hardware equivalence.
+Those window counts describe the pre-resumption core. The
+[internal-cycle resumption](REFERENCE-VALIDATION.md#resumable-cpu-internal-cycles-during-dma-2026-11-05)
+now matches all 96 readiness-normalized CPU observations and retains word-level
+yields. Its new game baseline preserves guest frame/audio continuity; the
+request-timing and full-game accuracy gates remain open.
 
 | Stage / priority | Work | Exit evidence |
 | --- | --- | --- |
 | R1 / P0: LeafGreen menu (three-way model comparison delivered; pixel qualification open) | Menu state matches; NBA agrees with mGBA on its color, while the 2244-case matrix exposes broader disagreement in rounding and palette bit 15 | Establish independently justified expected rounding and palette-bit behavior before correcting the renderer or passing the menu gate; existing arithmetic tests preserve behavior without certifying hardware |
-| R2 / P0: Timing and bus accuracy (activation/CPU arbitration now isolated) | Ownership/read-write fixes retain independent evidence; the new 96-row real-CPU matrix exposes immediate FIFO activation and load/internal-cycle arbitration gaps; frame 930 remains open | Implement scheduled activation together with resumable CPU fetch/data/internal arbitration; preserve FIFO-before-load retirement ordering, word-level yields and frame/audio deadlines; qualify request lifecycle, IRQ priority and timer workloads |
+| R2 / P0: Timing and bus accuracy (internal-cycle resumption delivered) | All 96 readiness-normalized CPU rows match NBA; long DMA yields across frame/audio budgets and resumes retirement without replay. Actual request activation remains immediate; frame 930 remains open | Add yield/resume boundaries before fetch/data and inside multi-access instructions, then scheduled activation with cancellation/re-enable/deduplication. Preserve retirement/IRQ ordering and bounded frame/audio progress; extend independent bus/refill/timer qualification |
 | R3 / P1: Audio correctness | Start with late Sonic Advance 3 and Wario Land 4 differences; compare timer/DMA FIFO events, PSG state and sample clocks; distinguish guest-state errors from output gain, filter and resampling differences | Repeatable event/sample checkpoints, justified comparison tolerances and listening review; no unexplained divergence in the selected routes and zero software buffer failures |
 | R4 / P1: Gameplay and player saves (second LeafGreen cross-load delivered) | A one-tile indoor route creates generation 2; four cold cross-loads restore the exact room in both emulators. New saves still differ in 667 bytes. Extend routes to levels, races, battles and other titles | Named reference checkpoints for all eleven titles; save-capable games restore latest progress from isolated copies, with explicit strict binary/full-stream outcomes |
 | R5 / P2: Sustained Linux playback | After route correctness passes, profile bottlenecks, optimize one at a time, and run the warmup/measurement protocol below | Three 10-minute runs per qualified scenario after 30-second warmup, actual presentation/audio counters, bounded memory/queues and A/V drift; all acceptance gates below pass |
@@ -204,6 +209,13 @@ execution and physical-device access remain separate gates.
    together, retaining per-word DMA yields for long-transfer capture budgets.
    Add request cancellation/re-enable/deduplication cases and extend independent
    instruction/timer coverage. No production activation correction is yet landed.
+   The next foundation is now delivered: pending internal-cycle timing resumes
+   across DMA without replaying the instruction, and all 96 ready-normalized rows
+   match NBA. Seventeen regressions retain long-DMA frame/audio progress, latched
+   values after code/data overwrite and IRQ boundaries. Eleven-game and player
+   continuation evidence is linked above. Actual activation timing is unchanged;
+   next add pre-fetch/data and multi-access suspension boundaries before enabling
+   delayed requests. Keep raw in-flight snapshots distinct from retirement.
    A separate
    [ROM DMA source correction](REFERENCE-VALIDATION.md#dma-game-pak-source-addressing-and-next-timing-boundary)
    matches 24 original reference cases and preserves the whole replay's RGB/PCM,

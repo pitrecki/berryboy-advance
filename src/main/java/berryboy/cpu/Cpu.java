@@ -5,7 +5,8 @@ import berryboy.bus.Memory;
 
 /**
  * ARM7TDMI execution loop. One step services a DMA unit, interrupt, HALT event
- * or instruction and advances guest cycles.
+ * or instruction phase and advances guest cycles. A decoded instruction can
+ * wait for DMA during internal cycles; it retires only after that interval.
  * The interpreters and register banks are created once and reused for every step.
  */
 public final class Cpu {
@@ -29,6 +30,8 @@ public final class Cpu {
     private final ArmInterpreter arm;
     private final ThumbInterpreter thumb;
     private long instructionCount;
+    private boolean instructionInFlight;
+    private int remainingInternalCycles;
 
     public Cpu(Memory memory) {
         this.memory = memory;
@@ -38,7 +41,11 @@ public final class Cpu {
     }
 
     public void step() {
-        if (memory.dma().runPending()) return;
+        if (serviceDma()) return;
+        if (instructionInFlight) {
+            resumeInstructionTiming();
+            return;
+        }
         if (memory.halted()) {
             if (!memory.interrupts().wakePending()) {
                 memory.clock().advanceTo(memory.clock().nextDeadline());
@@ -66,19 +73,59 @@ public final class Cpu {
             } else if (execute) {
                 arm.execute(opcode);
             }
-            memory.busTiming().internal(internal, state.branched());
-            if (state.branched()) memory.busTiming().refill(state.programCounter(), state.isThumb() ? 2 : 4);
-            instructionCount++;
+            remainingInternalCycles = internal;
+            instructionInFlight = true;
+            // DMA accesses must not inherit the CPU's timed-data context.
+            memory.finishInstruction();
+            resumeInstructionTiming();
         } catch (EmulationException error) {
             // A diagnostic stop restores PC, but does not roll back memory side effects.
             state.writeRegister(CpuState.PROGRAM_COUNTER, address);
             memory.busTiming().invalidateFetch();
+            instructionInFlight = false;
+            remainingInternalCycles = 0;
             throw new EmulationException(error.getMessage() + " [opcode=0x" + Integer.toHexString(opcode)
                     + ", pc=0x" + Integer.toHexString(address) + "]");
         } finally {
             memory.finishInstruction();
         }
     }
+
+    private void resumeInstructionTiming() {
+        // Preserve dispatch of zero-delay device writes even for instructions
+        // with no internal cycles. Readiness at the end of the final cycle
+        // belongs to the next bus operation, not to an extra retirement stall.
+        memory.busTiming().internal(0, state.branched());
+        while (remainingInternalCycles > 0) {
+            if (serviceDma()) return; // At most one DMA unit per public step.
+            memory.busTiming().internal(1, state.branched());
+            remainingInternalCycles--;
+        }
+        retireInstruction();
+    }
+
+    private boolean serviceDma() {
+        var before = memory.clock().now();
+        if (!memory.dma().runPending()) return false;
+        if (instructionInFlight) {
+            // Internal CPU work overlaps this DMA interval. Keep retirement
+            // blocked until ownership ends, even when its cycle budget is used.
+            var elapsed = memory.clock().now() - before;
+            remainingInternalCycles = elapsed >= remainingInternalCycles ? 0
+                    : remainingInternalCycles - (int) elapsed;
+            if (!memory.dma().ownsBus() && remainingInternalCycles == 0) retireInstruction();
+        }
+        return true;
+    }
+
+    private void retireInstruction() {
+        if (state.branched()) memory.busTiming().refill(state.programCounter(), state.isThumb() ? 2 : 4);
+        instructionInFlight = false;
+        instructionCount++;
+    }
+
+    /** Registers/PC can reflect executed work before the instruction retires. */
+    public boolean instructionInFlight() { return instructionInFlight; }
 
     public int register(int index) {
         return state.register(index);

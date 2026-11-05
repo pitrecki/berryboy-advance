@@ -1,5 +1,58 @@
 # Independent reference validation
 
+## Resumable CPU internal cycles during DMA, 2026-11-05
+
+CPU retirement can now wait across DMA units during internal execution cycles.
+The decoded instruction executes once; its remaining internal-cycle budget
+overlaps DMA ownership, and retirement resumes when that interval ends. An
+unfinished instruction cannot enter IRQ or execute the next instruction. Short
+transfers leave any uncovered internal cycles to complete normally. A new DMA
+request during release belongs to another interval, rather than extending the
+completed instruction's wait. The guest retains one deterministic owner and no
+per-instruction allocation is introduced.
+
+`Cpu.step()` still services at most one DMA unit. The 65536-word regression
+stops at a frame budget with the instruction pending, drains its 548 PCM frames,
+and later retires the original latched load even after DMA overwrites its code
+and data. No instruction replay or repeated memory side effects are used.
+Between steps, `instructionInFlight()` distinguishes pending timing from
+retirement; PC/registers may already reflect executed work. `instructions()`
+counts retirements. Host frame/step snapshots are not necessarily snapshots of
+a completed instruction. Step-count budgets retain that distinction.
+
+The readiness-normalized CPU matrix now matches **96/96 NBA observations**,
+versus **48/96 before**: ARM/Thumb ADD/LDR, three FIFO source regions and one/two
+channels. The reference request at cycle 0 activates at 2; BerryBoy injects
+readiness at 2 to isolate this arbitration stage. **Actual request timing is
+unchanged**: its default 24/96 result is byte-identical to the previous matrix.
+Scheduled activation and yielding before fetch/data accesses, including
+multi-access instructions and branch refill, remain future qualification work.
+
+Seventeen new core cases pass: 12 normalized loads plus long-DMA/audio budgets,
+uncovered multiply cycles, IRQ deferral, final-internal-cycle readiness and a
+new interval during release. The previous CPU fails **16**, retaining the one
+already-correct final-cycle case. The old test classpath adds only a constant
+false `instructionInFlight()` compatibility query, with no emulation change.
+Validation passes **1419 host / 1313 exported / 1313 actual new ECJ CLDC-class
+tests**. Current production sources also compile with JDE/ECJ and vendor RAPC;
+a new COD is emitted. No simulator/device runtime claim follows.
+
+All eleven fresh-backup games complete **39600 guest frames / 21725550 stereo
+samples**, with zero missing frames or software audio-buffer failures. Full RGB
+changes in Lost Age/Sonic; PCM changes in those two plus V-Rally, Emerald and
+LeafGreen. All backup hashes remain unchanged; four initialization files are
+written. Against the reused independent mGBA RGB888 captures, every title keeps
+the same exact-frame set: no gained/lost exact frames. Whole-stream comparisons
+remain unmatched; color-model/filter and timing gaps are still unqualified.
+
+The separate 1272-frame LeafGreen player continuation preserves its original
+save, full RGB and all three raw video states. PCM changes, while the reference
+RGB555 result remains **1111/1272 exact frames**, first difference **930**.
+These are headless boot/intro/limited continuation results, not gameplay or
+sustained/physical playback qualification. Prior equal-cycle CPU-window results
+describe the old core and need reassessment after this change.
+Evidence: [dma-internal-resume-2026-11-05.json](../benchmarks/dma-internal-resume-2026-11-05.json).
+
 ## FIFO activation and CPU load ordering, 2026-11-05
 
 The original [NBA CPU probe](../tools/nba-dma-activation-probe.cc) now executes

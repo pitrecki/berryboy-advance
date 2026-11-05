@@ -6,16 +6,17 @@ import berryboy.cpu.Cpu;
 /** Original CPU retirement adapter matching nba-dma-activation-probe.cc. */
 public final class DmaActivationProbe {
     public static void main(String[] args) {
-        if (args.length != 0) throw new IllegalArgumentException("Usage: berryboy.bus.DmaActivationProbe");
+        var readyAtTwo = args.length == 1 && args[0].equals("--ready-at-two");
+        if (args.length != 0 && !readyAtTwo) throw new IllegalArgumentException("Usage: berryboy.bus.DmaActivationProbe [--ready-at-two]");
         System.out.println("mode,program,source,channels,retired,cycle,r0,pc");
         for (var thumb : new boolean[]{false, true})
             for (var load : new boolean[]{false, true})
             for (var source : new int[]{0x03000000, 0x02000000, 0x08000000})
-                for (var channels = 1; channels <= 2; channels++) capture(thumb, load, source, channels);
+                for (var channels = 1; channels <= 2; channels++) capture(thumb, load, source, channels, readyAtTwo);
         if (System.out.checkError()) throw new IllegalStateException("Cannot write activation observations");
     }
 
-    private static void capture(boolean thumb, boolean load, int source, int channels) {
+    private static void capture(boolean thumb, boolean load, int source, int channels, boolean readyAtTwo) {
         var image = new byte[512];
         for (var i = 0; i < 16; i++) image[0x100 + i] = (byte) (i + 1);
         var m = new Machine(image);
@@ -42,8 +43,11 @@ public final class DmaActivationProbe {
             m.memory.write32(base + 4, 0x040000a0 + (c - 1) * 4);
             m.memory.write16(base + 8, 4);
             m.memory.write16(base + 10, 0xb640);
-            m.memory.dma().requestFifo(0x040000a0 + (c - 1) * 4);
+            if (!readyAtTwo) m.memory.dma().requestFifo(0x040000a0 + (c - 1) * 4);
         }
+        if (readyAtTwo) m.clock.schedule(() -> {
+            for (var c = 1; c <= channels; c++) m.memory.dma().requestFifo(0x040000a0 + (c - 1) * 4);
+        }, start + 2); // Isolate CPU arbitration after NBA's known request activation.
         for (var retired = 1; retired <= 4; retired++) {
             while (m.cpu.instructions() < retired) {
                 if (m.clock.now() - start > 1000) throw new IllegalStateException("CPU did not resume");

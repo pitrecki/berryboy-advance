@@ -407,12 +407,30 @@ Both adapters validate r0 and PC progression. The reference checks complete
 FIFO source progress before the first load retires. A CSV mismatch is an
 observed model difference, not an adapter process failure or a physical pass.
 
+For CPU internal-cycle arbitration after activation, normalize BerryBoy
+readiness to the reference's cycle 2:
+
+```bash
+java -cp target/classes:target/docs-tools berryboy.bus.DmaActivationProbe \
+  --ready-at-two > target/nba-reference/activation-ready-berryboy.csv
+cmp target/nba-reference/activation.csv target/nba-reference/activation-ready-berryboy.csv
+```
+
+This mode now matches all 96 reference rows. It does not change production DMA
+request timing and must not be interpreted as an activation-delay pass. The
+default request-mode comparison remains unmatched. During resumable internal
+timing, frame/step snapshots can expose executed-but-unretired registers/PC;
+use `Cpu.instructionInFlight()` and retirement counts when interpreting them.
+
 Production timing remains unmatched. The evidence contains an exact patch for
-an ignored, host-only delay experiment. It demonstrates why adding two cycles
-to pending-request scheduling alone is insufficient: all twelve first-load
-ordering regressions fail. Do not install that experiment into production or
-treat its ADD matches as complete CPU/DMA qualification. The next fix must
-preserve cooperative long-DMA yields while arbitrating data/internal CPU work.
+an ignored, host-only delay experiment on the pre-resumption core. On that
+revision, adding two cycles to pending scheduling alone fails all twelve
+first-load ordering regressions. Reproduce it with the source revision recorded
+in that evidence; mixing historical DMA classes with the current CPU's new
+ownership-query dependency is unsupported. The internal-cycle stage now
+preserves readiness-normalized ordering, but pre-fetch/data arbitration and
+actual activation scheduling still require implementation. Do not install the
+old experiment or treat ADD matches as complete CPU/DMA qualification.
 See [the comparison and constraints](REFERENCE-VALIDATION.md#fifo-activation-and-cpu-load-ordering-2026-11-05).
 
 ## Original FIFO DMA timing probes

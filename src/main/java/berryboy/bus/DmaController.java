@@ -102,6 +102,9 @@ public final class DmaController {
         memory.clock().advance(OWNERSHIP_EDGE_CYCLES);
     }
 
+    /** Whether the current word belongs to an unfinished ownership interval. */
+    public boolean ownsBus() { return ownsBus; }
+
     private boolean hasPending() {
         for (var i = 0; i < 4; i++) if (channels[i].pending) return true;
         return false;
