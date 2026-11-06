@@ -24,7 +24,7 @@ foreach(probe IN ITEMS
     nba-dma-probe nba-color-probe nba-dma-phase-probe nba-dma-release-probe
     nba-dma-activation-probe nba-dma-lifecycle-probe nba-dma-repeat-count-probe nba-dma-data-probe nba-cpu-refill-probe
     nba-cpu-refill-forms-probe nba-cpu-fetch-handoff-probe nba-cpu-fetch-irq-probe
-    nba-cpu-irq-fetch-probe nba-cpu-irq-prefetch-probe)
+    nba-cpu-irq-fetch-probe nba-cpu-irq-prefetch-probe nba-lcd-phase-probe)
   add_executable(${probe} ../${probe}.cc)
   target_include_directories(${probe} SYSTEM PRIVATE
     "${NBA_SOURCE_DIR}/src/nba/src" "${NBA_SOURCE_DIR}/src/nba/include"

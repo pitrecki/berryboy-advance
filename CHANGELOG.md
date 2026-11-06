@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.1-SNAPSHOT — unreleased
+
+- Add asset-free natural LCD/DMA/IRQ phase probes for BerryBoy, unmodified NBA
+  and mGBA. Preserve eight shared terminal outcomes as portable regressions;
+  keep disputed fine timing outside the production model.
+
 ## 0.9.0 — 2026-11-06 (preview)
 
 - Choose and persist any readable local ROM folder, plus last ROM/BIOS browser

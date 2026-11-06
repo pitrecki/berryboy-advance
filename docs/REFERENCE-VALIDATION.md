@@ -1223,3 +1223,40 @@ Raw per-window metrics are in the current evidence record.
 python3 tools/compare_audio.py /path/to/berryboy/audio.wav \
   /path/to/reference/audio.wav --output target/audio-analysis-new.json
 ```
+
+## Natural LCD, DMA and IRQ phase observations
+
+[Eight original cases per model](../benchmarks/lcd-natural-phases-2026-11-06.json)
+observe real scanline starts at lines 0, 159, 160 and 227, with forced blank off/on.
+CPU execution is excluded. NBA sets HBlank at cycle 1007, publishes HBlank IF at
+1009 and exposes its CPU IRQ input at 1011. mGBA sets HBlank and IF at 1008; its
+pending IRQ event clears at 1021 with CPU acceptance masked. These are different
+observation contracts, not interchangeable IRQ-entry measurements. DMA write
+visibility also differs between their event/bus models. A constant shift cannot
+qualify all of those phases.
+
+The matching terminal register/data rows at cycle 1248 are retained in
+`src/test/resources/berryboy/video/lcd-natural-terminal.csv`. Eight portable
+regressions use only that agreement; disputed fine edges remain diagnostic.
+Both references compare observed and unobserved terminal fields; the BerryBoy
+adapter additionally compares complete machine state. No commercial assets are used.
+
+Build the new NBA target with the existing pinned source configuration:
+
+```bash
+cmake -S tools/nba-reference -B target/lcd-reference \
+  -DNBA_SOURCE_DIR=/path/to/clean/pinned/NanoBoyAdvance -DCMAKE_BUILD_TYPE=Release
+cmake --build target/lcd-reference --target nba-lcd-phase-probe --parallel 4
+target/lcd-reference/nba-lcd-phase-probe > target/nba-lcd-phases.csv
+```
+
+Compile `tools/mgba-lcd-phase-probe.c` with the RGB888 standalone command above,
+substituting that source/binary name. Both C/C++ adapters print CSV to stdout and
+fail on broken sampling/completion/control invariants. For the current model:
+
+```bash
+mvn compile
+mkdir -p target/lcd-tools
+javac --release 21 -cp target/classes -d target/lcd-tools tools/LcdPhaseProbe.java
+java -cp target/classes:target/lcd-tools berryboy.desktop.LcdPhaseProbe > target/berryboy-lcd-phases.csv
+```
