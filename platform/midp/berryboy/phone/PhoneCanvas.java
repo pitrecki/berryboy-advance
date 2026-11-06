@@ -5,7 +5,7 @@ import berryboy.cheat.CheatCode;
 import berryboy.cheat.CheatList;
 import berryboy.input.Keypad;
 import berryboy.mobile.PhoneMenus;
-import berryboy.mobile.PhoneInput;
+import berryboy.mobile.input.PhoneInput;
 import berryboy.mobile.PhoneOptions;
 import berryboy.mobile.PhoneRenderer;
 import berryboy.mobile.PhoneScreen;

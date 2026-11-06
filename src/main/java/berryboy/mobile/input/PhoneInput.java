@@ -1,4 +1,6 @@
-package berryboy.mobile;
+package berryboy.mobile.input;
+
+import berryboy.mobile.PhoneOptions;
 
 import berryboy.input.Keypad;
 

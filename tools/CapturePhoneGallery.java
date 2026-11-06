@@ -1,7 +1,7 @@
 package berryboy.desktop;
 
 import berryboy.mobile.PhoneMenus;
-import berryboy.mobile.PhoneInput;
+import berryboy.mobile.input.PhoneInput;
 import berryboy.mobile.PhoneOptions;
 import berryboy.mobile.PhoneScreen;
 import berryboy.mobile.GameViewport;
