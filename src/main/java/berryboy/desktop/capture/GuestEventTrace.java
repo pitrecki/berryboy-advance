@@ -17,7 +17,7 @@ import java.util.Properties;
 public final class GuestEventTrace implements CycleObserver {
     private static final int DEFAULT_CAPACITY = 65536;
     private static final int MAX_CAPACITY = 1000000;
-    private static final int STATE_COLUMNS = 14;
+    private static final int STATE_COLUMNS = 21;
     private static final int BLEND_CONTROL = Memory.IO_BASE + 0x50;
     private static final int BLEND_ALPHA = Memory.IO_BASE + 0x52;
     private static final int BLEND_BRIGHTNESS = Memory.IO_BASE + 0x54;
@@ -100,13 +100,21 @@ public final class GuestEventTrace implements CycleObserver {
         values[11][size] = machine.memory.peek16(INTERRUPT_FLAGS);
         values[12][size] = machine.memory.peek16(INTERRUPT_MASTER);
         values[13][size] = machine.memory.halted() ? 1 : 0;
+        values[14][size] = machine.memory.peek16(Memory.IO_BASE + 0x0c);
+        for (var i = 0; i < 4; i++) values[15 + i][size] = machine.memory.peek16(Memory.IO_BASE + 0x20 + i * 2);
+        values[19][size] = peek32(Memory.IO_BASE + 0x28);
+        values[20][size] = peek32(Memory.IO_BASE + 0x2c);
         size++;
+    }
+
+    private int peek32(int address) {
+        return machine.memory.peek16(address) | (machine.memory.peek16(address + 2) << 16);
     }
 
     /** Call after detaching from the guest owner; only copied state is serialized. */
     public Map<String, Object> write(Path output) throws IOException {
         try (var writer = Files.newBufferedWriter(output)) {
-            writer.write("cycle\tdispatch_cycle\tphase\tevent_id\tevent\tpc\tcpsr\tvcount\tdispstat\tdispcnt\tbldcnt\tbldalpha\tbldy\tie\tif\time\thalted\n");
+            writer.write("cycle\tdispatch_cycle\tphase\tevent_id\tevent\tpc\tcpsr\tvcount\tdispstat\tdispcnt\tbldcnt\tbldalpha\tbldy\tie\tif\time\thalted\tbg2cnt\tbg2pa\tbg2pb\tbg2pc\tbg2pd\tbg2x\tbg2y\n");
             for (var row = 0; row < size; row++) {
                 writer.write(cycles[row] + "\t" + cycles[row] + "\t" + (values[0][row] == 0 ? "before" : "after")
                         + "\t" + values[1][row] + "\t" + eventNames.get(values[1][row]));

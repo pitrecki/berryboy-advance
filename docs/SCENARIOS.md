@@ -197,7 +197,10 @@ rows, with a default of 65536. Invalid settings fail before output creation.
 
 `events.tsv` records before/after callback state: effective cycle, dispatch cycle,
 phase, local event ID/type, PC, CPSR, VCOUNT, DISPSTAT, DISPCNT, BLDCNT,
-BLDALPHA, BLDY, IE, IF, IME and HALT. Numbers are unsigned decimal. Event IDs
+BLDALPHA, BLDY, IE, IF, IME and HALT. Appended fields `bg2cnt`, `bg2pa`,
+`bg2pb`, `bg2pc`, `bg2pd`, `bg2x` and `bg2y` capture the BG2 affine control,
+matrix and reference registers without changing existing column positions.
+Numbers are unsigned decimal. Event IDs
 identify callback instances within one trace, not devices across emulators.
 PC is the CPU's current instruction position during dispatch, not a bus trace.
 The optional observer stays on the guest owner, copies primitive values using

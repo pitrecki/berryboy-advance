@@ -1,0 +1,13 @@
+--- a/src/main/java/berryboy/video/LcdTiming.java
++++ b/src/main/java/berryboy/video/LcdTiming.java
+@@ -14,0 +15 @@
++    private static final int HBLANK_START_CYCLES = 1008;
+@@ -26 +27 @@
+-        clock.schedule(this, clock.now() + DRAW_CYCLES);
++        clock.schedule(this, clock.now() + HBLANK_START_CYCLES);
+@@ -45 +46 @@
+-            clock.schedule(this, clock.now() + LINE_CYCLES - DRAW_CYCLES);
++            clock.schedule(this, clock.now() + LINE_CYCLES - HBLANK_START_CYCLES);
+@@ -56 +57 @@
+-            clock.schedule(this, clock.now() + DRAW_CYCLES);
++            clock.schedule(this, clock.now() + HBLANK_START_CYCLES);

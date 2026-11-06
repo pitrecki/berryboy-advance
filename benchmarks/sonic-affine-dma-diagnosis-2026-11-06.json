@@ -1,0 +1,213 @@
+{
+  "date": "2026-11-06",
+  "source_base_commit": "3b4d5b5b7fdd9bba7d05f46361aa164e167bb6e8",
+  "source_dirty": true,
+  "scope": "Diagnose the rejected delayed-DMA prototype at Sonic Advance 3 frame 3555; no guest timing implementation is changed",
+  "hardware": "Linux x86_64 cloud host; Temurin 21.0.8+9; Maven 3.9.11; independent headless captures",
+  "identity": {
+    "rom_sha256": "f937fa93b97b14b9fb9fce98844c534f936222d21d1fdb5f1af42292bad32c85",
+    "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+    "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+    "initial_save_sha256": null,
+    "rtc_seed": "2000-01-01T00:00:00",
+    "devices": 0
+  },
+  "finding": {
+    "different_pixels": 195,
+    "bounding_box": [
+      0,
+      6,
+      239,
+      6
+    ],
+    "affected_scanline_zero_based": 6,
+    "end_video_state": "identical for baseline, DMA-only prototype and mGBA despite the raster difference",
+    "line6_register_samples": {
+      "baseline": {
+        "cycle": 998311776,
+        "vcount": 6,
+        "pc": 134881572,
+        "bg2cnt": 27521,
+        "bg2pa": 82,
+        "bg2pb": 0,
+        "bg2pc": 0,
+        "bg2pd": 256,
+        "bg2x": 45736,
+        "bg2y": 19064
+      },
+      "prototype": {
+        "cycle": 998311776,
+        "vcount": 6,
+        "pc": 134881544,
+        "bg2cnt": 27521,
+        "bg2pa": 82,
+        "bg2pb": 0,
+        "bg2pc": 0,
+        "bg2pd": 256,
+        "bg2x": 45736,
+        "bg2y": 19832
+      },
+      "reference": {
+        "cycle": 998311776,
+        "vcount": 6,
+        "pc": 134881548,
+        "bg2cnt": 27521,
+        "bg2pa": 82,
+        "bg2pb": 0,
+        "bg2pc": 0,
+        "bg2pd": 256,
+        "bg2x": 45736,
+        "bg2y": 19064
+      }
+    },
+    "cpu_store": {
+      "baseline": {
+        "trace_sha256": "a9869001d9fdb0cba1584df641893cb1865c9e209c1a4951ed44723eb1daf58b",
+        "matching_event_boundary_states": 138,
+        "store_retired_cycle": 998311490,
+        "store_pc": "0x080a218e",
+        "next_pc": "0x80a2190",
+        "instruction": "STRH r3,[r4,#12]",
+        "value": 19064,
+        "source_table_base": 33581564,
+        "written_address": 33581576
+      },
+      "prototype": {
+        "trace_sha256": "ab0096a15e63eb92913082b7c6079d06561aa400ef25a6591fbc0794fb5fa727",
+        "matching_event_boundary_states": 139,
+        "store_retired_cycle": 998311564,
+        "store_pc": "0x080a218e",
+        "next_pc": "0x80a2190",
+        "instruction": "STRH r3,[r4,#12]",
+        "value": 19064,
+        "source_table_base": 33581564,
+        "written_address": 33581576
+      }
+    },
+    "interpretation": "Both CPU routes compute the same 0x4a78 halfword for the affine source table. The baseline retires its store before the cycle-960 HBlank request; delayed DMA stalls the producer so the store completes later. The observed GPU reference value for line 6 is 0x4d78 in the rejected prototype and 0x4a78 in baseline/mGBA.",
+    "limits": "Callback snapshots do not prove the exact DMA source-read timestamp; the CPU trace independently confirms matching PC/CPSR at every sampled shared event boundary."
+  },
+  "captures": {
+    "baseline": {
+      "report_sha256": "c175e4d062e82b8a5547c09fb797c015fae581408ecb8dd02f1bf1f43b4975fa",
+      "frame3555_png_sha256": "8e1fa9546d8fdb1009e18bff7b4d7627246f5b7ae6a039d8ce832106eb2bb506",
+      "video_state_sha256": "5cbf835359239a2c9583b55e83598695e95a30e5db11648cd5113d5ca533afe1",
+      "events_sha256": "33b17b298f447df15cc5d622aac664b56f146dad18bdb05344c8c32f6faaeca0",
+      "trace": {
+        "file": "events.tsv",
+        "status": "complete",
+        "start_cycle": 998309312,
+        "end_cycle_exclusive": 998316704,
+        "capacity": 32768,
+        "rows": 2942,
+        "dropped_rows": 0,
+        "events": "all",
+        "scope": "scheduled callback boundaries only; not CPU bus accesses or IRQ entry"
+      },
+      "instrumentation_preserves_video_audio_and_counts": true,
+      "video_sha256": "62b77cf68130426d1a0a6d636ac9255b4121567f7f7dd62e857f7b91a85bf25e",
+      "audio_sha256": "67d8b3d5ee088ab0b77f470dd460b5ab71f9df70c6409d9e9b05a11959a8308f",
+      "audio_frames": 1953105,
+      "guest_cycles": 999989761,
+      "backup_sha256": "9d900aa5fddfccd3d528a98d7bf2aa44cb9613640cfb900c6c100e0606318d90"
+    },
+    "prototype": {
+      "report_sha256": "10e0800056b6969087508e805b4de77aa7fbb329538309426ade2845f27db5df",
+      "frame3555_png_sha256": "200ba3cf174369bb6545ece0eed639b70b38e7d58ff6cf9a8bd8eadf3a8c5435",
+      "video_state_sha256": "5cbf835359239a2c9583b55e83598695e95a30e5db11648cd5113d5ca533afe1",
+      "events_sha256": "619fcac1834e9f908b061980f9eade18fe89aced28da1512b1f215ecbc27f814",
+      "trace": {
+        "file": "events.tsv",
+        "status": "complete",
+        "start_cycle": 998309312,
+        "end_cycle_exclusive": 998316704,
+        "capacity": 32768,
+        "rows": 2956,
+        "dropped_rows": 0,
+        "events": "all",
+        "scope": "scheduled callback boundaries only; not CPU bus accesses or IRQ entry"
+      },
+      "instrumentation_preserves_video_audio_and_counts": true,
+      "video_sha256": "3d336a76945c8d7f849ac74d1f56b8df0fb88bd444b8d6a5e1625e5a22ff7bca",
+      "audio_sha256": "30753612b4cdcbb9fbc9bca351df8f62ed0b5d0007ca44891097c5494665eaea",
+      "audio_frames": 1953105,
+      "guest_cycles": 999989764,
+      "backup_sha256": "9d900aa5fddfccd3d528a98d7bf2aa44cb9613640cfb900c6c100e0606318d90"
+    },
+    "reference": {
+      "report_sha256": "f000f2d2ceade0bd6c28f42a35317f3307f6d1ab98dc54ecbf525ac4aa328f34",
+      "frame3555_png_sha256": "464b1a3f648d123bca70896b4c02ff0c027664a7de2fb7a4a9ee8ae6968700af",
+      "video_state_sha256": "5cbf835359239a2c9583b55e83598695e95a30e5db11648cd5113d5ca533afe1",
+      "events_sha256": "2967a381e7629bcaa4840e5926a917c62d0ed924bbdf515a3455748723aa7f6b",
+      "trace": {
+        "status": "complete",
+        "start_cycle": 998309312,
+        "end_cycle_exclusive": 998316704,
+        "capacity": 32768,
+        "rows": 24,
+        "dropped_rows": 0,
+        "scope": "LCD callbacks only"
+      },
+      "instrumentation_preserves_video_audio_and_counts": true,
+      "video_sha256": "e704826f138ba9d7d80280b449d40afb342fb53facd1f64d7f371f520dc1ad90",
+      "audio_sha256": "af37b8c9b39d055a1e7e5894bbf7c75ce328dd7942d050c7b12aecac29e1485e",
+      "audio_frames": 1953104
+    }
+  },
+  "counterfactual": {
+    "shipped": false,
+    "base_prototype_patch": "benchmarks/experiments/dma-activation-2026-11-06.patch",
+    "additional_patch": "benchmarks/experiments/lcd-dma-phase-2026-11-06.patch",
+    "additional_patch_sha256": "771ab4be79cd0388241f21eb9b84af0b39587f8676e48717f76b28546256a17e",
+    "apply_on_base": "Apply both experiments with git apply --unidiff-zero; compile only for isolated investigation",
+    "change": "Separate the 960-cycle pixel sampling budget from an experimental 1008-cycle LCD HBlank callback, matching the retained mGBA coordinate. Keep 1232 clocks/line and 280896/frame unchanged.",
+    "frames": 3600,
+    "exact_before": 2829,
+    "exact_after": 2832,
+    "lost_previous_exact_frames": [],
+    "gained_exact_frames": [
+      3556,
+      3558,
+      3559
+    ],
+    "frame3555_exact": true,
+    "report_sha256": "ecf75905b94ce5f21887f2a07ad5bf1b431401ceffca4338a83aac855fbbbf4e",
+    "events_sha256": "ac6be5a0e55aa0bb0ef557972799d7468d45d77dbc1df76669c5f51deaef77f3",
+    "video_sha256": "ff06937c07e538a31345d7c6b82978872f604e40fdeafb1626ca886b58f4e89b",
+    "audio_sha256": "b885b1637cd5198b2ebcc7781bc798c24ad2a4ef890523556a89c089cf910044",
+    "audio_frames": 1975050,
+    "guest_cycles": 1011225600,
+    "software_audio_overruns": 0,
+    "software_audio_underruns": 0,
+    "missing_guest_frames": 0,
+    "qualification": "One game route only. This removes the specific counterexample; it does not qualify LCD status/DMA/IRQ phase or broader gameplay/audio."
+  },
+  "validation": {
+    "host_tests": 2105,
+    "console_host_tests": 2105,
+    "exported_core_tests": 1987,
+    "failures": 0,
+    "skipped": 0,
+    "added_trace_test": "Verifies copied affine values and exact complete machine state with tracing on/off",
+    "c_adapter": "Compiled with -Wall -Wextra -Werror against the retained unmodified mGBA RGB888 library",
+    "library_sha256": "b47af07b62f97b0dacb9e48f0feeed90d7038e45c14564437c1d38bafdee7bb3",
+    "adapter_binary_sha256": "f82840b661f3c177ccf183d2fafc683aefe6dae9caebf46907a96ee1197d3830"
+  },
+  "source_files_sha256": {
+    "src/main/java/berryboy/desktop/capture/GuestEventTrace.java": "77603f00dedd44f6bf54831f9b045bdac7a7fc24490f676b4db7f230bfaf8d47",
+    "src/test/java/berryboy/desktop/capture/GuestEventTraceTest.java": "a556be759d1f3b12fa20ecac415484d2d606f415c6b410b270abf6a47a1e5dd1",
+    "tools/mgba-capture.c": "0841e44188694f4e5cb525db649cb9f0bb45ae83dd1f93df5f0f1f50b30727a5",
+    "tools/CpuCheckpointProbe.java": "cfd4afa596cd8ebf4bb14a873f1e98f08e4ca3f60ac1f0849fe5223fa2aaeafb"
+  },
+  "next_steps": [
+    "Independently distinguish the LCD status edge, HBlank DMA request, activation and IRQ propagation; the pinned models use different 1007/1008 callback coordinates",
+    "Run the eleven-game and saved-player gates after a justified phase model, preserving exact-frame sets and software frame/audio continuity",
+    "Qualify state-event migration and all prior CPU/DMA matrices before adopting scheduled activation"
+  ],
+  "local_outputs": [
+    "target/sonic3555",
+    "target/sonic3555-affine",
+    "target/sonic3555-lcd-prototype"
+  ],
+  "production_timing_changed": false
+}

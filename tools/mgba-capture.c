@@ -52,6 +52,7 @@ static void pixelRgb(color_t color, unsigned char* rgb) {
 struct Input { unsigned long long cycle; unsigned keys; };
 struct LcdRecord {
     uint32_t cycle, dispatchCycle, before, pc, cpsr, vcount, dispstat, dispcnt, bldcnt, bldalpha, bldy, ie, irq, ime, halted;
+    uint32_t bg2cnt, bg2pa, bg2pb, bg2pc, bg2pd, bg2x, bg2y;
 };
 struct Capture {
     struct mCore* core;
@@ -86,7 +87,11 @@ static void recordLcd(struct mTiming* timing, uint32_t late, unsigned before) {
         cpu->cpsr.packed, gba->video.vcount, gba->memory.io[REG_DISPSTAT >> 1],
         gba->memory.io[REG_DISPCNT >> 1], gba->memory.io[REG_BLDCNT >> 1],
         gba->memory.io[REG_BLDALPHA >> 1], gba->memory.io[REG_BLDY >> 1], gba->memory.io[REG_IE >> 1],
-        gba->memory.io[REG_IF >> 1], gba->memory.io[REG_IME >> 1], cpu->halted != 0
+        gba->memory.io[REG_IF >> 1], gba->memory.io[REG_IME >> 1], cpu->halted != 0,
+        gba->memory.io[REG_BG2CNT >> 1], gba->memory.io[REG_BG2PA >> 1], gba->memory.io[REG_BG2PB >> 1],
+        gba->memory.io[REG_BG2PC >> 1], gba->memory.io[REG_BG2PD >> 1],
+        gba->memory.io[REG_BG2X_LO >> 1] | ((uint32_t)gba->memory.io[REG_BG2X_HI >> 1] << 16),
+        gba->memory.io[REG_BG2Y_LO >> 1] | ((uint32_t)gba->memory.io[REG_BG2Y_HI >> 1] << 16)
     };
 }
 
@@ -104,12 +109,13 @@ static void tracedLcdEvent(struct mTiming* timing, void* context, uint32_t late)
 static int writeLcdTrace(struct Capture* c) {
     FILE* output = fopen(c->tracePath, "wx");
     if (!output) return 15;
-    fprintf(output, "cycle\tdispatch_cycle\tphase\tevent_id\tevent\tpc\tcpsr\tvcount\tdispstat\tdispcnt\tbldcnt\tbldalpha\tbldy\tie\tif\time\thalted\n");
+    fprintf(output, "cycle\tdispatch_cycle\tphase\tevent_id\tevent\tpc\tcpsr\tvcount\tdispstat\tdispcnt\tbldcnt\tbldalpha\tbldy\tie\tif\time\thalted\tbg2cnt\tbg2pa\tbg2pb\tbg2pc\tbg2pd\tbg2x\tbg2y\n");
     for (uint32_t i = 0; i < c->traceRows; ++i) {
         const struct LcdRecord* r = &c->lcdRecords[i];
-        fprintf(output, "%u\t%u\t%s\t0\tGBA Video\t%u\t%u\t%u\t%u\t%u\t%u\t%u\t%u\t%u\t%u\t%u\t%u\n",
+        fprintf(output, "%u\t%u\t%s\t0\tGBA Video\t%u\t%u\t%u\t%u\t%u\t%u\t%u\t%u\t%u\t%u\t%u\t%u\t%u\t%u\t%u\t%u\t%u\t%u\t%u\n",
             r->cycle, r->dispatchCycle, r->before ? "before" : "after", r->pc, r->cpsr,
-            r->vcount, r->dispstat, r->dispcnt, r->bldcnt, r->bldalpha, r->bldy, r->ie, r->irq, r->ime, r->halted);
+            r->vcount, r->dispstat, r->dispcnt, r->bldcnt, r->bldalpha, r->bldy, r->ie, r->irq, r->ime, r->halted,
+            r->bg2cnt, r->bg2pa, r->bg2pb, r->bg2pc, r->bg2pd, r->bg2x, r->bg2y);
     }
     int failed = ferror(output);
     if (fclose(output) || failed) return 15;
