@@ -28,7 +28,7 @@ bottlenecks and preserves event ordering.
 
 ## Current validation
 
-- **2155 host tests**, **2030 exported-core tests**, and **2030 tests against the
+- **2170 host tests**, **2045 exported-core tests**, and **2045 tests against the
   actual new ECJ/CLDC classes** pass, with no failures or skips. Counts include
   parameterized invocations. Detailed build and artifact data is in the linked evidence.
 - Native Linux JDE 7.1 / ECJ 4.6.1 / RAPC verification passes and produces a
@@ -69,6 +69,11 @@ bottlenecks and preserves event ordering.
   agree on all eight terminal register/data results, now portable regressions.
   Forced blank preserves HBlank DMA; VBlank lines suppress it. The different
   event models need justified hardware expectations before production adoption.
+- [IME register width](../benchmarks/ime-width-2026-11-06.json) fixes the first
+  Doom II startup exception on a word load at `0x04000208`. Twelve independent
+  NBA/mGBA register cases agree; ARM/Thumb word-load regressions now pass.
+  Doom II then reaches a separate disconnected multiplayer initialization gate,
+  so that game is not yet reported as completing the smoke route.
 - [Sticky shoulder controls](../benchmarks/shoulder-assist-2026-11-06.json)
   add optional independent L/R locks, repeat protection, visible active badges
   and release on pause/focus/game/state changes. Settings version 3 migrates

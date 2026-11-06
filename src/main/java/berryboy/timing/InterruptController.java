@@ -16,12 +16,14 @@ public final class InterruptController {
 
     public static boolean handles(int address) {
         return (address >= 0x04000200 && address <= 0x04000203)
-                || (address >= 0x04000208 && address <= 0x04000209);
+                || (address >= 0x04000208 && address <= 0x0400020b);
     }
 
     public int read8(int address) {
         var offset = address - 0x04000200;
-        var value = offset < 2 ? enabled : offset < 4 ? requested : master;
+        // IME is a four-byte register with only bit 0 implemented. Word loads
+        // used by interrupt libraries must read zero from its reserved lanes.
+        var value = offset < 2 ? enabled : offset < 4 ? requested : offset == 8 ? master : 0;
         return (value >>> ((offset & 1) * 8)) & 255;
     }
 

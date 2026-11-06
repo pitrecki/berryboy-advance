@@ -1,0 +1,179 @@
+{
+  "date": "2026-11-06",
+  "version": "0.9.1-SNAPSHOT",
+  "source_base_commit": "af95dc624a067447f83bb489f30948d5a5bf09c0",
+  "source_dirty": true,
+  "change": "Map all four IME bytes; return zero for reserved bytes and ignore their writes; preserve bit 0, IE/IF and guest-state format",
+  "trigger": {
+    "rom": "Doom II USA / A9DE",
+    "rom_sha256": "2a4c00510638659b6b207a7d2aa51cbd17bbad9a63f42bc2dc01c121eb83cf95",
+    "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+    "instruction": "Thumb LDR r0,[r4], opcode 0x6820, PC 0x080208a2",
+    "error": "Unimplemented bus / IO address 0x0400020a while reading the upper half of IME"
+  },
+  "reference_cases": {
+    "nba_commit": "55b5cf0ae3d929582ac5bfd486558173502b8354",
+    "nba_library_sha256": "01a99241e5e3f1e961b64ea5e3f3df3f34c7d5b041868d2d1aae03d40846f304",
+    "mgba_version": "0.10.5",
+    "mgba_library_sha256": "b47af07b62f97b0dacb9e48f0feeed90d7038e45c14564437c1d38bafdee7bb3",
+    "csv_sha256": "b41f4e16c6834982c8506ff9735b73c46582cc076f74a1c3b5c12dd89a12bcb4",
+    "both_outputs_identical": true,
+    "cases": [
+      {
+        "width": "1",
+        "value": "0",
+        "byte0": "0",
+        "byte1": "0",
+        "upper_halfword": "0",
+        "word": "0",
+        "ie": "512",
+        "irq": "512"
+      },
+      {
+        "width": "1",
+        "value": "1",
+        "byte0": "1",
+        "byte1": "0",
+        "upper_halfword": "0",
+        "word": "1",
+        "ie": "512",
+        "irq": "512"
+      },
+      {
+        "width": "1",
+        "value": "2",
+        "byte0": "0",
+        "byte1": "0",
+        "upper_halfword": "0",
+        "word": "0",
+        "ie": "512",
+        "irq": "512"
+      },
+      {
+        "width": "1",
+        "value": "4294967295",
+        "byte0": "1",
+        "byte1": "0",
+        "upper_halfword": "0",
+        "word": "1",
+        "ie": "512",
+        "irq": "512"
+      },
+      {
+        "width": "2",
+        "value": "0",
+        "byte0": "0",
+        "byte1": "0",
+        "upper_halfword": "0",
+        "word": "0",
+        "ie": "512",
+        "irq": "512"
+      },
+      {
+        "width": "2",
+        "value": "1",
+        "byte0": "1",
+        "byte1": "0",
+        "upper_halfword": "0",
+        "word": "1",
+        "ie": "512",
+        "irq": "512"
+      },
+      {
+        "width": "2",
+        "value": "2",
+        "byte0": "0",
+        "byte1": "0",
+        "upper_halfword": "0",
+        "word": "0",
+        "ie": "512",
+        "irq": "512"
+      },
+      {
+        "width": "2",
+        "value": "4294967295",
+        "byte0": "1",
+        "byte1": "0",
+        "upper_halfword": "0",
+        "word": "1",
+        "ie": "512",
+        "irq": "512"
+      },
+      {
+        "width": "4",
+        "value": "0",
+        "byte0": "0",
+        "byte1": "0",
+        "upper_halfword": "0",
+        "word": "0",
+        "ie": "512",
+        "irq": "512"
+      },
+      {
+        "width": "4",
+        "value": "1",
+        "byte0": "1",
+        "byte1": "0",
+        "upper_halfword": "0",
+        "word": "1",
+        "ie": "512",
+        "irq": "512"
+      },
+      {
+        "width": "4",
+        "value": "2",
+        "byte0": "0",
+        "byte1": "0",
+        "upper_halfword": "0",
+        "word": "0",
+        "ie": "512",
+        "irq": "512"
+      },
+      {
+        "width": "4",
+        "value": "4294967295",
+        "byte0": "1",
+        "byte1": "0",
+        "upper_halfword": "0",
+        "word": "1",
+        "ie": "512",
+        "irq": "512"
+      }
+    ],
+    "setup": "No user assets. Original synthetic cartridge; byte/halfword/word writes of 0,1,2,0xffffffff, then reserved-lane writes. NBA IRQ publication settles before inspection; mGBA uses nonzero bus/prefetch values. No IRQ latency claim."
+  },
+  "validation": {
+    "before_tests": 15,
+    "before_errors_reproducing_defect": 14,
+    "before_passed_scope_boundary_case": 1,
+    "host_tests": 2170,
+    "console_host_tests": 2170,
+    "exported_core_tests": 2045,
+    "actual_new_cldc_tests": 2045,
+    "failures": 0,
+    "skipped": 0,
+    "native_sdk_rapc": "Passed, JDE 7.1 / ECJ / 0.9.1 development COD/JAD",
+    "unrelated_game_replays": "All 1800 RGB/PCM frames, final backup hash, clock and sample count remain byte-identical for Tony Hawk 2, F-Zero GP Legend and Mario & Luigi after the fix."
+  },
+  "remaining_doom_gate": {
+    "error": "Multiplayer/UART transfer requires an unimplemented link backend",
+    "pc": "0x08020e04",
+    "opcode": "0x8010",
+    "operation": "STRH r0,[r2] writes SIOCNT=0x2083, RCNT readback 0x000f",
+    "cycle": 76612843,
+    "qualification": "The IME exception is removed. Doom II still stops in startup; do not claim a completed route."
+  },
+  "source_files_sha256": {
+    "src/main/java/berryboy/timing/InterruptController.java": "ba34649cf7bda59bf00d1a959e26620dc1e1a4415e16843de676b7ea33cacb2d",
+    "src/test/java/berryboy/timing/InterruptRegisterWidthTest.java": "5eb10da8168ef6dbd2e00a7d3e6c5dbe417c238e6e7aea682cfad8ca3ebce29f",
+    "src/test/resources/berryboy/timing/ime-width.csv": "b41f4e16c6834982c8506ff9735b73c46582cc076f74a1c3b5c12dd89a12bcb4",
+    "tools/nba-ime-width-probe.cc": "49388025795ad7bf47e4ec99cc6172729c430239fbb6504d38f826576dcc7944",
+    "tools/mgba-ime-width-probe.c": "f7dfc1750c38e59e5f4cac79e857be2a85ab4e1a4c575173388bd3813bda0f81"
+  },
+  "local_outputs": [
+    "target/ime-width",
+    "target/stress-games-2026-11-06"
+  ],
+  "reproduction": "Build nba-ime-width-probe through tools/nba-reference/CMakeLists.txt; compile mgba-ime-width-probe.c with the existing RGB888 standalone probe flags. Compare CSV outputs and run mvn -Dtest=InterruptRegisterWidthTest test.",
+  "release_policy": "No new tag or release package; v0.9.0 remains unchanged."
+}

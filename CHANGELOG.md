@@ -5,6 +5,8 @@
 - Add asset-free natural LCD/DMA/IRQ phase probes for BerryBoy, unmodified NBA
   and mGBA. Preserve eight shared terminal outcomes as portable regressions;
   keep disputed fine timing outside the production model.
+- Support the full four-byte IME register with reserved lanes reading zero,
+  fixing word loads used by interrupt libraries without changing IE/IF or state format.
 
 ## 0.9.0 — 2026-11-06 (preview)
 
