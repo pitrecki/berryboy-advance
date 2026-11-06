@@ -1,0 +1,62 @@
+{
+  "date": "2026-11-06",
+  "source_base_commit": "d6eebef5bf2f21e4586c8bf2a0b11c114124dd6c",
+  "source_dirty": true,
+  "scope": "Headless phone image boundary investigation; no physical-device capture or audio qualification",
+  "assets": {
+    "rom_sha256": "fc94f65380b65b870a30b9b04b39cca1dc63d6e46a4a373d3904adc0912ebc37",
+    "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+    "input_sha256": "c423d96841cba5c5ed07617131e87586c19df00646ce662ad4b7694db4112d5c"
+  },
+  "gallery_source": {
+    "guest_frame": 7200,
+    "png_sha256": "ff88653939fcd4e4ceddddd1ab5c81cef4c80bf47f759cd6a7b9b634f6a1a10d",
+    "source_commit": "a85be7fefbbd3a9d90739849aba84e8bebcae477",
+    "source_dirty": true
+  },
+  "phone_screenshot": {
+    "path": "docs/images/phone/metroid-zero-mission.png",
+    "png_sha256": "61ad22cac5e876e184147843f8c5bad699f67a42ea9f8e1ad34ae0e457b0f21b",
+    "canvas": [
+      640,
+      480
+    ],
+    "viewport": [
+      0,
+      27,
+      640,
+      426
+    ],
+    "source_dimensions": [
+      240,
+      160
+    ],
+    "cropped_source_rows": 0,
+    "cropped_source_columns": 0,
+    "different_pixels_from_production_nearest_neighbor_mapping": 0,
+    "black_bar_rows_each": 27
+  },
+  "independent_video_check": {
+    "reference": "mGBA 0.10.5 RGB555",
+    "binary_sha256": "e89cd6e4505e0f9f366834dc19a7328f2482fc416d72899ec15c547bd546b948",
+    "frames": 6600,
+    "exact_rgb_frames": 6600,
+    "berryboy_rgb_stream_sha256": "b4ee860a285f9738815e45b4825d6f31f54ce28f5ec6ff42bb6280a81ddc869a",
+    "mgba_rgb_stream_sha256": "b4ee860a285f9738815e45b4825d6f31f54ce28f5ec6ff42bb6280a81ddc869a",
+    "berryboy_pcm_stream_sha256": "6d451d6defed675c57207abe2528de5d47c17175e6b79ee56c5e2a86bbe6466a",
+    "mgba_pcm_stream_sha256": "aa17c3330ce6e4f59c319f17c7781842bf7d8faf9842afb8d7857d4ce384eb76",
+    "strict_rgb_equal": true,
+    "strict_pcm_equal": false,
+    "audio_qualification": "Still failing; video equality does not qualify sound",
+    "dropped_guest_frames": 0,
+    "software_audio_overruns": 0,
+    "software_audio_underruns": 0
+  },
+  "conclusion": "The application preserves the entire frame. Fit letterboxes the 3:2 source on a 4:3 canvas. Stretch removes the bars by changing the aspect ratio. The scene composition and HUD placement also occur in the independent reference.",
+  "reproduce": [
+    "Concatenate the verified baseline start-a-input.txt and benchmarks/inputs/phone-gallery-BMXE.tsv; SHA-256 is recorded above.",
+    "ScenarioRunner: fresh backup, 6600 frames, checkpoint 6600.",
+    "reference_capture.py: RGB555 binary, same scenario, --frames 6600 --checkpoints 6600.",
+    "For each phone viewport pixel (x,y+27), compare the gallery source pixel (floor(x*240/640),floor(y*160/426)); require zero differences and black bars outside the viewport."
+  ]
+}
