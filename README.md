@@ -65,7 +65,7 @@ recorded state and omits BIOS boot. [Recording details](docs/images/phone/golden
 Full-screen captures at **640×480**, rendered by the application. The default
 **Full screen** mode preserves the complete **240×160** GBA image and its 3:2
 proportions, leaving 27-pixel black bars above and below on the Bold's 4:3 screen.
-Choose **Display & audio → Scaling → Stretch** to fill the screen vertically too.
+Choose **Display & audio → Game image → Stretch** to fill the screen vertically too.
 
 | Metroid: Zero Mission | Grand Theft Auto Advance |
 | --- | --- |
