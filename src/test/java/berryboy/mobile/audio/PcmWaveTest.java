@@ -1,4 +1,4 @@
-package berryboy.mobile;
+package berryboy.mobile.audio;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

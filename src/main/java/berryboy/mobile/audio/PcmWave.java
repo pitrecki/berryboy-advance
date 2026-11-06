@@ -1,4 +1,4 @@
-package berryboy.mobile;
+package berryboy.mobile.audio;
 
 /** Small PCM16 stereo WAV packets for the phone MMAPI transport. */
 public final class PcmWave {

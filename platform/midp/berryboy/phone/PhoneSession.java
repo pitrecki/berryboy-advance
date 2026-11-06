@@ -7,7 +7,7 @@ import berryboy.cartridge.Cartridge;
 import berryboy.cartridge.CartridgeBackup;
 import berryboy.cheat.CheatList;
 import berryboy.mobile.FramePresentation;
-import berryboy.mobile.OutputMixer;
+import berryboy.mobile.audio.OutputMixer;
 import berryboy.mobile.PhoneOptions;
 import berryboy.MachineState;
 import berryboy.timing.CycleScheduler;

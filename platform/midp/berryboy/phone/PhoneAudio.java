@@ -1,6 +1,6 @@
 package berryboy.phone;
 
-import berryboy.mobile.PcmWave;
+import berryboy.mobile.audio.PcmWave;
 import java.io.ByteArrayInputStream;
 import javax.microedition.media.Manager;
 import javax.microedition.media.Player;
