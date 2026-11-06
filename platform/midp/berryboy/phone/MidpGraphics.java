@@ -1,7 +1,7 @@
 package berryboy.phone;
 
 import berryboy.mobile.PhoneGraphics;
-import berryboy.mobile.FrameScaler;
+import berryboy.mobile.video.FrameScaler;
 import java.io.IOException;
 import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;

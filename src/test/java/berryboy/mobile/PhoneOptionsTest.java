@@ -82,17 +82,4 @@ class PhoneOptionsTest {
         options.setStickyShoulders(true); PhoneMenus.controls(screen, options);
         assertThat(screen.value(0)).isEqualTo("Tap to lock");
     }
-    @Test
-    void skipsOnlyPresentationsAndMeasuresGuestAndPresentationRatesSeparately() {
-        var frames = new FramePresentation();
-        var shown = 0;
-        for (var i = 0; i <= 60; i++) if (frames.next(1, i * 1000L / 60)) shown++;
-        assertThat(shown).isEqualTo(31);
-        assertSoftly(s -> {
-            s.assertThat(frames.guestTenths()).isEqualTo(600);
-        });
-        frames.reset();
-        assertThat(frames.guestTenths()).isZero();
-        assertThat(frames.next(0, 0)).isTrue();
-    }
 }

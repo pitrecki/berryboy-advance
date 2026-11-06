@@ -1,6 +1,7 @@
 package berryboy.mobile;
 
 import berryboy.input.Keypad;
+import berryboy.mobile.video.GameViewport;
 
 /** Production phone UI, independent of SDK drawing and emulator internals. */
 public final class PhoneRenderer {

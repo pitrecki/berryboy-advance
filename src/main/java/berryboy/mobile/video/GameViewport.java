@@ -1,4 +1,6 @@
-package berryboy.mobile;
+package berryboy.mobile.video;
+
+import berryboy.mobile.PhoneOptions;
 
 /** Full-canvas placement of the 240x160 GBA image. Menus do not reserve game space. */
 public final class GameViewport {

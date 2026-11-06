@@ -1,4 +1,4 @@
-package berryboy.mobile;
+package berryboy.mobile.video;
 
 /** Presentation-only skipping and measured rates; all guest frames still execute. */
 public final class FramePresentation {

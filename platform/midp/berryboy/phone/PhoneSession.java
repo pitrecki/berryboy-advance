@@ -6,7 +6,7 @@ import berryboy.RuntimeChecks;
 import berryboy.cartridge.Cartridge;
 import berryboy.cartridge.CartridgeBackup;
 import berryboy.cheat.CheatList;
-import berryboy.mobile.FramePresentation;
+import berryboy.mobile.video.FramePresentation;
 import berryboy.mobile.audio.OutputMixer;
 import berryboy.mobile.PhoneOptions;
 import berryboy.MachineState;

@@ -1,4 +1,4 @@
-package berryboy.mobile;
+package berryboy.mobile.video;
 
 /** UI-owned nearest-neighbor output with cached coordinate maps for fractional scaling. */
 public final class FrameScaler {

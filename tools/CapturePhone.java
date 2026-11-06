@@ -1,7 +1,7 @@
 package berryboy.desktop;
 
 import berryboy.mobile.PhoneGraphics;
-import berryboy.mobile.FrameScaler;
+import berryboy.mobile.video.FrameScaler;
 import berryboy.mobile.PhoneMenus;
 import berryboy.mobile.PhoneOptions;
 import berryboy.mobile.PhoneRenderer;
