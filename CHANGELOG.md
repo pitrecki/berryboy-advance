@@ -7,6 +7,9 @@
   keep disputed fine timing outside the production model.
 - Support the full four-byte IME register with reserved lanes reading zero,
   fixing word loads used by interrupt libraries without changing IE/IF or state format.
+- Model disconnected multiplayer-port initialization without synthesizing peer
+  data or completion IRQs, allowing Doom II startup to continue. Preserve normal
+  shifts, GPIO selection and the existing machine-state layout.
 
 ## 0.9.0 — 2026-11-06 (preview)
 

@@ -40,12 +40,13 @@ class SerialUnitTest {
     }
 
     @Test
-    void resetPortsAcceptWritesButUnsupportedLinkTransfersFailExplicitly() {
+    void resetPortsAcceptWritesButUartTransfersStillFailExplicitly() {
         var serial = new SerialUnit(new CycleScheduler(), new InterruptController());
         serial.write8(0x04000134, 0); serial.write8(0x04000135, 0x80);
         assertThat(serial.read8(0x04000134) & 15).isEqualTo(15);
         serial.write8(0x04000154, 42);
         assertThat(serial.read8(0x04000158) & 2).isEqualTo(2);
+        serial.write8(0x04000135, 0); // Select serial rather than GPIO before requesting UART.
         serial.write8(0x04000129, 0x30);
         assertThatThrownBy(() -> serial.write8(0x04000128, 0x80)).isInstanceOf(EmulationException.class)
                 .hasMessageContaining("link backend");

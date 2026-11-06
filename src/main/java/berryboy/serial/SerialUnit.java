@@ -6,7 +6,7 @@ import berryboy.timing.CycleEvent;
 import berryboy.timing.CycleScheduler;
 import berryboy.timing.InterruptController;
 
-/** Disconnected serial port: reset state, normal clocked shifts and JOY/GPIO registers. */
+/** Disconnected serial port: normal shifts, waiting multiplayer and JOY/GPIO registers. */
 public final class SerialUnit implements CycleEvent {
     private final CycleScheduler clock;
     private final InterruptController interrupts;
@@ -29,7 +29,12 @@ public final class SerialUnit implements CycleEvent {
         if (address < 0x04000128) return data[address - 0x04000120] & 255;
         var register = address & ~1;
         int value;
-        if (register == 0x04000128) value = (control & 0x7ffb) | ((control & 0x2000) == 0 ? 4 : 0); // Disconnected SI is high.
+        if (register == 0x04000128) {
+            value = (control & 0x7ffb) | ((control & 0x2000) == 0 ? 4 : 0);
+            // Without a cable SI/SD are pulled high. No peer assigns an ID,
+            // supplies a clock or changes received data/error status.
+            if ((control & 0x3000) == 0x2000 && (rcnt & 0x8000) == 0) value = (value & ~0x7c) | 0x0c;
+        }
         else if (register == 0x0400012a) value = send;
         else if (register == 0x04000134) value = (rcnt & ~15) | (rcnt & (rcnt >>> 4) & 15) | (~(rcnt >>> 4) & 15);
         else if (register == 0x04000140) value = joyControl;
@@ -45,11 +50,11 @@ public final class SerialUnit implements CycleEvent {
         if (register == 0x04000128) {
             var previous = control;
             var next = replace(control, address, value) & 0x7ffb;
-            if ((next & 0x80) != 0 && (next & 0x2000) != 0) throw new EmulationException("Multiplayer/UART transfer requires an unimplemented link backend");
+            if ((next & 0x3080) == 0x3080 && (rcnt & 0x8000) == 0) throw new EmulationException("UART transfer requires an unimplemented link backend");
             control = next;
             var restart = (previous & 0x80) == 0 || ((previous ^ control) & 0x3003) != 0;
             if ((control & 0x80) == 0 || restart) clock.cancel(this);
-            if (restart && (control & 0x81) == 0x81 && (rcnt & 0x8000) == 0) {
+            if (restart && (control & 0x2081) == 0x81 && (rcnt & 0x8000) == 0) {
                 var bits = (control & 0x1000) != 0 ? 32 : 8;
                 clock.schedule(this, clock.now() + bits * ((control & 2) != 0 ? 8 : 64));
             }

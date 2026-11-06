@@ -19,6 +19,7 @@ separately. Neither platform has passed sustained-playback qualification.
 | Cartridges | SRAM, Flash 64/128 KiB, EEPROM sizes, persistence, RTC/GPIO and deterministic sensor state | Busy/ADC timing, RTC IRQ, calibration and wider real-player save coverage |
 | Desktop | Keypad, Swing output, clock pacing, scenario recording and bounded host workers | Native-window/audio integration and sustained presentation measurements |
 | Save states | Versioned complete snapshots, identity/CRC checks, pending CPU/DMA work and hardware event order | Wider gameplay coverage, format migration and device storage behavior |
+| Serial | Normal disconnected shifts, multiplayer-port status with no cable, JOY/GPIO registers | UART backend, peer communication and physical port timing |
 | Phone frontend | Home/pause UI, ROM/BIOS browser, five slots, cheats, key remapping, volume/mono/mute, scaling, frame skip and FPS | Simulator/device UI, permissions, native keyboard, audio latency/gaps and performance |
 | BlackBerry build | Legacy export, actual CLDC compilation and vendor RAPC COD | Simulator application execution and physical Bold testing |
 
@@ -28,7 +29,7 @@ bottlenecks and preserves event ordering.
 
 ## Current validation
 
-- **2170 host tests**, **2045 exported-core tests**, and **2045 tests against the
+- **2221 host tests**, **2096 exported-core tests**, and **2096 tests against the
   actual new ECJ/CLDC classes** pass, with no failures or skips. Counts include
   parameterized invocations. Detailed build and artifact data is in the linked evidence.
 - Native Linux JDE 7.1 / ECJ 4.6.1 / RAPC verification passes and produces a
@@ -72,8 +73,12 @@ bottlenecks and preserves event ordering.
 - [IME register width](../benchmarks/ime-width-2026-11-06.json) fixes the first
   Doom II startup exception on a word load at `0x04000208`. Twelve independent
   NBA/mGBA register cases agree; ARM/Thumb word-load regressions now pass.
-  Doom II then reaches a separate disconnected multiplayer initialization gate,
-  so that game is not yet reported as completing the smoke route.
+  A separate disconnected multiplayer initialization gate was isolated next.
+- [Disconnected multiplayer initialization](../benchmarks/disconnected-multi-2026-11-06.json)
+  now exposes pulled-up SI/SD status and accepts a waiting start without a peer.
+  Forty-eight mGBA observations plus cancellation, GPIO selection and state replay
+  regressions pass. Doom II completes the 1800-frame smoke route after both fixes;
+  existing Tony Hawk/F-Zero/Mario & Luigi RGB/PCM captures remain unchanged.
 - [Sticky shoulder controls](../benchmarks/shoulder-assist-2026-11-06.json)
   add optional independent L/R locks, repeat protection, visible active badges
   and release on pause/focus/game/state changes. Settings version 3 migrates
