@@ -1,0 +1,189 @@
+{
+  "date": "2026-11-06",
+  "version": "0.9.1-SNAPSHOT",
+  "capture_source_commit": "545a390f13df46e56cd965172bca0b317c2ed506",
+  "capture_source_dirty": false,
+  "scope": "Named F-Zero race and Mario & Luigi player-control routes, plus real-game state continuations",
+  "hardware": "Linux x86_64 cloud host; Temurin 21.0.8; deterministic unpaced headless captures, not physical presentation/audio performance",
+  "scenarios": {
+    "BFZE": {
+      "title": "F-Zero: GP Legend",
+      "input_file": "benchmarks/inputs/fzero-race-2026-11-06.tsv",
+      "capture": {
+        "rom_sha256": "f499a88fae072452a1b157b266ff516f033eb792b6a442d28e273bb2eeee4391",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "d81df65a8ca379a6ba3c130c2be8407d8a5da8f70db6d69b671d8a92ea2fe8c1",
+        "frames": 6000,
+        "guest_cycles": 1685376001,
+        "audio_frames": 3291750,
+        "audio_overruns": 0,
+        "audio_underruns": 0,
+        "dropped_guest_frames": 0,
+        "video_sha256": "2c436a33e53a4809d5974084dec9fd838b7a12d67573415b7b9f2969d8c1d107",
+        "audio_sha256": "2f492200530146b8d9b1c1b5f62f3ad7bc09c3b18962c951fd3e87a970ee9559",
+        "backup_type": 0,
+        "backup_bytes": 32768,
+        "backup_sha256": "b63f270d4c3548172df194dbb5ba3398796e049e5a621b0ac1d021a046e489c9"
+      },
+      "comparison": {
+        "status": "mismatch",
+        "exact_video_frames": 3999,
+        "total_video_frames": 6000,
+        "first_video_mismatch": 10,
+        "whole_video_hash_match": false,
+        "whole_audio_hash_match": false,
+        "reference_audio_frames": 3291752,
+        "berryboy_audio_frames": 3291750,
+        "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+      },
+      "last_frame_rgb_hash_matches_reference": false,
+      "observed_route": "Cold boot, Rick Wheeler dialogue/selection, then race with acceleration and steering",
+      "state_replay": {
+        "snapshot_frame": 6000,
+        "snapshot_cycles": 1685376001,
+        "resumed_frames": 120,
+        "resumed_audio_frames": 65835,
+        "state_bytes": 805979,
+        "state_sha256": "3bc8b2b5087c4afa33564d0b1a1069a4c4077d71ff32c20a12d6e1ce32bc67dc",
+        "final_state_sha256": "d820bf31d8aef7f27e73b683a9074c0fd3c91b8c70db7f10e4a1e4a40f907c6f",
+        "immediate_and_future_full_state_exact": true,
+        "all_resumed_rgb_pcm_exact": true
+      },
+      "isolated_cldc_continuation_matches_host": true,
+      "local_output": "target/roadmap-gameplay-2026-11-06/BFZE-race",
+      "local_reference": "target/roadmap-gameplay-2026-11-06/reference-BFZE-race",
+      "local_state": "target/roadmap-gameplay-2026-11-06/fzero-race-state",
+      "capture_report_sha256": "3c0db76cd83ac578e6f8e572697a84d3a5b39100e35159bdefb79539c0e19b03",
+      "reference_report_sha256": "84f6ec127f9933d9768e2b79f8e239018bafaeb3770c72356fd1abea349a2a3f",
+      "state_report_sha256": "77f94b980e8eb89fbeefe2add8e70caa3c7852aa07fcd07358f2286865721c8e",
+      "last_capture_png_sha256": "4e4725b6d4eca6afc508539f6c66f85af9daf655dd42c60ca4ffc844b86add35",
+      "last_frame_different_pixels": 8626,
+      "last_frame_difference_bbox": [
+        0,
+        6,
+        239,
+        145
+      ]
+    },
+    "A88E": {
+      "title": "Mario & Luigi: Superstar Saga",
+      "input_file": "benchmarks/inputs/mario-house-2026-11-06.tsv",
+      "capture": {
+        "rom_sha256": "af9066e7eacdab919e92987db8856d038e4b75d4ed011259c893702085a886be",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "525c2a5f737a5a67a65f7823a053761afc38a25db8d2737e4842d860d2e416fe",
+        "frames": 6600,
+        "guest_cycles": 1853913602,
+        "audio_frames": 3620925,
+        "audio_overruns": 0,
+        "audio_underruns": 0,
+        "dropped_guest_frames": 0,
+        "video_sha256": "4ec4493a8d5a7be1fd9552d4e2d4f8247d74cf645fe866e8bc25722150f1f65c",
+        "audio_sha256": "987f5ea69aaa6f817cf68226ba7477b7342bb752422b06f989366ca8f9704cd8",
+        "backup_type": 4,
+        "backup_bytes": 8192,
+        "backup_sha256": "ac18c6cd5aa62d1797bd9cae00239300ec6b9a702e155368c39caa5a25dd5878"
+      },
+      "comparison": {
+        "status": "mismatch",
+        "exact_video_frames": 3512,
+        "total_video_frames": 6600,
+        "first_video_mismatch": 10,
+        "whole_video_hash_match": false,
+        "whole_audio_hash_match": false,
+        "reference_audio_frames": 3620924,
+        "berryboy_audio_frames": 3620925,
+        "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+      },
+      "last_frame_rgb_hash_matches_reference": true,
+      "observed_route": "Cold boot and opening scenes, then controlled Toad moving right/down and interacting by the house exit",
+      "state_replay": {
+        "snapshot_frame": 6600,
+        "snapshot_cycles": 1853913602,
+        "resumed_frames": 120,
+        "resumed_audio_frames": 65835,
+        "state_bytes": 781403,
+        "state_sha256": "7a83c7544e1b0d535d18e873e3f1d077b72648640e6784b6122e2ea45d9c4d5b",
+        "final_state_sha256": "ae775ed8cb0447d1666bfeec5e099a37a449ffe85f80ac2416da75f347a060ce",
+        "immediate_and_future_full_state_exact": true,
+        "all_resumed_rgb_pcm_exact": true
+      },
+      "isolated_cldc_continuation_matches_host": true,
+      "local_output": "target/roadmap-gameplay-2026-11-06/A88E-house",
+      "local_reference": "target/roadmap-gameplay-2026-11-06/reference-A88E-house",
+      "local_state": "target/roadmap-gameplay-2026-11-06/mario-house-replay",
+      "capture_report_sha256": "fc7e5fcf1441a1bad6e95ebe9622a75f2a5675260e4efb8dd7c7e01390c503b6",
+      "reference_report_sha256": "e1d79df516964063320dfa569dffd1898fba67cdffa65bfc40ac4804992a4606",
+      "state_report_sha256": "ae04df08c9e8265f482c1e922e65087dc8957e60f66815ea7ec2ab2cb04f4e7e",
+      "last_capture_png_sha256": "772a5c31da3e1f9c57cc9ad3b0ac015d833eb28bb3e686a4b3baf1def8cbacd2",
+      "last_frame_different_pixels": 0,
+      "last_frame_difference_bbox": null
+    }
+  },
+  "doom_first_level_state": {
+    "input_file": "benchmarks/inputs/doom-entry-2026-11-06.tsv",
+    "report": {
+      "rom_sha256": "2a4c00510638659b6b207a7d2aa51cbd17bbad9a63f42bc2dc01c121eb83cf95",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "62ae23d5fefa6ac388138b0ebe6e84293cb3d0c48df772db4d7f77561957b5e1",
+      "snapshot_frame": 2400,
+      "snapshot_cycles": 674150400,
+      "resumed_frames": 120,
+      "resumed_audio_frames": 65835,
+      "state_bytes": 773735,
+      "state_sha256": "f6ebef5e45335496b6422fb74f66f0785de9d9f6d3c1c389e4365722487c0684",
+      "final_state_sha256": "cd7dfe8495e98b6a68f1439be904b07425864f643ebe53ff0402d07295e36f61",
+      "immediate_and_future_full_state_exact": true,
+      "all_resumed_rgb_pcm_exact": true
+    },
+    "isolated_cldc_continuation_matches_host": true,
+    "parser_preservation_evidence": "benchmarks/recorded-inputs-2026-11-06.json"
+  },
+  "native_verification": {
+    "method": "tools/VerifyStateResume.java runs with target/blackberry/classes and helper classes only; no host emulator classes on the classpath. ROM/BIOS identities and immediate state round-trip are checked, then 120 guest frames reproduce the complete expected future-state hash.",
+    "cases": 3,
+    "frames_per_case": 120,
+    "logs_sha256": {
+      "roadmap-doom-cldc.log": "ccf941de2edfc8c3795bb924428457ddf163ad4532f29cb2aaab7c0ed87fb45d",
+      "fzero-race-cldc.log": "43181bfaf62f8af4814d8276417a65142839907b2aa4a2e72897e2101b592d21",
+      "mario-house-cldc.log": "b4c3f5f2cca36b378113aa07371aaa7a2cee3977decae10ad4e3d3ccf64c6185"
+    },
+    "note": "Host replay separately compares every resumed RGB frame and PCM sample before its full final-state check. This is codec/continuation evidence, not independent game accuracy."
+  },
+  "preservation_control": {
+    "mario_unchanged_prefix_frames": 6000,
+    "fields_compared": [
+      "frame",
+      "cycle",
+      "pc",
+      "cpsr",
+      "rgb_sha256",
+      "audio_frames"
+    ],
+    "normalized_prefix_sha256": "31b28622196d5f413177cbe7aa3491b085f14b7bfd98c034f443bdd73154bba7",
+    "unchanged_against": "Earlier 9000-frame exploratory host capture; same first 6000 inputs before the new movement sequence",
+    "reference_bound": "The final Mario route ends at frame 6600 inside the existing reference adapter limit of 7000. The limit was preserved."
+  },
+  "reference": {
+    "emulator": "mGBA 0.10.5, RGB888 software output and blip_buf audio",
+    "library_sha256": "b47af07b62f97b0dacb9e48f0feeed90d7038e45c14564437c1d38bafdee7bb3",
+    "adapter_sha256": "f82840b661f3c177ccf183d2fafc683aefe6dae9caebf46907a96ee1197d3830",
+    "rules": "Same ROM/BIOS/input hashes, fresh backups, fixed RTC and same frame indices. Strict RGB and full PCM comparisons remain failing; no frame shift, tolerance or new oracle."
+  },
+  "validation": {
+    "host_tests": 2384,
+    "exported_core_tests": 2240,
+    "actual_cldc_core_tests": 2240,
+    "failures": 0,
+    "skipped": 0,
+    "original_player_saves_used": false,
+    "all_capture_frame_audio_loss_counters_zero": true,
+    "machine_state_format_changed": false
+  },
+  "next_steps": [
+    "Record second battery-save generations and cold cross-loads from isolated copies; current full-state continuations do not qualify cartridge-save compatibility.",
+    "Trace post-BIOS differences in the new race/player routes while retaining strict whole-stream outcomes.",
+    "Extend Mario & Luigi from Toad control to Mario/Luigi movement and a battle with named checkpoints."
+  ],
+  "release_policy": "New source/evidence on main only; published v0.9.0 and its package are unchanged."
+}

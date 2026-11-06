@@ -6,6 +6,9 @@
   replay, retaining exact guest-cycle installation and immutable recording data.
 - Add 144 independent cartridge-DMA/discarded-IRQ-fetch regressions across
   Game Pak regions, page edges and cold/warm prefetch, preserving production timing.
+- Extend F-Zero to a recorded race and Mario & Luigi to Toad control in the
+  house. Verify 120-frame full-state continuations in Doom II and both new routes
+  on host and isolated CLDC classes, retaining strict reference mismatches.
 - Add asset-free natural LCD/DMA/IRQ phase probes for BerryBoy, unmodified NBA
   and mGBA. Preserve eight shared terminal outcomes as portable regressions;
   keep disputed fine timing outside the production model.
