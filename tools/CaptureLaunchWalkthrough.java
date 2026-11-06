@@ -1,8 +1,8 @@
 package berryboy.desktop;
 
 import berryboy.MachineState;
-import berryboy.mobile.PhoneMenus;
-import berryboy.mobile.PhoneScreen;
+import berryboy.mobile.ui.PhoneMenus;
+import berryboy.mobile.ui.PhoneScreen;
 import berryboy.video.LcdTiming;
 import java.nio.file.*;
 import java.util.*;
