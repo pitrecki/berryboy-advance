@@ -1,6 +1,7 @@
 package berryboy.bus;
 
 import berryboy.EmulationException;
+import berryboy.state.StateBuffer;
 
 /** Four bus-owning DMA channels. Requests latch at device events, CPU services them. */
 public final class DmaController {
@@ -104,6 +105,23 @@ public final class DmaController {
 
     /** Whether the current word belongs to an unfinished ownership interval. */
     public boolean ownsBus() { return ownsBus; }
+
+    public void transferState(StateBuffer state) {
+        ownsBus = state.flag(ownsBus);
+        for (var i = 0; i < channels.length; i++) {
+            var channel = channels[i];
+            channel.source = state.value(channel.source);
+            channel.destination = state.value(channel.destination);
+            channel.count = state.value(channel.count);
+            channel.control = state.value(channel.control);
+            channel.currentSource = state.value(channel.currentSource);
+            channel.currentDestination = state.value(channel.currentDestination);
+            channel.remaining = state.value(channel.remaining);
+            channel.initialCount = state.value(channel.initialCount);
+            channel.pending = state.flag(channel.pending);
+            channel.first = state.flag(channel.first);
+        }
+    }
 
     private boolean hasPending() {
         for (var i = 0; i < 4; i++) if (channels[i].pending) return true;

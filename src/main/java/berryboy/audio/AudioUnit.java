@@ -1,5 +1,6 @@
 package berryboy.audio;
 
+import berryboy.state.StateBuffer;
 import berryboy.EmulationException;
 
 /**
@@ -179,5 +180,19 @@ public final class AudioUnit {
     private static int replaceByte(int current, int address, int value) {
         var shift = (address & 1) * 8;
         return (current & ~(0xff << shift)) | (value << shift);
+    }
+
+    /** Device-owned fields for versioned machine state; call only between CPU steps. */
+    public void transferState(StateBuffer state) {
+        stereoControl = state.value(stereoControl);
+        mixControl = state.value(mixControl);
+        biasControl = state.value(biasControl);
+        enabled = state.flag(enabled);
+        channel1.transferState(state);
+        channel2.transferState(state);
+        channel3.transferState(state);
+        channel4.transferState(state);
+        fifoA.transferState(state);
+        fifoB.transferState(state);
     }
 }

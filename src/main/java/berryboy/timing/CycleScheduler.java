@@ -1,6 +1,7 @@
 package berryboy.timing;
 
 import berryboy.EmulationException;
+import berryboy.state.StateBuffer;
 
 /**
  * Deterministic guest clock. Equal deadlines execute in scheduling order.
@@ -107,6 +108,29 @@ public final class CycleScheduler {
             events[--size] = null;
         }
         now = 0;
+    }
+
+    /** Persist hardware deadlines in their existing tie order; reject external callbacks. */
+    public void transferState(StateBuffer state, CycleEvent[] hardware) {
+        if (advancing) throw new IllegalArgumentException("Cannot capture during clock dispatch");
+        now = state.value(now);
+        size = state.value(size);
+        if (now < 0 || size < 0 || size > hardware.length) throw new IllegalArgumentException("Invalid state clock");
+        for (var i = 0; i < size; i++) {
+            var id = -1;
+            if (!state.reading()) {
+                for (var j = 0; j < hardware.length; j++) if (hardware[j] == events[i]) id = j;
+            }
+            id = state.value(id);
+            if (id < 0 || id >= hardware.length) throw new IllegalArgumentException("State contains an external clock callback");
+            events[i] = hardware[id];
+            deadlines[i] = state.value(deadlines[i]);
+            if (deadlines[i] < now || (i > 0 && deadlines[i] < deadlines[i - 1])) {
+                throw new IllegalArgumentException("Invalid state deadline");
+            }
+            for (var j = 0; j < i; j++) if (events[j] == events[i]) throw new IllegalArgumentException("Duplicate state event");
+        }
+        for (var i = size; i < events.length; i++) events[i] = null;
     }
 
     private void remove(int index) {

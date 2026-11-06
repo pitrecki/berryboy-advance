@@ -1,5 +1,6 @@
 package berryboy.cartridge;
 
+import berryboy.state.StateBuffer;
 import berryboy.timing.CycleScheduler;
 
 /** Deterministic S-3511-style serial RTC. Calendar advances from guest cycles. */
@@ -117,5 +118,21 @@ public final class CartridgeRtc {
     private static int monthDays(int year, int month) {
         if (month == 2) return (year & 3) == 0 ? 29 : 28;
         return month == 4 || month == 6 || month == 9 || month == 11 ? 30 : 31;
+    }
+
+    /** Device-owned fields for versioned machine state; call only between CPU steps. */
+    public void transferState(StateBuffer state) {
+        state.ints(calendar);
+        state.ints(parameters);
+        control = state.value(control);
+        command = state.value(command);
+        bits = state.value(bits);
+        value = state.value(value);
+        parameter = state.value(parameter);
+        readBit = state.value(readBit);
+        output = state.value(output);
+        lastCycle = state.value(lastCycle);
+        selected = state.flag(selected);
+        reading = state.flag(reading);
     }
 }

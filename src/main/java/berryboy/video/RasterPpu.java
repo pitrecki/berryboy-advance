@@ -1,5 +1,6 @@
 package berryboy.video;
 
+import berryboy.state.StateBuffer;
 import berryboy.timing.CycleEvent;
 
 /** Cycle-driven reference sampling, one pixel per four guest clocks during drawing. */
@@ -45,5 +46,15 @@ public final class RasterPpu implements CycleEvent {
             }
         }
         memory.clock().schedule(this, memory.clock().now() + delay);
+    }
+
+    /** Device-owned fields for versioned machine state; call only between CPU steps. */
+    public void transferState(StateBuffer state) {
+        state.ints(drawing);
+        state.ints(completed);
+        x = state.value(x);
+        y = state.value(y);
+        frames = state.value(frames);
+        ppu.transferState(state);
     }
 }

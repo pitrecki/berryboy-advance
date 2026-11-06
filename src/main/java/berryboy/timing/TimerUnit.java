@@ -1,5 +1,7 @@
 package berryboy.timing;
 
+import berryboy.state.StateBuffer;
+
 /** Four cycle-driven 16-bit timers, including reload, prescale and cascading. */
 public final class TimerUnit {
     private static final int[] PERIODS = {1, 64, 256, 1024};
@@ -15,6 +17,18 @@ public final class TimerUnit {
     }
 
     public void attachListener(TimerOverflowListener listener) { this.listener = listener; }
+
+    public CycleEvent stateEvent(int index) { return timers[index]; }
+
+    public void transferState(StateBuffer state) {
+        for (var i = 0; i < timers.length; i++) {
+            var timer = timers[i];
+            timer.reload = state.value(timer.reload);
+            timer.counter = state.value(timer.counter);
+            timer.control = state.value(timer.control);
+            timer.lastCycle = state.value(timer.lastCycle);
+        }
+    }
 
     public int read8(int address) {
         var offset = address - 0x04000100;

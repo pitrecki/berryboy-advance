@@ -8,6 +8,9 @@ import berryboy.cartridge.CartridgeBackup;
 import berryboy.cartridge.CartridgeGpio;
 import berryboy.input.Keypad;
 import berryboy.serial.SerialUnit;
+import berryboy.state.StateBuffer;
+import berryboy.state.StateChecksum;
+import berryboy.timing.CycleEvent;
 import berryboy.timing.CycleScheduler;
 import berryboy.timing.InterruptController;
 import berryboy.timing.TimerOverflowListener;
@@ -98,6 +101,26 @@ public final class Memory implements VideoBus {
 
     public boolean hasBios() {
         return bios != null;
+    }
+
+    public int biosChecksum() { return bios == null ? 0 : StateChecksum.bytes(bios, bios.length); }
+
+    public void transferState(StateBuffer state) {
+        if (cpuAccess) throw new IllegalArgumentException("State transfer requires a completed CPU step");
+        state.bytes(externalRam); state.bytes(internalRam); state.bytes(ioRegisters);
+        state.bytes(palette); state.bytes(videoRam); state.bytes(objectAttributes);
+        videoVersion = state.value(videoVersion); displayVersion = state.value(displayVersion);
+        automaticEeprom = state.flag(automaticEeprom);
+        memoryControl = state.value(memoryControl); instructionAddress = state.value(instructionAddress);
+        thumbInstruction = state.flag(thumbInstruction); biosPrefetch = state.value(biosPrefetch);
+        halted = state.flag(halted); postFlag = state.value(postFlag);
+        keyControl = state.value(keyControl); keyMatched = state.flag(keyMatched);
+        keypad.transferState(state); bus.transferState(state); interrupts.transferState(state);
+        serial.transferState(state); lcd.transferState(state); timers.transferState(state);
+        dma.transferState(state); audio.transferState(state); clockedAudio.transferState(state);
+        raster.transferState(state); gpio.transferState(state); backup.transferState(state);
+        clock.transferState(state, new CycleEvent[]{lcd, raster, clockedAudio, serial,
+                timers.stateEvent(0), timers.stateEvent(1), timers.stateEvent(2), timers.stateEvent(3)});
     }
 
     /** GBA bit order: A, B, Select, Start, Right, Left, Up, Down, R, L. */

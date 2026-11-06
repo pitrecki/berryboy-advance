@@ -1,5 +1,7 @@
 package berryboy.audio;
 
+import berryboy.state.StateBuffer;
+
 /** Channel 3 banked 4-bit wave RAM and programmable sample playback. */
 final class WaveChannel {
     private final byte[] wave = new byte[32];
@@ -56,4 +58,16 @@ final class WaveChannel {
 
     void reset() { control = 0; volume = 0; frequency = 0; remaining = 0; active = false; }
     private int accessBank() { return ((control >>> 6) & 1) ^ 1; }
+
+    /** Device-owned fields for versioned machine state; call only between CPU steps. */
+    public void transferState(StateBuffer state) {
+        control = state.value(control);
+        volume = state.value(volume);
+        frequency = state.value(frequency);
+        remaining = state.value(remaining);
+        phase = state.value(phase);
+        position = state.value(position);
+        active = state.flag(active);
+        state.bytes(wave);
+    }
 }

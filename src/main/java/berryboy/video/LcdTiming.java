@@ -1,5 +1,6 @@
 package berryboy.video;
 
+import berryboy.state.StateBuffer;
 import berryboy.timing.CycleEvent;
 import berryboy.timing.CycleScheduler;
 import berryboy.timing.InterruptController;
@@ -67,5 +68,13 @@ public final class LcdTiming implements CycleEvent {
         var shift = (address & 1) * 8;
         control = ((control & ~(255 << shift)) | ((value & 255) << shift)) & 0xff38;
         if (!matched && line == (control >>> 8) && (control & 0x20) != 0) interrupts.request(4);
+    }
+
+    /** Device-owned fields for versioned machine state; call only between CPU steps. */
+    public void transferState(StateBuffer state) {
+        control = state.value(control);
+        line = state.value(line);
+        frames = state.value(frames);
+        hblank = state.flag(hblank);
     }
 }

@@ -1,5 +1,7 @@
 package berryboy.audio;
 
+import berryboy.state.StateBuffer;
+
 /** 32-byte signed PCM FIFO. Timer overflows latch one sample; DMA refills at <=16. */
 final class SoundFifo {
     private final byte[] samples = new byte[32];
@@ -19,4 +21,12 @@ final class SoundFifo {
     int output() { return output; }
     boolean needsDma() { return size <= 16; }
     void reset() { head = 0; size = 0; output = 0; }
+
+    /** Device-owned fields for versioned machine state; call only between CPU steps. */
+    public void transferState(StateBuffer state) {
+        head = state.value(head);
+        size = state.value(size);
+        output = state.value(output);
+        state.bytes(samples);
+    }
 }

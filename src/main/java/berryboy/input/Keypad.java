@@ -1,5 +1,7 @@
 package berryboy.input;
 
+import berryboy.state.StateBuffer;
+
 /** The ten GBA buttons. Frontends provide pressed bits; KEYINPUT exposes active-low bits. */
 public final class Keypad {
     public static final int A = 1;
@@ -22,5 +24,10 @@ public final class Keypad {
 
     public int readInput() {
         return ~pressed & ALL_BUTTONS;
+    }
+
+    /** Device-owned fields for versioned machine state; call only between CPU steps. */
+    public void transferState(StateBuffer state) {
+        pressed = state.value(pressed);
     }
 }

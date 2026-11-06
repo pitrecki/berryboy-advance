@@ -1,5 +1,6 @@
 package berryboy.cpu;
 
+import berryboy.state.StateBuffer;
 import berryboy.EmulationException;
 import berryboy.bus.Memory;
 
@@ -116,5 +117,24 @@ final class CpuDataTransfers {
         registers[count] = register;
         values[count] = value;
         userBank[count++] = user;
+    }
+
+    /** Device-owned fields for versioned machine state; call only between CPU steps. */
+    public void transferState(StateBuffer state) {
+        state.ints(kinds);
+        state.ints(addresses);
+        state.ints(registers);
+        state.ints(values);
+        count = state.value(count);
+        next = state.value(next);
+        writeBackRegister = state.value(writeBackRegister);
+        writeBackValue = state.value(writeBackValue);
+        loadedPc = state.value(loadedPc);
+        swapRegister = state.value(swapRegister);
+        swapValue = state.value(swapValue);
+        restoreStatus = state.flag(restoreStatus);
+        pcLoaded = state.flag(pcLoaded);
+        locked = state.flag(locked);
+        state.flags(userBank);
     }
 }

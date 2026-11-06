@@ -1,5 +1,7 @@
 package berryboy.timing;
 
+import berryboy.state.StateBuffer;
+
 /** IE/IF/IME interrupt registers. IF uses write-one-to-clear semantics. */
 public final class InterruptController {
     private int enabled;
@@ -30,5 +32,12 @@ public final class InterruptController {
         if (offset < 2) enabled = ((enabled & ~(255 << shift)) | (value << shift)) & 0x3fff;
         else if (offset < 4) requested &= ~(value << shift);
         else if (offset == 8) master = value & 1;
+    }
+
+    /** Device-owned fields for versioned machine state; call only between CPU steps. */
+    public void transferState(StateBuffer state) {
+        enabled = state.value(enabled);
+        requested = state.value(requested);
+        master = state.value(master);
     }
 }

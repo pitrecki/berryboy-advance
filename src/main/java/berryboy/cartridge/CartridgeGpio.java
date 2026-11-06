@@ -1,5 +1,6 @@
 package berryboy.cartridge;
 
+import berryboy.state.StateBuffer;
 import berryboy.timing.CycleScheduler;
 
 /** Configurable RTC/solar/gyro/rumble GPIO and Yoshi-style tilt ADC registers. */
@@ -99,5 +100,24 @@ public final class CartridgeGpio {
             if (tiltUnlock && (value & 255) == 0xaa) { latchedX = tiltX; latchedY = tiltY; }
             tiltUnlock = false;
         }
+    }
+
+    /** Device-owned fields for versioned machine state; call only between CPU steps. */
+    public void transferState(StateBuffer state) {
+        devices = state.value(devices);
+        pins = state.value(pins);
+        direction = state.value(direction);
+        readable = state.value(readable);
+        solar = state.value(solar);
+        solarCount = state.value(solarCount);
+        gyro = state.value(gyro);
+        latchedGyro = state.value(latchedGyro);
+        gyroBit = state.value(gyroBit);
+        tiltX = state.value(tiltX);
+        tiltY = state.value(tiltY);
+        latchedX = state.value(latchedX);
+        latchedY = state.value(latchedY);
+        tiltUnlock = state.flag(tiltUnlock);
+        rtc.transferState(state);
     }
 }

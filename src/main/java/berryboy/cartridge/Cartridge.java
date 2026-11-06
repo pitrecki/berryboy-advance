@@ -1,9 +1,12 @@
 package berryboy.cartridge;
 
+import berryboy.state.StateChecksum;
+
 /** Immutable ROM image and the small set of header fields used by the launcher. */
 public final class Cartridge {
     public static final int MAX_SIZE = 32 * 1024 * 1024;
     private final byte[] rom;
+    private final int checksum;
 
     public Cartridge(byte[] image) {
         if (image == null || image.length < 0xC0 || image.length > MAX_SIZE) {
@@ -11,7 +14,13 @@ public final class Cartridge {
         }
         rom = new byte[image.length];
         System.arraycopy(image, 0, rom, 0, image.length);
+        var crc = -1;
+        for (var i = 0; i < rom.length; i++) crc = StateChecksum.next(crc, rom[i]);
+        checksum = ~crc;
     }
+
+    /** Stable identity of the immutable image, computed once without changing guest time. */
+    public int checksum() { return checksum; }
 
     public int size() {
         return rom.length;

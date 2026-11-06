@@ -1,5 +1,6 @@
 package berryboy.audio;
 
+import berryboy.state.StateBuffer;
 import berryboy.timing.CycleEvent;
 import berryboy.timing.CycleScheduler;
 
@@ -66,5 +67,18 @@ public final class ClockedAudio implements CycleEvent {
             }
         }
         clock.schedule(this, clock.now() + CYCLES_PER_SAMPLE);
+    }
+
+    /** Device-owned fields for versioned machine state; call only between CPU steps. */
+    public void transferState(StateBuffer state) {
+        head = state.value(head);
+        size = state.value(size);
+        produced = state.value(produced);
+        consumed = state.value(consumed);
+        overruns = state.value(overruns);
+        underruns = state.value(underruns);
+        capture = state.flag(capture);
+        state.shorts(sample);
+        state.shorts(buffer);
     }
 }

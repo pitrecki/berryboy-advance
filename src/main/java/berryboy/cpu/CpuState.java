@@ -1,5 +1,6 @@
 package berryboy.cpu;
 
+import berryboy.state.StateBuffer;
 import berryboy.EmulationException;
 
 /** Registers, status flags and register banks of an ARM7TDMI processor. */
@@ -252,5 +253,17 @@ final class CpuState {
             case Cpu.UNDEFINED -> 5;
             default -> 0;
         };
+    }
+
+    /** Device-owned fields for versioned machine state; call only between CPU steps. */
+    public void transferState(StateBuffer state) {
+        state.ints(registers);
+        state.ints(userRegisters);
+        state.ints(fastInterruptRegisters);
+        state.ints(savedStatus);
+        status = state.value(status);
+        instructionAddress = state.value(instructionAddress);
+        branched = state.flag(branched);
+        for (var i = 0; i < exceptionRegisters.length; i++) state.ints(exceptionRegisters[i]);
     }
 }

@@ -1,5 +1,7 @@
 package berryboy.audio;
 
+import berryboy.state.StateBuffer;
+
 /** Channel 1 pulse oscillator with the 128 Hz frequency sweep unit. */
 final class SweepChannel {
     final PulseChannel pulse = new PulseChannel();
@@ -52,5 +54,15 @@ final class SweepChannel {
         if ((sweep & 8) != 0) negated = true;
         if (frequency > 2047) pulse.silence();
         else if (apply) { shadow = frequency; pulse.sweepFrequency(frequency); }
+    }
+
+    /** Device-owned fields for versioned machine state; call only between CPU steps. */
+    public void transferState(StateBuffer state) {
+        sweep = state.value(sweep);
+        shadow = state.value(shadow);
+        remaining = state.value(remaining);
+        sweepEnabled = state.flag(sweepEnabled);
+        negated = state.flag(negated);
+        pulse.transferState(state);
     }
 }

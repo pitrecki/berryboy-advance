@@ -1,5 +1,6 @@
 package berryboy.video;
 
+import berryboy.state.StateBuffer;
 import berryboy.EmulationException;
 
 /** Reference software PPU. Composes one scanline from the current register state. */
@@ -284,5 +285,20 @@ public final class SoftwarePpu {
     private static int rgb888(int color) {
         var r = color & 31; var g = (color >>> 5) & 31; var b = (color >>> 10) & 31;
         return (((r << 3) | (r >>> 2)) << 16) | (((g << 3) | (g >>> 2)) << 8) | (b << 3) | (b >>> 2);
+    }
+
+    /** Device-owned fields for versioned machine state; call only between CPU steps. */
+    public void transferState(StateBuffer state) {
+        state.ints(objects);
+        state.ints(objectPriority);
+        state.ints(referenceX);
+        state.ints(referenceY);
+        state.ints(registers);
+        cachedRow = state.value(cachedRow);
+        cachedDisplay = state.value(cachedDisplay);
+        cachedVersion = state.value(cachedVersion);
+        registerVersion = state.value(registerVersion);
+        timed = state.flag(timed);
+        state.flags(objectWindow);
     }
 }

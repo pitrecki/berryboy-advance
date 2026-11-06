@@ -1,5 +1,7 @@
 package berryboy.audio;
 
+import berryboy.state.StateBuffer;
+
 /** Channel 4 envelope and 15/7-bit linear-feedback noise generator. */
 final class NoiseChannel {
     private int length;
@@ -51,4 +53,17 @@ final class NoiseChannel {
     }
 
     void reset() { length = 0; envelope = 0; frequency = 0; remaining = 0; active = false; }
+
+    /** Device-owned fields for versioned machine state; call only between CPU steps. */
+    public void transferState(StateBuffer state) {
+        length = state.value(length);
+        envelope = state.value(envelope);
+        frequency = state.value(frequency);
+        remaining = state.value(remaining);
+        envelopeSamples = state.value(envelopeSamples);
+        volume = state.value(volume);
+        phase = state.value(phase);
+        lfsr = state.value(lfsr);
+        active = state.flag(active);
+    }
 }

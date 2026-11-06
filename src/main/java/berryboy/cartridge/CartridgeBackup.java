@@ -1,5 +1,7 @@
 package berryboy.cartridge;
 
+import berryboy.state.StateBuffer;
+
 /** Portable SRAM, Flash and serial EEPROM storage; host adapters own file persistence. */
 public final class CartridgeBackup {
     public static final int SRAM = 0;
@@ -121,5 +123,19 @@ public final class CartridgeBackup {
     private void erase(int start, int length) {
         for (var i = start; i < start + length; i++) data[i] = (byte) 255;
         dirty = true;
+    }
+
+    /** Device-owned fields for versioned machine state; call only between CPU steps. */
+    public void transferState(StateBuffer state) {
+        state.ints(serial);
+        unlock = state.value(unlock);
+        command = state.value(command);
+        bank = state.value(bank);
+        serialCount = state.value(serialCount);
+        responseBit = state.value(responseBit);
+        responseAddress = state.value(responseAddress);
+        dirty = state.flag(dirty);
+        identify = state.flag(identify);
+        state.bytes(data);
     }
 }

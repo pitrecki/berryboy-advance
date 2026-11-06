@@ -1,5 +1,6 @@
 package berryboy.bus;
 
+import berryboy.state.StateBuffer;
 import berryboy.EmulationException;
 import berryboy.timing.CycleScheduler;
 
@@ -188,5 +189,23 @@ public final class BusTiming {
             prefetched++;
         }
         if (prefetched == 8) prefetchCredit = 0;
+    }
+
+    /** Device-owned fields for versioned machine state; call only between CPU steps. */
+    public void transferState(StateBuffer state) {
+        waitControl = state.value(waitControl);
+        expectedFetch = state.value(expectedFetch);
+        nextData = state.value(nextData);
+        dataRegion = state.value(dataRegion);
+        prefetched = state.value(prefetched);
+        prefetchCredit = state.value(prefetchCredit);
+        ewramCycles = state.value(ewramCycles);
+        refillAddress = state.value(refillAddress);
+        refillWidth = state.value(refillWidth);
+        refillRemaining = state.value(refillRemaining);
+        nextFetchSequential = state.flag(nextFetchSequential);
+        dataWrite = state.flag(dataWrite);
+        prefetchActive = state.flag(prefetchActive);
+        externalRam = state.flag(externalRam);
     }
 }

@@ -1,5 +1,6 @@
 package berryboy.serial;
 
+import berryboy.state.StateBuffer;
 import berryboy.EmulationException;
 import berryboy.timing.CycleEvent;
 import berryboy.timing.CycleScheduler;
@@ -72,5 +73,16 @@ public final class SerialUnit implements CycleEvent {
     private static int replace(int current, int address, int value) {
         var shift = (address & 1) * 8;
         return (current & ~(255 << shift)) | (value << shift);
+    }
+
+    /** Device-owned fields for versioned machine state; call only between CPU steps. */
+    public void transferState(StateBuffer state) {
+        control = state.value(control);
+        rcnt = state.value(rcnt);
+        send = state.value(send);
+        joyControl = state.value(joyControl);
+        joyStatus = state.value(joyStatus);
+        state.bytes(data);
+        state.bytes(joy);
     }
 }

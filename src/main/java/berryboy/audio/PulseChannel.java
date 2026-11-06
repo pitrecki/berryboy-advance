@@ -1,5 +1,7 @@
 package berryboy.audio;
 
+import berryboy.state.StateBuffer;
+
 /** Channel 2 tone generator, advanced by output samples rather than CPU cycles. */
 final class PulseChannel {
     private static final int FREQUENCY_CLOCK = 131072;
@@ -125,5 +127,17 @@ final class PulseChannel {
         } else if (volume > 0) {
             volume--;
         }
+    }
+
+    /** Device-owned fields for versioned machine state; call only between CPU steps. */
+    public void transferState(StateBuffer state) {
+        dutyAndLength = state.value(dutyAndLength);
+        envelope = state.value(envelope);
+        frequencyControl = state.value(frequencyControl);
+        remainingSamples = state.value(remainingSamples);
+        envelopeSamples = state.value(envelopeSamples);
+        volume = state.value(volume);
+        phase = state.value(phase);
+        active = state.flag(active);
     }
 }

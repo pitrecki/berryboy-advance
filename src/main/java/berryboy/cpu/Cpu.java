@@ -1,5 +1,6 @@
 package berryboy.cpu;
 
+import berryboy.state.StateBuffer;
 import berryboy.EmulationException;
 import berryboy.bus.Memory;
 
@@ -270,5 +271,21 @@ public final class Cpu {
 
     public boolean overflow() {
         return state.overflow();
+    }
+
+    /** Device-owned fields for versioned machine state; call only between CPU steps. */
+    public void transferState(StateBuffer state) {
+        remainingInternalCycles = state.value(remainingInternalCycles);
+        pendingAddress = state.value(pendingAddress);
+        pendingOpcode = state.value(pendingOpcode);
+        instructionCount = state.value(instructionCount);
+        instructionInFlight = state.flag(instructionInFlight);
+        dataPhase = state.flag(dataPhase);
+        busGranted = state.flag(busGranted);
+        fetchPending = state.flag(fetchPending);
+        pendingThumb = state.flag(pendingThumb);
+        pendingIrq = state.flag(pendingIrq);
+        this.state.transferState(state);
+        transfers.transferState(state);
     }
 }
