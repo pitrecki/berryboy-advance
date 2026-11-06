@@ -724,6 +724,8 @@ the [three-way report](REFERENCE-VALIDATION.md#three-way-brightness-model-compar
 records the counts and the open hardware expectations. The C probe rejects an
 RGB888/RGB565 build to prevent an accidental pixel ABI mismatch.
 
+<a id="leafgreen-second-save-route"></a>
+
 ## LeafGreen repeated-save routes
 
 Use LeafGreen USA Rev-A, the original BIOS and a copy of the generation-1 player
