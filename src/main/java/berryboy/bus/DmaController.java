@@ -117,7 +117,7 @@ public final class DmaController {
             channel.currentSource = state.value(channel.currentSource);
             channel.currentDestination = state.value(channel.currentDestination);
             channel.remaining = state.value(channel.remaining);
-            channel.initialCount = state.value(channel.initialCount);
+            channel.latchedCount = state.value(channel.latchedCount);
             channel.pending = state.flag(channel.pending);
             channel.first = state.flag(channel.first);
         }
@@ -141,7 +141,7 @@ public final class DmaController {
         private int currentSource;
         private int currentDestination;
         private int remaining;
-        private int initialCount;
+        private int latchedCount;
         private boolean pending;
         private boolean first = true;
 
@@ -150,13 +150,17 @@ public final class DmaController {
         void latch() {
             currentSource = source & (index == 0 ? 0x07ffffff : 0x0fffffff);
             currentDestination = destination & (index == 3 ? 0x0fffffff : 0x07ffffff);
-            initialCount = count & (index == 3 ? 0xffff : 0x3fff);
-            if (initialCount == 0) initialCount = index == 3 ? 0x10000 : 0x4000;
-            if ((control & 0x3000) == 0x3000) initialCount = 4;
-            remaining = initialCount;
-            memory.prepareEepromDma(currentDestination, initialCount);
+            reloadCount();
+            memory.prepareEepromDma(currentDestination, latchedCount);
             first = true;
             pending = ((control >>> 12) & 3) == 0;
+        }
+
+        void reloadCount() {
+            latchedCount = count & (index == 3 ? 0xffff : 0x3fff);
+            if (latchedCount == 0) latchedCount = index == 3 ? 0x10000 : 0x4000;
+            if ((control & 0x3000) == 0x3000) latchedCount = 4;
+            remaining = latchedCount;
         }
 
         void transfer() {
@@ -182,7 +186,10 @@ public final class DmaController {
                 pending = false;
                 if ((control & 0x4000) != 0) memory.interrupts().request(0x100 << index);
                 if ((control & 0x200) != 0 && (control & 0x3000) != 0) {
-                    remaining = initialCount;
+                    // Reload from the programmed count at completion. Writes
+                    // during a burst cannot change that burst's remaining units;
+                    // writes after completion wait for the following reload.
+                    reloadCount();
                     first = true;
                     if (destinationMode == 3) currentDestination = destination & (index == 3 ? 0x0fffffff : 0x07ffffff);
                 } else control &= ~0x8000;

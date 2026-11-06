@@ -1,6 +1,6 @@
 # Current status and roadmap
 
-Updated **2026-11-06**, for **0.8.1**. This is the canonical current
+Updated **2026-11-06**, for **0.8.2-SNAPSHOT** (released: **0.8.1**). This is the canonical current
 validation and work queue. [CHANGELOG](../CHANGELOG.md) records version highlights;
 linked JSON records and Git history preserve detailed measurements.
 
@@ -28,11 +28,20 @@ bottlenecks and preserves event ordering.
 
 ## Current validation
 
-- **1887 host tests**, **1770 exported-core tests**, and **1770 tests against the
+- **1995 host tests**, **1878 exported-core tests**, and **1878 tests against the
   actual new ECJ/CLDC classes** pass, with no failures or skips. Counts include
   parameterized invocations. Detailed build and artifact data is in the linked evidence.
 - Native Linux JDE 7.1 / ECJ 4.6.1 / RAPC verification passes and produces a
-  **0.8.1** JAD/COD. Host: Linux x86_64, Temurin 21.0.8, Maven 3.9.11.
+  **0.8.2 development** JAD/COD. Host: Linux x86_64, Temurin 21.0.8, Maven 3.9.11.
+- [Repeated DMA count reload](../benchmarks/dma-repeat-count-2026-11-06.json)
+  matches 288 independent reference observations across four channels, both
+  widths, write timing and count-mask/zero edges. The 108 portable regressions
+  also cover suspended and completed bursts across save/load. A state generated
+  with the released 0.8.1 DMA implementation still loads byte-exactly.
+  Readiness-normalized activation observations now match 96/96 rows with the
+  current CPU arbitration; production request activation remains immediate.
+  Eleven fresh-backup 3600-frame before/after routes retain identical full
+  RGB/PCM, backup hashes, guest cycle/sample counts and per-frame traces.
 - [Phone frontend evidence](../benchmarks/phone-ui-2026-11-06.json): full-state
   save/load preserves the next 60 frames, PCM and complete final machine state
   in Sonic, Golden Sun and LeafGreen. Original saves remain unchanged. Native
@@ -65,7 +74,8 @@ alone does not pass those gates.
 ## Version milestone releases
 
 Compiled phone packages are now part of each major/minor milestone. The first
-release line is **0.8.1 preview**; each package contains normalized raw COD siblings,
+release line is [**0.8.1 preview**](https://github.com/pitrecki/berryboy-advance/releases/tag/v0.8.1);
+each package contains normalized raw COD siblings,
 JAD/ALX descriptors, the native MIDlet JAR, installation instructions, checksums
 and a build manifest identifying the exact source and tool inputs.
 
@@ -80,6 +90,9 @@ The package/container and write guards have nine focused host cases. The SDK
 bootstrap was exercised against the retained installer, and the minimal SDK
 built the current application. Subsequent release workflow outcomes are recorded
 by GitHub Actions and the release's own immutable manifest.
+The first [release workflow](https://github.com/pitrecki/berryboy-advance/actions/runs/42191836278)
+completed successfully. Its published ZIP was downloaded and its outer/internal
+checksums, source commit and native COD/JAD/ALX descriptors were verified.
 
 ## Phone frontend roadmap
 
@@ -103,7 +116,7 @@ user settings do not relax that qualification protocol.
 
 | Order | Next work | Completion evidence |
 | --- | --- | --- |
-| 1 / P0: DMA activation and lifecycle | Isolate scheduled activation versus immediate readiness, then cancellation, disable/re-enable and duplicate requests. Preserve bounded yields and accepted IRQ decisions. | Independent counterexamples, focused regressions, exact prior CPU/DMA matrices on host and CLDC, and unchanged frame/audio continuity. Current production activation remains immediate. |
+| 1 / P0: DMA activation and lifecycle | Repeat count reload is corrected. Next, schedule activation with cancellation, disable/re-enable and duplicate-request handling; retain save-state event identity/order. Preserve bounded yields and accepted IRQ decisions. | Independent counterexamples, focused regressions, exact prior CPU/DMA matrices on host and CLDC, and unchanged frame/audio continuity. Readiness-normalized activation matches 96/96 observations; production activation remains immediate. |
 | 2 / P0: Wider CPU/LCD timing | Extend prefetch coverage to cartridge-bus DMA, stream invalidation and address edges; qualify pipeline latching/self-modifying code and IRQ propagation/mask latency. Trace the LeafGreen frame-930 offset and HBlank at cycle 960 versus the reference's 1008. | Matching event/retirement observations with justified expected timing. Keep in-flight snapshots distinct from retired state. Do not adjust a constant solely to improve screenshot counts. |
 | 3 / P0: Graphics expected results | Resolve the 2244-case three-way disagreement on brightness rounding and palette bit 15 using independently justified outputs or hardware evidence. Then qualify combined raster/OBJ/window effects. | Explicit per-pixel expectations and regression scenes. The renderer remains unqualified until those expectations are established; no relaxed tolerances. |
 | 4 / P1: Audio correctness | Start with late Sonic Advance 3 and Wario Land 4 differences. Compare timer/DMA FIFO, PSG and sample-clock events before diagnosing gain/filter/resampling. | Repeatable sample/event checkpoints, justified comparison rules, listening review and no software-buffer loss. Timing-dependent fixes follow the timing gates. |

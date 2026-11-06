@@ -1,0 +1,320 @@
+{
+  "date": "2026-11-06",
+  "source_base_commit": "fc48fff9cd2e298ba9704a0f639f04b4b13adb58",
+  "source_dirty": true,
+  "version": "0.8.2-SNAPSHOT",
+  "change": "Reload repeat-DMA length from the current programmed count at completion, preserving the current burst, count masking, zero expansion and fixed FIFO length",
+  "hardware": "Linux x86_64 cloud host; Temurin 21.0.8+9; Maven 3.9.11; headless correctness checks",
+  "reference": {
+    "project": "NanoBoyAdvance",
+    "commit": "55b5cf0ae3d929582ac5bfd486558173502b8354",
+    "tracked_core_unmodified": true,
+    "adapter": "tools/nba-dma-repeat-count-probe.cc",
+    "asset_free": true,
+    "cpu_executed": false,
+    "scope": "Activated HBlank repeated transfers. Service excludes the two-cycle activation interval. Fixed IWRAM source/destination avoid address wrapping in maximum-length bursts.",
+    "scenarios": 96,
+    "observations": 288,
+    "matching_explicit_rule": 288,
+    "channels": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "width_bytes": [
+      2,
+      4
+    ],
+    "programmed_counts": [
+      1,
+      3,
+      0,
+      16386
+    ],
+    "write_stages": [
+      "after enable before first request",
+      "during first burst at service+4",
+      "after first completion before second request"
+    ],
+    "bursts_per_scenario": 3,
+    "expected_rule": {
+      "initial_burst_units": 2,
+      "repeat_count": "count & (channel == 3 ? 0xffff : 0x3fff); masked zero means 0x10000 for channel 3, 0x4000 otherwise",
+      "latch_boundary": "completion; a count write before or during completion affects the next burst; a write between completed bursts affects the following reload",
+      "service_cycles": "2 acquisition/release cycles plus 2 per fixed IWRAM read/write unit, for either width",
+      "data": "0x0201 halfword or 0x04030201 word",
+      "completion_if": "0x100 << channel on every burst"
+    },
+    "csv_sha256": "db2937bde67fe97cbe5cb70ed8365c3f2037ed49f42fa523a147c2831afd5be5",
+    "build": "cmake -S tools/nba-reference -B /path/to/build -DNBA_SOURCE_DIR=/path/to/pinned/unmodified/NanoBoyAdvance; cmake --build /path/to/build --target nba-dma-repeat-count-probe; /path/to/build/nba-dma-repeat-count-probe",
+    "compiler_options": [
+      "-Wall",
+      "-Wextra",
+      "-Werror"
+    ]
+  },
+  "regressions": {
+    "before": {
+      "new_repeat_cases": 96,
+      "passed": 18,
+      "failed": 78
+    },
+    "after": {
+      "new_repeat_cases": 96,
+      "new_state_cases": 12,
+      "all_passed": true
+    },
+    "host_tests": 1995,
+    "console_host_tests": 1995,
+    "exported_core_tests": 1878,
+    "actual_new_cldc_core_tests": 1878,
+    "failures": 0,
+    "skipped": 0,
+    "native_sdk_and_rapc": "passed; JDE 7.1 minimal SDK, ECJ 4.6.1, 0.8.2 development JAD/COD; no errors",
+    "existing_fifo_matrix": "Retained tests confirm four-word FIFO bursts regardless of programmed count",
+    "state_format": {
+      "version": 1,
+      "wire_layout_unchanged": true,
+      "old_controller_source_commit": "fc48fff9cd2e298ba9704a0f639f04b4b13adb58",
+      "old_controller_source_sha256": "cf4c71a99923c70cea6388cc9b7ab92e1b2f7b10de14ffdb953c9fff29558f9c",
+      "old_state_sha256": "7244206f134d62442b8babf10694e833e8e60a1d57af7d342e5df5a964e1c45b",
+      "old_state_bytes": 805967,
+      "old_state_load_and_resave_byte_exact": true,
+      "old_state_next_bursts": [
+        2,
+        1
+      ],
+      "note": "The released DMA controller was rebuilt against otherwise unchanged current runtime classes. Snapshot after initial completion and a count change preserves the already-latched two-unit burst, then reloads one."
+    }
+  },
+  "activation_followup": {
+    "production_activation_changed": false,
+    "reference": "tools/nba-dma-activation-probe.cc, same unmodified pinned core",
+    "adapter": "tools/DmaActivationProbe.java --ready-at-two",
+    "observations": 96,
+    "exact_matches": 96,
+    "reference_csv_sha256": "96e83c59c0dd4c50414f1608d119bf188736926b1c3528994005d3167413ff10",
+    "after_csv_sha256": "96e83c59c0dd4c50414f1608d119bf188736926b1c3528994005d3167413ff10",
+    "limits": "Readiness-normalized observation only. Current resumable fetch/data/internal arbitration matches the known two-cycle readiness boundary, but production still requests immediate readiness. This is not a production activation fix."
+  },
+  "source_files_sha256": {
+    "src/main/java/berryboy/bus/DmaController.java": "971ab3177971e96d161e4f9f4c386a8ff0894f1e3bf801ec07bb2bf44221c5b4",
+    "src/test/java/berryboy/bus/DmaRepeatCountTest.java": "41784d24ac435a780c6f1a3eff855ac3b8dcb26a13b23ee94ad53816377a349c",
+    "tools/nba-dma-repeat-count-probe.cc": "a678d4fb7930f58e0045e0414b9f12fed306b71f3fdfdcf923a5b10b5d7754b1",
+    "tools/nba-reference/CMakeLists.txt": "4dd9380e03666d527d15289627e3afdc0f08c5ca0ea4a12c0847f2581248525e",
+    "pom.xml": "227a8df6ab8e3030f7dc8bd9310497f2a12d0ab6e09c372ee1c5c59dcda75682"
+  },
+  "local_output": "target/dma-lifecycle-diagnosis",
+  "local_game_output": "target/dma-lifecycle-game-regression-2026-11-06",
+  "next_steps": [
+    "Schedule activation with cancellation and duplicate-request lifecycle handling, preserving the CPU arbitration and bounded word yields",
+    "Register DMA activation events in the state event table with explicit format migration rather than dropping pending work",
+    "Keep equal-deadline IRQ, real timer and wider instruction cases independently justified"
+  ],
+  "remaining_gates": [
+    "Production DMA activation remains immediate; cancellation, disable/re-enable and duplicate requests during scheduled activation are not implemented",
+    "This change does not close existing game full-stream mismatches, graphics expected-result disputes or sustained playback qualification"
+  ],
+  "native_build": {
+    "compiler": "ecj",
+    "tool_sha256": {
+      "net_rim_api.jar": "b36d23121983e1115bbfa638eaf969c208d673ffb217b5ffc8e3cc90c045bb49",
+      "rapc.jar": "617107f0ca2b3710544fc12bd63f6da147abfd33d77e87cef1f473bdbf279d0a",
+      "ecj.jar": "9cddda75f4a1b4469e73f44e7b61a3e897d0f657df4797f9106ffe88c4eeade0"
+    },
+    "artifacts": {
+      "BerryBoyAdvance.cod": "e7c8df267c8479da5c4a95e4c99f9e85e600a1dad98f3ea98ef33eccc549f411",
+      "BerryBoyAdvance.jar": "797ea6247eea7285cafe764775558f97c236dec485dfe830f231e95aed434b04",
+      "BerryBoyAdvance.jad": "27da29bb715a433dd75acdb42bf02e197db581121355bf528ba9ce83676839a2"
+    },
+    "signing": "No signing step performed by the SDK build script",
+    "record_sha256": "9bf25f4193689cb024c4932a2c3d89d75945e6410716daab21569cacbd25c4b2"
+  },
+  "game_regression": {
+    "baseline": "Released v0.8.1 DMA controller, recompiled against otherwise unchanged current runtime classes",
+    "baseline_dma_class_sha256": "c55d99010544f26512ee7d5ad5a58da1c3744907ff1d0b5c483344020fa4b639",
+    "scenarios": 11,
+    "guest_frames_per_scenario": 3600,
+    "variants": [
+      "before",
+      "after"
+    ],
+    "initial_backups": "Fresh, nonexistent per-game paths for each variant; no player saves reused",
+    "comparison": "Exact full RGB/PCM/backup SHA-256, guest cycle/audio counts and every frame trace; no differences in any title",
+    "ordered_frame_ids_checked": true,
+    "missing_guest_frames": 0,
+    "software_audio_overruns": 0,
+    "software_audio_underruns": 0,
+    "reference_game_agreement_claimed": false,
+    "physical_playback_claimed": false,
+    "summary_sha256": "59c61418af01c19e40a978a43347683bae02e21167414b6477fcf11573d199f1",
+    "cases": [
+      {
+        "code": "AGFE",
+        "rom_sha256": "4199d82f845edf3e2e92f3783bca00190b5bc102d7c8aa339b951de280b1e6cc",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "frames": 3600,
+        "video_sha256": "cdf974441226a90f5d3794d1a135ed31cdb9796d48464ab26badf21a3edf60fd",
+        "audio_sha256": "357e02c27c8165f9d4e346c5306593cbb137a41948233a584cb16c6815184221",
+        "backup_sha256": "71189f7fb6aed638640078fba3a35fda6c39c8962e74dcc75935aac948da9063",
+        "guest_cycles": 1011225600,
+        "audio_frames": 1975050,
+        "produced_audio_frames": 1975050,
+        "consumed_audio_frames": 1975050,
+        "frame_trace_sha256": "e7c6331ed7783408167424e4ea690614877b222e36e65825a670e29ae3dbabbf"
+      },
+      {
+        "code": "AGSE",
+        "rom_sha256": "c14f1151897e8d73f25ffdd67e21eebb6dc57973ff2458872ee89fa9060aaca1",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "frames": 3600,
+        "video_sha256": "eb6d4e5d21980a2be32005761294a982724aee13eeac6655051210938d579f22",
+        "audio_sha256": "520669158f6af403eaae4ed3b3d609f89fcb5eff4ea6f47e15e198aa01daf00e",
+        "backup_sha256": "71189f7fb6aed638640078fba3a35fda6c39c8962e74dcc75935aac948da9063",
+        "guest_cycles": 1011225600,
+        "audio_frames": 1975050,
+        "produced_audio_frames": 1975050,
+        "consumed_audio_frames": 1975050,
+        "frame_trace_sha256": "ac983a2dca39de53c9adc7e61ba54ada40777e96217ec7f94157ebcbc28f7b45"
+      },
+      {
+        "code": "AMTE",
+        "rom_sha256": "a56ce3d7f8f3f4f4d0468d421fff5dd3ee3aec99a58244377e43aae769dc3fe8",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "frames": 3600,
+        "video_sha256": "7c63270973194cc973b139295f1e1a313954184941e7f9378f3d9d4cefe54759",
+        "audio_sha256": "0dfca2dcd145643058d4b13878df5b4544a6041dbbd15f52a96e24b8832b926f",
+        "backup_sha256": "5b7becd1c51999f6f13359f1515672056849788383af8a2834a6ce69b94aa4f0",
+        "guest_cycles": 1011225600,
+        "audio_frames": 1975050,
+        "produced_audio_frames": 1975050,
+        "consumed_audio_frames": 1975050,
+        "frame_trace_sha256": "85a65991b672a514859cbd7822109d61322774100d8a1832d6165d431b2873a8"
+      },
+      {
+        "code": "AVRE",
+        "rom_sha256": "5818fa74fdcacf39b53a1acea99432c4362979dd656c8153fd9861094aca51f7",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "frames": 3600,
+        "video_sha256": "0201bafe4bc96886d8f09641193d3b76045e219d7833b6886d6fb9ea07e992c2",
+        "audio_sha256": "37d8c0ba20e912e96897b39a63b43dbae08ab836281e8694598ce57144745be3",
+        "backup_sha256": "7d2c7ac4888bfd75cd5f56e8d61f69595121183afc81556c876732fd3782c62f",
+        "guest_cycles": 1011225602,
+        "audio_frames": 1975050,
+        "produced_audio_frames": 1975050,
+        "consumed_audio_frames": 1975050,
+        "frame_trace_sha256": "af91c4e797c37153755f7563797ec97b48281b795a5665bd091dd032edbea814"
+      },
+      {
+        "code": "AWAE",
+        "rom_sha256": "d16c7bf6e62bb84049fff1b387108fbd1e6e2cd38ca994ab5310dd9cbf9ba414",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "frames": 3600,
+        "video_sha256": "607471de81655b1834b765c46f268ca4adca4943db7e0f818745ca85b2e9a00d",
+        "audio_sha256": "e45c30927b5c89d0f15b6a0fec84d9edbda100a97d32dfa2521fef66791905a7",
+        "backup_sha256": "fe405055a8c4a9d22ae94d03f6ee4f851b7869ac4f76eb3254c7888398b37903",
+        "guest_cycles": 1011225600,
+        "audio_frames": 1975050,
+        "produced_audio_frames": 1975050,
+        "consumed_audio_frames": 1975050,
+        "frame_trace_sha256": "dab18645097eb473c327ce0cb996521e362238e46e9edf4e2e061f427fe62c27"
+      },
+      {
+        "code": "AZEE",
+        "rom_sha256": "114fff29e5642300a9b3698916ecd86682aa6da0fd821065b7431ba8c059f0f2",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "frames": 3600,
+        "video_sha256": "941434e3c27502c2a4970cb580dad9806c3f01c1d8057f2f8bb578cd13bdb6db",
+        "audio_sha256": "aba9c83ac9b4226bece7ed495a42ff3f93bdb4deaf6a166118d6b4cd1221845f",
+        "backup_sha256": "71189f7fb6aed638640078fba3a35fda6c39c8962e74dcc75935aac948da9063",
+        "guest_cycles": 1011225600,
+        "audio_frames": 1975050,
+        "produced_audio_frames": 1975050,
+        "consumed_audio_frames": 1975050,
+        "frame_trace_sha256": "8bae2c78bd3652af5326bd5bb01f086d97317de00b4262511fed727320c40a0d"
+      },
+      {
+        "code": "B3SE",
+        "rom_sha256": "f937fa93b97b14b9fb9fce98844c534f936222d21d1fdb5f1af42292bad32c85",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "frames": 3600,
+        "video_sha256": "49fd8998a7458425206c03764a75a14843da3f86e09fbefab60a0e7761f988af",
+        "audio_sha256": "a3cd8094b34ef42a29dcdd115e12cbc1c42219042181fcc570115c2cfab45e11",
+        "backup_sha256": "9d900aa5fddfccd3d528a98d7bf2aa44cb9613640cfb900c6c100e0606318d90",
+        "guest_cycles": 1011225602,
+        "audio_frames": 1975050,
+        "produced_audio_frames": 1975050,
+        "consumed_audio_frames": 1975050,
+        "frame_trace_sha256": "64e18a159183e2bbc773c02c34ffec706478b8b20051b1fea9f662cc6558960f"
+      },
+      {
+        "code": "BGTE",
+        "rom_sha256": "215c574d5afbda0aadbf89dc76b765cfaaeb35953eab63f7687d8bfe8a8e0f4d",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "frames": 3600,
+        "video_sha256": "05ae3a6668903169652d0390fc7da78e25fe821553258518ff7b2b8d3693cc96",
+        "audio_sha256": "3d4193ae962eae1dea27a91e1577765ba7f5c4b08afd3250fe43eff0209fef82",
+        "backup_sha256": "9f56cda75fefeab90f6fa5d5ddc9601544b121732c5ecccab32e631060453a5d",
+        "guest_cycles": 1011225600,
+        "audio_frames": 1975050,
+        "produced_audio_frames": 1975050,
+        "consumed_audio_frames": 1975050,
+        "frame_trace_sha256": "9e23a019d7cb0a176c37b3c648c142a23e2c172580a2552592159287505134c1"
+      },
+      {
+        "code": "BMXE",
+        "rom_sha256": "fc94f65380b65b870a30b9b04b39cca1dc63d6e46a4a373d3904adc0912ebc37",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "frames": 3600,
+        "video_sha256": "b94a1673deb442521e935055b975db807068b042a4ed8acab76cfa4aaf8a7f84",
+        "audio_sha256": "79b846733d2b26ca2fe9bcac7b1ea09c48bee59c2cfe1e6777b32363aa7bd88a",
+        "backup_sha256": "e7ef5933b70b4e5866829363eeb0fa4799f43c152c3b39f3e9ca0e1ffe53df89",
+        "guest_cycles": 1011225600,
+        "audio_frames": 1975050,
+        "produced_audio_frames": 1975050,
+        "consumed_audio_frames": 1975050,
+        "frame_trace_sha256": "bc3a008263640646d31ade5e2b1a8166b154fec740640d5f54580f262ab25fec"
+      },
+      {
+        "code": "BPEE",
+        "rom_sha256": "a9dec84dfe7f62ab2220bafaef7479da0929d066ece16a6885f6226db19085af",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "frames": 3600,
+        "video_sha256": "5dcd5d4b1ead03da7ac0bd4514374ec64cdccff9d63739aa89046710ce944d1e",
+        "audio_sha256": "f887461a5ae5756778efdcc538ef8c314815070ba18bd0eef9d577c4decd6fcb",
+        "backup_sha256": "b5a41c3758763bbec72769fab4a2533bf2db0b6312d93d25a695f9e4b9e02260",
+        "guest_cycles": 1011225601,
+        "audio_frames": 1975050,
+        "produced_audio_frames": 1975050,
+        "consumed_audio_frames": 1975050,
+        "frame_trace_sha256": "d05efe827c3e45c3b1ac2b386f07ee0da02f76ae42c3e68a648423d170adfef6"
+      },
+      {
+        "code": "BPGE",
+        "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "frames": 3600,
+        "video_sha256": "d49919c30dab14080db1057861ea66c8ad5ae104d868fd66de2c4f41b0799945",
+        "audio_sha256": "b4f2000e7fd0864f324875d9793cedd5354224265484bfea1b15254d39aabcb0",
+        "backup_sha256": "b5a41c3758763bbec72769fab4a2533bf2db0b6312d93d25a695f9e4b9e02260",
+        "guest_cycles": 1011225600,
+        "audio_frames": 1975050,
+        "produced_audio_frames": 1975050,
+        "consumed_audio_frames": 1975050,
+        "frame_trace_sha256": "95b5712a4306223ee67b482d5e0e426241025ef3ecfa94f283e9405b8ff36e82"
+      }
+    ]
+  }
+}

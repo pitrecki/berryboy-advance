@@ -22,7 +22,7 @@ add_subdirectory("${NBA_SOURCE_DIR}/thirdparty/atom-1.0.1" atom)
 add_subdirectory("${NBA_SOURCE_DIR}/src/nba" nba)
 foreach(probe IN ITEMS
     nba-dma-probe nba-color-probe nba-dma-phase-probe nba-dma-release-probe
-    nba-dma-activation-probe nba-dma-data-probe nba-cpu-refill-probe
+    nba-dma-activation-probe nba-dma-repeat-count-probe nba-dma-data-probe nba-cpu-refill-probe
     nba-cpu-refill-forms-probe nba-cpu-fetch-handoff-probe nba-cpu-fetch-irq-probe
     nba-cpu-irq-fetch-probe nba-cpu-irq-prefetch-probe)
   add_executable(${probe} ../${probe}.cc)

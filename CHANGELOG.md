@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.2-SNAPSHOT — unreleased
+
+- Reload repeated DMA lengths from the current count register at completion,
+  preserving the active burst and the already latched next burst. Keep FIFO
+  bursts fixed at four words and preserve the version-1 save-state layout.
+
 ## 0.8.1 — 2026-11-06 (preview)
 
 - Add versioned phone release ZIPs with raw sibling CODs, JAD/ALX, native MIDlet
