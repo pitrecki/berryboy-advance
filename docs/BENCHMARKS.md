@@ -1,6 +1,6 @@
 # Current status and roadmap
 
-Updated **2026-11-05**, for **0.7.0-SNAPSHOT**. This is the canonical current
+Updated **2026-11-06**, for **0.8.0-SNAPSHOT**. This is the canonical current
 validation and work queue. [CHANGELOG](../CHANGELOG.md) records version highlights;
 linked JSON records and Git history preserve detailed measurements.
 
@@ -15,10 +15,12 @@ separately. Neither platform has passed sustained-playback qualification.
 | --- | --- | --- |
 | Timing | Shared clock/events, ARM/Thumb costs, bus waits, timers, DMA, IRQ, HALT and supplied-BIOS reset | DMA activation/lifecycle, broader pipeline/prefetch behavior, IRQ latency, LCD timing and STOP |
 | Graphics | Raster software PPU, modes 0–5, text/affine BG and OBJ, priorities, windows, blend/brightness and mosaic | Color rounding/palette bit 15, fetch delays, sprite evaluation and combined scenes |
-| Audio | Four PSG channels, Direct Sound A/B, timer/DMA FIFO feed and bounded PCM output | Reference divergences, sequencer/PWM edges, audible output and target playback backend |
+| Audio | Four PSG channels, Direct Sound A/B, timer/DMA FIFO feed and bounded PCM output | Reference divergences, sequencer/PWM edges and physical playback; phone MMAPI packet transport is implemented but unqualified |
 | Cartridges | SRAM, Flash 64/128 KiB, EEPROM sizes, persistence, RTC/GPIO and deterministic sensor state | Busy/ADC timing, RTC IRQ, calibration and wider real-player save coverage |
 | Desktop | Keypad, Swing output, clock pacing, scenario recording and bounded host workers | Native-window/audio integration and sustained presentation measurements |
-| BlackBerry | Legacy export, actual CLDC compilation, vendor RAPC COD and diagnostic MIDlet | Simulator application execution, device audio/input and physical Bold testing |
+| Save states | Versioned complete snapshots, identity/CRC checks, pending CPU/DMA work and hardware event order | Wider gameplay coverage, format migration and device storage behavior |
+| Phone frontend | Home/pause UI, ROM/BIOS browser, five slots, cheats, key remapping, volume/mono/mute, scaling, frame skip and FPS | Simulator/device UI, permissions, native keyboard, audio latency/gaps and performance |
+| BlackBerry build | Legacy export, actual CLDC compilation and vendor RAPC COD | Simulator application execution and physical Bold testing |
 
 Guest CPU, PPU and sound share one deterministic owner. Host encoding/I/O may
 run in parallel on bounded owned snapshots. Further threading follows measured
@@ -26,19 +28,27 @@ bottlenecks and preserves event ordering.
 
 ## Current validation
 
-- **1828 host tests**, **1722 exported-core tests**, and **1722 tests against the
+- **1867 host tests**, **1759 exported-core tests**, and **1759 tests against the
   actual new ECJ/CLDC classes** pass, with no failures or skips. Counts include
-  parameterized invocations. Export performs 475 syntax rewrites.
+  parameterized invocations. Detailed build and artifact data is in the linked evidence.
 - Native Linux JDE 7.1 / ECJ 4.6.1 / RAPC verification passes and produces a
-  **0.7.0** JAD/COD. Host: Linux x86_64, Temurin 21.0.8, Maven 3.9.11.
-- IRQ source waits and prefetch/page-edge observations now match the pinned,
+  **0.8.0** JAD/COD. Host: Linux x86_64, Temurin 21.0.8, Maven 3.9.11.
+- [Phone frontend evidence](../benchmarks/phone-ui-2026-11-06.json): full-state
+  save/load preserves the next 60 frames, PCM and complete final machine state
+  in Sonic, Golden Sun and LeafGreen. Original saves remain unchanged. Native
+  session commands and failed file/RMS commits are exercised with host doubles;
+  actual SDK compilation is checked separately.
+- [Phone screenshots](../README.md#phone-screenshots) use the production renderer
+  and a verified restored frame, with Java2D fonts. They do not demonstrate
+  execution in the simulator or on a physical phone.
+- Earlier IRQ source waits and prefetch/page-edge observations now match the pinned,
   unmodified NanoBoyAdvance reference. Earlier CPU/DMA matrices are retained.
   [Latest timing and game evidence](../benchmarks/irq-fetch-waits-2026-11-05.json).
-- Eleven uploaded games are exercised with fresh backups for 3600 guest frames
+- The previous timing delivery exercised eleven uploaded games with fresh backups for 3600 guest frames
   each. These are boot/intro smoke routes; full RGB/PCM agreement and eleven
-  gameplay passes have not been established. The latest record above identifies
+  gameplay passes have not been established. The linked timing record identifies
   output changes and independent exact-frame outcomes.
-  The latest correction gains 17 exact Sonic frames without losing previously
+  That correction gains 17 exact Sonic frames without losing previously
   exact frames in any title; full-stream differences remain open.
 - The saved-player LeafGreen continuation retains identical full RGB/PCM and the
   original save. Its first remaining RGB555 mismatch stays at frame 930.
@@ -50,6 +60,24 @@ Local checks are distinct from remote CI. No physical Bold is available. The
 Windows JDK 6 path and simulator runtime remain unqualified. SDK compilation
 alone does not pass those gates.
 
+## Phone frontend roadmap
+
+The requested first frontend is implemented. Its checks establish host behavior
+and SDK/API compatibility, while target execution remains open.
+
+| Stage | Status and next evidence |
+| --- | --- |
+| Menus, local games and controls | Implemented. Verify browsing/permissions, simultaneous keys, focus release, pause/resume and text/layout on BBOS. |
+| Five save slots | Implemented. Host replay and failed-write tests pass. Repeat save/load across application restart, low storage and interrupted writes on the target; keep a copy of the original player save. |
+| Cheat support | Raw 8/16/32-bit RAM writes and unencrypted CodeBreaker 3/8 are implemented. Other CodeBreaker commands and encrypted GameShark/Action Replay require explicit format specifications and independent fixtures before support. |
+| Audio settings and MMAPI | Volume/mute/mono and bounded packet output are implemented. Qualify actual format support, audible gaps, latency and pause/load cancellation; a gapless backend needs target evidence. |
+| Frame skip and FPS | Implemented. Skipping affects display submissions only; the PPU, guest clock and audio continue. GBA FPS counts executed guest frames, draw FPS counts distinct game frames painted by the canvas, not instruction throughput or certified physical presentations. |
+| Application gallery | Six headless component captures are available. Add actual simulator/phone screenshots when the application can be observed there. |
+
+The no-skips sustained-playback gate below still requires frame skip **off**, full
+sound, measured physical presentation/audio and correct game output. Optional
+user settings do not relax that qualification protocol.
+
 ## Next roadmap: correctness, gameplay, then sustained playback
 
 | Order | Next work | Completion evidence |
@@ -60,7 +88,7 @@ alone does not pass those gates.
 | 4 / P1: Audio correctness | Start with late Sonic Advance 3 and Wario Land 4 differences. Compare timer/DMA FIFO, PSG and sample-clock events before diagnosing gain/filter/resampling. | Repeatable sample/event checkpoints, justified comparison rules, listening review and no software-buffer loss. Timing-dependent fixes follow the timing gates. |
 | 5 / P1: Gameplay and saves | Extend LeafGreen to overworld/menu/save, Sonic or Wario to a level, Golden Sun to a battle and V-Rally to a race; then cover the remaining titles. | Named reference checkpoints, second save generations and cold cross-loads from isolated copies. Preserve strict binary and full-stream outcomes. |
 | 6 / P2: Linux performance | Once selected routes pass correctness, profile CPU/PPU/presentation and optimize one demonstrated bottleneck at a time. Consider acceleration only with a supported backend and matching software output. | Three 10-minute runs after 30-second warmup, measured presentation/audio, bounded queues/memory and the gates below. |
-| 7 / Target-dependent: BlackBerry runtime | Run the diagnostic MIDlet in the simulator; add and qualify target audio/input, then repeat correctness and sustained playback on a physical Bold. | Separate build, simulator and device reports; actual application results and physical measurements. |
+| 7 / Target-dependent: BlackBerry runtime | Run the new phone frontend in the simulator; qualify file access, slots, input and MMAPI output, then repeat correctness and sustained playback on a physical Bold. | Separate build, simulator and device reports; actual application results and physical measurements. |
 
 Input recording and save-route development can proceed alongside timing
 investigation. A route remains failing until its unexplained differences are
@@ -72,7 +100,7 @@ position in four cold cross-loads, with exact room pixels. Its 667 differing
 save bytes remain an open strict-binary result. Repeat that route against the
 latest core before extending its qualification claim.
 
-Deferred features: versioned save states/rewind, link play and optional accelerated
+Deferred features: rewind, link play and optional accelerated
 presentation. Add them after current correctness and playback needs justify them.
 Cartridge work should include repeated saves, erase/bank edges, RTC rollover and
 safe failure injection using disposable save copies.
@@ -130,6 +158,8 @@ push and verify the remote revision. Do not mute sound, skip frames or normalize
 unexplained failures into a pass.
 
 ## Evidence and references
+
+- [Phone UI, state replay and SDK checks](../benchmarks/phone-ui-2026-11-06.json)
 
 - [Latest IRQ wait/prefetch correction and game regression](../benchmarks/irq-fetch-waits-2026-11-05.json)
 - [Previous waiting-fetch correction](../benchmarks/cpu-fetch-resume-2026-11-05.json)

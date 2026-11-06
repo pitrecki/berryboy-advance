@@ -1,4 +1,4 @@
-# BerryBoy Advance — 0.7 development
+# BerryBoy Advance — 0.8 development
 
 An experimental Game Boy Advance emulator for classic BlackBerry, targeting the
 Bold 9900 and BBOS 7.1. Develop and run the desktop tools on **Linux, JDK 21 and
@@ -15,16 +15,40 @@ and game output; it is not a real-time performance measurement.
 [Capture metadata](docs/images/desktop-games.json) ·
 [Current status and roadmap](docs/BENCHMARKS.md) · [Changelog](CHANGELOG.md)
 
-## What changed in 0.7
+## Phone interface in 0.8
 
-- CPU work resumes correctly across bounded DMA transfers, including internal
-  cycles, data accesses, pipeline refills and waiting opcode fetches.
-- IRQ entry charges the original ARM/Thumb source fetch waits. Game Pak prefetch
-  survives off-cartridge DMA and uses the physical pipeline address at page edges.
-- Independent timing probes cover the corrected boundaries on both host and
-  actual CLDC builds. The BlackBerry COD and application JAR share the Maven version.
-- The README now shows several games; the roadmap keeps one current status and
-  an ordered queue instead of repeating each small fix across multiple guides.
+The BBOS frontend now opens local `.gba` files with a supplied 16 KiB BIOS and
+provides a home screen, pause menu, file browser and configurable controls.
+
+- **Save/load state:** five slots capture CPU work, RAM, PPU, audio, timers, DMA,
+  cartridge state and scheduled hardware events. Version, ROM/BIOS identity and
+  CRC checks reject incompatible or damaged files before replacing the session.
+- **Cheats:** named, switchable Raw RAM writes and unencrypted CodeBreaker types
+  3/8. Encrypted GameShark/Action Replay and other command types are not supported.
+- **Controls:** remap all ten buttons; mappings and preferences persist.
+- **Sound:** volume, mute and mono/stereo output, with a bounded MMAPI packet backend.
+- **Display:** native/integer scaling, optional presentation-only frame skip 0–5,
+  and separate GBA-frame and GUI-draw FPS counters. Default frame skip is off.
+
+The SDK build and host replay tests pass. Simulator execution, file permissions,
+keyboard behavior and physical audio/performance still need target validation.
+See [phone usage and storage](docs/BLACKBERRY.md#phone-interface).
+
+## Phone screenshots
+
+These are the production phone renderer at **640×480**, painted headlessly with
+Java2D fonts and a real restored LeafGreen frame. They are component captures;
+simulator and physical-phone screenshots remain pending.
+
+| Home | Pause menu |
+| --- | --- |
+| ![Phone home screen](docs/images/phone/home.png) | ![Phone pause menu](docs/images/phone/pause.png) |
+| Display and audio | Controls |
+| ![Phone display and audio settings](docs/images/phone/settings.png) | ![Phone control mapping](docs/images/phone/controls.png) |
+| Save slots | Game view |
+| ![Phone save slots](docs/images/phone/slots.png) | ![Phone game view](docs/images/phone/game.png) |
+
+[Capture and validation evidence](benchmarks/phone-ui-2026-11-06.json).
 
 ## Build and run
 
@@ -93,7 +117,8 @@ mvn -Pbb-sim verify -Dbb.compiler=ecj -Dbb.ecj="$BB_ECJ_JAR" -Dbb.launch=false
 SDK/API compilation and COD generation pass. Simulator application execution,
 device audio and physical Bold performance remain unverified. The alternative
 Wine/JDK 6 route and runtime setup are documented in [BLACKBERRY.md](docs/BLACKBERRY.md).
-The MIDlet currently provides portable checks, demo graphics and keypad diagnostics.
+The MIDlet starts at the phone home screen. Open a local game, or use
+**Diagnostics** for the original demo and eight portable checks.
 
 ## Source organization
 
@@ -103,6 +128,8 @@ The MIDlet currently provides portable checks, demo graphics and keypad diagnost
 | `berryboy.bus`, `berryboy.timing` | Memory, bus costs, DMA, events, timers and IRQ |
 | `berryboy.video`, `berryboy.audio` | Software/raster PPU and clocked sound |
 | `berryboy.cartridge`, `input`, `serial` | Backups, GPIO/RTC/sensors, keys and disconnected link hardware |
+| `berryboy.state`, `MachineState` | Bounded state codec and complete machine-state orchestration |
+| `berryboy.mobile`, `berryboy.cheat` | Portable phone UI/preferences, output policy and RAM cheats |
 | `berryboy.desktop` | CLI, Swing, persistence and scenario capture |
 | `berryboy.desktop.concurrent`, `capture` | Bounded host workers and owned snapshots |
 | `berryboy.build`, `tools/` | Export, SDK builds, reference probes and capture tooling |
@@ -126,3 +153,17 @@ tools/capture-showcase.sh /path/to/local/scenarios target/desktop-games.gif
 
 The script paints the application's `DesktopPanel`, then encodes its PNG frames
 as a GIF with adjacent JSON provenance. The capture does not require a display server.
+
+## Reproduce the phone screenshots
+
+Build with `mvn verify`, then use a local ROM/BIOS scenario mapping and matching
+version-1 machine state. The tool checks asset hashes and uses the same menus
+and renderer as the MIDlet:
+
+```bash
+tools/capture-phone.sh /path/to/game.properties /path/to/state.bbs target/phone-captures
+```
+
+`tools/StateRoundTrip.java` produces local states and verifies their continuation
+against the original running machine. Capture provenance records hashes and scope;
+no ROM, BIOS or state bytes are committed.

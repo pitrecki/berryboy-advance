@@ -79,7 +79,9 @@ source_argument() {
 while IFS= read -r -d '' source; do
   source_argument "$source"
 done < <(find "$generated" -name '*.java' -type f -print0 | sort -z)
-source_argument "$project_root/platform/midp/berryboy/BlackBerryMidlet.java"
+while IFS= read -r -d '' source; do
+  source_argument "$source"
+done < <(find "$project_root/platform/midp" -name '*.java' -type f -print0 | sort -z)
 midlet_jar="$build_root/output/BerryBoyAdvance.jar"
 # Compile only against the actual CLDC/MIDP vendor API, never a desktop rt.jar.
 if [[ $bb_compiler == ecj ]]; then

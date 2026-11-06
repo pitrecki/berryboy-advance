@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.8.0-SNAPSHOT — 2026-11-06
+
+- Replace the phone diagnostic screen with a home/pause frontend, local ROM/BIOS
+  browser, settings, control remapping and diagnostics.
+- Add versioned complete machine save states, including pending CPU/DMA work,
+  hardware event order, graphics and audio. Five phone slots use alternating
+  sidecar generations and an atomic RMS pointer; original `.sav` files remain unchanged.
+- Add named Raw/unencrypted CodeBreaker RAM cheats, volume/mute/mono controls,
+  integer/native image scaling, presentation frame skip and GBA/draw FPS counters.
+- Introduce a bounded MMAPI packet transport. Physical playback, gaps/latency,
+  file permissions and device input remain unqualified.
+- Add a reproducible gallery of the production phone UI and host save/load
+  continuation checks with Sonic, Golden Sun and LeafGreen.
+
 ## 0.7.0-SNAPSHOT — 2026-11-05
 
 - Resume CPU internal work, data accesses, branch/exception refills and opcode

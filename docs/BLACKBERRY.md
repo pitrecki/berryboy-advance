@@ -33,18 +33,14 @@ and produces `target/blackberry/output/BerryBoyAdvance.cod`.
 
 A plain Java 1.4 classfile target is insufficient: the first SDK run failed with
 **Missing stack map** in `BlackBerryMidlet.commandAction`. With CLDC maps, RAPC
-reports **No errors** and emits a roughly 46 KiB COD. The full Maven profile
-passes 1295 host tests; 1201 core tests also pass using the actual ECJ-compiled
-CLDC classes with no host production classes on the runtime classpath. The
-separate exported-core console run still passes all 1201 tests. These JVM tests
-and the SDK compiler do not establish execution on a BlackBerry.
+reports **No errors** and emits a COD. Current validation and artifact details
+are recorded in [BENCHMARKS.md](BENCHMARKS.md#current-validation) and
+[the phone frontend evidence](../benchmarks/phone-ui-2026-11-06.json).
 
-Evidence and exact tool/output hashes:
-[blackberry-sdk-build-2026-10-22.json](../benchmarks/blackberry-sdk-build-2026-10-22.json).
-The [shared DMA follow-up](../benchmarks/dma-shared-ownership-2026-10-23.json)
-records the current test counts and repeated SDK build after the ownership fix.
-The compiled application still contains the original demo and eight portable
-checks; it is not a commercial-ROM loading frontend for the phone.
+The [original SDK build record](../benchmarks/blackberry-sdk-build-2026-10-22.json)
+preserves initial tool/output hashes. Its test counts and application size are
+historical. The application now starts at the phone home screen described below;
+SDK compilation still does not establish simulator or device execution.
 
 ## Vendor preverification and current simulator outcome
 
@@ -112,8 +108,9 @@ mvn -Pbb-sim verify -Dbb.launch=false
 4. Include the `BlackBerryMidlet` adapter, package the preverified classes, and
    convert the JAR through the selected vendor RAPC entry point.
 5. Start the original `9900.bat` and send `LoadCod(...)` to the simulator controller.
-6. Open BerryBoy Advance in the simulator. The MIDlet runs eight local checks
-   and the demo. The `Run checks` command repeats them.
+6. Open BerryBoy Advance in the simulator. The home screen offers game loading,
+   settings and controls. **Diagnostics → Run checks** runs the eight portable
+   checks; **Run demo** opens the original development cartridge.
 
 Application outputs are under `target/blackberry/output/`; `simulator.log` and
 `controller.log` are directly under `target/blackberry/`.
@@ -127,16 +124,74 @@ remain separate checks. Wine runtime experiments and their current outcome are
 recorded in the evidence file above. Controller exit status alone does not
 establish success; the MIDlet must display its on-runtime checks result.
 
-The MIDP canvas now continues the demo in a worker loop and forwards directional
-game actions plus Z/X, A/S, Enter and Backspace to the shared keypad. Hiding or
-pausing it releases held buttons. The screen exposes `KEYINPUT` for diagnosis.
-These mappings and the worker lifecycle still need testing on the actual Bold
-keyboard and simulator. The loop's sleep is diagnostic pacing, not GBA timing.
+## Phone interface
 
-The portable channel 2 synthesizer is exported with the core, but the MIDlet has
-no device audio playback adapter yet. Java Sound belongs only to the desktop
-package. MMAPI/BlackBerry audio format, buffering and device performance need
-separate implementation and verification; a desktop WAV does not validate them.
+Open **BerryBoy Advance → Open game**. Browse to an unpacked `.gba` and a local
+16 KiB GBA BIOS, then choose **Start game**. The picker lists the actual device
+storage roots; example URLs are `file:///SDCard/roms/game.gba` and
+`file:///SDCard/gba_bios.bin`. ZIP extraction and network downloads are not part
+of the phone frontend. File-access permission failures are shown in the application.
+
+Use the trackpad or I/J/K/L for directions, Z/X for A/B, A/S for L/R, Enter for
+Start and Backspace for Select. **Controls** remaps all ten buttons and saves the
+mapping. Back/Escape or `#` opens the pause menu; losing focus releases held keys.
+Returning from a phone interruption leaves the game paused until **Resume game**.
+
+The pause menu provides:
+
+- **Save state / Load state:** five slots, with confirmation before overwriting.
+  Load restores the scene into the paused preview; choose **Resume game** to play.
+- **Cheats:** add a name, format and code, select a row to toggle it, or use
+  **Delete cheat**. Raw syntax is `02000100:16:03E7`, with decimal widths 8/16/32
+  and hexadecimal address/value. Unencrypted CodeBreaker commands 3 and 8 are
+  supported, for example `82000100 03E7`; unsupported/encrypted commands fail
+  explicitly. Writes are restricted to aligned EWRAM/IWRAM and applied by the
+  guest owner between frames. Profiles are stored per cartridge/location.
+- **Display & audio:** output volume 0–100%, mute, mono/stereo, native/integer
+  scaling, presentation frame skip 0–5 and a GBA/draw FPS overlay. Left/right
+  changes a setting. Synthesis and guest timing continue when muted or skipping
+  display submissions. Frame skip defaults to off.
+- **Restart game / Home:** restart preserves current battery data; Home leaves
+  the session paused. Diagnostics remains available without a commercial ROM.
+
+### Save storage and format
+
+State version 1 stores CPU registers/banks and unfinished work, RAM and IO state,
+PPU buffers, audio/FIFOs, timer/DMA/IRQ/serial/cartridge state and hardware event
+deadlines in their tie order. It records the ROM size/CRC and BIOS identity, plus
+a whole-file CRC. CRC detects accidental mismatch/corruption; it is not
+cryptographic authentication. A failed load validates into a replacement machine
+and leaves the current session intact. External scheduled callbacks cannot be
+serialized and are rejected; the phone session schedules hardware events only.
+
+Slots require a writable directory beside the ROM. Each slot/battery save uses
+two `.berryboy-*` sidecar generations and a small atomic RMS pointer. The complete
+inactive file closes before the pointer changes; a failed file or pointer write
+retains the previous active generation. Keep the sidecars and application RMS
+metadata together. The diagnostic demo has no persistent file location, so its
+slot actions are disabled.
+
+On first load, an adjacent standard `.sav`, when present, is imported read only.
+Later battery progress is written to BerryBoy sidecars on pause, game change,
+restart and orderly exit. Original `.sav` files are never overwritten. A failed
+orderly exit save leaves the session open for retry. Abrupt termination and
+power-loss behavior still need testing on the target.
+
+### Audio and capture limits
+
+The phone backend queues at most two owned PCM/WAV packets and uses MMAPI on a
+separate worker. Playback failure is visible; pause/load/settings changes cancel
+pending output. This is packet playback, not a verified gapless stream. Format
+support, audible gaps, latency and A/V drift need simulator/device measurements.
+Java Sound remains desktop-only and cannot establish BlackBerry audio behavior.
+
+[The README gallery](../README.md#phone-screenshots) paints the actual portable
+phone menus/renderer at Bold geometry with Java2D fonts and real restored pixels.
+It is a headless component capture, not a simulator screenshot. Reproduce it with:
+
+```bash
+tools/capture-phone.sh /path/to/game.properties /path/to/state.bbs target/phone-captures
+```
 
 ## Source export boundaries
 
