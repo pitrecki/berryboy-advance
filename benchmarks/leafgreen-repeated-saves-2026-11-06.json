@@ -1,0 +1,496 @@
+{
+  "date": "2026-11-06",
+  "scope": "LeafGreen USA Rev-A indoor move/save, restart, opposite move/save, eight cold cross-loads; no claim of full overworld or battery qualification",
+  "hardware": "Linux x86_64 host, Temurin 21.0.8; mGBA 0.10.5 RGB555, physical playback unmeasured",
+  "captures_root": "target/leafgreen-save-refresh-2026-11-06",
+  "source_notes": "Machine/core and ScenarioRunner classes match the recorded commits. Subsequent inspector/test source edits do not change those emulation classes. Generation-2 save creation refreshes the prior route on d6eebef; generation-3 creation runs on b30aa01.",
+  "assets": {
+    "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+    "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+    "rtc_seed": "2000-01-01T00:00:00",
+    "devices": 0
+  },
+  "original_player_save": {
+    "sha256": "fd44f0a2d5348f7ea91c1e3c50a9b2b794023be9bb86787a32bcb9d90c9aa8a9",
+    "untouched": true
+  },
+  "initial_generation": {
+    "save_sha256": "fd44f0a2d5348f7ea91c1e3c50a9b2b794023be9bb86787a32bcb9d90c9aa8a9",
+    "bytes": 131072,
+    "valid_sectors": 14,
+    "generations": [
+      1
+    ],
+    "latest_generation": 1,
+    "position": {
+      "x": 7,
+      "y": 6,
+      "map_group": 4,
+      "map_number": 1
+    },
+    "play_time": {
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 8,
+      "frames": 51
+    },
+    "money": 3000
+  },
+  "generations": [
+    {
+      "generation": 2,
+      "input": "benchmarks/inputs/leafgreen-second-save.tsv",
+      "source_commit": "d6eebef5bf2f21e4586c8bf2a0b11c114124dd6c",
+      "source_dirty_at_creation": false,
+      "initial_save_sha256": "fd44f0a2d5348f7ea91c1e3c50a9b2b794023be9bb86787a32bcb9d90c9aa8a9",
+      "input_sha256": "7d76b201cd764e15122b3ea9b43992332d4e72bf4e21bd28b98a36856048c678",
+      "frames": 2750,
+      "host_report": {
+        "video_sha256": "1b333dedf54415f98e8f573a44bc757f86d4fb32820208b3ac3d909249f4fd7b",
+        "audio_sha256": "52c0957d5984e86929450e766c4f17c5aefaf3e7b7efab77fcb75177946b4ed7",
+        "backup_sha256": "cd5406542e5d808be6427d51013ab64cfd94f6964ee81f692b7669b4a23091b9",
+        "audio_frames": 1508718,
+        "dropped_guest_frames": 0,
+        "audio_overruns": 0,
+        "audio_underruns": 0
+      },
+      "reference_report": {
+        "binary_sha256": "e89cd6e4505e0f9f366834dc19a7328f2482fc416d72899ec15c547bd546b948",
+        "video_sha256": "d771440f6dcfa900e50c48dcb2b35b8791a9ae0904c569465dfaf3b837022241",
+        "audio_sha256": "aeecd81b76cdfe4dd3127bb62efef20e8ee2b5c0e0ebdb5333f9706a96aac985",
+        "audio_frames": 1508720
+      },
+      "strict_stream_comparison": {
+        "status": "mismatch",
+        "exact_video_frames": 2356,
+        "total_video_frames": 2750,
+        "first_video_mismatch": 930,
+        "whole_video_hash_match": false,
+        "whole_audio_hash_match": false,
+        "reference_audio_frames": 1508720,
+        "berryboy_audio_frames": 1508718,
+        "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+      },
+      "save_comparison": {
+        "raw_equal": false,
+        "raw_different_bytes": 667,
+        "raw_difference_categories": {
+          "rekeyed_encrypted_fields": 654,
+          "encryption_key": 4,
+          "play_time": 1,
+          "section_checksum": 8,
+          "unexplained": 0
+        },
+        "left": {
+          "save_sha256": "cd5406542e5d808be6427d51013ab64cfd94f6964ee81f692b7669b4a23091b9",
+          "bytes": 131072,
+          "valid_sectors": 28,
+          "generations": [
+            1,
+            2
+          ],
+          "latest_generation": 2,
+          "position": {
+            "x": 8,
+            "y": 6,
+            "map_group": 4,
+            "map_number": 1
+          },
+          "play_time": {
+            "hours": 0,
+            "minutes": 0,
+            "seconds": 27,
+            "frames": 45
+          },
+          "money": 3000
+        },
+        "right": {
+          "save_sha256": "7221d65d5cb8cb357a774dd1f34df6c432a033fdf9f8abe1a96d5d3a213d29df",
+          "bytes": 131072,
+          "valid_sectors": 28,
+          "generations": [
+            1,
+            2
+          ],
+          "latest_generation": 2,
+          "position": {
+            "x": 8,
+            "y": 6,
+            "map_group": 4,
+            "map_number": 1
+          },
+          "play_time": {
+            "hours": 0,
+            "minutes": 0,
+            "seconds": 27,
+            "frames": 46
+          },
+          "money": 3000
+        },
+        "only_left_generations": [],
+        "only_right_generations": [],
+        "decoded_payload_differences": [
+          {
+            "generation": 2,
+            "section": 0,
+            "different_bytes": 5,
+            "offsets": [
+              18,
+              3872,
+              3873,
+              3874,
+              3875
+            ]
+          }
+        ],
+        "scope": "Read-only diagnosis; keys and play time remain decoded differences. Classification never relaxes strict whole-file or RGB/PCM comparison."
+      },
+      "post_save_room_rgb_sha256": "c2adbc6c263f51ef98678d265c825727f877d78a5711cdb0c3adaec5b9be7787",
+      "post_save_room_exact": true,
+      "cold_cross_loads": [
+        {
+          "save_origin": "berryboy",
+          "engine": "berryboy",
+          "initial_save_sha256": "cd5406542e5d808be6427d51013ab64cfd94f6964ee81f692b7669b4a23091b9",
+          "final_save_sha256": "cd5406542e5d808be6427d51013ab64cfd94f6964ee81f692b7669b4a23091b9",
+          "backup_unchanged": true,
+          "restored_room_rgb_sha256": "c2adbc6c263f51ef98678d265c825727f877d78a5711cdb0c3adaec5b9be7787",
+          "restored_room_exact": true,
+          "frames": 1272,
+          "video_sha256": "b37fc2b9d611a77c67f0ca05105c22bdf34ced55618b9b4c6ba0a75341c35d11",
+          "audio_sha256": "9b30828f177bff68c017967b205cfca4f7de1ee98068f2dd346a09b5ad6474b5",
+          "same_seed_full_stream_comparison": {
+            "status": "mismatch",
+            "exact_video_frames": 1112,
+            "total_video_frames": 1272,
+            "first_video_mismatch": 931,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 697852,
+            "berryboy_audio_frames": 697851,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "save_written": false,
+          "dropped_guest_frames": 0,
+          "audio_overruns": 0,
+          "audio_underruns": 0
+        },
+        {
+          "save_origin": "berryboy",
+          "engine": "reference",
+          "initial_save_sha256": "cd5406542e5d808be6427d51013ab64cfd94f6964ee81f692b7669b4a23091b9",
+          "final_save_sha256": "cd5406542e5d808be6427d51013ab64cfd94f6964ee81f692b7669b4a23091b9",
+          "backup_unchanged": true,
+          "restored_room_rgb_sha256": "c2adbc6c263f51ef98678d265c825727f877d78a5711cdb0c3adaec5b9be7787",
+          "restored_room_exact": true,
+          "frames": 1272,
+          "video_sha256": "29c03174dd49cca11d098292a5296da21db8fa41638da8546e19a2cbe9500002",
+          "audio_sha256": "6ac122d57c6c30898f9c9725d48da132a5d5d8fc5e096b419a8a51348d05c8a3",
+          "same_seed_full_stream_comparison": {
+            "status": "mismatch",
+            "exact_video_frames": 1112,
+            "total_video_frames": 1272,
+            "first_video_mismatch": 931,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 697852,
+            "berryboy_audio_frames": 697851,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          }
+        },
+        {
+          "save_origin": "reference",
+          "engine": "berryboy",
+          "initial_save_sha256": "7221d65d5cb8cb357a774dd1f34df6c432a033fdf9f8abe1a96d5d3a213d29df",
+          "final_save_sha256": "7221d65d5cb8cb357a774dd1f34df6c432a033fdf9f8abe1a96d5d3a213d29df",
+          "backup_unchanged": true,
+          "restored_room_rgb_sha256": "c2adbc6c263f51ef98678d265c825727f877d78a5711cdb0c3adaec5b9be7787",
+          "restored_room_exact": true,
+          "frames": 1272,
+          "video_sha256": "b37fc2b9d611a77c67f0ca05105c22bdf34ced55618b9b4c6ba0a75341c35d11",
+          "audio_sha256": "9b30828f177bff68c017967b205cfca4f7de1ee98068f2dd346a09b5ad6474b5",
+          "same_seed_full_stream_comparison": {
+            "status": "mismatch",
+            "exact_video_frames": 1112,
+            "total_video_frames": 1272,
+            "first_video_mismatch": 931,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 697852,
+            "berryboy_audio_frames": 697851,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "save_written": false,
+          "dropped_guest_frames": 0,
+          "audio_overruns": 0,
+          "audio_underruns": 0
+        },
+        {
+          "save_origin": "reference",
+          "engine": "reference",
+          "initial_save_sha256": "7221d65d5cb8cb357a774dd1f34df6c432a033fdf9f8abe1a96d5d3a213d29df",
+          "final_save_sha256": "7221d65d5cb8cb357a774dd1f34df6c432a033fdf9f8abe1a96d5d3a213d29df",
+          "backup_unchanged": true,
+          "restored_room_rgb_sha256": "c2adbc6c263f51ef98678d265c825727f877d78a5711cdb0c3adaec5b9be7787",
+          "restored_room_exact": true,
+          "frames": 1272,
+          "video_sha256": "29c03174dd49cca11d098292a5296da21db8fa41638da8546e19a2cbe9500002",
+          "audio_sha256": "d1053ecaa5051328fabcf83c9f4030e6df78c5250e2ab2cf59c13a0e2e774fa4",
+          "same_seed_full_stream_comparison": {
+            "status": "mismatch",
+            "exact_video_frames": 1112,
+            "total_video_frames": 1272,
+            "first_video_mismatch": 931,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 697852,
+            "berryboy_audio_frames": 697851,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          }
+        }
+      ]
+    },
+    {
+      "generation": 3,
+      "input": "benchmarks/inputs/leafgreen-third-save.tsv",
+      "source_commit": "b30aa01824ae8b98f51a12f727f7e1558db376b0",
+      "source_dirty_at_creation": false,
+      "initial_save_sha256": "cd5406542e5d808be6427d51013ab64cfd94f6964ee81f692b7669b4a23091b9",
+      "input_sha256": "ae8cda0d3582307cda8b9986ea1f623ab22301348a7ad3a5c12062856e2f7b52",
+      "frames": 2750,
+      "host_report": {
+        "video_sha256": "6fd43bcc7177245da330df916af932c1871c3a7bf3abf3409c935460813c0db5",
+        "audio_sha256": "78128ffd2969e3730788d1b33ae0abddcdd5a32db014a7243b75cb10277f5b3c",
+        "backup_sha256": "8f192f66ac21928523cb295e1353b6f0bd3ce6dc2adc40e34cc5f4b8455b8961",
+        "audio_frames": 1508718,
+        "dropped_guest_frames": 0,
+        "audio_overruns": 0,
+        "audio_underruns": 0
+      },
+      "reference_report": {
+        "binary_sha256": "e89cd6e4505e0f9f366834dc19a7328f2482fc416d72899ec15c547bd546b948",
+        "video_sha256": "174b78226b44f6740a8c671ebb09c6e6b55b8c825cf2aa5068d9a97f6b290468",
+        "audio_sha256": "1860d062741c1305546520ee80baf1b889ef563fb1f8f50552f4f0de86aa7274",
+        "audio_frames": 1508720
+      },
+      "strict_stream_comparison": {
+        "status": "mismatch",
+        "exact_video_frames": 2357,
+        "total_video_frames": 2750,
+        "first_video_mismatch": 931,
+        "whole_video_hash_match": false,
+        "whole_audio_hash_match": false,
+        "reference_audio_frames": 1508720,
+        "berryboy_audio_frames": 1508718,
+        "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+      },
+      "save_comparison": {
+        "raw_equal": false,
+        "raw_different_bytes": 667,
+        "raw_difference_categories": {
+          "rekeyed_encrypted_fields": 654,
+          "encryption_key": 4,
+          "play_time": 1,
+          "section_checksum": 8,
+          "unexplained": 0
+        },
+        "left": {
+          "save_sha256": "8f192f66ac21928523cb295e1353b6f0bd3ce6dc2adc40e34cc5f4b8455b8961",
+          "bytes": 131072,
+          "valid_sectors": 28,
+          "generations": [
+            2,
+            3
+          ],
+          "latest_generation": 3,
+          "position": {
+            "x": 7,
+            "y": 6,
+            "map_group": 4,
+            "map_number": 1
+          },
+          "play_time": {
+            "hours": 0,
+            "minutes": 0,
+            "seconds": 46,
+            "frames": 39
+          },
+          "money": 3000
+        },
+        "right": {
+          "save_sha256": "b43db2678ae27dfb43ac043f99e512b4069bf2ae233a824f915c16514085e1ea",
+          "bytes": 131072,
+          "valid_sectors": 28,
+          "generations": [
+            2,
+            3
+          ],
+          "latest_generation": 3,
+          "position": {
+            "x": 7,
+            "y": 6,
+            "map_group": 4,
+            "map_number": 1
+          },
+          "play_time": {
+            "hours": 0,
+            "minutes": 0,
+            "seconds": 46,
+            "frames": 40
+          },
+          "money": 3000
+        },
+        "only_left_generations": [],
+        "only_right_generations": [],
+        "decoded_payload_differences": [
+          {
+            "generation": 3,
+            "section": 0,
+            "different_bytes": 5,
+            "offsets": [
+              18,
+              3872,
+              3873,
+              3874,
+              3875
+            ]
+          }
+        ],
+        "scope": "Read-only diagnosis; keys and play time remain decoded differences. Classification never relaxes strict whole-file or RGB/PCM comparison."
+      },
+      "post_save_room_rgb_sha256": "e82e5f863225c190c9fa6fc42e1aed0e7f7d8122995bdb4fae74af43a8928528",
+      "post_save_room_exact": true,
+      "cold_cross_loads": [
+        {
+          "save_origin": "berryboy",
+          "engine": "berryboy",
+          "initial_save_sha256": "8f192f66ac21928523cb295e1353b6f0bd3ce6dc2adc40e34cc5f4b8455b8961",
+          "final_save_sha256": "8f192f66ac21928523cb295e1353b6f0bd3ce6dc2adc40e34cc5f4b8455b8961",
+          "backup_unchanged": true,
+          "restored_room_rgb_sha256": "e82e5f863225c190c9fa6fc42e1aed0e7f7d8122995bdb4fae74af43a8928528",
+          "restored_room_exact": true,
+          "frames": 1272,
+          "video_sha256": "257753622c5aa378386452486b01acfe9a62cee5c784f3b7b127d623604551bd",
+          "audio_sha256": "9b30828f177bff68c017967b205cfca4f7de1ee98068f2dd346a09b5ad6474b5",
+          "same_seed_full_stream_comparison": {
+            "status": "mismatch",
+            "exact_video_frames": 1112,
+            "total_video_frames": 1272,
+            "first_video_mismatch": 931,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 697852,
+            "berryboy_audio_frames": 697851,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "save_written": false,
+          "dropped_guest_frames": 0,
+          "audio_overruns": 0,
+          "audio_underruns": 0
+        },
+        {
+          "save_origin": "berryboy",
+          "engine": "reference",
+          "initial_save_sha256": "8f192f66ac21928523cb295e1353b6f0bd3ce6dc2adc40e34cc5f4b8455b8961",
+          "final_save_sha256": "8f192f66ac21928523cb295e1353b6f0bd3ce6dc2adc40e34cc5f4b8455b8961",
+          "backup_unchanged": true,
+          "restored_room_rgb_sha256": "e82e5f863225c190c9fa6fc42e1aed0e7f7d8122995bdb4fae74af43a8928528",
+          "restored_room_exact": true,
+          "frames": 1272,
+          "video_sha256": "da2d126b6a35c7c954f05438a19c26026044e81e8e1cab7d7b6da0f07e1a83a2",
+          "audio_sha256": "a50241f8152caf86875b190763f0e83c19d84c8a6f479f652b73d1e902f21add",
+          "same_seed_full_stream_comparison": {
+            "status": "mismatch",
+            "exact_video_frames": 1112,
+            "total_video_frames": 1272,
+            "first_video_mismatch": 931,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 697852,
+            "berryboy_audio_frames": 697851,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          }
+        },
+        {
+          "save_origin": "reference",
+          "engine": "berryboy",
+          "initial_save_sha256": "b43db2678ae27dfb43ac043f99e512b4069bf2ae233a824f915c16514085e1ea",
+          "final_save_sha256": "b43db2678ae27dfb43ac043f99e512b4069bf2ae233a824f915c16514085e1ea",
+          "backup_unchanged": true,
+          "restored_room_rgb_sha256": "e82e5f863225c190c9fa6fc42e1aed0e7f7d8122995bdb4fae74af43a8928528",
+          "restored_room_exact": true,
+          "frames": 1272,
+          "video_sha256": "257753622c5aa378386452486b01acfe9a62cee5c784f3b7b127d623604551bd",
+          "audio_sha256": "9b30828f177bff68c017967b205cfca4f7de1ee98068f2dd346a09b5ad6474b5",
+          "same_seed_full_stream_comparison": {
+            "status": "mismatch",
+            "exact_video_frames": 1112,
+            "total_video_frames": 1272,
+            "first_video_mismatch": 931,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 697852,
+            "berryboy_audio_frames": 697851,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          },
+          "save_written": false,
+          "dropped_guest_frames": 0,
+          "audio_overruns": 0,
+          "audio_underruns": 0
+        },
+        {
+          "save_origin": "reference",
+          "engine": "reference",
+          "initial_save_sha256": "b43db2678ae27dfb43ac043f99e512b4069bf2ae233a824f915c16514085e1ea",
+          "final_save_sha256": "b43db2678ae27dfb43ac043f99e512b4069bf2ae233a824f915c16514085e1ea",
+          "backup_unchanged": true,
+          "restored_room_rgb_sha256": "e82e5f863225c190c9fa6fc42e1aed0e7f7d8122995bdb4fae74af43a8928528",
+          "restored_room_exact": true,
+          "frames": 1272,
+          "video_sha256": "da2d126b6a35c7c954f05438a19c26026044e81e8e1cab7d7b6da0f07e1a83a2",
+          "audio_sha256": "07022527bc6874e6782d375b8a123577e7fbca486edbe666eee5eb4c8d77178a",
+          "same_seed_full_stream_comparison": {
+            "status": "mismatch",
+            "exact_video_frames": 1112,
+            "total_video_frames": 1272,
+            "first_video_mismatch": 931,
+            "whole_video_hash_match": false,
+            "whole_audio_hash_match": false,
+            "reference_audio_frames": 697852,
+            "berryboy_audio_frames": 697851,
+            "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+          }
+        }
+      ]
+    }
+  ],
+  "format_reference": {
+    "repository": "https://github.com/pret/pokefirered",
+    "commit": "ce6406d8c2eaf46d543c8a2606de0c3cb1951982",
+    "scope": "Independent shared FR/LG structure offsets and XOR routine source; not a claim of a matching ROM rebuild",
+    "file_sha256": {
+      "include/global.h": "044325b90e7c79146cc0cf73d31b6be3e4840059e2e778b63d9b5448fe538429",
+      "include/constants/global.h": "7ecf4a63c7be65328135a75f8620786e40343bbe7688e7017e6d780526fd6a0c",
+      "include/constants/game_stat.h": "e98ebe4c3d4448fd95ece37f84e15c8dbcbe91f7d61bf2dd3878c8aade0facc6",
+      "src/load_save.c": "b6a07136288f9330cf2b56f3a101fb62fd99fb23d76c9ab8de81e8cba458c012",
+      "src/item.c": "117c3d29617bd779db7c32332ab75fe5859f02ee6165a047508558977a88d01a",
+      "src/overworld.c": "df352e738b56856765aec65adc6fdea0a4b25fe567bc760d4ce2d34afc6ff7e2",
+      "src/berry_powder.c": "e6cf74024dfc461a83f3213ee22aaf127b00511d106d89fc27d974037d64366c"
+    }
+  },
+  "validation": {
+    "host_tests": 2400,
+    "exported_core_tests": 2240,
+    "actual_cldc_tests": 2240,
+    "new_host_cases": 9,
+    "failures": 0,
+    "skips": 0,
+    "native_adapter_changes": false
+  },
+  "remaining_gates": [
+    "Strict binary equality fails for both generations; 667 physical byte differences are classified, not ignored.",
+    "One play-time VBlank remains different in each generation; its timing cause is unqualified.",
+    "Strict full RGB/PCM streams still fail for save and reload routes.",
+    "Partial-sector writes, interrupted saves, erase/bank edges, counter wrap and recovery remain outside this diagnostic scope."
+  ]
+}

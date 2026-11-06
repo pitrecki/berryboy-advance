@@ -724,7 +724,7 @@ the [three-way report](REFERENCE-VALIDATION.md#three-way-brightness-model-compar
 records the counts and the open hardware expectations. The C probe rejects an
 RGB888/RGB565 build to prevent an accidental pixel ABI mismatch.
 
-## LeafGreen second-save route
+## LeafGreen repeated-save routes
 
 Use LeafGreen USA Rev-A, the original BIOS and a copy of the generation-1 player
 save identified in `benchmarks/leafgreen-second-save-2026-10-23.json`. Configure
@@ -746,6 +746,8 @@ Inspect the initial and generated copies without modifying them:
 python3 tools/inspect_leafgreen_save.py /path/to/initial-copy.sav
 python3 tools/inspect_leafgreen_save.py /path/to/berryboy-second.sav
 python3 tools/inspect_leafgreen_save.py /path/to/reference-second.sav
+python3 tools/inspect_leafgreen_save.py /path/to/berryboy-second.sav \
+  --compare /path/to/reference-second.sav
 ```
 
 The inspector checks the 128 KiB geometry, signatures, section identities,
@@ -753,9 +755,25 @@ checksums and complete generations before reporting latest position, play time
 and decoded money. Unknown/corrupt data fails explicitly. It targets this
 LeafGreen layout; counter-wrap/recovery behavior is outside its scope.
 
+`--compare` diagnoses every physical byte difference across both generations.
+Known XOR fields are decoded using each generation's own key; ciphertext counts
+as rekeyed only if the decoded field is equal. Keys, play time and derived
+checksums are named separately. Unknown payload, layout or padding differences
+remain unexplained. The report retains decoded key/time differences and strict
+raw equality: exit 0 means identical files, 1 means different files, 2 means
+invalid input. Inspection and comparison never write either input file.
+
 For each generated file, start fresh BerryBoy and mGBA instances with the
 existing `leafgreen-continue.tsv`, 1272 frames and checkpoints 1029/1272.
 Use separate copies and fresh output paths for all four cross-loads. Room frame
 1272 must match post-save frame 2750 exactly, and each reload's backup hash must
 remain its initial hash. Preserve strict whole-file and full-stream comparisons:
 the recorded new saves differ in 667 bytes, despite exact restored-room progress.
+
+For generation 3, use `benchmarks/inputs/leafgreen-third-save.tsv` and a copy of
+the newly created BerryBoy generation-2 save as the common initial image for both
+engines. The trace changes only the frame-1300 movement from Right to Left,
+returning from x=8 to x=7. Keep the same save confirmations, frame budgets and
+four independent cross-loads. The refreshed generation-2/3 results and pinned
+format-source identities are in
+[the repeated-save record](../benchmarks/leafgreen-repeated-saves-2026-11-06.json).
