@@ -1,0 +1,17 @@
+{
+  "frames": 150,
+  "capture": "Scripted production-renderer walkthrough; chooser is illustrative, not a recording of native JSR-75 file browsing. Game segment is 600 actual guest frames resumed from verified Golden Sun state, sampled every six frames. Transition omits BIOS boot.",
+  "rom_sha256": "c14f1151897e8d73f25ffdd67e21eebb6dc57973ff2458872ee89fa9060aaca1",
+  "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+  "state_sha256": "8addb5a3604d879d329dc750a98fc668097ebfa55d929245533db68c22ed983f",
+  "gif": {
+    "bytes": 4560637,
+    "sha256": "429e6f092a7f73bb8087f76c7466b9ed530b05e7bfc660120c6b5005ccd1957c",
+    "size": [
+      640,
+      480
+    ],
+    "encoded_frames": 98,
+    "duration_ms": 15000
+  }
+}

@@ -29,6 +29,14 @@ provides a home screen, pause menu, file browser and configurable controls.
 
 See [phone usage and storage](docs/BLACKBERRY.md#phone-interface).
 
+## Golden Sun walkthrough
+
+![Launch, game selection and Golden Sun running](docs/images/phone/golden-sun-walkthrough.gif)
+
+A 15-second walkthrough: Home, Golden Sun selection and ten seconds of real
+emulation. The selection screen is illustrative; the game segment resumes a
+recorded state and omits BIOS boot. [Recording details](docs/images/phone/golden-sun-walkthrough.json).
+
 ## Phone screenshots
 
 Full-screen captures at **640×480**, rendered by the application.
