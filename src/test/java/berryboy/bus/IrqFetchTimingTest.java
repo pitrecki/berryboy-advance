@@ -16,17 +16,24 @@ class IrqFetchTimingTest {
     @CsvFileSource(resources = "/berryboy/bus/irq-fetch.csv", numLinesToSkip = 1)
     void chargesTheOriginalModeAndSourceWaits(String mode, long pc, int ready, long cycles,
             long finalPc, long status, long link, int r0, int dmaComplete) {
-        compare(mode.equals("thumb"), (int) pc, 0, 0, ready, cycles, finalPc, status, link, r0, dmaComplete);
+        compare(mode.equals("thumb"), (int) pc, 0, 0, ready, 0x03000100, cycles, finalPc, status, link, r0, dmaComplete);
     }
 
     @ParameterizedTest
     @CsvFileSource(resources = "/berryboy/bus/irq-prefetch.csv", numLinesToSkip = 1)
     void preservesPrefetchAndPhysicalPageTiming(String mode, long pc, int prefetch, int idle, int ready,
             long cycles, long finalPc, long status, long link, int r0, int dmaComplete) {
-        compare(mode.equals("thumb"), (int) pc, prefetch, idle, ready, cycles, finalPc, status, link, r0, dmaComplete);
+        compare(mode.equals("thumb"), (int) pc, prefetch, idle, ready, 0x03000100, cycles, finalPc, status, link, r0, dmaComplete);
     }
 
-    private static void compare(boolean thumb, int pc, int prefetch, int idle, int ready, long cycles,
+    @ParameterizedTest
+    @CsvFileSource(resources = "/berryboy/bus/irq-cartridge-dma.csv", numLinesToSkip = 1)
+    void arbitratesCartridgeDmaAgainstIrqDiscardedFetches(String mode, long pc, int prefetch, int idle, int ready,
+            long cycles, long finalPc, long status, long link, int r0, int dmaComplete, long source) {
+        compare(mode.equals("thumb"), (int) pc, prefetch, idle, ready, (int)source, cycles, finalPc, status, link, r0, dmaComplete);
+    }
+
+    private static void compare(boolean thumb, int pc, int prefetch, int idle, int ready, int source, long cycles,
             long finalPc, long status, long link, int r0, int dmaComplete) {
         var width = thumb ? 2 : 4;
         var image = new byte[0x20040];
@@ -51,7 +58,7 @@ class IrqFetchTimingTest {
         m.memory.write16(0x04000208, 1);
         m.memory.interrupts().request(8);
         if (ready >= 0) {
-            m.memory.write32(0x040000d4, 0x03000100);
+            m.memory.write32(0x040000d4, source);
             m.memory.write32(0x040000d8, 0x03001000);
             m.memory.write16(0x040000dc, 1);
             m.memory.write16(0x040000de, 0xa400);
@@ -62,13 +69,14 @@ class IrqFetchTimingTest {
             if (m.clock.now() - start > 1000) throw new IllegalStateException("IRQ did not complete");
             m.cpu.step();
         }
+        var data = source == 0x03000100 ? 0x04030201 : thumb ? 0x30013001 : 0xe2800001;
         assertSoftly(s -> {
             s.assertThat(m.clock.now() - start).isEqualTo(cycles);
             s.assertThat(m.cpu.pc()).isEqualTo((int) finalPc);
             s.assertThat(m.cpu.cpsr()).isEqualTo((int) status);
             s.assertThat(m.cpu.register(14)).isEqualTo((int) link);
             s.assertThat(m.cpu.register(0)).isEqualTo(r0);
-            s.assertThat(m.memory.read32(0x03001000)).isEqualTo(dmaComplete == 0 ? 0 : 0x04030201);
+            s.assertThat(m.memory.read32(0x03001000)).isEqualTo(dmaComplete == 0 ? 0 : data);
             s.assertThat(m.cpu.instructions()).isEqualTo(2);
             s.assertThat(m.cpu.fetchInFlight()).isFalse();
             s.assertThat(m.memory.busTiming().refilling()).isFalse();

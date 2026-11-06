@@ -29,7 +29,7 @@ bottlenecks and preserves event ordering.
 
 ## Current validation
 
-- **2240 host tests**, **2096 exported-core tests**, and **2096 tests against the
+- **2384 host tests**, **2240 exported-core tests**, and **2240 tests against the
   actual new ECJ/CLDC classes** pass, with no failures or skips. Counts include
   parameterized invocations. Detailed build and artifact data is in the linked evidence.
 - Native Linux JDE 7.1 / ECJ 4.6.1 / RAPC verification passes and produces a
@@ -89,6 +89,12 @@ bottlenecks and preserves event ordering.
   State replay now rejects duplicate/out-of-order cycles and invalid keys/sensors
   before executing them. The Doom first-level snapshot and its exact 120-frame
   continuation are unchanged after the extraction and also replay on CLDC classes.
+- [Cartridge DMA during discarded IRQ fetches](../benchmarks/irq-cartridge-prefetch-2026-11-06.json)
+  adds 144 independent ARM/Thumb observations over all Game Pak wait regions,
+  physical page edges and cold/warm prefetch. Host and actual CLDC outputs match
+  NBA exactly; the original 216-observation matrix remains byte-identical.
+  This qualifies raw readiness arbitration, separately from peripheral activation
+  and IRQ propagation; production timing is unchanged.
 - [Sticky shoulder controls](../benchmarks/shoulder-assist-2026-11-06.json)
   add optional independent L/R locks, repeat protection, visible active badges
   and release on pause/focus/game/state changes. Settings version 3 migrates
@@ -192,7 +198,7 @@ user settings do not relax that qualification protocol.
 | Order | Next work | Completion evidence |
 | --- | --- | --- |
 | 1 / P0: DMA activation and lifecycle | Natural LCD probes now separate status, readiness, writes and IF publication. NBA/mGBA disagree on those phases; resolve the expected timing with hardware evidence or an independently justified specification before choosing a model. Then repeat game/CPU/state gates. | Keep 96 CPU, 66 lifecycle and eight shared natural-LCD terminal observations, previously exact frame sets and software frame/audio continuity. The Sonic-only phase experiment has no lost exact frames; wider validation remains open. Production activation remains immediate and machine-state format remains 1. |
-| 2 / P0: Wider CPU/LCD timing | Extend prefetch coverage to cartridge-bus DMA, stream invalidation and address edges; qualify pipeline latching/self-modifying code and IRQ propagation/mask latency. Trace the LeafGreen frame-930 offset and HBlank at cycle 960 versus the reference's 1008. | Matching event/retirement observations with justified expected timing. Keep in-flight snapshots distinct from retired state. Do not adjust a constant solely to improve screenshot counts. |
+| 2 / P0: Wider CPU/LCD timing | Cartridge DMA during discarded IRQ fetches now matches 144 independent cold/warm/page-edge observations. Extend coverage to subsequent stream invalidation and pipeline latching/self-modifying code, then IRQ propagation/mask latency. Trace the LeafGreen frame-930 offset and HBlank at cycle 960 versus the reference's 1008. | Matching event/retirement observations with justified expected timing. Keep in-flight snapshots distinct from retired state. Do not adjust a constant solely to improve screenshot counts. |
 | 3 / P0: Graphics expected results | Resolve the 2244-case three-way disagreement on brightness rounding and palette bit 15 using independently justified outputs or hardware evidence. Then qualify combined raster/OBJ/window effects. | Explicit per-pixel expectations and regression scenes. The renderer remains unqualified until those expectations are established; no relaxed tolerances. |
 | 4 / P1: Audio correctness | Start with late Sonic Advance 3 and Wario Land 4 differences. Compare timer/DMA FIFO, PSG and sample-clock events before diagnosing gain/filter/resampling. | Repeatable sample/event checkpoints, justified comparison rules, listening review and no software-buffer loss. Timing-dependent fixes follow the timing gates. |
 | 5 / P1: Gameplay and saves | Doom II now has a first-level input route. Extend F-Zero to a race and Mario & Luigi to player control; retain LeafGreen overworld/menu/save, Sonic/Wario level, Golden Sun battle and V-Rally race work. | Named reference checkpoints, second save generations and cold cross-loads from isolated copies. Preserve strict binary and full-stream outcomes; visible play alone does not qualify correctness. |

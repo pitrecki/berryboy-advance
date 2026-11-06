@@ -1,0 +1,69 @@
+{
+  "date": "2026-11-06",
+  "version": "0.9.1-SNAPSHOT",
+  "source_base_commit": "545a390f13df46e56cd965172bca0b317c2ed506",
+  "source_dirty": true,
+  "scope": "Qualify cartridge-bus DMA during IRQ discarded fetches; tests and diagnostic adapters only",
+  "hardware": "Linux x86_64 cloud host; JDK 21.0.8; Maven 3.9.11; C++20 -Wall -Wextra -Werror",
+  "assets": "Generated ADD streams and a NOP BIOS handler, no user ROM/BIOS",
+  "reference": {
+    "core": "NanoBoyAdvance",
+    "commit": "55b5cf0ae3d929582ac5bfd486558173502b8354",
+    "tracked_core_and_thirdparty_source_clean": true,
+    "library_sha256": "01a99241e5e3f1e961b64ea5e3f3df3f34c7d5b041868d2d1aae03d40846f304",
+    "binary_sha256": "010ba10f9e42e681f1ea703f96c3cf7b24baeeae217de0329eb1f974638e32e0"
+  },
+  "matrix": {
+    "rows": 144,
+    "modes": [
+      "ARM",
+      "Thumb"
+    ],
+    "code_regions": [
+      "0x08000000",
+      "0x0a000000",
+      "0x0c000000"
+    ],
+    "offsets": "0x20, 128-KiB physical page minus two instructions, minus one instruction, and page start",
+    "prefetch_setups": "Off, enabled with sequential stream, enabled plus 24 internal idle cycles",
+    "dma_runnable_relative_cycles": [
+      0,
+      1
+    ],
+    "dma": "Channel 3, one word from Game Pak 0x08001000 to IWRAM 0x03001000",
+    "input_contract": "Logical pipeline is primed before the observed interval; assert IRQ input and normalized raw DMA readiness. This does not qualify peripheral activation, IRQ propagation or handler return-stream invalidation.",
+    "outputs": "Elapsed guest cycles, retired handler PC/CPSR/LR/r0 and completed data transfer; Java regressions additionally require two retirements and no unfinished fetch/refill."
+  },
+  "results": {
+    "reference_and_host_rows_identical": 144,
+    "reference_and_actual_cldc_rows_identical": 144,
+    "fixture": "src/test/resources/berryboy/bus/irq-cartridge-dma.csv",
+    "fixture_sha256": "ef47ab8c78469c0bed77e9ac2b1cd1bc78b26226f121c5006d269e4a64d9f428",
+    "original_matrix_rows": 216,
+    "original_reference_and_host_output_bytes_unchanged": true,
+    "original_fixture_sha256": "f8d7108ffea5eb23c21949ad056dd845a5b080fa1732ddae75454d5efeb16587"
+  },
+  "validation": {
+    "host_tests": 2384,
+    "console_host_tests": 2384,
+    "exported_core_tests": 2240,
+    "actual_cldc_core_tests": 2240,
+    "added_core_cases": 144,
+    "failures": 0,
+    "skipped": 0,
+    "native_scope": "Jupiter and the standalone adapter execute isolated retained ECJ/CLDC core classes on the host JVM, without host-core fallback. Portable/native source inputs are unchanged; no new SDK build or phone performance claim is required."
+  },
+  "source_files_sha256": {
+    "tools/nba-cpu-irq-prefetch-probe.cc": "5b907c39b20af25a913f0f6e70fabca967016c85c868d813eb5bc31f82931737",
+    "tools/nba-reference/probe-machine.hh": "652adfc13a9fa5da09d76ec92b931f6e9ad70aa470867d0d7417995dc22cf84a",
+    "tools/CpuIrqPrefetchProbe.java": "1c274b72688331ea800fadc9549625a5e23848947524c64e82109b9eae0bc8e6",
+    "src/test/java/berryboy/bus/IrqFetchTimingTest.java": "4c86dab7942b88b1c76edc534d723a571d2eb80e926e02ce925a64d2e5b86cf9",
+    "src/test/resources/berryboy/bus/irq-cartridge-dma.csv": "ef47ab8c78469c0bed77e9ac2b1cd1bc78b26226f121c5006d269e4a64d9f428"
+  },
+  "production_timing_changed": false,
+  "machine_state_format_changed": false,
+  "local_output": "target/irq-cartridge",
+  "reproduction": "Build existing tools/nba-reference CMake target nba-cpu-irq-prefetch-probe and run --cartridge-dma. Compile tools/CpuIrqPrefetchProbe.java and run with the same option against host or isolated CLDC classes. Default no-option output remains compatible.",
+  "next": "Qualify subsequent fetch streams, self-modifying/pipeline latching and IRQ mask/propagation behavior independently; retain the separate natural-LCD timing gate.",
+  "release_policy": "No tag or release ZIP; v0.9.0 remains immutable."
+}

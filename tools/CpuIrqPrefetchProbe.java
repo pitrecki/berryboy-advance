@@ -6,17 +6,21 @@ import berryboy.cpu.Cpu;
 /** Asset-free adapter for nba-cpu-irq-prefetch-probe.cc. */
 public final class CpuIrqPrefetchProbe {
     public static void main(String[] args) {
-        if (args.length != 0) throw new IllegalArgumentException("Usage: berryboy.bus.CpuIrqPrefetchProbe");
-        System.out.println("mode,code,prefetch,idle,dma_ready,cycle,pc,cpsr,lr,r0,dma_complete");
+        var cartridge = args.length == 1 && args[0].equals("--cartridge-dma");
+        if (args.length != 0 && !cartridge) throw new IllegalArgumentException("Usage: berryboy.bus.CpuIrqPrefetchProbe [--cartridge-dma]");
+        System.out.println("mode,code,prefetch,idle,dma_ready,cycle,pc,cpsr,lr,r0,dma_complete" + (cartridge ? ",source" : ""));
         for (var thumb : new boolean[]{false, true})
             for (var bank : new int[]{0x08000000, 0x0a000000, 0x0c000000})
                 for (var offset : new int[]{0x20, 0x20000 - (thumb ? 4 : 8), 0x20000 - (thumb ? 2 : 4), 0x20000})
                     for (var setup : new int[]{0, 1, 2})
-                        for (var ready : new int[]{-1, 0, 1}) capture(thumb, bank + offset, setup, ready);
+                        for (var ready : new int[]{-1, 0, 1}) {
+                            if (cartridge && ready < 0) continue;
+                            capture(thumb, bank + offset, setup, ready, cartridge);
+                        }
         if (System.out.checkError()) throw new IllegalStateException("Cannot write IRQ prefetch observations");
     }
 
-    private static void capture(boolean thumb, int pc, int setup, int ready) {
+    private static void capture(boolean thumb, int pc, int setup, int ready, boolean cartridge) {
         var width = thumb ? 2 : 4;
         var image = new byte[0x20040];
         for (var i = 0; i < image.length; i++) image[i] = (byte) ((thumb ? 0x3001 : 0xe2800001) >>> ((i % width) * 8));
@@ -38,8 +42,9 @@ public final class CpuIrqPrefetchProbe {
         m.memory.write16(0x04000200, 8);
         m.memory.write16(0x04000208, 1);
         m.memory.interrupts().request(8);
+        var source = cartridge ? 0x08001000 : 0x03000100;
         if (ready >= 0) {
-            m.memory.write32(0x040000d4, 0x03000100);
+            m.memory.write32(0x040000d4, source);
             m.memory.write32(0x040000d8, 0x03001000);
             m.memory.write16(0x040000dc, 1);
             m.memory.write16(0x040000de, 0xa400);
@@ -52,8 +57,11 @@ public final class CpuIrqPrefetchProbe {
         }
         if (m.cpu.pc() != 0x1c || m.cpu.register(14) != pc + 4 || m.cpu.register(0) != 0)
             throw new IllegalStateException("Unexpected IRQ handler state");
-        System.out.printf("%s,0x%08x,%d,%d,%d,%d,0x%08x,0x%08x,0x%08x,%d,%d%n", thumb ? "thumb" : "arm", pc,
+        var expected = cartridge ? (thumb ? 0x30013001 : 0xe2800001) : 0x04030201;
+        System.out.printf("%s,0x%08x,%d,%d,%d,%d,0x%08x,0x%08x,0x%08x,%d,%d", thumb ? "thumb" : "arm", pc,
                 setup == 0 ? 0 : 1, idle, ready, m.clock.now() - start, m.cpu.pc(), m.cpu.cpsr(), m.cpu.register(14),
-                m.cpu.register(0), m.memory.read32(0x03001000) == 0x04030201 ? 1 : 0);
+                m.cpu.register(0), m.memory.read32(0x03001000) == expected ? 1 : 0);
+        if (cartridge) System.out.printf(",0x%08x", source);
+        System.out.println();
     }
 }

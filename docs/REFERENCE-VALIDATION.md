@@ -1224,6 +1224,23 @@ python3 tools/compare_audio.py /path/to/berryboy/audio.wav \
   /path/to/reference/audio.wav --output target/audio-analysis-new.json
 ```
 
+## Cartridge DMA during discarded IRQ fetches
+
+[The additional 144 observations](../benchmarks/irq-cartridge-prefetch-2026-11-06.json)
+use the pinned, unmodified NBA core. They replace the IWRAM DMA source with
+cartridge address `0x08001000` while ARM/Thumb IRQ acceptance discards a fetch
+from each Game Pak region, including physical page edges and cold/warm prefetch.
+DMA becomes runnable at relative cycle 0 or 1; activation and IRQ propagation
+latencies are deliberately excluded. The fixture checks elapsed cycles, retired
+PC/CPSR/link/r0 and transferred data. No production timing change was needed.
+
+The existing `nba-cpu-irq-prefetch-probe` CMake target and Java adapter accept
+`--cartridge-dma`. That mode appends a `source` column and emits 144 rows;
+invocation without the option preserves all original 216 rows and their schema.
+Compile `tools/CpuIrqPrefetchProbe.java` against host classes, or run that helper
+against isolated CLDC classes, then compare its output with
+`src/test/resources/berryboy/bus/irq-cartridge-dma.csv`.
+
 ## Natural LCD, DMA and IRQ phase observations
 
 [Eight original cases per model](../benchmarks/lcd-natural-phases-2026-11-06.json)
