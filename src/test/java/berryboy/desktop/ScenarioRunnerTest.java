@@ -142,6 +142,34 @@ class ScenarioRunnerTest {
     }
 
     @Test
+    void wrongInitialSaveHashFailsBeforeExecutingOrCreatingOutputs() throws Exception {
+        var config = config("bad-initial-save"); var saved = new byte[32768]; saved[7] = 42;
+        var path = directory.resolve("initial.sav"); Files.write(path, saved);
+        config.setProperty("save", "initial.sav"); config.setProperty("initial_save_sha256", "0".repeat(64));
+        assertThatThrownBy(() -> ScenarioRunner.run(config, directory)).hasMessageContaining("SHA-256");
+        assertThat(Files.readAllBytes(path)).isEqualTo(saved);
+        assertThat(directory.resolve("bad-initial-save")).doesNotExist();
+    }
+
+    @Test
+    void initialSaveHashRequiresASavePath() throws Exception {
+        var config = config("missing-initial-save"); config.setProperty("initial_save_sha256", "0".repeat(64));
+        assertThatThrownBy(() -> ScenarioRunner.run(config, directory)).hasMessageContaining("requires save");
+        assertThat(directory.resolve("missing-initial-save")).doesNotExist();
+    }
+
+    @Test
+    void verifiedInitialSaveIsReportedAndRemainsUnchangedWhenGuestDoesNotWriteIt() throws Exception {
+        var config = config("verified-initial-save"); var saved = new byte[32768]; saved[7] = 42;
+        var path = directory.resolve("initial.sav"); Files.write(path, saved);
+        var digest = ScenarioRunner.hash(saved);
+        config.setProperty("save", "initial.sav"); config.setProperty("initial_save_sha256", digest);
+        assertThat(ScenarioRunner.run(config, directory)).containsEntry("initial_save_sha256", digest)
+                .containsEntry("backup_sha256", digest).containsEntry("save_written", false);
+        assertThat(Files.readAllBytes(path)).isEqualTo(saved);
+    }
+
+    @Test
     void wrongRomOrInputHashFailsBeforeCreatingOutputs() throws Exception {
         var romConfig = config("bad"); romConfig.setProperty("rom_sha256", "0".repeat(64));
         assertThatThrownBy(() -> ScenarioRunner.run(romConfig, directory)).hasMessageContaining("SHA-256");

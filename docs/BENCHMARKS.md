@@ -29,7 +29,7 @@ bottlenecks and preserves event ordering.
 
 ## Current validation
 
-- **2384 host tests**, **2240 exported-core tests**, and **2240 tests against the
+- **2391 host tests**, **2240 exported-core tests**, and **2240 tests against the
   actual new ECJ/CLDC classes** pass, with no failures or skips. Counts include
   parameterized invocations. Detailed build and artifact data is in the linked evidence.
 - Native Linux JDE 7.1 / ECJ 4.6.1 / RAPC verification passes and produces a

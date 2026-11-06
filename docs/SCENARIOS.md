@@ -33,6 +33,11 @@ repetition gets its own copy, preserving the initial save. Optional `backup`
 overrides detection: 0=SRAM, 1=Flash64, 2=Flash128, 3=EEPROM512, 4=EEPROM8K.
 Use an explicit EEPROM type when loading an existing EEPROM save.
 
+For direct `ScenarioRunner` properties, optional `initial_save_sha256` verifies
+the existing `save` file before restoring cartridge bytes or running the guest.
+A missing file, mismatched hash or absent `save` path fails the capture. Without
+that property, a missing `save` file still starts a fresh cartridge backup.
+
 Optional `devices` is a bit mask: RTC=1, solar=2, gyro=4, tilt=8, rumble=16.
 Gyro cannot share pins with RTC/solar. Optional `rtc` is a deterministic ISO local
 datetime, default `2000-01-01T00:00:00`; it advances from guest cycles.

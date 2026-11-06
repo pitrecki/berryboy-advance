@@ -55,8 +55,9 @@ public final class ScenarioRunner {
         machine.memory.gpio().rtc().setDateTime(date.getYear() % 100, date.getMonthValue(), date.getDayOfMonth(),
                 date.getDayOfWeek().getValue() % 7, date.getHour(), date.getMinute(), date.getSecond());
         var save = config.containsKey("save") ? resolve(base, config.getProperty("save")) : null;
-        var loadedSave = save != null && Files.exists(save);
-        if (save != null) SaveFile.load(save, machine.memory.backup());
+        var expectedSave = config.containsKey("initial_save_sha256") ? required(config, "initial_save_sha256") : null;
+        if (expectedSave != null && save == null) throw new IllegalArgumentException("initial_save_sha256 requires save");
+        var loadedSave = save != null && SaveFile.load(save, machine.memory.backup(), expectedSave);
         var initialSaveHash = loadedSave ? hash(machine.memory.backup().snapshot()) : null;
         var inputHash = installInputs(machine, config, base);
         var eventTrace = GuestEventTrace.from(config, machine, (warmup + (long) frames) * LcdTiming.FRAME_CYCLES);
