@@ -5,7 +5,7 @@ import berryboy.DemoRom;
 import berryboy.Machine;
 import berryboy.cheat.CheatList;
 import berryboy.cheat.CheatCode;
-import berryboy.mobile.PhoneOptions;
+import berryboy.mobile.settings.PhoneOptions;
 import berryboy.MachineState;
 import java.lang.reflect.Method;
 import java.net.URLClassLoader;

@@ -1,6 +1,6 @@
 package berryboy.mobile.audio;
 
-import berryboy.mobile.PhoneOptions;
+import berryboy.mobile.settings.PhoneOptions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 

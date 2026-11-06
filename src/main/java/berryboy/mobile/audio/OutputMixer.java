@@ -1,6 +1,6 @@
 package berryboy.mobile.audio;
 
-import berryboy.mobile.PhoneOptions;
+import berryboy.mobile.settings.PhoneOptions;
 
 /** Post-process owned output PCM; synthesis and guest audio state continue unchanged. */
 public final class OutputMixer {

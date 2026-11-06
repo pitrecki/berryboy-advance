@@ -1,4 +1,4 @@
-package berryboy.mobile;
+package berryboy.mobile.settings;
 
 import berryboy.input.Keypad;
 import berryboy.state.StateBuffer;

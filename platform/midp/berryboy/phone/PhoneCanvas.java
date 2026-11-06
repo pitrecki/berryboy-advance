@@ -6,7 +6,7 @@ import berryboy.cheat.CheatList;
 import berryboy.input.Keypad;
 import berryboy.mobile.PhoneMenus;
 import berryboy.mobile.input.PhoneInput;
-import berryboy.mobile.PhoneOptions;
+import berryboy.mobile.settings.PhoneOptions;
 import berryboy.mobile.PhoneRenderer;
 import berryboy.mobile.PhoneScreen;
 import javax.microedition.lcdui.Canvas;

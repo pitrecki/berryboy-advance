@@ -1,5 +1,7 @@
 package berryboy.mobile;
 
+import berryboy.mobile.settings.PhoneOptions;
+
 import berryboy.cheat.CheatList;
 
 /** Menu content shared by the running MIDlet and reproducible application captures. */

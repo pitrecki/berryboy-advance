@@ -1,6 +1,6 @@
 package berryboy.mobile.input;
 
-import berryboy.mobile.PhoneOptions;
+import berryboy.mobile.settings.PhoneOptions;
 
 import berryboy.input.Keypad;
 import org.junit.jupiter.api.Tag;

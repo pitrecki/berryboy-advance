@@ -1,5 +1,7 @@
 package berryboy.mobile;
 
+import berryboy.mobile.settings.PhoneOptions;
+
 import berryboy.input.Keypad;
 
 /** UI-owned view state. Guest memory and render buffers never enter this object. */

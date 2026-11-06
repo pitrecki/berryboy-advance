@@ -8,7 +8,7 @@ import berryboy.cartridge.CartridgeBackup;
 import berryboy.cheat.CheatList;
 import berryboy.mobile.video.FramePresentation;
 import berryboy.mobile.audio.OutputMixer;
-import berryboy.mobile.PhoneOptions;
+import berryboy.mobile.settings.PhoneOptions;
 import berryboy.MachineState;
 import berryboy.timing.CycleScheduler;
 import berryboy.video.LcdTiming;

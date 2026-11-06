@@ -3,7 +3,7 @@ package berryboy.desktop;
 import berryboy.mobile.PhoneGraphics;
 import berryboy.mobile.video.FrameScaler;
 import berryboy.mobile.PhoneMenus;
-import berryboy.mobile.PhoneOptions;
+import berryboy.mobile.settings.PhoneOptions;
 import berryboy.mobile.PhoneRenderer;
 import berryboy.mobile.PhoneScreen;
 import berryboy.MachineState;
