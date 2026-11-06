@@ -21,12 +21,16 @@ public final class PhoneMenus {
                     options.frameSkip() == 0 ? "Off" : "1 in " + (options.frameSkip() + 1), options.showFps() ? "On" : "Off", scalingName(options.scaling())}, null);
     }
     public static void controls(PhoneScreen screen, PhoneOptions options) {
-        var keys = new String[10];
-        for (var i = 0; i < keys.length; i++) {
+        var labels = new String[11];
+        var keys = new String[11];
+        labels[0] = "L/R assist";
+        keys[0] = options.stickyShoulders() ? "Tap to lock" : "Off";
+        for (var i = 0; i < BUTTONS.length; i++) {
             var key = options.key(i);
-            keys[i] = key == 10 ? "Enter" : key == 8 ? "Backspace" : key >= 32 && key < 127 ? "" + (char) key : "Key " + key;
+            labels[i + 1] = BUTTONS[i];
+            keys[i + 1] = key == 10 ? "Enter" : key == 8 ? "Backspace" : key >= 32 && key < 127 ? "" + (char) key : "Key " + key;
         }
-        show(screen, "Controls", "Select a button, then press a key", BUTTONS, keys, null);
+        show(screen, "Controls", "Select assist or remap a button", labels, keys, null);
     }
     public static void slots(PhoneScreen screen, boolean loading, String[] summaries, boolean supported) {
         var labels = new String[5]; var enabled = new boolean[5];

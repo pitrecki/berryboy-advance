@@ -1,5 +1,7 @@
 package berryboy.mobile;
 
+import berryboy.input.Keypad;
+
 /** Production phone UI, independent of SDK drawing and emulator internals. */
 public final class PhoneRenderer {
     private static final int BACKGROUND = 0x10141e;
@@ -60,6 +62,16 @@ public final class PhoneRenderer {
         if (screen.fps().length() != 0) {
             g.fill(8, 8, g.textWidth(screen.fps(), false) + 12, 32, BACKGROUND);
             g.text(screen.fps(), 14, 12, TEXT, false);
+        }
+        if (screen.shoulderLocks() != 0) {
+            var locks = screen.shoulderLocks();
+            var label = locks == (Keypad.L | Keypad.R) ? "L+R locked" : locks == Keypad.L ? "L locked" : "R locked";
+            var badgeWidth = g.textWidth(label, false) + 12;
+            var x = width - badgeWidth - 8;
+            if (x < 8) x = 8;
+            var y = screen.fps().length() == 0 ? 8 : 48;
+            g.fill(x, y, badgeWidth, 32, BACKGROUND);
+            g.text(label, x + 6, y + 4, ACCENT, false);
         }
         if (screen.notice().length() != 0) {
             g.fill(8, height - 40, g.textWidth(screen.notice(), false) + 12, 32, BACKGROUND);

@@ -1,0 +1,83 @@
+--- a/src/main/java/berryboy/MachineState.java
++++ b/src/main/java/berryboy/MachineState.java
+@@ -10 +10 @@
+-    private static final int VERSION = 1;
++    private static final int VERSION = 2;
+@@ -21 +21 @@
+-        machine.memory.transferState(state);
++        machine.memory.transferState(state, VERSION);
+@@ -40 +40,3 @@
+-        if (state.value(0) != MAGIC || state.value(0) != VERSION) throw new IllegalArgumentException("Unsupported state format/version");
++        if (state.value(0) != MAGIC) throw new IllegalArgumentException("Unsupported state format/version");
++        var version = state.value(0);
++        if (version < 1 || version > VERSION) throw new IllegalArgumentException("Unsupported state format/version");
+@@ -49 +51 @@
+-        machine.memory.transferState(state);
++        machine.memory.transferState(state, version);
+--- a/src/main/java/berryboy/bus/Memory.java
++++ b/src/main/java/berryboy/bus/Memory.java
+@@ -108 +108 @@
+-    public void transferState(StateBuffer state) {
++    public void transferState(StateBuffer state, int version) {
+@@ -122,2 +122,9 @@
+-        clock.transferState(state, new CycleEvent[]{lcd, raster, clockedAudio, serial,
+-                timers.stateEvent(0), timers.stateEvent(1), timers.stateEvent(2), timers.stateEvent(3)});
++        // Version 1 had only the first eight event IDs and immediate DMA
++        // readiness. Append new IDs so old states retain every existing tie.
++        var hardware = version == 1
++                ? new CycleEvent[]{lcd, raster, clockedAudio, serial,
++                    timers.stateEvent(0), timers.stateEvent(1), timers.stateEvent(2), timers.stateEvent(3)}
++                : new CycleEvent[]{lcd, raster, clockedAudio, serial,
++                    timers.stateEvent(0), timers.stateEvent(1), timers.stateEvent(2), timers.stateEvent(3),
++                    dma.stateEvent(0), dma.stateEvent(1), dma.stateEvent(2), dma.stateEvent(3)};
++        clock.transferState(state, hardware);
+--- a/src/main/java/berryboy/bus/DmaController.java
++++ b/src/main/java/berryboy/bus/DmaController.java
+@@ -4,0 +5 @@
++import berryboy.timing.CycleEvent;
+@@ -11,0 +13 @@
++    private static final int ACTIVATION_CYCLES = 2;
+@@ -46 +48,4 @@
+-            if ((control & 0x8000) == 0) channel.pending = false;
++            if ((control & 0x8000) == 0) {
++                channel.pending = false;
++                memory.clock().cancel(channel);
++            }
+@@ -55 +60 @@
+-                channel.pending = true;
++                channel.requestActivation();
+@@ -64 +69 @@
+-                channel.pending = true;
++                channel.requestActivation();
+@@ -107,0 +113,3 @@
++
++    /** Stable per-channel callback identity for machine-state event ordering. */
++    public CycleEvent stateEvent(int index) { return channels[index]; }
+@@ -135 +143 @@
+-    private final class Channel {
++    private final class Channel implements CycleEvent {
+@@ -156 +164,14 @@
+-            pending = ((control >>> 12) & 3) == 0;
++            pending = false;
++            if (((control >>> 12) & 3) == 0) requestActivation();
++        }
++
++        void requestActivation() {
++            // A channel has one outstanding activation/burst. Repeated device
++            // requests must neither postpone its deadline nor queue extra work.
++            if (!pending && !memory.clock().isScheduled(this)) {
++                memory.clock().schedule(this, memory.clock().now() + ACTIVATION_CYCLES);
++            }
++        }
++
++        public void fire() {
++            if ((control & 0x8000) != 0) pending = true;
+--- a/src/main/java/berryboy/timing/CycleScheduler.java
++++ b/src/main/java/berryboy/timing/CycleScheduler.java
+@@ -35,0 +36,6 @@
++    }
++
++    /** Inspection only; callbacks are removed before they start dispatching. */
++    public boolean isScheduled(CycleEvent event) {
++        for (var i = 0; i < size; i++) if (events[i] == event) return true;
++        return false;

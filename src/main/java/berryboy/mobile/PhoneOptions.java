@@ -14,6 +14,7 @@ public final class PhoneOptions {
     private boolean muted;
     private boolean mono;
     private boolean showFps;
+    private boolean stickyShoulders;
     private int scaling = SCALE_FIT;
     private final int[] keys = {'z', 'x', '\b', '\n', 'l', 'j', 'i', 'k', 's', 'a'};
 
@@ -22,6 +23,7 @@ public final class PhoneOptions {
     public boolean muted() { return muted; }
     public boolean mono() { return mono; }
     public boolean showFps() { return showFps; }
+    public boolean stickyShoulders() { return stickyShoulders; }
     public int scaling() { return scaling; }
     public int key(int button) { return keys[button]; }
     public void setVolume(int value) {
@@ -35,13 +37,13 @@ public final class PhoneOptions {
     public void setMuted(boolean value) { muted = value; }
     public void setMono(boolean value) { mono = value; }
     public void setShowFps(boolean value) { showFps = value; }
+    public void setStickyShoulders(boolean value) { stickyShoulders = value; }
     public void setScaling(int value) {
         if (value < SCALE_NATIVE || value > SCALE_STRETCH) throw new IllegalArgumentException("Invalid image scaling mode");
         scaling = value;
     }
     public void bind(int button, int key) {
-        if (key >= 'A' && key <= 'Z') key += 'a' - 'A';
-        if (key == '\r') key = '\n';
+        key = normalizeKey(key);
         if (button < 0 || button >= keys.length || key == 0 || key == -11 || key == 27 || key == '#') {
             throw new IllegalArgumentException("Choose a game key; Back is reserved for the menu");
         }
@@ -51,28 +53,32 @@ public final class PhoneOptions {
         keys[button] = key;
     }
     public int buttonsFor(int code) {
-        if (code >= 'A' && code <= 'Z') code += 'a' - 'A';
-        if (code == '\r') code = '\n';
+        code = normalizeKey(code);
         var buttons = 0;
         for (var i = 0; i < keys.length; i++) if (keys[i] == code) buttons |= 1 << i;
         return buttons & Keypad.ALL_BUTTONS;
+    }
+    public static int normalizeKey(int code) {
+        if (code >= 'A' && code <= 'Z') code += 'a' - 'A';
+        return code == '\r' ? '\n' : code;
     }
     public PhoneOptions copy() {
         var result = new PhoneOptions();
         result.volume = volume; result.frameSkip = frameSkip;
         result.muted = muted; result.mono = mono;
         result.showFps = showFps; result.scaling = scaling;
+        result.stickyShoulders = stickyShoulders;
         System.arraycopy(keys, 0, result.keys, 0, keys.length);
         return result;
     }
     public byte[] encode() {
         var state = new StateBuffer();
-        state.value(2); transfer(state, 2); return state.finish();
+        state.value(3); transfer(state, 3); return state.finish();
     }
     public static PhoneOptions decode(byte[] bytes) {
         var state = new StateBuffer(bytes);
         var version = state.value(0);
-        if (version != 1 && version != 2) throw new IllegalArgumentException("Unsupported settings version");
+        if (version < 1 || version > 3) throw new IllegalArgumentException("Unsupported settings version");
         var result = new PhoneOptions(); result.transfer(state, version); state.requireEnd();
         result.setVolume(result.volume); result.setFrameSkip(result.frameSkip); result.setScaling(result.scaling);
         for (var i = 0; i < result.keys.length; i++) result.bind(i, result.keys[i]);
@@ -84,5 +90,6 @@ public final class PhoneOptions {
         showFps = state.flag(showFps);
         scaling = version == 1 ? (state.flag(false) ? SCALE_INTEGER : SCALE_NATIVE) : state.value(scaling);
         state.ints(keys);
+        stickyShoulders = version >= 3 && state.flag(stickyShoulders);
     }
 }

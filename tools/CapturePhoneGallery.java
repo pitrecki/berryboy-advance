@@ -1,9 +1,11 @@
 package berryboy.desktop;
 
 import berryboy.mobile.PhoneMenus;
+import berryboy.mobile.PhoneInput;
 import berryboy.mobile.PhoneOptions;
 import berryboy.mobile.PhoneScreen;
 import berryboy.mobile.GameViewport;
+import berryboy.input.Keypad;
 import berryboy.desktop.capture.JsonReport;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -45,6 +47,18 @@ public final class CapturePhoneGallery {
             metadata.put("viewport",view.x()+","+view.y()+","+view.width()+","+view.height());
             metadata.put("scaling","Fit; nearest neighbor; full canvas; no menu/header/footer");
             Files.writeString(output.resolve(slug+".json"),JsonReport.encode(metadata)+"\n");
+            if (slug.equals("golden-sun-lost-age")) {
+                var assist = new PhoneInput(); assist.setStickyShoulders(true);
+                assist.press('a', Keypad.L); assist.release('a');
+                assist.press('s', Keypad.R); assist.release('s');
+                screen.setShoulderLocks(assist.lockedShoulders());
+                painter.write(screen, output.resolve("shoulder-assist.png"));
+                screen.setShoulderLocks(0);
+                var assisted = new LinkedHashMap<String,Object>(metadata);
+                assisted.put("capture_png_sha256", ScenarioRunner.hash(Files.readAllBytes(output.resolve("shoulder-assist.png"))));
+                assisted.put("assist", "Production PhoneInput: enable sticky shoulders, tap/release L and R; FPS off");
+                Files.writeString(output.resolve("shoulder-assist.json"), JsonReport.encode(assisted)+"\n");
+            }
             if (menuFrame == null) { menuFrame=pixels; menuTitle=stringField(details,"title"); }
         }
         screen = new PhoneScreen(); PhoneMenus.home(screen,false);
@@ -52,7 +66,10 @@ public final class CapturePhoneGallery {
         screen.setFrame(menuFrame); PhoneMenus.pause(screen,menuTitle); painter.write(screen,output.resolve("pause.png"));
         var options=new PhoneOptions(); options.setShowFps(true); PhoneMenus.settings(screen,options); screen.select(5);
         painter.write(screen,output.resolve("settings.png"));
-        PhoneMenus.controls(screen,options); painter.write(screen,output.resolve("controls.png"));
+        options.setStickyShoulders(true); PhoneMenus.controls(screen,options);
+        screen.setMessage("L/R: tap to lock, tap again to release / Back clears");
+        painter.write(screen,output.resolve("controls.png"));
+        screen.setMessage("Navigate: trackpad / I,K / Select: Enter / Back");
         PhoneMenus.slots(screen,false,new String[]{"Empty","Empty","Empty","Empty","Empty"},true);
         painter.write(screen,output.resolve("slots.png")); painter.close();
     }

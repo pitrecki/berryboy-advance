@@ -1,0 +1,101 @@
+{
+  "date": "2026-11-06",
+  "version": "0.8.2",
+  "source_base_commit": "a3619778195d4a9d88fbcfe59cdc81167a95bcdd",
+  "source_dirty": true,
+  "change": "Optional independent sticky shoulder buttons on the BBOS frontend, with active badges and lifecycle release",
+  "hardware": "Linux x86_64 cloud host; Temurin 21.0.8+9; Maven 3.9.11",
+  "behavior": {
+    "menu": "Controls / L/R assist / Tap to lock",
+    "default": "Off",
+    "lock": "First physical key-down toggles L or R independently; key-up retains a lock; the next key-down releases it",
+    "repeat_and_key_aliases": "Duplicate key-downs do not toggle; letter case and CR/LF use the same normalization as bindings",
+    "other_buttons": "A/B, directions, Select and Start remain momentary; simultaneous physical keys compose with the locked shoulders",
+    "cleared_by": [
+      "pause/menu",
+      "focus loss/hide/suspend",
+      "game open/switch",
+      "state restore",
+      "restart",
+      "mode change",
+      "failure",
+      "shutdown"
+    ],
+    "persisted": "Mode and mappings only; settings version 3 reads versions 1 and 2 with assist off",
+    "indicator": "L locked / R locked / L+R locked, visible with FPS off and below its row when enabled",
+    "ownership": "UI-owned PhoneInput; bounded 16-key arrays, no per-event allocation; session receives only a synchronized button mask"
+  },
+  "validation": {
+    "host_tests": 2104,
+    "console_host_tests": 2104,
+    "exported_core_tests": 1987,
+    "actual_new_cldc_core_tests": 1987,
+    "failures": 0,
+    "skipped": 0,
+    "input_cases": 8,
+    "new_settings_and_menu_cases": 2,
+    "new_overlay_cases": 3,
+    "readiness_only_cpu_dma_cases": 96,
+    "sdk_and_rapc": "passed; numeric 0.8.2 JAD/COD, no errors",
+    "guest_implementation_changed": false,
+    "machine_state_version": 1,
+    "game_regression_note": "Guest core sources are unchanged from a361977. The rejected activation experiment and its eleven-game results are recorded separately, not claimed as a shipped fix."
+  },
+  "native_build": {
+    "compiler": "ecj",
+    "tool_sha256": {
+      "net_rim_api.jar": "b36d23121983e1115bbfa638eaf969c208d673ffb217b5ffc8e3cc90c045bb49",
+      "rapc.jar": "617107f0ca2b3710544fc12bd63f6da147abfd33d77e87cef1f473bdbf279d0a",
+      "ecj.jar": "9cddda75f4a1b4469e73f44e7b61a3e897d0f657df4797f9106ffe88c4eeade0"
+    },
+    "artifacts": {
+      "BerryBoyAdvance.cod": "2131ccffa76b7ede2f90a8e43ed7c59a5576e5abcc0eeaa5b1ba246646a6fa88",
+      "BerryBoyAdvance.jar": "a37fd574574f18eb6f2f2b051345ebb9b97fab8558d53054517e3049abd9e91f",
+      "BerryBoyAdvance.jad": "69255192240251b315d20ac0befdf35a661e3e26ca8d2af21edc21f2a5cf26e6"
+    },
+    "signing": "No signing step performed by the SDK build script",
+    "record_sha256": "5cd302d19ac0c6144f4c35bbed824168631b6b68286c5c1b823a0c9a62565350"
+  },
+  "capture": {
+    "method": "Production PhoneInput, PhoneMenus and PhoneRenderer via the PhoneGraphics port; headless Java2D fonts, not device execution",
+    "canvas": [
+      640,
+      480
+    ],
+    "scene": {
+      "game": "AGFE",
+      "title": "Golden Sun: The Lost Age",
+      "guest_frame": 7200,
+      "rom_sha256": "4199d82f845edf3e2e92f3783bca00190b5bc102d7c8aa339b951de280b1e6cc",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+      "extra_input_sha256": "e1e2831fdd14998e267ed41f0e70f0c3bffc2a4ef0645d541fe2490f64121d67",
+      "rgb_png_sha256": "ae7aa3203daaf2ae9a3895d9c228603dad418c3765d38b818af7283e810f3a6d",
+      "capture_png_sha256": "d4334d7a3923197c011f5c93a2b6d642c7c657c779ce0e654b1967a593b1e828",
+      "viewport": "0,27,640,426",
+      "scaling": "Fit; nearest neighbor; full canvas; no menu/header/footer",
+      "assist": "Production PhoneInput: enable sticky shoulders, tap/release L and R; FPS off"
+    },
+    "files_sha256": {
+      "docs/images/phone/shoulder-assist.png": "d4334d7a3923197c011f5c93a2b6d642c7c657c779ce0e654b1967a593b1e828",
+      "docs/images/phone/controls.png": "ae772295375d7cca0bf1d71e045ee68bb6c5136105bc6466ee0996aaea3fefe8"
+    },
+    "reproduce": "tools/capture-phone-gallery.sh target/phone-gallery-scenes /path/to/fresh/output",
+    "scope": "Existing deterministic Golden Sun: The Lost Age game checkpoint plus UI lock events; not a new gameplay or performance qualification"
+  },
+  "source_files_sha256": {
+    "src/main/java/berryboy/mobile/PhoneInput.java": "90d8b637c8055056ba13cca76c8b3340c776bee70ab1f0477d8ab5cba62d5753",
+    "src/main/java/berryboy/mobile/PhoneOptions.java": "dd2ca3efe5d433acd0d4f10da5a2a594ee76c4efd540019e4facc5ebc7324572",
+    "src/main/java/berryboy/mobile/PhoneMenus.java": "d55bd2a092a99ca533c4eb2a94bf40cbf601ba5e0175a57c6d6e2044a5b8a344",
+    "src/main/java/berryboy/mobile/PhoneScreen.java": "57bb0cf89b9e2aac39a588bd2d0ff9d0dfb83df5547a949a3909a8ceedfbb36f",
+    "src/main/java/berryboy/mobile/PhoneRenderer.java": "c39deca308c8f2ab2b7abe781849b3832320d17c8b7d2e1747a6792d35716feb",
+    "platform/midp/berryboy/phone/PhoneCanvas.java": "f5ba1402e0fcf5d5f19d537754ee11077871a60ebce3b3c19899aa0b5cdd0b21",
+    "src/test/java/berryboy/mobile/PhoneInputTest.java": "46e1af8b470b7ed9d7a990bde0129ae0a52362cb96fac2162dbd26443eab966d",
+    "src/test/java/berryboy/mobile/PhoneOptionsTest.java": "ab5735a70b26e4831095a94f739f0064c6dd8d4fbc1fd199f4377a2f53f3dfa4",
+    "src/test/java/berryboy/mobile/GameViewportTest.java": "d9105d2510cd68466cf2c72dcc826b72bdafba45c8247f827aa98f98350bca3b",
+    "tools/CapturePhoneGallery.java": "fec1c631380617f65ca8fc8b2716a58b4305271ac0f3ea0e33aedd020630b1c8",
+    "pom.xml": "8e6f429f9d5aa9e65e131f90428f09d068957fc6448ad940e493f55ea90abd32"
+  },
+  "local_capture_output": "target/shoulder-assist-gallery-final",
+  "dma_gate_record": "benchmarks/dma-activation-game-gate-2026-11-06.json"
+}

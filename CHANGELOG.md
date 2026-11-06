@@ -1,6 +1,14 @@
 # Changelog
 
-## 0.8.2-SNAPSHOT — unreleased
+## 0.8.2 — 2026-11-06 (preview)
+
+- Add optional sticky L/R controls for shoulder-plus-action/direction combinations,
+  with independent locks, repeat-key protection and an always-visible active badge.
+  Clear input on pause, focus loss and game/state changes. Preserve old controls
+  while migrating settings versions 1/2 to version 3; assist defaults to off.
+- Preserve 96 independent CPU/DMA readiness observations as portable regressions.
+  Record a rejected delayed-activation prototype and its Sonic frame-3555 regression;
+  production activation and machine-state format remain unchanged.
 
 - Reload repeated DMA lengths from the current count register at completion,
   preserving the active burst and the already latched next burst. Keep FIFO

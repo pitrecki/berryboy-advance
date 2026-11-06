@@ -1,5 +1,7 @@
 package berryboy.mobile;
 
+import berryboy.input.Keypad;
+
 /** UI-owned view state. Guest memory and render buffers never enter this object. */
 public final class PhoneScreen {
     private String title = "Home";
@@ -13,6 +15,7 @@ public final class PhoneScreen {
     private int scaling = PhoneOptions.SCALE_FIT;
     private String fps = "";
     private String notice = "";
+    private int shoulderLocks;
     public void menu(String title, String subtitle, String[] labels, String[] values, boolean[] enabled) {
         if (labels == null || values == null || enabled == null || labels.length != values.length || labels.length != enabled.length) {
             throw new IllegalArgumentException("Incomplete phone menu");
@@ -36,6 +39,7 @@ public final class PhoneScreen {
     public void setScaling(int value) { scaling = value; }
     public void setFps(String text) { fps = text; }
     public void setNotice(String text) { notice = text; }
+    public void setShoulderLocks(int buttons) { shoulderLocks = buttons & (Keypad.L | Keypad.R); }
     public String title() { return title; }
     public String subtitle() { return subtitle; }
     public String message() { return message; }
@@ -48,4 +52,5 @@ public final class PhoneScreen {
     public int scaling() { return scaling; }
     public String fps() { return fps; }
     public String notice() { return notice; }
+    public int shoulderLocks() { return shoulderLocks; }
 }

@@ -5,6 +5,7 @@ import berryboy.cheat.CheatCode;
 import berryboy.cheat.CheatList;
 import berryboy.input.Keypad;
 import berryboy.mobile.PhoneMenus;
+import berryboy.mobile.PhoneInput;
 import berryboy.mobile.PhoneOptions;
 import berryboy.mobile.PhoneRenderer;
 import berryboy.mobile.PhoneScreen;
@@ -35,10 +36,9 @@ public final class PhoneCanvas extends Canvas implements CommandListener {
     private final PhoneScreen screen = new PhoneScreen();
     private final MidpGraphics painter = new MidpGraphics();
     private final PhoneSession session;
-    private final int[] held = new int[16];
+    private final PhoneInput input = new PhoneInput();
     private PhoneOptions options = new PhoneOptions();
     private CheatList cheats = new CheatList();
-    private int heldCount;
     private int page;
     private int captureButton = -1;
     private boolean loaded;
@@ -65,6 +65,7 @@ public final class PhoneCanvas extends Canvas implements CommandListener {
         String startupError = null;
         try { byte[] data = PhoneRecords.read("berryboy-options"); if (data != null) options = PhoneOptions.decode(data); }
         catch (Exception error) { startupError = "Settings: " + error.toString(); }
+        input.setStickyShoulders(options.stickyShoulders());
         session = new PhoneSession(this, options);
         setFullScreenMode(true); addCommand(menu); addCommand(back); addCommand(exit); addCommand(removeCheat); setCommandListener(this);
         show(HOME);
@@ -87,6 +88,7 @@ public final class PhoneCanvas extends Canvas implements CommandListener {
     // Called without the canvas monitor: the UI thread must be able to paint.
     void awaitPresentation() { serviceRepaints(); }
     synchronized void loaded(String title, CheatList cheats, String[] slots, boolean persistent, int generation) {
+        releaseKeys();
         loaded = true; game = title; this.cheats = cheats; slotSummaries = slots; this.persistent = persistent;
         gameGeneration = generation;
         screen.setFrame(null); frameVersion++; show(active ? GAME : PAUSE);
@@ -97,6 +99,7 @@ public final class PhoneCanvas extends Canvas implements CommandListener {
         if (page == SAVE || page == LOAD) { int selected = screen.selection(); show(page); screen.select(selected); repaint(); }
     }
     synchronized void restored(int[] ownedRgb, String status) {
+        releaseKeys();
         screen.setFrame(ownedRgb); frameVersion++; show(PAUSE); message(status);
     }
     synchronized void present(int[] ownedRgb, int gbaTenths, int drawTenths, String audioError) {
@@ -123,7 +126,9 @@ public final class PhoneCanvas extends Canvas implements CommandListener {
         else if (target == CONTROLS) PhoneMenus.controls(screen, options);
         else if (target == SAVE || target == LOAD) PhoneMenus.slots(screen, target == LOAD, slotSummaries, persistent);
         else if (target == CHEATS) PhoneMenus.cheats(screen, cheats);
-        screen.setMessage(target == GAME ? "Back / Menu: pause" : "Navigate: trackpad / I,K / Select: Enter / Back");
+        screen.setMessage(target == GAME ? "Back / Menu: pause"
+                : target == CONTROLS && options.stickyShoulders() ? "L/R: tap to lock, tap again to release / Back clears"
+                : "Navigate: trackpad / I,K / Select: Enter / Back");
         repaint();
     }
     protected synchronized void paint(Graphics graphics) {
@@ -139,8 +144,13 @@ public final class PhoneCanvas extends Canvas implements CommandListener {
             return;
         }
         if (page == GAME) {
-            for (int i = 0; i < heldCount; i++) if (held[i] == code) return;
-            if (heldCount < held.length) held[heldCount++] = code;
+            int mapped = options.buttonsFor(code);
+            if (mapped == 0) {
+                int action = action(code);
+                mapped = action == UP ? Keypad.UP : action == DOWN ? Keypad.DOWN : action == LEFT ? Keypad.LEFT
+                        : action == RIGHT ? Keypad.RIGHT : action == FIRE ? Keypad.A : 0;
+            }
+            input.press(code, mapped);
             updateKeys(); return;
         }
         if (code >= 'A' && code <= 'Z') code += 'a' - 'A';
@@ -154,7 +164,7 @@ public final class PhoneCanvas extends Canvas implements CommandListener {
     }
     protected synchronized void keyRepeated(int code) { if (page != GAME) keyPressed(code); }
     protected synchronized void keyReleased(int code) {
-        for (int i = 0; i < heldCount; i++) if (held[i] == code) { held[i] = held[--heldCount]; break; }
+        input.release(code);
         updateKeys();
     }
     protected synchronized void hideNotify() { pause(); }
@@ -171,19 +181,11 @@ public final class PhoneCanvas extends Canvas implements CommandListener {
     }
     private int action(int code) { try { return getGameAction(code); } catch (IllegalArgumentException unknown) { return 0; } }
     private void updateKeys() {
-        int pressed = 0;
-        if (page == GAME) for (int i = 0; i < heldCount; i++) {
-            int mapped = options.buttonsFor(held[i]);
-            if (mapped == 0) {
-                int action = action(held[i]);
-                mapped = action == UP ? Keypad.UP : action == DOWN ? Keypad.DOWN : action == LEFT ? Keypad.LEFT
-                        : action == RIGHT ? Keypad.RIGHT : action == FIRE ? Keypad.A : 0;
-            }
-            pressed |= mapped;
-        }
-        session.buttons(pressed);
+        session.buttons(page == GAME ? input.pressed() : 0);
+        screen.setShoulderLocks(page == GAME ? input.lockedShoulders() : 0);
+        repaint();
     }
-    private void releaseKeys() { heldCount = 0; session.buttons(0); }
+    private void releaseKeys() { input.releaseAll(); updateKeys(); }
     private void goBack() {
         if (captureButton >= 0) { show(CONTROLS); return; }
         releaseKeys();
@@ -212,7 +214,15 @@ public final class PhoneCanvas extends Canvas implements CommandListener {
             else if (selected == 6) confirmRestart();
             else show(HOME);
         } else if (page == SETTINGS) changeSetting(1);
-        else if (page == CONTROLS) { captureButton = selected; message("Press a new key for " + PhoneMenus.buttonName(selected) + " / Back cancels"); }
+        else if (page == CONTROLS) {
+            if (selected == 0) {
+                options.setStickyShoulders(!options.stickyShoulders());
+                releaseKeys(); show(CONTROLS); saveOptions();
+            } else {
+                captureButton = selected - 1;
+                message("Press a new key for " + PhoneMenus.buttonName(captureButton) + " / Back cancels");
+            }
+        }
         else if (page == SAVE || page == LOAD) {
             if (page == SAVE && !slotSummaries[selected].equals("Empty")) confirmSave(selected);
             else request(page == SAVE ? PhoneSession.SAVE : PhoneSession.LOAD, selected, null, null);
@@ -232,6 +242,7 @@ public final class PhoneCanvas extends Canvas implements CommandListener {
         show(SETTINGS); screen.select(selected); saveOptions();
     }
     private void saveOptions() {
+        input.setStickyShoulders(options.stickyShoulders());
         session.options(options);
         try { PhoneRecords.write("berryboy-options", options.encode()); }
         catch (Exception error) { message("Settings not saved: " + error.toString()); }

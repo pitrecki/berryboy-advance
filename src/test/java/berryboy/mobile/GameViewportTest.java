@@ -11,6 +11,22 @@ import org.junit.jupiter.params.provider.CsvSource;
 @Tag("core")
 class GameViewportTest {
     @ParameterizedTest
+    @CsvSource({"512,L locked", "256,R locked", "768,L+R locked"})
+    void shoulderLocksRemainVisibleWithFpsOffAndDoNotOverlapTheFpsRow(int locks, String label) {
+        var screen = new PhoneScreen(); PhoneMenus.game(screen, "Game"); screen.setFrame(new int[240 * 160]);
+        screen.setShoulderLocks(locks);
+        var plain = new RecordingGraphics(); PhoneRenderer.paint(plain, screen, 640, 480);
+        assertThat(plain.text).containsExactly(label);
+        assertThat(plain.textY).containsExactly(12);
+        screen.setFps("GBA 59.7 / Draw 59.7 fps");
+        var fps = new RecordingGraphics(); PhoneRenderer.paint(fps, screen, 640, 480);
+        assertThat(fps.text).containsExactly(screen.fps(), label);
+        assertThat(fps.textY).containsExactly(12, 52);
+        screen.setShoulderLocks(0); screen.setFps("");
+        var clear = new RecordingGraphics(); PhoneRenderer.paint(clear, screen, 640, 480);
+        assertThat(clear.text).isEmpty();
+    }
+    @ParameterizedTest
     @CsvSource({"640,480,2,0,27,640,426", "640,480,3,0,0,640,480", "640,480,1,80,80,480,320",
             "640,480,0,200,160,240,160", "480,640,2,0,160,480,320", "128,128,1,0,21,128,85",
             "128,128,0,0,21,128,85", "240,160,2,0,0,240,160"})
@@ -56,8 +72,10 @@ class GameViewportTest {
     }
     private static final class RecordingGraphics implements PhoneGraphics {
         int logoCalls, textCalls, pixelX, pixelY, pixelWidth, pixelHeight;
+        final java.util.List<String> text = new java.util.ArrayList<>();
+        final java.util.List<Integer> textY = new java.util.ArrayList<>();
         public void fill(int x, int y, int w, int h, int color) { }
-        public void text(String text, int x, int y, int color, boolean heading) { textCalls++; }
+        public void text(String value, int x, int y, int color, boolean heading) { textCalls++; text.add(value); textY.add(y); }
         public int textWidth(String text, boolean heading) { return text.length() * 8; }
         public void logo(int x, int y) { logoCalls++; }
         public void pixels(int[] rgb, int x, int y, int w, int h) { pixelX=x; pixelY=y; pixelWidth=w; pixelHeight=h; }

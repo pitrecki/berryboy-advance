@@ -2,7 +2,7 @@
   <img src="docs/images/brand/berryboy-icon.png" width="144" alt="BerryBoy Advance logo">
 </p>
 
-# BerryBoy Advance — 0.8.1
+# BerryBoy Advance — 0.8.2
 
 Game Boy Advance emulation for the BlackBerry Bold 9900 and BBOS 7.1, with
 local games, save states, cheats and configurable controls. Desktop tools run
@@ -30,6 +30,10 @@ provides a home screen, pause menu, file browser and configurable controls.
 - **Cheats:** named, switchable Raw RAM writes and unencrypted CodeBreaker types
   3/8. Encrypted GameShark/Action Replay and other command types are not supported.
 - **Controls:** remap all ten buttons; mappings and preferences persist.
+- **L/R assist:** choose **Controls → L/R assist → Tap to lock**. Tap a shoulder
+  key once to keep it held while using D-pad and A/B; tap again to release it.
+  Pause, focus loss and game/state changes clear the locks. The mode is off by
+  default; active locks remain visible with FPS off. [Golden Sun preview](docs/images/phone/shoulder-assist.png).
 - **Sound:** volume, mute and mono/stereo output, with a bounded MMAPI packet backend.
 - **Display:** full-screen play with no app header or footer. Choose **Full screen**
   to preserve GBA proportions, **Stretch** for edge-to-edge output, or native/integer
