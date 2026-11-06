@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.9.0-SNAPSHOT — unreleased
+## 0.9.0 — 2026-11-06 (preview)
 
 - Choose and persist any readable local ROM folder, plus last ROM/BIOS browser
   selections. Separate asynchronous file/folder browsing from the canvas.

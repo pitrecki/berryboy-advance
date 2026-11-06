@@ -1,6 +1,6 @@
 # Current status and roadmap
 
-Updated **2026-11-06**, for **0.9.0-SNAPSHOT** (published: **0.8.2 preview**). This is the canonical current
+Updated **2026-11-06**, for **0.9.0** (published: **0.8.2 preview**; 0.9.0 release preparation). This is the canonical current
 validation and work queue. [CHANGELOG](../CHANGELOG.md) records version highlights;
 linked JSON records and Git history preserve detailed measurements.
 
@@ -32,7 +32,7 @@ bottlenecks and preserves event ordering.
   actual new ECJ/CLDC classes** pass, with no failures or skips. Counts include
   parameterized invocations. Detailed build and artifact data is in the linked evidence.
 - Native Linux JDE 7.1 / ECJ 4.6.1 / RAPC verification passes and produces a
-  **0.9.0 development** JAD/COD. Host: Linux x86_64, Temurin 21.0.8, Maven 3.9.11.
+  **0.9.0** JAD/COD. Host: Linux x86_64, Temurin 21.0.8, Maven 3.9.11.
 - [Configurable game folder](../benchmarks/rom-folder-2026-11-06.json) persists a
   chosen local directory and browser selections. The asynchronous picker starts
   there, supports other storage roots and Unicode names, filters ROM/BIOS files,
