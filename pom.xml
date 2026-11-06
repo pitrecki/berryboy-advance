@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>dev.berryboy</groupId>
   <artifactId>berryboy-advance</artifactId>
-  <version>0.8.2</version>
+  <version>0.9.0-SNAPSHOT</version>
   <name>BerryBoy Advance</name>
   <properties>
     <maven.compiler.release>21</maven.compiler.release>

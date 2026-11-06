@@ -1,6 +1,6 @@
 # Current status and roadmap
 
-Updated **2026-11-06**, for **0.8.2 preview**. This is the canonical current
+Updated **2026-11-06**, for **0.9.0-SNAPSHOT** (published: **0.8.2 preview**). This is the canonical current
 validation and work queue. [CHANGELOG](../CHANGELOG.md) records version highlights;
 linked JSON records and Git history preserve detailed measurements.
 
@@ -28,11 +28,16 @@ bottlenecks and preserves event ordering.
 
 ## Current validation
 
-- **2109 host tests**, **1991 exported-core tests**, and **1991 tests against the
+- **2120 host tests**, **1998 exported-core tests**, and **1998 tests against the
   actual new ECJ/CLDC classes** pass, with no failures or skips. Counts include
   parameterized invocations. Detailed build and artifact data is in the linked evidence.
 - Native Linux JDE 7.1 / ECJ 4.6.1 / RAPC verification passes and produces a
-  **0.8.2** JAD/COD. Host: Linux x86_64, Temurin 21.0.8, Maven 3.9.11.
+  **0.9.0 development** JAD/COD. Host: Linux x86_64, Temurin 21.0.8, Maven 3.9.11.
+- [Configurable game folder](../benchmarks/rom-folder-2026-11-06.json) persists a
+  chosen local directory and browser selections. The asynchronous picker starts
+  there, supports other storage roots and Unicode names, filters ROM/BIOS files,
+  and suppresses late callbacks after cancellation. Host doubles and native SDK
+  compilation cover the new interface separately.
 - The [phone feature boundaries](ARCHITECTURE.md#responsibilities) now separate
   input, settings, audio, video and UI, with matching test packages. Key mappings
   have their own state owner. Package moves preserve preference/state layouts and
@@ -128,6 +133,9 @@ and SDK/API compatibility, while target execution remains open.
 | Stage | Status and next evidence |
 | --- | --- |
 | Menus, local games and controls | Implemented. Verify browsing/permissions, simultaneous keys, focus release, pause/resume and text/layout on BBOS. |
+| Configurable game folder | Implemented. Home → ROM folder persists the chosen local location; Open game → Browse ROM starts there. Last selected ROM/BIOS URLs persist independently. |
+| Boot animation | Requested next: optionally hide the BIOS startup animation while preserving actual BIOS initialization. |
+| Playback speed | Requested next: selectable 1×/2×/4×/8× pacing, with explicit accelerated-audio behavior and accurate guest/draw counters. |
 | Shoulder combinations | Implemented. Controls → L/R assist → Tap to lock keeps either shoulder held while using A/B and directions; a second tap releases it. Default off, mode persists, held locks never persist and clear at lifecycle boundaries. |
 | Five save slots | Implemented. Host replay and failed-write tests pass. Repeat save/load across application restart, low storage and interrupted writes on the target; keep a copy of the original player save. |
 | Cheat support | Raw 8/16/32-bit RAM writes and unencrypted CodeBreaker 3/8 are implemented. Other CodeBreaker commands and encrypted GameShark/Action Replay require explicit format specifications and independent fixtures before support. |

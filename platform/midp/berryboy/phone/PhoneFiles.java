@@ -1,5 +1,6 @@
 package berryboy.phone;
 
+import berryboy.phone.library.FileUrls;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -10,16 +11,7 @@ import javax.microedition.io.file.FileConnection;
 final class PhoneFiles {
     private PhoneFiles() { }
     static String childUrl(String directory, String name) throws IOException {
-        byte[] bytes = name.getBytes("UTF-8");
-        StringBuffer url = new StringBuffer(directory);
-        String hex = "0123456789ABCDEF";
-        for (int i = 0; i < bytes.length; i++) {
-            int c = bytes[i] & 255;
-            if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')
-                    || c == '-' || c == '_' || c == '.' || c == '~' || c == '/') url.append((char) c);
-            else { url.append('%'); url.append(hex.charAt(c >>> 4)); url.append(hex.charAt(c & 15)); }
-        }
-        return url.toString();
+        return FileUrls.child(directory, name);
     }
     static byte[] read(String url, int maximum) throws IOException {
         checkUrl(url);

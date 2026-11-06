@@ -6,6 +6,9 @@ import berryboy.cheat.CheatList;
 import berryboy.input.Keypad;
 import berryboy.mobile.ui.PhoneMenus;
 import berryboy.mobile.input.PhoneInput;
+import berryboy.mobile.library.LibraryProfile;
+import berryboy.phone.library.FilePicker;
+import berryboy.phone.library.FileUrls;
 import berryboy.mobile.settings.PhoneOptions;
 import berryboy.mobile.ui.PhoneRenderer;
 import berryboy.mobile.ui.PhoneScreen;
@@ -29,6 +32,8 @@ public final class PhoneCanvas extends Canvas implements CommandListener {
     private final Command start = new Command("Start game", Command.OK, 1);
     private final Command browseRom = new Command("Browse ROM", Command.SCREEN, 2);
     private final Command browseBios = new Command("Browse BIOS", Command.SCREEN, 3);
+    private final Command browseFolder = new Command("Browse folders", Command.SCREEN, 1);
+    private final Command saveFolder = new Command("Save folder", Command.OK, 1);
     private final Command addCheat = new Command("Add", Command.OK, 1);
     private final Command removeCheat = new Command("Delete cheat", Command.ITEM, 4);
     private final BlackBerryMidlet application;
@@ -38,6 +43,7 @@ public final class PhoneCanvas extends Canvas implements CommandListener {
     private final PhoneSession session;
     private final PhoneInput input = new PhoneInput();
     private PhoneOptions options = new PhoneOptions();
+    private LibraryProfile library = new LibraryProfile();
     private CheatList cheats = new CheatList();
     private int page;
     private int captureButton = -1;
@@ -51,6 +57,8 @@ public final class PhoneCanvas extends Canvas implements CommandListener {
     private Form openForm;
     private TextField romPath;
     private TextField biosPath;
+    private Form libraryForm;
+    private TextField libraryDirectory;
     private Form cheatForm;
     private int cheatFormGeneration;
     private TextField cheatName;
@@ -65,6 +73,8 @@ public final class PhoneCanvas extends Canvas implements CommandListener {
         String startupError = null;
         try { byte[] data = PhoneRecords.read("berryboy-options"); if (data != null) options = PhoneOptions.decode(data); }
         catch (Exception error) { startupError = "Settings: " + error.toString(); }
+        try { byte[] data = PhoneRecords.read("berryboy-library"); if (data != null) library = LibraryProfile.decode(data); }
+        catch (Exception error) { startupError = "Game folder: " + error.toString(); }
         input.setStickyShoulders(options.stickyShoulders());
         session = new PhoneSession(this, options);
         setFullScreenMode(true); addCommand(menu); addCommand(back); addCommand(exit); addCommand(removeCheat); setCommandListener(this);
@@ -199,10 +209,11 @@ public final class PhoneCanvas extends Canvas implements CommandListener {
         int selected = screen.selection();
         if (page == HOME) {
             if (selected == 0) openGameForm();
-            else if (selected == 1) resume();
-            else if (selected == 2) show(SETTINGS);
-            else if (selected == 3) show(CONTROLS);
-            else if (selected == 4) diagnostics();
+            else if (selected == 1) openLibraryForm();
+            else if (selected == 2) resume();
+            else if (selected == 3) show(SETTINGS);
+            else if (selected == 4) show(CONTROLS);
+            else if (selected == 5) diagnostics();
             else message("BerryBoy " + application.getAppProperty("MIDlet-Version") + " / Demo in Diagnostics / Raw + CodeBreaker 3,8");
         } else if (page == PAUSE) {
             if (selected == 0) resume();
@@ -258,9 +269,21 @@ public final class PhoneCanvas extends Canvas implements CommandListener {
         if (command == exit) { shutdown(); return; }
         if (source == openForm) {
             if (command == back) { display.setCurrent(this); return; }
-            if (command == browseRom || command == browseBios) { new PhoneBrowser(display, this, command == browseBios); return; }
+            if (command == browseRom || command == browseBios) { browseFile(command == browseBios); return; }
             if (command == start) {
                 display.setCurrent(this); request(PhoneSession.OPEN, 0, romPath.getString(), biosPath.getString()); return;
+            }
+        }
+        if (source == libraryForm) {
+            if (command == back) { display.setCurrent(this); return; }
+            if (command == browseFolder) { browseLibraryFolder(); return; }
+            if (command == saveFolder) {
+                try {
+                    LibraryProfile next = library.copy(); next.setDirectory(libraryDirectory.getString());
+                    PhoneRecords.write("berryboy-library", next.encode()); library = next;
+                    show(HOME); message("ROM folder saved"); display.setCurrent(this);
+                } catch (Exception error) { libraryForm.setTitle("Folder not saved: " + error.toString()); }
+                return;
             }
         }
         if (source == cheatForm) {
@@ -285,8 +308,8 @@ public final class PhoneCanvas extends Canvas implements CommandListener {
     private void openGameForm() {
         session.pause(); releaseKeys();
         openForm = new Form("Open game");
-        romPath = new TextField("ROM (.gba)", "file:///SDCard/roms/", 512, TextField.ANY);
-        biosPath = new TextField("GBA BIOS (16 KiB)", "file:///SDCard/gba_bios.bin", 512, TextField.ANY);
+        romPath = new TextField("ROM (.gba)", library.rom().length() == 0 ? library.directory() : library.rom(), 512, TextField.ANY);
+        biosPath = new TextField("GBA BIOS (16 KiB)", library.bios().length() == 0 ? FileUrls.ROOTS : library.bios(), 512, TextField.ANY);
         openForm.append(romPath); openForm.append(biosPath);
         openForm.append("Choose unpacked local files. Save slots use sidecar files next to the ROM.");
         openForm.addCommand(start); openForm.addCommand(browseRom); openForm.addCommand(browseBios); openForm.addCommand(back);
@@ -302,9 +325,45 @@ public final class PhoneCanvas extends Canvas implements CommandListener {
         cheatForm.append("Raw example: 02000100:16:03E7. CodeBreaker: unencrypted types 3 and 8 only.");
         cheatForm.addCommand(addCheat); cheatForm.addCommand(back); cheatForm.setCommandListener(this); display.setCurrent(cheatForm);
     }
-    synchronized void browserSelected(String url, boolean bios) { if (bios) biosPath.setString(url); else romPath.setString(url); display.setCurrent(openForm); }
-    synchronized void browserCancelled() { display.setCurrent(openForm); }
-    synchronized void browserFailed(String error) { openForm.setTitle(error); display.setCurrent(openForm); }
+    private void openLibraryForm() {
+        session.pause(); releaseKeys();
+        libraryForm = new Form("ROM folder");
+        libraryDirectory = new TextField("Folder URL", library.directory(), 512, TextField.ANY);
+        libraryForm.append(libraryDirectory);
+        libraryForm.append("Choose any readable local folder. Open game / Browse ROM starts here. file:/// shows all storage roots.");
+        libraryForm.addCommand(browseFolder); libraryForm.addCommand(saveFolder); libraryForm.addCommand(back);
+        libraryForm.setCommandListener(this); display.setCurrent(libraryForm);
+    }
+    private void browseLibraryFolder() {
+        final Form target = libraryForm;
+        try {
+            new FilePicker(display, new FilePicker.Selection() {
+                public void selected(String url) { synchronized (PhoneCanvas.this) { if (target == libraryForm) { libraryDirectory.setString(url); display.setCurrent(target); } } }
+                public void cancelled() { display.setCurrent(target); }
+                public void failed(String error) { target.setTitle(error); display.setCurrent(target); }
+            }, true, "", libraryDirectory.getString());
+        } catch (Exception error) { target.setTitle(error.toString()); }
+    }
+    private void browseFile(final boolean bios) {
+        final Form target = openForm;
+        final int generation = gameGeneration;
+        new FilePicker(display, new FilePicker.Selection() {
+            public void selected(String url) {
+                synchronized (PhoneCanvas.this) {
+                    if (target != openForm || generation != gameGeneration) return;
+                    if (bios) biosPath.setString(url); else romPath.setString(url);
+                    try {
+                        LibraryProfile next = library.copy();
+                        if (bios) next.setBios(url); else next.setRom(url);
+                        PhoneRecords.write("berryboy-library", next.encode()); library = next;
+                    } catch (Exception error) { target.setTitle("Path not saved: " + error.toString()); }
+                    display.setCurrent(target);
+                }
+            }
+            public void cancelled() { display.setCurrent(target); }
+            public void failed(String error) { target.setTitle(error); display.setCurrent(target); }
+        }, false, bios ? ".bin" : ".gba", bios ? FileUrls.parent(biosPath.getString()) : library.directory());
+    }
     private void diagnostics() {
         final Form form = new Form("Diagnostics");
         final Command demo = new Command("Run demo", Command.SCREEN, 2);

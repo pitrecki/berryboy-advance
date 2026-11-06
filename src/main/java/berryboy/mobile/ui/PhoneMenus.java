@@ -10,8 +10,8 @@ public final class PhoneMenus {
     private PhoneMenus() { }
     public static String buttonName(int index) { return BUTTONS[index]; }
     public static void home(PhoneScreen screen, boolean loaded) {
-        show(screen, "Home", "Game Boy Advance / BBOS", new String[]{"Open game", "Resume game", "Display & audio", "Controls", "Diagnostics", "About"},
-                new String[]{">", loaded ? ">" : "No game", ">", ">", ">", ">"}, new boolean[]{true, loaded, true, true, true, true});
+        show(screen, "Home", "Game Boy Advance / BBOS", new String[]{"Open game", "ROM folder", "Resume game", "Display & audio", "Controls", "Diagnostics", "About"},
+                new String[]{">", ">", loaded ? ">" : "No game", ">", ">", ">", ">"}, new boolean[]{true, true, loaded, true, true, true, true});
     }
     public static void pause(PhoneScreen screen, String game) {
         show(screen, "Paused", game, new String[]{"Resume game", "Save state", "Load state", "Cheats", "Display & audio", "Controls", "Restart game", "Home"},

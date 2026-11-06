@@ -43,6 +43,7 @@ The phone frontend has separate feature packages and matching test directories:
 | --- | --- |
 | `mobile.input` | Physical key state, sticky shoulders, key assignments and normalization |
 | `mobile.settings` | Preference values, versioned persistence and migration |
+| `mobile.library` | Saved ROM folder and last file selections, without device IO |
 | `mobile.audio` | PCM output mixing and bounded WAV packet encoding |
 | `mobile.video` | Viewport geometry, frame scaling, submission cadence and rate counters |
 | `mobile.ui` | Menu content, view state, drawing port and renderer |
@@ -52,6 +53,8 @@ The phone frontend has separate feature packages and matching test directories:
 the complete settings object. Settings depend on input bindings; audio/video
 consume settings; UI consumes settings and video. These dependencies are acyclic.
 SDK-specific lifecycle, storage and MMAPI adapters remain under `platform/midp`.
+The native `phone.library` picker uses a selection callback, so directory IO does
+not depend on the application's canvas or guest session.
 
 Keep package moves, behavioral changes and diagnostic investigations in separate
 commits. Use an isolated worktree for investigations that need different core

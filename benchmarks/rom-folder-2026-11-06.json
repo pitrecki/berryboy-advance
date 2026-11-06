@@ -1,0 +1,63 @@
+{
+  "date": "2026-11-06",
+  "version": "0.9.0-SNAPSHOT",
+  "source_base_commit": "d9ebf937f62116791ccb3a30e95b038d1d638389",
+  "source_dirty": true,
+  "change": "Persist an arbitrary readable local ROM folder and last browser-selected ROM/BIOS URLs, with an independent asynchronous file/folder picker",
+  "hardware": "Linux x86_64 cloud host; Temurin 21.0.8+9; Maven 3.9.11",
+  "behavior": {
+    "menu": "Home / ROM folder / Browse folders / Use this folder / Save folder",
+    "rom_browse": "Open game / Browse ROM starts in the saved directory; other storage roots remain navigable",
+    "default": "All storage roots (file:///), without a fixed SD-card folder",
+    "persistence": "Independent version-1 library RMS profile, bounded 512-character URLs; Unicode and percent escapes round-trip unchanged",
+    "folder_change": "Clear the previous ROM selection and retain the independent BIOS selection",
+    "io": "JSR-75 file access through device permissions; folder/file reading runs in the picker thread; selection callbacks do not depend on the canvas",
+    "cancellation": "Suppress stale results/failures after Back; reject old list commands",
+    "files": "Unpacked GBA files and case-insensitive .gba/.bin picker filters; battery/state storage behavior remains unchanged"
+  },
+  "validation": {
+    "host_tests": 2120,
+    "console_host_tests": 2120,
+    "exported_core_tests": 1998,
+    "actual_new_cldc_core_tests": 1998,
+    "failures": 0,
+    "skipped": 0,
+    "profile_cases": 5,
+    "native_picker_cases": 4,
+    "home_menu_cases": 2,
+    "sdk_and_rapc": "passed; JDE 7.1 / ECJ 4.6.1; 0.9.0 development COD/JAD",
+    "native_runtime": "Host filesystem/UI doubles exercise the actual native picker; physical BBOS behavior is not inferred"
+  },
+  "native_build": {
+    "compiler": "ecj",
+    "tool_sha256": {
+      "net_rim_api.jar": "b36d23121983e1115bbfa638eaf969c208d673ffb217b5ffc8e3cc90c045bb49",
+      "rapc.jar": "617107f0ca2b3710544fc12bd63f6da147abfd33d77e87cef1f473bdbf279d0a",
+      "ecj.jar": "9cddda75f4a1b4469e73f44e7b61a3e897d0f657df4797f9106ffe88c4eeade0"
+    },
+    "artifacts": {
+      "BerryBoyAdvance.cod": "c432662d0087f9900d0d87cf807af4d9796493535ce1f29694b018b6cd3367c2",
+      "BerryBoyAdvance.jar": "b09ef2bc469e5a3c6394b8db20058274276c685e21a0874399a07e23b8a14fc6",
+      "BerryBoyAdvance.jad": "87a6fad6f70cc3c50090c698fdbc6eb1fe7dd874e0dc818cdb9977c5bc6e120e"
+    },
+    "signing": "No signing step performed by the SDK build script"
+  },
+  "source_files_sha256": {
+    "src/main/java/berryboy/mobile/library/LibraryProfile.java": "ec07bcdce8160e71fd005a9f595c2b815055a2ea32cc28a51f4d90d0654d0eda",
+    "src/main/java/berryboy/mobile/ui/PhoneMenus.java": "9482cf84e65a8bd4589a5bdc6e066f6cdfdbd8982b9c17b724ea0faca11bac6a",
+    "platform/midp/berryboy/phone/library/FilePicker.java": "6608038c2539a4f8b6f5e87d84fcbf4d4600dc53f9c01e8abe39855b113dd193",
+    "platform/midp/berryboy/phone/library/FileUrls.java": "4fad76186333134909948943e07281b4c654f5873b034ab5f5b8d5e794d5cadd",
+    "platform/midp/berryboy/phone/PhoneCanvas.java": "9b7cbb1687891043344cc9e0392da233330b7c7a46114bf63f30a8f0e2059492",
+    "platform/midp/berryboy/phone/PhoneFiles.java": "8d2d1bdeaf93cdd7c7e1eefac317c357d8b89e21bb1b544cccc8a770955ed758",
+    "src/test/java/berryboy/mobile/library/LibraryProfileTest.java": "499072d0e0a6136682e6ad2d0b66c8693e43768151d721da2a8d680f9b9b2f94",
+    "src/test/java/berryboy/phone/library/FilePickerTest.java": "785a32d237a0e53440f65a87e6f221ffe19bc2f7145d5c157d82708b5011fb59",
+    "pom.xml": "f3e1f685bd5c86b9ae49a39bb326b2ff52181d25bc6f33fd13f9b73499f837fd"
+  },
+  "home_capture": {
+    "file": "docs/images/phone/home.png",
+    "sha256": "9aa68106ce9c1115751ae73bf60bcccf244175e61c24c240e92ed0c878797ce8",
+    "method": "Production menu/renderer via headless Java2D, 640x480",
+    "local_output": "target/rom-folder-gallery"
+  },
+  "release_policy": "Development source committed/pushed only; no tag or release ZIP without explicit user approval"
+}
