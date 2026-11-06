@@ -46,9 +46,10 @@ provides a home screen, pause menu, file browser and configurable controls.
 - **Speed:** select **1×/2×/4×/8×** in the pause menu or **Display & audio → Speed**.
   Accelerated play is silent; returning to 1× restores sound unless Mute is on.
   A visible badge shows the selected factor. Actual speed depends on available CPU.
-- **Display:** full-screen play with no app header or footer. Choose **Full screen**
-  to preserve GBA proportions, **Stretch** for edge-to-edge output, or native/integer
-  scaling. Optional frame skip affects presentation; FPS is a small overlay.
+- **Display:** choose **Display & audio → Game image**. **Full screen** preserves
+  the complete GBA frame and its proportions, with black bars above and below.
+  **Stretch** fills the display by stretching the image vertically. Native/integer
+  scaling is also available. Optional frame skip affects presentation; FPS is a small overlay.
 
 See [phone usage and storage](docs/BLACKBERRY.md#phone-interface).
 
@@ -62,18 +63,19 @@ recorded state and omits BIOS boot. [Recording details](docs/images/phone/golden
 
 ## Phone screenshots
 
-Full-screen captures at **640×480**, rendered by the application. The default
-**Full screen** mode preserves the complete **240×160** GBA image and its 3:2
-proportions, leaving 27-pixel black bars above and below on the Bold's 4:3 screen.
-Choose **Display & audio → Game image → Stretch** to fill the screen vertically too.
+Application-rendered captures at **640×480**. Both Metroid views show the same
+complete **240×160** game frame. The default **Full screen** mode preserves its
+3:2 proportions, leaving 27-pixel black bars above and below on the Bold's 4:3
+display. **Stretch** fills the display and makes the image taller. Select either
+mode in **Display & audio → Game image**.
 
-| Metroid: Zero Mission | Grand Theft Auto Advance |
+| Metroid: Zero Mission — Full screen (default) | Metroid: Zero Mission — Stretch |
 | --- | --- |
-| ![Metroid Zero Mission full-screen](docs/images/phone/metroid-zero-mission.png) | ![GTA Advance full-screen](docs/images/phone/gta-advance.png) |
-| Golden Sun: The Lost Age | Wario Land 4 |
-| ![Golden Sun The Lost Age full-screen](docs/images/phone/golden-sun-lost-age.png) | ![Wario Land 4 full-screen](docs/images/phone/wario-land-4.png) |
-
-[V-Rally 3 — stage selection](docs/images/phone/v-rally-3.png)
+| ![Metroid Zero Mission complete frame with original proportions](docs/images/phone/metroid-zero-mission.png) | ![Metroid Zero Mission complete frame stretched to fill the display](docs/images/phone/metroid-zero-mission-stretch.png) |
+| Grand Theft Auto Advance | Golden Sun: The Lost Age |
+| ![GTA Advance with original proportions](docs/images/phone/gta-advance.png) | ![Golden Sun The Lost Age with original proportions](docs/images/phone/golden-sun-lost-age.png) |
+| Wario Land 4 | V-Rally 3 — stage selection |
+| ![Wario Land 4 with original proportions](docs/images/phone/wario-land-4.png) | ![V-Rally 3 stage selection with original proportions](docs/images/phone/v-rally-3.png) |
 
 ### App screens
 

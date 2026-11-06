@@ -47,6 +47,18 @@ public final class CapturePhoneGallery {
             metadata.put("viewport",view.x()+","+view.y()+","+view.width()+","+view.height());
             metadata.put("scaling","Fit; nearest neighbor; full canvas; no menu/header/footer");
             Files.writeString(output.resolve(slug+".json"),JsonReport.encode(metadata)+"\n");
+            if (code.equals("BMXE")) {
+                screen.setScaling(PhoneOptions.SCALE_STRETCH);
+                painter.write(screen, output.resolve(slug + "-stretch.png"));
+                var stretchView = GameViewport.create(640,480,screen.scaling());
+                screen.setScaling(PhoneOptions.SCALE_FIT);
+                var stretched = new LinkedHashMap<String,Object>(metadata);
+                stretched.put("capture_png_sha256", ScenarioRunner.hash(Files.readAllBytes(output.resolve(slug + "-stretch.png"))));
+                stretched.put("viewport", stretchView.x()+","+stretchView.y()+","+stretchView.width()+","+stretchView.height());
+                stretched.put("scaling", "Stretch; nearest neighbor; complete GBA frame with altered aspect ratio");
+                stretched.put("capture", "Production PhoneMenus/PhoneRenderer painted headlessly through CapturePhone; same checkpoint as the default Fit view");
+                Files.writeString(output.resolve(slug + "-stretch.json"), JsonReport.encode(stretched)+"\n");
+            }
             if (slug.equals("golden-sun-lost-age")) {
                 var assist = new PhoneInput(); assist.setStickyShoulders(true);
                 assist.press('a', Keypad.L); assist.release('a');
