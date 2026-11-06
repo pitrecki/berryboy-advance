@@ -1,0 +1,64 @@
+{
+  "published_zip_sha256": "36d54252e367287423f91e4021818be0d88f0b4cf09a0fbbe79f635f83b88f7f",
+  "published_bytes": 222977,
+  "manifest": {
+    "schema": 1,
+    "version": "0.9.0",
+    "target": "BlackBerry OS 7.1 / Bold 9900",
+    "commit": "64ef9b2b5069723b6447b5e642ffe7318d9ce5a9",
+    "source_dirty": false,
+    "signing": "No signing step performed by the SDK build script",
+    "compiler": "ecj",
+    "tool_sha256": {
+      "net_rim_api.jar": "b36d23121983e1115bbfa638eaf969c208d673ffb217b5ffc8e3cc90c045bb49",
+      "rapc.jar": "617107f0ca2b3710544fc12bd63f6da147abfd33d77e87cef1f473bdbf279d0a",
+      "ecj.jar": "9cddda75f4a1b4469e73f44e7b61a3e897d0f657df4797f9106ffe88c4eeade0"
+    },
+    "build_inputs_sha256": "a85e4e752f678013eaa18a99242fd4e3b9a3c206c23d6c4401422e1d79ce1e00",
+    "files": {
+      "BerryBoyAdvance.cod": {
+        "bytes": 90684,
+        "sha256": "36f20cca74693cd2c3f7c654a83676764e57c3e516007ef1e184b7bc86899c2e"
+      },
+      "BerryBoyAdvance-1.cod": {
+        "bytes": 18368,
+        "sha256": "e07dd86c5d90a0dce12e876b649d90bbe0f66163a6e2e30158034e2eee237de3"
+      },
+      "BerryBoyAdvance.jad": {
+        "bytes": 633,
+        "sha256": "17268d6b840015a9fef7a37ff168e67f917d05a154f851779774628c49ca6bf9"
+      },
+      "BerryBoyAdvance.jar": {
+        "bytes": 156454,
+        "sha256": "f524752bf13d4647d3bd1602e89cdc66dba1940841bf904f29ba8a896d3651db"
+      },
+      "BerryBoyAdvance.alx": {
+        "bytes": 350,
+        "sha256": "b75cf5b881542f8ef495b1ddd72f1c6b4dff32b7ae08f51ef7b7a19e9bbaf595"
+      },
+      "INSTALL.txt": {
+        "bytes": 1480,
+        "sha256": "5cb8fef96d81a0345b66d815e3a2979cd59a8b170b0bfbf0dc9294b6f93ef23b"
+      }
+    }
+  },
+  "matches_local_source_inputs": true,
+  "public_sha256_and_all_internal_checksums_valid": true,
+  "workflow": "https://github.com/pitrecki/berryboy-advance/actions/runs/42213495031",
+  "release": "https://github.com/pitrecki/berryboy-advance/releases/tag/v0.9.0",
+  "date": "2026-11-06",
+  "tag": "v0.9.0",
+  "tag_object": "43c97aa922e153981725ce993b1f6da4fc197e3d",
+  "local_host_validation": {
+    "host_tests": 2147,
+    "console_host_tests": 2147,
+    "exported_core_tests": 2022,
+    "actual_cldc_tests": 2022,
+    "failures": 0,
+    "skipped": 0
+  },
+  "local_zip_sha256": "de9aa5c185903d6d42121f7ce0832265dc2b2de53e90392e8fa996e4f70c7e28",
+  "build_notes": "Public CI and local archives identify the same tagged source inputs. SDK/JAR timestamps may differ, so the downloaded CI package is checked against its own published checksum and manifest.",
+  "download": "https://github.com/pitrecki/berryboy-advance/releases/download/v0.9.0/BerryBoy-Advance-0.9.0-BBOS7.1.zip",
+  "approval": "Explicit user approval for v0.9.0 only; later routine commits do not create tags or release packages."
+}
