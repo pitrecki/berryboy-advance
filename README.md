@@ -16,8 +16,8 @@ on **Linux, JDK 21 and Maven 3.9.x**.
 [Download phone packages from GitHub Releases](https://github.com/pitrecki/berryboy-advance/releases).
 Choose the **BBOS7.1 ZIP**, extract all files together and follow `INSTALL.txt`.
 Use the included **ALX** with BlackBerry Desktop Software, or the **JAD** with
-its companion files. Every larger version milestone gets a compiled package
-and checksums; ROMs and BIOS are supplied separately.
+its companion files. New tags and phone packages are published after your release
+decision for a larger change. ROMs and BIOS are supplied separately.
 
 ## Phone interface
 

@@ -14,7 +14,7 @@
   unverified BlackBerry runtime behavior.
 - Use Git history as the primary source review and delivery channel. Do not
   generate HTML source summaries or source ZIP archives unless explicitly requested.
-  The user explicitly authorizes compiled phone release ZIPs for version milestones.
+  Compiled phone release ZIPs require the user's explicit approval for that release.
 - After each completed and verified project update, commit the relevant changes
   as Piotr Nowak <piotr_nowak@outlook.com>, then push to the configured repository.
   The user has restored push authorization. Verify the remote commit after
@@ -22,10 +22,13 @@
   rewrite published history. If the remote or write access is missing, finish the
   local work and report the missing destination or access; never claim a push
   succeeded without verifying it.
-- At each major/minor version milestone, publish a compiled BBOS phone release;
-  patch releases are optional or requested explicitly. Freeze the numeric Maven
-  version, verify host/export/SDK/CLDC checks, then tag the reviewed commit as
-  `vX.Y.Z`. The BlackBerry release workflow builds and publishes the package.
+- Routine verified updates are committed and pushed without tags or release
+  packages. After a genuinely large change is implemented and validated, present
+  the concrete result and ask whether the user wants a tag and phone package.
+  Do not ask for a release decision after every commit. Only after explicit
+  approval for that release, freeze the numeric Maven version and tag the
+  reviewed commit as `vX.Y.Z`; the BlackBerry workflow builds and publishes it.
+  Host/export/SDK/CLDC validation may proceed without release approval.
   Include raw sibling CODs, JAD/ALX, installation instructions, provenance and
   checksums. Keep compiled artifacts and vendor SDKs out of Git. Preserve
   published tags/assets; do not silently replace an existing release.
@@ -36,6 +39,13 @@
 - Group core code and tests by feature (`cpu`, `bus`, `timing`, `video`, `audio`,
   `cartridge`, `input`, `serial`). Keep the root for composition and diagnostics. Preserve
   device ports/listeners rather than introducing dependencies on decoder internals.
+- Group the phone frontend by feature as well. Do not turn `mobile` into a catch-all
+  for controls, audio, settings and rendering. Move one cohesive area at a time,
+  keeping its tests with it and dependencies explicit.
+- Keep commits focused on one reviewable concern. Separate package moves,
+  behavior changes, diagnostic experiments and unrelated policy changes; include
+  only documentation directly needed by that concern. Use separate worktrees for
+  concurrent investigations so source edits and generated build outputs cannot mix.
 - Keep guest state on its deterministic emulation owner. Parallel host work must
   receive owned snapshots through bounded queues, propagate failures and apply
   backpressure; do not share live memory/frame/audio buffers across threads.

@@ -85,7 +85,10 @@ alone does not pass those gates.
 
 ## Version milestone releases
 
-Compiled phone packages are now part of each major/minor milestone. The current
+Routine updates are committed and pushed without tags or release packages.
+After a genuinely large change is implemented and validated, ask the user whether
+to tag it and build a phone package. Release approval is specific to that release;
+host/export/SDK/CLDC validation can continue independently. The current
 release line is [**0.8.2 preview**](https://github.com/pitrecki/berryboy-advance/releases/tag/v0.8.2);
 each package contains normalized raw COD siblings,
 JAD/ALX descriptors, the native MIDlet JAR, installation instructions, checksums
