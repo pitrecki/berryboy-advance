@@ -2,6 +2,8 @@
 
 ## 0.9.1-SNAPSHOT — unreleased
 
+- Share strict input-recording validation between scenario captures and state
+  replay, retaining exact guest-cycle installation and immutable recording data.
 - Add asset-free natural LCD/DMA/IRQ phase probes for BerryBoy, unmodified NBA
   and mGBA. Preserve eight shared terminal outcomes as portable regressions;
   keep disputed fine timing outside the production model.

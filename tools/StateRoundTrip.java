@@ -3,6 +3,7 @@ package berryboy.desktop;
 import berryboy.Machine;
 import berryboy.cartridge.CartridgeBackup;
 import berryboy.desktop.capture.JsonReport;
+import berryboy.desktop.scenario.RecordedInputs;
 import berryboy.MachineState;
 import berryboy.video.LcdTiming;
 import java.nio.file.Files;
@@ -36,23 +37,14 @@ public final class StateRoundTrip {
             if (!initialSaveHash.equals(p.getProperty("initial_save_sha256"))) throw new IllegalArgumentException("Initial save hash mismatch");
             original.memory.backup().restore(bytes);
         }
-        long lastInput = 0;
-        for (var line : new String(input, java.nio.charset.StandardCharsets.UTF_8).split("\\R")) {
-            if (line.isBlank() || line.startsWith("#")) continue;
-            var v = line.strip().split("\\s+");
-            if (v.length != 6) throw new IllegalArgumentException("Invalid input trace");
-            long cycle = Long.parseLong(v[0]); int keys = Integer.decode(v[1]);
-            int x = Integer.decode(v[2]); int y = Integer.decode(v[3]); int z = Integer.decode(v[4]); int solar = Integer.decode(v[5]);
-            original.clock.schedule(() -> { original.memory.setPressedKeys(keys); original.memory.gpio().setSensors(x,y,z,solar); }, cycle);
-            lastInput = Math.max(lastInput, cycle);
-        }
+        var recording = RecordedInputs.parse(input); recording.install(original);
         var first = Integer.parseInt(args[1]); var resumed = Integer.parseInt(args[2]);
         var pcm = new short[2048]; original.memory.clockedAudio().setCapture(true);
         for (var frame = 1; frame <= first; frame++) {
             original.runCycles(frame * (long) LcdTiming.FRAME_CYCLES - original.clock.now());
             original.memory.clockedAudio().drain(pcm, original.memory.clockedAudio().availableFrames());
         }
-        if (lastInput > original.clock.now()) throw new IllegalArgumentException("Snapshot must follow the final recorded input");
+        if (recording.lastCycle() > original.clock.now()) throw new IllegalArgumentException("Snapshot must follow the final recorded input");
         var savedCycles = original.clock.now(); var state = MachineState.save(original);
         Files.write(output.resolve("state.bbs"), state);
         var restored = MachineState.load(rom, bios, state);

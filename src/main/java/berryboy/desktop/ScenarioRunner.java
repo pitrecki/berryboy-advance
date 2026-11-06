@@ -4,6 +4,7 @@ import berryboy.desktop.capture.JsonReport;
 import berryboy.desktop.capture.ScenarioCapture;
 import berryboy.desktop.capture.VideoState;
 import berryboy.desktop.capture.GuestEventTrace;
+import berryboy.desktop.scenario.RecordedInputs;
 
 import berryboy.cartridge.CartridgeBackup;
 import berryboy.video.LcdTiming;
@@ -11,7 +12,6 @@ import berryboy.Machine;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
@@ -145,20 +145,7 @@ public final class ScenarioRunner {
     private static String installInputs(Machine machine, Properties config, Path base) throws IOException {
         if (!config.containsKey("input")) return null;
         var input = verified(resolve(base, config.getProperty("input")), required(config, "input_sha256"));
-        long previous = -1;
-        for (var line : new String(input, StandardCharsets.UTF_8).split("\\R")) {
-            if (line.isBlank() || line.stripLeading().startsWith("#")) continue;
-            var values = line.strip().split("\\s+");
-            if (values.length != 6) throw new IllegalArgumentException("Input: cycle keys tiltX tiltY gyro solar");
-            var cycle = Long.parseLong(values[0]);
-            var keys = Integer.decode(values[1]);
-            var x = Integer.decode(values[2]); var y = Integer.decode(values[3]);
-            var z = Integer.decode(values[4]); var solar = Integer.decode(values[5]);
-            if (cycle <= previous || keys < 0 || keys > 1023 || x < 0 || x > 4095 || y < 0 || y > 4095
-                    || z < 0 || z > 4095 || solar < 0 || solar > 255) throw new IllegalArgumentException("Invalid input event");
-            previous = cycle;
-            machine.clock.schedule(() -> { machine.memory.setPressedKeys(keys); machine.memory.gpio().setSensors(x, y, z, solar); }, cycle);
-        }
+        RecordedInputs.parse(input).install(machine);
         return hash(input);
     }
 

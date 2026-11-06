@@ -1,0 +1,59 @@
+{
+  "date": "2026-11-06",
+  "version": "0.9.1-SNAPSHOT",
+  "source_base_commit": "f5b76d9e7dd972c6a33c63c55798e865fbe474f5",
+  "source_dirty": true,
+  "change": "One immutable input timeline owns parsing, range/order validation and original-cycle installation for scenario captures and state replay",
+  "problem": "StateRoundTrip previously parsed six fields independently, accepted duplicate/out-of-order cycles without the ScenarioRunner checks and handled indented comments differently. Malformed recordings could enter the replay driver instead of failing at its input boundary.",
+  "behavior": {
+    "validation": "Validate the full recording before installation; strictly increasing nonnegative cycles, keys 0..1023, tilt/gyro 0..4095, solar 0..255, six numeric fields. Errors identify the source line.",
+    "ownership": "Copy parsed primitive records into an immutable list; caller byte-array mutation cannot change queued events; one recording can be installed into independent machines.",
+    "queries": "lastCycle is read-only and returns -1 for empty input. Empty installation changes no guest state; installation into the past fails before mutating the queue.",
+    "timing": "Install callbacks at the same absolute cycles and order as the old ScenarioRunner. No guest device, clock, state schema or phone input change."
+  },
+  "validation": {
+    "host_tests": 2240,
+    "console_host_tests": 2240,
+    "exported_core_tests": 2096,
+    "actual_cldc_core_tests": 2096,
+    "new_host_cases": 19,
+    "failures": 0,
+    "skipped": 0,
+    "new_cases": "Sixteen invalid-input cases plus owned key/sensor/deadline execution, empty input and failure-before-mutation cases. Full machine states prove sensor/key application and independent reuse.",
+    "native_inputs": "Portable core and native phone input hashes still match the retained SDK build; this change is host-only."
+  },
+  "doom_before_after": {
+    "snapshot_and_report_bytes_identical": true,
+    "snapshot_png_sha256": "38dde3e873e1ab043a8f8de87977aceb0a47dabf54449fcfb204e2a257ea66df",
+    "report": {
+      "title": "DOOM II",
+      "rom_sha256": "2a4c00510638659b6b207a7d2aa51cbd17bbad9a63f42bc2dc01c121eb83cf95",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "62ae23d5fefa6ac388138b0ebe6e84293cb3d0c48df772db4d7f77561957b5e1",
+      "initial_save_sha256": null,
+      "snapshot_frame": 2400,
+      "snapshot_cycles": 674150400,
+      "resumed_frames": 120,
+      "resumed_audio_frames": 65835,
+      "state_bytes": 773735,
+      "state_sha256": "f6ebef5e45335496b6422fb74f66f0785de9d9f6d3c1c389e4365722487c0684",
+      "final_state_sha256": "cd7dfe8495e98b6a68f1439be904b07425864f643ebe53ff0402d07295e36f61",
+      "immediate_and_future_full_state_exact": true,
+      "all_resumed_rgb_pcm_exact": true,
+      "original_save_unchanged": true,
+      "scope": "Host core save/load replay, not independent game accuracy or physical phone validation"
+    },
+    "cldc_verification": "VerifyStateResume on isolated target/blackberry/classes; no host core fallback; 120-frame complete final state cd7dfe8495e98b6a68f1439be904b07425864f643ebe53ff0402d07295e36f61 matched."
+  },
+  "source_files_sha256": {
+    "src/main/java/berryboy/desktop/scenario/RecordedInputs.java": "977ef2f6ae4434acb14bba7264ea871f860eb4358931b4010c7c094601cd5e21",
+    "src/main/java/berryboy/desktop/ScenarioRunner.java": "a0a6aef7a89a9ce7b1a4a561a1f0d1ec35aa025b031141535764992ea8c5ef28",
+    "tools/StateRoundTrip.java": "e7dd549ee58f00f3c4d6bde60ae0db2df243f49f9488e4ae9bd9000dbe80b91b",
+    "src/test/java/berryboy/desktop/scenario/RecordedInputsTest.java": "9b67deb3d1e13173ac30fba96f978073dc712a8a1f86e163273757cf25f932e9"
+  },
+  "local_outputs": [
+    "target/roadmap-gameplay-2026-11-06/doom-state",
+    "target/roadmap-gameplay-2026-11-06/doom-state-shared-input"
+  ],
+  "release_policy": "Source changes only; published v0.9.0 remains unchanged and no new release tag/ZIP is created."
+}

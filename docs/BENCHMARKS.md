@@ -29,7 +29,7 @@ bottlenecks and preserves event ordering.
 
 ## Current validation
 
-- **2221 host tests**, **2096 exported-core tests**, and **2096 tests against the
+- **2240 host tests**, **2096 exported-core tests**, and **2096 tests against the
   actual new ECJ/CLDC classes** pass, with no failures or skips. Counts include
   parameterized invocations. Detailed build and artifact data is in the linked evidence.
 - Native Linux JDE 7.1 / ECJ 4.6.1 / RAPC verification passes and produces a
@@ -84,6 +84,11 @@ bottlenecks and preserves event ordering.
   a separate 2400-frame Doom II route reaches the first level with movement,
   turning and fire input. Strict RGB/PCM comparisons still fail. F-Zero reaches
   vehicle selection and Mario & Luigi its intro; their gameplay routes remain open.
+- [Shared recording validation](../benchmarks/recorded-inputs-2026-11-06.json)
+  gives scenario and state-replay tools the same immutable, validated input timeline.
+  State replay now rejects duplicate/out-of-order cycles and invalid keys/sensors
+  before executing them. The Doom first-level snapshot and its exact 120-frame
+  continuation are unchanged after the extraction and also replay on CLDC classes.
 - [Sticky shoulder controls](../benchmarks/shoulder-assist-2026-11-06.json)
   add optional independent L/R locks, repeat protection, visible active badges
   and release on pause/focus/game/state changes. Settings version 3 migrates
