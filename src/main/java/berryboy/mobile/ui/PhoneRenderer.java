@@ -1,4 +1,4 @@
-package berryboy.mobile;
+package berryboy.mobile.ui;
 
 import berryboy.input.Keypad;
 import berryboy.mobile.video.GameViewport;

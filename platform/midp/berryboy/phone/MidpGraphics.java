@@ -1,6 +1,6 @@
 package berryboy.phone;
 
-import berryboy.mobile.PhoneGraphics;
+import berryboy.mobile.ui.PhoneGraphics;
 import berryboy.mobile.video.FrameScaler;
 import java.io.IOException;
 import javax.microedition.lcdui.Font;

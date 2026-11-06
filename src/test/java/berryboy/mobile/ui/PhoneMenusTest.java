@@ -1,7 +1,5 @@
 package berryboy.mobile.ui;
 
-import berryboy.mobile.PhoneMenus;
-import berryboy.mobile.PhoneScreen;
 import berryboy.mobile.settings.PhoneOptions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;

@@ -1,9 +1,5 @@
 package berryboy.mobile.ui;
 
-import berryboy.mobile.PhoneGraphics;
-import berryboy.mobile.PhoneMenus;
-import berryboy.mobile.PhoneRenderer;
-import berryboy.mobile.PhoneScreen;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;

@@ -1,4 +1,4 @@
-package berryboy.mobile;
+package berryboy.mobile.ui;
 
 /** Phone drawing boundary; MIDP and documentation capture use the same renderer. */
 public interface PhoneGraphics {

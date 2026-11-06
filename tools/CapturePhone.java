@@ -1,11 +1,11 @@
 package berryboy.desktop;
 
-import berryboy.mobile.PhoneGraphics;
+import berryboy.mobile.ui.PhoneGraphics;
 import berryboy.mobile.video.FrameScaler;
-import berryboy.mobile.PhoneMenus;
+import berryboy.mobile.ui.PhoneMenus;
 import berryboy.mobile.settings.PhoneOptions;
-import berryboy.mobile.PhoneRenderer;
-import berryboy.mobile.PhoneScreen;
+import berryboy.mobile.ui.PhoneRenderer;
+import berryboy.mobile.ui.PhoneScreen;
 import berryboy.MachineState;
 import berryboy.desktop.capture.JsonReport;
 import java.awt.Color;

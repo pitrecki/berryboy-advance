@@ -1,4 +1,4 @@
-package berryboy.mobile;
+package berryboy.mobile.ui;
 
 import berryboy.mobile.settings.PhoneOptions;
 

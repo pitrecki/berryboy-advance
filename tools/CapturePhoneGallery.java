@@ -1,9 +1,9 @@
 package berryboy.desktop;
 
-import berryboy.mobile.PhoneMenus;
+import berryboy.mobile.ui.PhoneMenus;
 import berryboy.mobile.input.PhoneInput;
 import berryboy.mobile.settings.PhoneOptions;
-import berryboy.mobile.PhoneScreen;
+import berryboy.mobile.ui.PhoneScreen;
 import berryboy.mobile.video.GameViewport;
 import berryboy.input.Keypad;
 import berryboy.desktop.capture.JsonReport;
