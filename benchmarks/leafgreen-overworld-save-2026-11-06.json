@@ -1,0 +1,500 @@
+{
+  "date": "2026-11-06",
+  "capture_source_commit": "a7456673eefc5bf18d9bc9271c02e259f0fbb472",
+  "source_dirty_at_save_creation": false,
+  "scope": "LeafGreen USA Rev-A: bedroom, downstairs, Pallet Town, manual overwrite save, four cold cross-loads with normal Quest Log skip, and a 120-frame state continuation. Not full game/save accuracy or physical playback qualification.",
+  "hardware": "Linux x86_64, Temurin 21.0.8, mGBA 0.10.5 RGB555; no physical playback measurements",
+  "local_artifacts_root": "target/leafgreen-recovery-2026-11-06",
+  "assets": {
+    "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+    "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+    "initial_save_sha256": "8f192f66ac21928523cb295e1353b6f0bd3ce6dc2adc40e34cc5f4b8455b8961",
+    "rtc_seed": "2000-01-01T00:00:00",
+    "devices": 0
+  },
+  "save_route": {
+    "input": "benchmarks/inputs/leafgreen-overworld-save.tsv",
+    "input_sha256": "9aa6fdb357675a515ae9e6d61de932b76b0143f6d82808fffb2ae72c8e008fab",
+    "frames": 4190,
+    "controls": {
+      "right_frames": [
+        [
+          1300,
+          1348
+        ]
+      ],
+      "up_frames": [
+        [
+          1380,
+          1444
+        ]
+      ],
+      "left_frames": [
+        [
+          1500,
+          1532
+        ],
+        [
+          2000,
+          2096
+        ]
+      ],
+      "down_frames": [
+        [
+          1850,
+          1930
+        ],
+        [
+          2150,
+          2214
+        ]
+      ],
+      "start_frame": 2800,
+      "save_menu_down_frames": [
+        2830,
+        2848
+      ],
+      "a_frames": [
+        2866,
+        2960,
+        3100,
+        3240,
+        3540,
+        3890
+      ],
+      "menu_hold_frames": 3,
+      "cycles_per_frame": 280896
+    },
+    "checkpoints": [
+      1750,
+      2000,
+      2400,
+      2700,
+      2950,
+      3400,
+      3700,
+      4190
+    ],
+    "host": {
+      "video_sha256": "60461f60459899a98c50ef1bd5cb6bd7f9abb3c040525c78bddde8e9d5e38bd4",
+      "audio_sha256": "92c89769c9805ff55659bbff5baf966c1c67629661733d6f8ae3cc1dc4416429",
+      "backup_sha256": "d614d8d71d797aba5820f00c8aea7b8bd777f4014da3b664d02232c3697e74e5",
+      "save_written": true,
+      "guest_cycles": 1176954241,
+      "audio_frames": 2298738,
+      "dropped_guest_frames": 0,
+      "audio_overruns": 0,
+      "audio_underruns": 0
+    },
+    "reference": {
+      "video_sha256": "184ba37098e03f8d26a236143923fa2b74cb6f05f5fb44f6039535f67f4c732c",
+      "audio_sha256": "0cf3a8ec3c1268f4e1f62bbc94713f8904292bc41ce09e7573e144a974479281",
+      "binary_sha256": "e89cd6e4505e0f9f366834dc19a7328f2482fc416d72899ec15c547bd546b948",
+      "audio_frames": 2298740
+    },
+    "strict_full_stream_comparison": {
+      "status": "mismatch",
+      "exact_video_frames": 3611,
+      "total_video_frames": 4190,
+      "first_video_mismatch": 931,
+      "whole_video_hash_match": false,
+      "whole_audio_hash_match": false,
+      "reference_audio_frames": 2298740,
+      "berryboy_audio_frames": 2298738,
+      "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+    },
+    "final_city_rgb_sha256": "805489f3337de71a9923f26a52c2179b6ffa151f697aee958d7e60c513e45772",
+    "final_host_reference_rgb_equal": true
+  },
+  "battery_comparison": {
+    "raw_equal": false,
+    "raw_different_bytes": 709,
+    "raw_difference_categories": {
+      "rekeyed_encrypted_fields": 654,
+      "encryption_key": 4,
+      "play_time": 1,
+      "section_checksum": 8,
+      "unexplained": 42
+    },
+    "left": {
+      "save_sha256": "d614d8d71d797aba5820f00c8aea7b8bd777f4014da3b664d02232c3697e74e5",
+      "bytes": 131072,
+      "valid_sectors": 28,
+      "generations": [
+        3,
+        4
+      ],
+      "latest_generation": 4,
+      "position": {
+        "x": 6,
+        "y": 8,
+        "map_group": 3,
+        "map_number": 0
+      },
+      "play_time": {
+        "hours": 0,
+        "minutes": 1,
+        "seconds": 29,
+        "frames": 14
+      },
+      "money": 3000
+    },
+    "right": {
+      "save_sha256": "fe1e39a17511d060f897fb6477f548a432b1b0f5bdc87fa0c6e41bff1364c799",
+      "bytes": 131072,
+      "valid_sectors": 28,
+      "generations": [
+        3,
+        4
+      ],
+      "latest_generation": 4,
+      "position": {
+        "x": 6,
+        "y": 8,
+        "map_group": 3,
+        "map_number": 0
+      },
+      "play_time": {
+        "hours": 0,
+        "minutes": 1,
+        "seconds": 29,
+        "frames": 17
+      },
+      "money": 3000
+    },
+    "only_left_generations": [],
+    "only_right_generations": [],
+    "decoded_payload_differences": [
+      {
+        "generation": 4,
+        "section": 0,
+        "different_bytes": 5,
+        "offsets": [
+          18,
+          3872,
+          3873,
+          3874,
+          3875
+        ]
+      },
+      {
+        "generation": 4,
+        "section": 1,
+        "different_bytes": 4,
+        "offsets": [
+          1784,
+          1788,
+          1792,
+          1800
+        ]
+      },
+      {
+        "generation": 4,
+        "section": 2,
+        "different_bytes": 38,
+        "offsets": [
+          2312,
+          2317,
+          2320,
+          2325,
+          2328,
+          2333,
+          2336,
+          2341,
+          2344,
+          2349,
+          2352,
+          2357,
+          2360,
+          2365,
+          2366,
+          2368,
+          2370,
+          2372,
+          2373,
+          2374,
+          2376,
+          2378,
+          2380,
+          2381,
+          2382,
+          2384,
+          2386,
+          2388,
+          2389,
+          2390,
+          2392,
+          2394,
+          2396,
+          2397,
+          2400,
+          2406,
+          2408,
+          2410
+        ]
+      }
+    ],
+    "scope": "Read-only diagnosis; keys and play time remain decoded differences. Classification never relaxes strict whole-file or RGB/PCM comparison."
+  },
+  "additional_payload_diagnosis": {
+    "status": "Differences remain unexplained by the rekeying model and are not ignored",
+    "object_events_different_bytes": 4,
+    "quest_log_script_different_bytes": 38,
+    "source_layout_reference": "pret/pokefirered ce6406d8c2eaf46d543c8a2606de0c3cb1951982 include/global.h: SaveBlock1 objectEvents at 0x06A0, QuestLogScene script within questLog at 0x1300",
+    "object_events_offsets_in_saveblock1": [
+      1784,
+      1788,
+      1792,
+      1800
+    ],
+    "quest_log_script_offsets_in_saveblock1": [
+      6280,
+      6285,
+      6288,
+      6293,
+      6296,
+      6301,
+      6304,
+      6309,
+      6312,
+      6317,
+      6320,
+      6325,
+      6328,
+      6333,
+      6334,
+      6336,
+      6338,
+      6340,
+      6341,
+      6342,
+      6344,
+      6346,
+      6348,
+      6349,
+      6350,
+      6352,
+      6354,
+      6356,
+      6357,
+      6358,
+      6360,
+      6362,
+      6364,
+      6365,
+      6368,
+      6374,
+      6376,
+      6378
+    ]
+  },
+  "cold_cross_loads": [
+    {
+      "save_origin": "berryboy",
+      "engine": "berryboy",
+      "input": "benchmarks/inputs/leafgreen-overworld-continue.tsv",
+      "input_sha256": "063e8bea8ea50cbf73f2026f4c0941fb175bb5d07fefe24030439f89b6f344c4",
+      "frames": 1700,
+      "initial_save_sha256": "d614d8d71d797aba5820f00c8aea7b8bd777f4014da3b664d02232c3697e74e5",
+      "final_save_sha256": "d614d8d71d797aba5820f00c8aea7b8bd777f4014da3b664d02232c3697e74e5",
+      "backup_unchanged": true,
+      "quest_log_skip_B_frames": [
+        1300,
+        1500
+      ],
+      "final_scene": "Pallet Town, player below home at saved position",
+      "final_frame_rgb_sha256": "db31a0ef652967f1ce419b6ab6c5c41d3c463be221fda00d563fe6e35d6c0b2a",
+      "same_seed_host_reference_final_frame_exact": true,
+      "post_save_vs_cold_loaded_image_equal": false,
+      "post_save_vs_cold_loaded_different_pixels": 512,
+      "different_pixel_bounds_xy_inclusive": [
+        96,
+        137,
+        158,
+        159
+      ],
+      "pixel_note": "Flower animation differs after cold boot; the full images remain different. No area is masked or used to relax strict RGB comparison.",
+      "strict_full_stream_comparison": {
+        "status": "mismatch",
+        "exact_video_frames": 1384,
+        "total_video_frames": 1700,
+        "first_video_mismatch": 931,
+        "whole_video_hash_match": false,
+        "whole_audio_hash_match": false,
+        "reference_audio_frames": 932664,
+        "berryboy_audio_frames": 932662,
+        "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+      },
+      "video_sha256": "8648349bc613c0cc9ec05d758f88d86d43c8eeccef67b5c69e7f971acb82f968",
+      "audio_sha256": "2ee1d59e30b3fc0f3689cf269ecf64f73bee0f3a010d957ab31101785db0f650",
+      "save_written": false,
+      "dropped_guest_frames": 0,
+      "audio_overruns": 0,
+      "audio_underruns": 0
+    },
+    {
+      "save_origin": "berryboy",
+      "engine": "reference",
+      "input": "benchmarks/inputs/leafgreen-overworld-continue.tsv",
+      "input_sha256": "063e8bea8ea50cbf73f2026f4c0941fb175bb5d07fefe24030439f89b6f344c4",
+      "frames": 1700,
+      "initial_save_sha256": "d614d8d71d797aba5820f00c8aea7b8bd777f4014da3b664d02232c3697e74e5",
+      "final_save_sha256": "d614d8d71d797aba5820f00c8aea7b8bd777f4014da3b664d02232c3697e74e5",
+      "backup_unchanged": true,
+      "quest_log_skip_B_frames": [
+        1300,
+        1500
+      ],
+      "final_scene": "Pallet Town, player below home at saved position",
+      "final_frame_rgb_sha256": "db31a0ef652967f1ce419b6ab6c5c41d3c463be221fda00d563fe6e35d6c0b2a",
+      "same_seed_host_reference_final_frame_exact": true,
+      "post_save_vs_cold_loaded_image_equal": false,
+      "post_save_vs_cold_loaded_different_pixels": 512,
+      "different_pixel_bounds_xy_inclusive": [
+        96,
+        137,
+        158,
+        159
+      ],
+      "pixel_note": "Flower animation differs after cold boot; the full images remain different. No area is masked or used to relax strict RGB comparison.",
+      "strict_full_stream_comparison": {
+        "status": "mismatch",
+        "exact_video_frames": 1384,
+        "total_video_frames": 1700,
+        "first_video_mismatch": 931,
+        "whole_video_hash_match": false,
+        "whole_audio_hash_match": false,
+        "reference_audio_frames": 932664,
+        "berryboy_audio_frames": 932662,
+        "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+      },
+      "video_sha256": "a2384dfc63fe9a0bc117144ba39efc80966ec9b5a63bd52ebc78097f9f9d3ccc",
+      "audio_sha256": "9d6c093ec2a50b66d9ef5d3d50ce0b518e5a2e832442a4a57734d80852838f96"
+    },
+    {
+      "save_origin": "reference",
+      "engine": "berryboy",
+      "input": "benchmarks/inputs/leafgreen-overworld-continue.tsv",
+      "input_sha256": "063e8bea8ea50cbf73f2026f4c0941fb175bb5d07fefe24030439f89b6f344c4",
+      "frames": 1700,
+      "initial_save_sha256": "fe1e39a17511d060f897fb6477f548a432b1b0f5bdc87fa0c6e41bff1364c799",
+      "final_save_sha256": "fe1e39a17511d060f897fb6477f548a432b1b0f5bdc87fa0c6e41bff1364c799",
+      "backup_unchanged": true,
+      "quest_log_skip_B_frames": [
+        1300,
+        1500
+      ],
+      "final_scene": "Pallet Town, player below home at saved position",
+      "final_frame_rgb_sha256": "db31a0ef652967f1ce419b6ab6c5c41d3c463be221fda00d563fe6e35d6c0b2a",
+      "same_seed_host_reference_final_frame_exact": true,
+      "post_save_vs_cold_loaded_image_equal": false,
+      "post_save_vs_cold_loaded_different_pixels": 512,
+      "different_pixel_bounds_xy_inclusive": [
+        96,
+        137,
+        158,
+        159
+      ],
+      "pixel_note": "Flower animation differs after cold boot; the full images remain different. No area is masked or used to relax strict RGB comparison.",
+      "strict_full_stream_comparison": {
+        "status": "mismatch",
+        "exact_video_frames": 1384,
+        "total_video_frames": 1700,
+        "first_video_mismatch": 931,
+        "whole_video_hash_match": false,
+        "whole_audio_hash_match": false,
+        "reference_audio_frames": 932664,
+        "berryboy_audio_frames": 932662,
+        "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+      },
+      "video_sha256": "8648349bc613c0cc9ec05d758f88d86d43c8eeccef67b5c69e7f971acb82f968",
+      "audio_sha256": "2ee1d59e30b3fc0f3689cf269ecf64f73bee0f3a010d957ab31101785db0f650",
+      "save_written": false,
+      "dropped_guest_frames": 0,
+      "audio_overruns": 0,
+      "audio_underruns": 0
+    },
+    {
+      "save_origin": "reference",
+      "engine": "reference",
+      "input": "benchmarks/inputs/leafgreen-overworld-continue.tsv",
+      "input_sha256": "063e8bea8ea50cbf73f2026f4c0941fb175bb5d07fefe24030439f89b6f344c4",
+      "frames": 1700,
+      "initial_save_sha256": "fe1e39a17511d060f897fb6477f548a432b1b0f5bdc87fa0c6e41bff1364c799",
+      "final_save_sha256": "fe1e39a17511d060f897fb6477f548a432b1b0f5bdc87fa0c6e41bff1364c799",
+      "backup_unchanged": true,
+      "quest_log_skip_B_frames": [
+        1300,
+        1500
+      ],
+      "final_scene": "Pallet Town, player below home at saved position",
+      "final_frame_rgb_sha256": "db31a0ef652967f1ce419b6ab6c5c41d3c463be221fda00d563fe6e35d6c0b2a",
+      "same_seed_host_reference_final_frame_exact": true,
+      "post_save_vs_cold_loaded_image_equal": false,
+      "post_save_vs_cold_loaded_different_pixels": 512,
+      "different_pixel_bounds_xy_inclusive": [
+        96,
+        137,
+        158,
+        159
+      ],
+      "pixel_note": "Flower animation differs after cold boot; the full images remain different. No area is masked or used to relax strict RGB comparison.",
+      "strict_full_stream_comparison": {
+        "status": "mismatch",
+        "exact_video_frames": 1384,
+        "total_video_frames": 1700,
+        "first_video_mismatch": 931,
+        "whole_video_hash_match": false,
+        "whole_audio_hash_match": false,
+        "reference_audio_frames": 932664,
+        "berryboy_audio_frames": 932662,
+        "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+      },
+      "video_sha256": "a2384dfc63fe9a0bc117144ba39efc80966ec9b5a63bd52ebc78097f9f9d3ccc",
+      "audio_sha256": "b3a0380f02f5526cfe1eff5a13b301f8b650644b311aa2f77cd34e6f910cd4ec"
+    }
+  ],
+  "state_replay": {
+    "title": "POKEMON LEAF",
+    "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+    "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+    "input_sha256": "9aa6fdb357675a515ae9e6d61de932b76b0143f6d82808fffb2ae72c8e008fab",
+    "initial_save_sha256": "8f192f66ac21928523cb295e1353b6f0bd3ce6dc2adc40e34cc5f4b8455b8961",
+    "snapshot_frame": 4190,
+    "snapshot_cycles": 1176954241,
+    "resumed_frames": 120,
+    "resumed_audio_frames": 65835,
+    "state_bytes": 904283,
+    "state_sha256": "6a597c2500858a2be0da5a09708271ddc2d5b7d45d64e89baf65a9ad322af0fe",
+    "final_state_sha256": "df722b2a601c0e409f364e634a7f0dcd2f704c667e19daf2906590f5939b8609",
+    "immediate_and_future_full_state_exact": true,
+    "all_resumed_rgb_pcm_exact": true,
+    "original_save_unchanged": true,
+    "scope": "Host core save/load replay, not independent game accuracy or physical phone validation"
+  },
+  "actual_cldc_replay": {
+    "class_path": "target/state-tools:target/blackberry/classes",
+    "harness": "tools/VerifyStateResume.java",
+    "snapshot_frame": 4190,
+    "resumed_frames": 120,
+    "immediate_state_equal": true,
+    "final_full_state_equal": true,
+    "final_state_sha256": "df722b2a601c0e409f364e634a7f0dcd2f704c667e19daf2906590f5939b8609",
+    "scope": "Actual ECJ/CLDC core classes under the Linux host VM, isolated from host production classes; immediate/final state checks, not per-frame RGB/PCM checks or phone runtime",
+    "verification_stdout": "POKEMON LEAF: exact 120-frame continuation; df722b2a601c0e409f364e634a7f0dcd2f704c667e19daf2906590f5939b8609"
+  },
+  "original_generation3_save_unchanged": true,
+  "validation": {
+    "host_tests": 2410,
+    "exported_core_tests": 2240,
+    "failures": 0,
+    "skips": 0,
+    "production_source_changes": false
+  },
+  "remaining_gates": [
+    "Strict save-file comparison fails with 709 differing bytes, including 42 payload bytes outside the rekey/time/checksum classification.",
+    "Strict complete RGB/PCM streams fail in the save route and both same-seed cold-load pairs.",
+    "Post-save and cold-loaded final frames differ in 512 flower-area pixels; they are not declared equivalent.",
+    "No battle, route beyond Pallet Town, counter-wrap recovery, host-file interruption or physical runtime qualification."
+  ]
+}

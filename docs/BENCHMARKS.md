@@ -208,7 +208,7 @@ user settings do not relax that qualification protocol.
 | 2 / P0: Wider CPU/LCD timing | Cartridge DMA during discarded IRQ fetches now matches 144 independent cold/warm/page-edge observations. Extend coverage to subsequent stream invalidation and pipeline latching/self-modifying code, then IRQ propagation/mask latency. Trace the LeafGreen frame-930 offset and HBlank at cycle 960 versus the reference's 1008. | Matching event/retirement observations with justified expected timing. Keep in-flight snapshots distinct from retired state. Do not adjust a constant solely to improve screenshot counts. |
 | 3 / P0: Graphics expected results | Resolve the 2244-case three-way disagreement on brightness rounding and palette bit 15 using independently justified outputs or hardware evidence. Then qualify combined raster/OBJ/window effects. | Explicit per-pixel expectations and regression scenes. The renderer remains unqualified until those expectations are established; no relaxed tolerances. |
 | 4 / P1: Audio correctness | Start with late Sonic Advance 3 and Wario Land 4 differences. Compare timer/DMA FIFO, PSG and sample-clock events before diagnosing gain/filter/resampling. | Repeatable sample/event checkpoints, justified comparison rules, listening review and no software-buffer loss. Timing-dependent fixes follow the timing gates. |
-| 5 / P1: Gameplay and saves | LeafGreen repeats battery generations 2/3 with eight cold cross-loads; three interrupted generation-4 writes now restore the prior room in both engines. Extend to overworld/menu/save, counter wrap and host-file recovery; extend Mario/Luigi movement/battle, Sonic/Wario level, Golden Sun battle and V-Rally race work. Doom II first level, F-Zero race and Mario & Luigi Toad control retain named routes and 120-frame full-state replays. | Preserve strict binary and full-stream outcomes; visible play or a successful full-state replay alone does not qualify game accuracy or cartridge-save compatibility. |
+| 5 / P1: Gameplay and saves | LeafGreen now covers repeated indoor saves, a Pallet Town save with four cold cross-loads and a 120-frame state replay, plus three interrupted-write phases in both engines. Investigate the 42 additional outdoor-save payload differences; extend to counter wrap, host-file recovery and further gameplay. Extend Mario/Luigi movement/battle, Sonic/Wario level, Golden Sun battle and V-Rally race work. Doom II first level, F-Zero race and Mario & Luigi Toad control retain named routes and state replays. | Preserve strict binary and full-stream outcomes; visible play or a successful full-state replay alone does not qualify game accuracy or cartridge-save compatibility. |
 | 6 / P2: Linux performance | Once selected routes pass correctness, profile CPU/PPU/presentation and optimize one demonstrated bottleneck at a time. Consider acceleration only with a supported backend and matching software output. | Three 10-minute runs after 30-second warmup, measured presentation/audio, bounded queues/memory and the gates below. |
 | 7 / Target-dependent: BlackBerry runtime | Run the new phone frontend in the simulator; qualify file access, slots, input and MMAPI output, then repeat correctness and sustained playback on a physical Bold. | Separate build, simulator and device reports; actual application results and physical measurements. |
 
@@ -224,8 +224,8 @@ save bytes and restore exact room pixels. Each generated pair still differs in
 667 bytes: 654 rekeyed encrypted bytes, four key bytes, eight checksums and one
 play-time VBlank. Independent format source and synthetic inspector regressions
 account for those differences; keys and play time remain explicit decoded
-differences. Strict whole-file and full RGB/PCM results still fail. Next extend
-the route beyond the room and qualify counter/host-file recovery.
+differences. Strict whole-file and full RGB/PCM results still fail. Outdoor
+continuation and interruption outcomes are recorded below.
 
 [Interrupted LeafGreen saves](../benchmarks/leafgreen-interrupted-save-2026-11-06.json)
 sample actual generation-4 Flash writes at 190 frame boundaries. Early, middle
@@ -235,6 +235,18 @@ controls restore the new position. Injected bytes stay unchanged after every
 load. Strict inspection still rejects incomplete files, and full RGB/PCM streams
 still differ. Counter wrap, both-slot corruption and host-file interruption
 remain open; these observations do not qualify physical power-loss timing.
+
+[LeafGreen outdoor save](../benchmarks/leafgreen-overworld-save-2026-11-06.json)
+extends the route through downstairs to Pallet Town and writes generation 4 at
+x=6, y=8, map 3/0. Four cold cross-loads skip the game's Quest Log with B, preserve
+the input saves and end with identical same-seed BerryBoy/mGBA city frames.
+The host state snapshot at frame 4190 replays 120 frames with exact RGB/PCM and
+full state; actual CLDC classes match immediate and final full state. The save
+files differ in 709 bytes, including 42 additional object-event/Quest Log script
+bytes outside the rekey/time/checksum classification. These remain open.
+The route matches 3611/4190 reference RGB frames; full RGB/PCM streams still
+fail. Cold-loaded frames differ from post-save frames in 512 flower-area pixels;
+no image region is masked or declared equivalent.
 
 Deferred features: rewind, link play and optional accelerated
 presentation. Add them after current correctness and playback needs justify them.

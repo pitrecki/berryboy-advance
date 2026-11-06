@@ -812,3 +812,31 @@ for interrupted cases and the x=8 room for the completed control; verify that
 neither engine changes the injected backup. Preserve failing strict full-stream
 comparisons. The [interruption record](../benchmarks/leafgreen-interrupted-save-2026-11-06.json)
 pins snapshots, slot/section profiles and independent save-loader source.
+
+## LeafGreen outdoor save and cold continuation
+
+Use `benchmarks/inputs/leafgreen-overworld-save.tsv`, the same ROM/BIOS and
+a fresh copy of the generation-3 BerryBoy seed. Set `backup=2`, its
+`initial_save_sha256`, zero warmup, 4190 frames and checkpoints
+1750/2000/2400/2700/2950/3400/3700/4190. The trace walks to the upstairs stair,
+uses Left to descend, crosses downstairs to the exit and enters Pallet Town.
+Start at frame 2800 opens the save menu; Down at 2830/2848 and A at
+2866/2960/3100/3240/3540/3890 complete the overwrite. The final save must contain
+generation 4 at x=6, y=8, map group/number 3/0, with money 3000.
+
+For each generated save, start fresh BerryBoy and mGBA runs using
+`benchmarks/inputs/leafgreen-overworld-continue.tsv`, 1700 frames and checkpoints
+1272/1320/1450/1700. This trace adds B at frames 1300 and 1500, held for three
+frames, to skip the normal "Previously on your quest" playback. The original
+indoor Continue trace alone still shows that recap at frame 1272. Check four
+independent cross-loads, unchanged save hashes and same-seed cross-engine final
+city frames. Preserve strict comparisons with the post-save image: the observed
+512 flower-area pixel differences remain different, without masks or tolerance.
+
+For state replay, use a separate scenario whose `save` still points to the
+unchanged generation-3 seed. `StateRoundTrip` snapshots at frame 4190 after the
+last recorded input and verifies 120 resumed frames. `VerifyStateResume` with
+isolated `target/blackberry/classes` checks immediate/final state on actual CLDC
+classes; it does not compare per-frame RGB/PCM. Asset identities, save payload
+differences and both continuation results are in
+[the outdoor-save record](../benchmarks/leafgreen-overworld-save-2026-11-06.json).
