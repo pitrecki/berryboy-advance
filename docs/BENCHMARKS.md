@@ -28,11 +28,22 @@ bottlenecks and preserves event ordering.
 
 ## Current validation
 
-- **2104 host tests**, **1987 exported-core tests**, and **1987 tests against the
+- **2109 host tests**, **1991 exported-core tests**, and **1991 tests against the
   actual new ECJ/CLDC classes** pass, with no failures or skips. Counts include
   parameterized invocations. Detailed build and artifact data is in the linked evidence.
 - Native Linux JDE 7.1 / ECJ 4.6.1 / RAPC verification passes and produces a
   **0.8.2** JAD/COD. Host: Linux x86_64, Temurin 21.0.8, Maven 3.9.11.
+- The [phone feature boundaries](ARCHITECTURE.md#responsibilities) now separate
+  input, settings, audio, video and UI, with matching test packages. Key mappings
+  have their own state owner. Package moves preserve preference/state layouts and
+  all eleven application gallery PNGs byte-for-byte; each area is delivered separately.
+- [Sonic affine/DMA diagnosis](../benchmarks/sonic-affine-dma-diagnosis-2026-11-06.json)
+  narrows frame 3555 to 195 pixels on scanline 6 and a transient BG2Y difference.
+  Both CPU routes compute the same source halfword, but its store completes on
+  opposite sides of the current early HBlank request. An isolated experiment
+  separating pixel sampling from a 1008-cycle HBlank callback restores that frame
+  and keeps all previously exact Sonic frames, gaining three. It remains unshipped:
+  independently distinguish LCD status/DMA/IRQ phases and repeat the wider gates.
 - [Sticky shoulder controls](../benchmarks/shoulder-assist-2026-11-06.json)
   add optional independent L/R locks, repeat protection, visible active badges
   and release on pause/focus/game/state changes. Settings version 3 migrates
@@ -132,7 +143,7 @@ user settings do not relax that qualification protocol.
 
 | Order | Next work | Completion evidence |
 | --- | --- | --- |
-| 1 / P0: DMA activation and lifecycle | Diagnose Sonic frame 3555 before adopting the rejected scheduled-activation/state-event prototype. Keep cancellation, disable/re-enable, duplicate requests, bounded yields and accepted IRQ decisions covered. | Prototype matches 96 CPU and 66 lifecycle observations, but loses one previously exact game frame. Explain/fix that counterexample and preserve prior matrices and frame/audio continuity. Production activation remains immediate and machine-state format remains 1. |
+| 1 / P0: DMA activation and lifecycle | The Sonic counterexample is isolated to an affine source-table update near HBlank; separating the callback phase restores it in one route. Independently qualify LCD status, DMA request/activation and IRQ timing, then repeat all game/CPU/state gates before adoption. | Keep 96 CPU and 66 lifecycle observations, all previously exact frame sets and software frame/audio continuity. The combined Sonic-only experiment has no lost exact frames; wider validation remains open. Production activation remains immediate and machine-state format remains 1. |
 | 2 / P0: Wider CPU/LCD timing | Extend prefetch coverage to cartridge-bus DMA, stream invalidation and address edges; qualify pipeline latching/self-modifying code and IRQ propagation/mask latency. Trace the LeafGreen frame-930 offset and HBlank at cycle 960 versus the reference's 1008. | Matching event/retirement observations with justified expected timing. Keep in-flight snapshots distinct from retired state. Do not adjust a constant solely to improve screenshot counts. |
 | 3 / P0: Graphics expected results | Resolve the 2244-case three-way disagreement on brightness rounding and palette bit 15 using independently justified outputs or hardware evidence. Then qualify combined raster/OBJ/window effects. | Explicit per-pixel expectations and regression scenes. The renderer remains unqualified until those expectations are established; no relaxed tolerances. |
 | 4 / P1: Audio correctness | Start with late Sonic Advance 3 and Wario Land 4 differences. Compare timer/DMA FIFO, PSG and sample-clock events before diagnosing gain/filter/resampling. | Repeatable sample/event checkpoints, justified comparison rules, listening review and no software-buffer loss. Timing-dependent fixes follow the timing gates. |

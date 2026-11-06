@@ -37,6 +37,27 @@ Production and test sources are grouped by feature: `cpu`, `bus`, `timing`,
 `video`, `audio`, `cartridge`, `input` and `serial`. The `berryboy` root contains composition
 and diagnostic entry points. Desktop and build tooling remain host-only.
 
+The phone frontend has separate feature packages and matching test directories:
+
+| Package | Responsibility |
+| --- | --- |
+| `mobile.input` | Physical key state, sticky shoulders, key assignments and normalization |
+| `mobile.settings` | Preference values, versioned persistence and migration |
+| `mobile.audio` | PCM output mixing and bounded WAV packet encoding |
+| `mobile.video` | Viewport geometry, frame scaling, submission cadence and rate counters |
+| `mobile.ui` | Menu content, view state, drawing port and renderer |
+
+`KeyBindings` owns key validation and its established ten-word storage layout;
+`PhoneOptions` delegates that responsibility. Input handling does not depend on
+the complete settings object. Settings depend on input bindings; audio/video
+consume settings; UI consumes settings and video. These dependencies are acyclic.
+SDK-specific lifecycle, storage and MMAPI adapters remain under `platform/midp`.
+
+Keep package moves, behavioral changes and diagnostic investigations in separate
+commits. Use an isolated worktree for investigations that need different core
+classes or generated output. Existing raw state/preference layouts and application
+captures remain unchanged by the package moves.
+
 CPU execution depends on the bus; devices do not call into CPU internals.
 `VideoBus` gives the PPU read-only sampling/version access. `LcdListener` and
 `TimerOverflowListener` route device events through bus wiring, avoiding a
