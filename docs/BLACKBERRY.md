@@ -67,6 +67,53 @@ Do not treat Wine/QEMU timing as Bold performance. The simulator's native audio
 backend also has no sound device on this host. Physical input/audio/performance
 qualification still requires the actual phone.
 
+## Release packages
+
+Download the **BBOS7.1 ZIP** from [GitHub Releases](https://github.com/pitrecki/berryboy-advance/releases),
+extract everything into one folder and follow `INSTALL.txt`. The package contains:
+
+- Raw `BerryBoyAdvance.cod` and every sibling COD, extracted from RAPC's container.
+- A JAD with matching module URLs, sizes and legacy SHA-1 loader hashes.
+- An ALX for BlackBerry Desktop Software's Application Loader.
+- The native CLDC MIDlet JAR, `manifest.json` and `SHA256SUMS`.
+
+Keep the files together. For USB installation select the ALX in Desktop Software.
+For local/hosted installation open the JAD; a hosted JAD must have every listed
+file beside it. The ZIP itself is a download bundle, not an OTA URL.
+
+### Build and publish a milestone
+
+Use Python 3.11+, JDK 21 and Maven. `tools/bootstrap-blackberry.py` can restore the
+exact validated JDE 7.1 API/RAPC and ECJ 4.6.1, checking every checksum. It extracts
+the required JARs without executing the Windows installer; `cabextract` is needed.
+A retained installer can be passed with `--installer /path/to/BlackBerry_JDE_7.1.0.exe`.
+The vendor tools stay outside Git and outside release packages.
+
+```bash
+python3 tools/bootstrap-blackberry.py --output /path/to/local/toolchain
+# Export BB_JDE_HOME and BB_ECJ_JAR using the printed paths.
+tools/test-with-console.sh
+mvn -Pbb-sim verify -Dbb.compiler=ecj -Dbb.ecj="$BB_ECJ_JAR" -Dbb.launch=false
+tools/test-cldc-core.sh
+python3 tools/blackberry_release.py package --version 0.8.1
+```
+
+The package appears under `target/releases/`. Local preview packaging permits
+a dirty tree but records it. Publication requires a clean source build whose
+commit, source fingerprints, artifact hashes, tag and frozen Maven version agree.
+An existing package/release is never overwritten silently.
+
+For a major/minor milestone, commit the release version and changelog, then create
+and push its `vX.Y.Z` tag. **Build and publish BlackBerry release** restores the
+pinned tools on a GitHub runner, verifies all layers and publishes the ZIP plus
+its checksum. Manual workflow dispatch accepts an existing version tag for retry.
+Alternatively, run `tools/publish-blackberry-release.sh vX.Y.Z` after the same
+checks with authenticated GitHub CLI access.
+
+The publisher uploads to a draft before making it visible. Current 0.x packages
+are previews; the manifest records that no code-signing step was performed.
+No vendor SDK, commercial ROM, BIOS, personal save or signing key is distributed.
+
 ## Windows compiler and simulator prerequisites
 
 1. Maven 3.9.x running on JDK 21; check `mvn -v`.

@@ -13,7 +13,8 @@
   exported core. Record actual results and distinguish host validation from
   unverified BlackBerry runtime behavior.
 - Use Git history as the primary source review and delivery channel. Do not
-  generate HTML source summaries or ZIP archives unless explicitly requested.
+  generate HTML source summaries or source ZIP archives unless explicitly requested.
+  The user explicitly authorizes compiled phone release ZIPs for version milestones.
 - After each completed and verified project update, commit the relevant changes
   as Piotr Nowak <piotr_nowak@outlook.com>, then push to the configured repository.
   The user has restored push authorization. Verify the remote commit after
@@ -21,6 +22,13 @@
   rewrite published history. If the remote or write access is missing, finish the
   local work and report the missing destination or access; never claim a push
   succeeded without verifying it.
+- At each major/minor version milestone, publish a compiled BBOS phone release;
+  patch releases are optional or requested explicitly. Freeze the numeric Maven
+  version, verify host/export/SDK/CLDC checks, then tag the reviewed commit as
+  `vX.Y.Z`. The BlackBerry release workflow builds and publishes the package.
+  Include raw sibling CODs, JAD/ALX, installation instructions, provenance and
+  checksums. Keep compiled artifacts and vendor SDKs out of Git. Preserve
+  published tags/assets; do not silently replace an existing release.
 - Keep generated build output, downloaded dependencies, SDK installations and
   credentials out of Git.
 - Prefer small classes with one responsibility and named hardware constants.

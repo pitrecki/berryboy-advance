@@ -1,0 +1,24 @@
+BerryBoy Advance - BlackBerry OS 7.1 / Bold 9900
+
+1. Extract every file from this ZIP into one directory. Keep the COD siblings together.
+2. Verify SHA256SUMS (for example: sha256sum -c SHA256SUMS).
+3. For USB installation, open BlackBerry Desktop Software's Application Loader,
+   select BerryBoyAdvance.alx and follow its installation steps.
+4. For device/local or hosted installation, open BerryBoyAdvance.jad using the
+   BlackBerry browser/file manager. A hosted JAD must sit beside every listed
+   COD and the native MIDlet JAR; a ZIP URL is not an OTA installation URL.
+5. Launch BerryBoy Advance. Use Open game to choose your own unpacked .gba and
+   16 KiB GBA BIOS. Grant local file access when requested.
+
+Default controls: I/J/K/L or trackpad for directions; Z/X for A/B; A/S for L/R;
+Enter for Start; Backspace for Select. Back/Escape or # pauses the game.
+Use Controls to remap keys and Display & audio for scaling, sound and FPS.
+
+Save slots and battery progress use sidecar files next to the ROM plus application
+RMS metadata. Back up both before replacing/removing an installation. Original
+standard .sav files are imported without being overwritten.
+
+This package contains the compiled application only: no ROM, BIOS, player saves,
+SDK or signing credentials. No code-signing step is performed by this build.
+An installation policy requiring RIM signatures cannot be satisfied by this
+unsigned package. manifest.json identifies the exact source and tool hashes.

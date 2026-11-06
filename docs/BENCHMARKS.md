@@ -1,6 +1,6 @@
 # Current status and roadmap
 
-Updated **2026-11-06**, for **0.8.1-SNAPSHOT**. This is the canonical current
+Updated **2026-11-06**, for **0.8.1**. This is the canonical current
 validation and work queue. [CHANGELOG](../CHANGELOG.md) records version highlights;
 linked JSON records and Git history preserve detailed measurements.
 
@@ -28,7 +28,7 @@ bottlenecks and preserves event ordering.
 
 ## Current validation
 
-- **1878 host tests**, **1770 exported-core tests**, and **1770 tests against the
+- **1887 host tests**, **1770 exported-core tests**, and **1770 tests against the
   actual new ECJ/CLDC classes** pass, with no failures or skips. Counts include
   parameterized invocations. Detailed build and artifact data is in the linked evidence.
 - Native Linux JDE 7.1 / ECJ 4.6.1 / RAPC verification passes and produces a
@@ -61,6 +61,25 @@ bottlenecks and preserves event ordering.
 Local checks are distinct from remote CI. No physical Bold is available. The
 Windows JDK 6 path and simulator runtime remain unqualified. SDK compilation
 alone does not pass those gates.
+
+## Version milestone releases
+
+Compiled phone packages are now part of each major/minor milestone. The first
+release line is **0.8.1 preview**; each package contains normalized raw COD siblings,
+JAD/ALX descriptors, the native MIDlet JAR, installation instructions, checksums
+and a build manifest identifying the exact source and tool inputs.
+
+The release workflow is triggered by `vX.Y.Z` tags, with a manual retry entry.
+It restores the pinned JDE/ECJ tools outside Git, repeats host/export/SDK/CLDC
+checks and publishes a draft only after assets upload successfully. A release
+requires a clean build at the tagged commit and a frozen Maven version; changed
+inputs/artifacts, modern desktop bytecode and malformed COD bundles are rejected.
+[Release commands and installation](BLACKBERRY.md#release-packages).
+
+The package/container and write guards have nine focused host cases. The SDK
+bootstrap was exercised against the retained installer, and the minimal SDK
+built the current application. Subsequent release workflow outcomes are recorded
+by GitHub Actions and the release's own immutable manifest.
 
 ## Phone frontend roadmap
 

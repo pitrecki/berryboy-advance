@@ -2,7 +2,7 @@
   <img src="docs/images/brand/berryboy-icon.png" width="144" alt="BerryBoy Advance logo">
 </p>
 
-# BerryBoy Advance — 0.8.1 development
+# BerryBoy Advance — 0.8.1
 
 Game Boy Advance emulation for the BlackBerry Bold 9900 and BBOS 7.1, with
 local games, save states, cheats and configurable controls. Desktop tools run
@@ -10,6 +10,14 @@ on **Linux, JDK 21 and Maven 3.9.x**.
 
 [Changelog](CHANGELOG.md) · [Roadmap](docs/BENCHMARKS.md) ·
 [BlackBerry setup](docs/BLACKBERRY.md)
+
+## Phone download
+
+[Download phone packages from GitHub Releases](https://github.com/pitrecki/berryboy-advance/releases).
+Choose the **BBOS7.1 ZIP**, extract all files together and follow `INSTALL.txt`.
+Use the included **ALX** with BlackBerry Desktop Software, or the **JAD** with
+its companion files. Every larger version milestone gets a compiled package
+and checksums; ROMs and BIOS are supplied separately.
 
 ## Phone interface
 

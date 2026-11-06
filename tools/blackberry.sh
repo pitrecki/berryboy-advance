@@ -143,6 +143,7 @@ else
 fi
 cod="$build_root/output/BerryBoyAdvance.cod"
 [[ -s $cod ]] || { echo 'RAPC produced no COD' >&2; exit 1; }
+python3 "$project_root/tools/blackberry_release.py" record --sdk "$bb_sdk" --compiler "$bb_compiler" --ecj "$bb_ecj" --output "$build_root/output"
 printf 'Built: %s\n' "$cod"
 if [[ $bb_launch == true ]]; then
   (

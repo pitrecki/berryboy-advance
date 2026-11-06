@@ -1,0 +1,65 @@
+name: Build and publish BlackBerry release
+
+on:
+  push:
+    tags: ['v*.*.*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing vX.Y.Z tag to build and publish
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: blackberry-release-${{ github.event.inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  phone:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Install CAB extraction tool
+        run: sudo apt-get update && sudo apt-get install -y cabextract
+      - uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/berryboy-sdk
+          key: jde71-2bf7117ad26e3e65-ecj461
+      - name: Restore pinned SDK and compiler
+        run: python3 tools/bootstrap-blackberry.py --output "$RUNNER_TEMP/berryboy-sdk" >> "$GITHUB_ENV"
+      - name: Verify host and exported core
+        run: tools/test-with-console.sh
+      - name: Build with vendor APIs and RAPC
+        run: mvn -B -ntp -Pbb-sim verify -Dbb.compiler=ecj -Dbb.ecj="$BB_ECJ_JAR" -Dbb.launch=false
+      - name: Verify actual CLDC core
+        run: tools/test-cldc-core.sh
+      - name: Publish phone package
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.event.inputs.tag || github.ref_name }}
+        run: tools/publish-blackberry-release.sh "$RELEASE_TAG"
+      - name: Preserve package and validation reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: blackberry-release-evidence
+          path: |
+            target/releases/
+            target/blackberry/output/build-record.json
+            target/surefire-reports/
+            target/junit-console/reports/

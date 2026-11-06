@@ -1,7 +1,11 @@
 # Changelog
 
-## 0.8.1-SNAPSHOT — 2026-11-06
+## 0.8.1 — 2026-11-06 (preview)
 
+- Add versioned phone release ZIPs with raw sibling CODs, JAD/ALX, native MIDlet
+  JAR, installation instructions, source/tool provenance and SHA-256 checksums.
+- Build and publish releases from version tags through GitHub Actions using a
+  pinned Linux SDK bootstrap and host/export/actual-CLDC verification.
 - Add an original BerryBoy icon to the phone launcher, menus and README.
 - Use the entire canvas during play, with no app header/footer. Add aspect-fit
   and edge-to-edge stretch alongside native/integer modes; FPS is an optional overlay.
