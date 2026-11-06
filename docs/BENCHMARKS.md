@@ -29,7 +29,7 @@ bottlenecks and preserves event ordering.
 
 ## Current validation
 
-- **2400 host tests**, **2240 exported-core tests**, and **2240 tests against the
+- **2410 host tests**, **2240 exported-core tests**, and **2240 tests against the
   actual new ECJ/CLDC classes** pass, with no failures or skips. Counts include
   parameterized invocations. Detailed build and artifact data is in the linked evidence.
 - Native Linux JDE 7.1 / ECJ 4.6.1 / RAPC verification passes and produces a
@@ -208,7 +208,7 @@ user settings do not relax that qualification protocol.
 | 2 / P0: Wider CPU/LCD timing | Cartridge DMA during discarded IRQ fetches now matches 144 independent cold/warm/page-edge observations. Extend coverage to subsequent stream invalidation and pipeline latching/self-modifying code, then IRQ propagation/mask latency. Trace the LeafGreen frame-930 offset and HBlank at cycle 960 versus the reference's 1008. | Matching event/retirement observations with justified expected timing. Keep in-flight snapshots distinct from retired state. Do not adjust a constant solely to improve screenshot counts. |
 | 3 / P0: Graphics expected results | Resolve the 2244-case three-way disagreement on brightness rounding and palette bit 15 using independently justified outputs or hardware evidence. Then qualify combined raster/OBJ/window effects. | Explicit per-pixel expectations and regression scenes. The renderer remains unqualified until those expectations are established; no relaxed tolerances. |
 | 4 / P1: Audio correctness | Start with late Sonic Advance 3 and Wario Land 4 differences. Compare timer/DMA FIFO, PSG and sample-clock events before diagnosing gain/filter/resampling. | Repeatable sample/event checkpoints, justified comparison rules, listening review and no software-buffer loss. Timing-dependent fixes follow the timing gates. |
-| 5 / P1: Gameplay and saves | LeafGreen now repeats battery generations 2/3 with opposite indoor movement and eight cold cross-loads. Extend to overworld/menu/save and interrupted-write recovery; extend Mario/Luigi movement/battle, Sonic/Wario level, Golden Sun battle and V-Rally race work. Doom II first level, F-Zero race and Mario & Luigi Toad control retain named routes and 120-frame full-state replays. | Preserve strict binary and full-stream outcomes; visible play or a successful full-state replay alone does not qualify game accuracy or cartridge-save compatibility. |
+| 5 / P1: Gameplay and saves | LeafGreen repeats battery generations 2/3 with eight cold cross-loads; three interrupted generation-4 writes now restore the prior room in both engines. Extend to overworld/menu/save, counter wrap and host-file recovery; extend Mario/Luigi movement/battle, Sonic/Wario level, Golden Sun battle and V-Rally race work. Doom II first level, F-Zero race and Mario & Luigi Toad control retain named routes and 120-frame full-state replays. | Preserve strict binary and full-stream outcomes; visible play or a successful full-state replay alone does not qualify game accuracy or cartridge-save compatibility. |
 | 6 / P2: Linux performance | Once selected routes pass correctness, profile CPU/PPU/presentation and optimize one demonstrated bottleneck at a time. Consider acceleration only with a supported backend and matching software output. | Three 10-minute runs after 30-second warmup, measured presentation/audio, bounded queues/memory and the gates below. |
 | 7 / Target-dependent: BlackBerry runtime | Run the new phone frontend in the simulator; qualify file access, slots, input and MMAPI output, then repeat correctness and sustained playback on a physical Bold. | Separate build, simulator and device reports; actual application results and physical measurements. |
 
@@ -225,7 +225,16 @@ save bytes and restore exact room pixels. Each generated pair still differs in
 play-time VBlank. Independent format source and synthetic inspector regressions
 account for those differences; keys and play time remain explicit decoded
 differences. Strict whole-file and full RGB/PCM results still fail. Next extend
-the route beyond the room and qualify interrupted-write/counter recovery.
+the route beyond the room and qualify counter/host-file recovery.
+
+[Interrupted LeafGreen saves](../benchmarks/leafgreen-interrupted-save-2026-11-06.json)
+sample actual generation-4 Flash writes at 190 frame boundaries. Early, middle
+and final-sector interruptions retain the complete generation-3 slot. All six
+BerryBoy/mGBA cold loads restore its exact room pixels; two completed-save
+controls restore the new position. Injected bytes stay unchanged after every
+load. Strict inspection still rejects incomplete files, and full RGB/PCM streams
+still differ. Counter wrap, both-slot corruption and host-file interruption
+remain open; these observations do not qualify physical power-loss timing.
 
 Deferred features: rewind, link play and optional accelerated
 presentation. Add them after current correctness and playback needs justify them.

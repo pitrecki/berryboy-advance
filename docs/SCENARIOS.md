@@ -779,3 +779,36 @@ returning from x=8 to x=7. Keep the same save confirmations, frame budgets and
 four independent cross-loads. The refreshed generation-2/3 results and pinned
 format-source identities are in
 [the repeated-save record](../benchmarks/leafgreen-repeated-saves-2026-11-06.json).
+
+## LeafGreen interrupted-write checkpoints
+
+Use the generation-3 BerryBoy save as a read-only seed with the existing
+`leafgreen-second-save.tsv` route, `backup=2`, its `initial_save_sha256`, the
+default RTC, zero warmup and no peripherals. Include `commit` and `source_dirty`
+in the scenario metadata. Capture a fresh output directory:
+
+```bash
+mkdir -p target/battery-tools
+javac --release 21 -cp target/classes -d target/battery-tools tools/CaptureBatteryCheckpoints.java
+java -Djava.awt.headless=true -cp target/battery-tools:target/classes \
+  berryboy.desktop.CaptureBatteryCheckpoints /path/to/scenario.properties \
+  1740 2750 target/local-battery-checkpoints
+```
+
+The tool verifies assets, input and initial save before creating output. It
+records the first observation and subsequent changed Flash images, their frame
+PNGs and hashes. The window is bounded to 1024 observations inside frames
+1–7000. It copies live backup bytes without resetting dirty/command state and
+never saves to the input path. A snapshot can contain an unfinished erase/program
+sequence; frame-boundary sampling does not cover every programmed byte.
+
+The recorded run first changes Flash at frame 2235 and finishes at 2423.
+Cold-load copies from frames 2235, 2329 and 2422, plus completed control 2423,
+using `benchmarks/inputs/leafgreen-recovery-continue.tsv`, 1700 frames and
+checkpoints 900/1030/1200/1400/1700. This Continue trace adds A at frames
+1200 and 1400 to dismiss recovery text. Use fresh BerryBoy/mGBA runs and explicit
+seed hashes for every case. Compare the final room with the generation-3 room
+for interrupted cases and the x=8 room for the completed control; verify that
+neither engine changes the injected backup. Preserve failing strict full-stream
+comparisons. The [interruption record](../benchmarks/leafgreen-interrupted-save-2026-11-06.json)
+pins snapshots, slot/section profiles and independent save-loader source.
