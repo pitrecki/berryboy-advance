@@ -1,0 +1,89 @@
+{
+  "date": "2026-11-06",
+  "version": "0.9.0-SNAPSHOT",
+  "source_base_commit": "4c6bfa09a29e4d26e946f05c0f73e107fd2eede2",
+  "source_dirty": true,
+  "change": "Persistent 1x/2x/4x/8x pacing with muted accelerated output, quick pause-menu control and speed overlay",
+  "hardware": "Linux x86_64; Temurin 21.0.8; Maven 3.9.11",
+  "behavior": {
+    "default": "1x; preference formats 1-4 migrate to normal speed without changing other preferences",
+    "persistence": "PhoneOptions version 5; guest MachineState format remains 1",
+    "sound": "Drain original guest PCM at every frame; do not send packets above 1x. Reset pending/active output on setting changes. At 1x output resumes according to independent user Mute setting. Guest audio registers/clocks remain unchanged.",
+    "presentation": "Submit every (frameSkip+1)*speed guest frames, including first frame after reset; all guest CPU/PPU/audio work still executes. Frame skip defaults to 0.",
+    "counters": "GBA FPS counts all guest frames against wall time; draw FPS counts distinct frames painted. Speed badge shows selected target factor even with FPS off.",
+    "transitions": "Rebase wall/guest deadline and rate origins on pause/resume or settings changes; state loading preserves frontend speed preference.",
+    "deadlines": "Integer quotient/remainder calculation avoids cycles*1000 overflow; tested against independent BigInteger arithmetic through Long.MAX_VALUE",
+    "ui": "Pause / Speed cycles upward; Display & audio / Speed accepts both directions; FPS, speed and shoulder badges occupy separate rows"
+  },
+  "validation": {
+    "host_tests": 2147,
+    "console_host_tests": 2147,
+    "exported_core_tests": 2022,
+    "failures": 0,
+    "skipped": 0,
+    "new_core_cases": 18,
+    "native_session": "Actual session with host adapters: initial 2x then 1x/4x/1x/8x/1x/1x+Mute; packet submission remains absent in accelerated/muted modes and resumes at normal speed. Save/load covers a change from 1x to 4x.",
+    "sdk_and_rapc": "Passed; JDE 7.1 / ECJ 4.6.1, numeric 0.9.0 development COD/JAD",
+    "actual_new_cldc_core_tests": 2022
+  },
+  "nominal_targets_not_performance_measurements": {
+    "1x": {
+      "wall_milliseconds_for_10_guest_seconds": 10000,
+      "submission_interval_skip_0": 1,
+      "submission_interval_skip_5": 6
+    },
+    "2x": {
+      "wall_milliseconds_for_10_guest_seconds": 5000,
+      "submission_interval_skip_0": 2,
+      "submission_interval_skip_5": 12
+    },
+    "4x": {
+      "wall_milliseconds_for_10_guest_seconds": 2500,
+      "submission_interval_skip_0": 4,
+      "submission_interval_skip_5": 24
+    },
+    "8x": {
+      "wall_milliseconds_for_10_guest_seconds": 1250,
+      "submission_interval_skip_0": 8,
+      "submission_interval_skip_5": 48
+    }
+  },
+  "source_files_sha256": {
+    "src/main/java/berryboy/mobile/playback/PlaybackSpeed.java": "48e4f513520e7f8d97127595a635e21b63567ab5373fef5639e20ee6cd8fb321",
+    "src/main/java/berryboy/mobile/video/FramePresentation.java": "f05d0f83ef1724f75dec7404d6122bc2396ac6d93de2f4b856dc4cce8aff21f7",
+    "src/main/java/berryboy/mobile/settings/PhoneOptions.java": "b6a2453a98a830ccd33cab2b05436c9cb6acd946622bac42ce45ecef937aef1d",
+    "src/main/java/berryboy/mobile/ui/PhoneMenus.java": "8d15eccda2c1b68ee832d8e644bed7aa9f3114043e8fad7284beb8e3074de56c",
+    "src/main/java/berryboy/mobile/ui/PhoneRenderer.java": "071e0cc1e59299666657a1598e6d8d560ba5f0c4da33576ac478befb8a58cf3e",
+    "platform/midp/berryboy/phone/PhoneSession.java": "ec7599e9e16828c3b2c6a43926cde0e335f1972e2e1cc27a54102c8d6ca33807",
+    "platform/midp/berryboy/phone/PhoneCanvas.java": "0ff96038dff814e726d758b26e5cf3a5dad12917876293e4cd2114cf93fb85b1"
+  },
+  "native_artifact_sha256": {
+    "BerryBoyAdvance.cod": "f417faccb0cd987d6e7045bde9e30aa0f18e2d6eb59b54ac3043bfd5ee807ca4",
+    "BerryBoyAdvance.jad": "a3ce5728738858809764776d236ba1b649e6b5a44bb0c347fe230142bdece22c",
+    "BerryBoyAdvance.jar": "4d22664d902539a91f21821112eb8557c085af8d9bcce504ee5a6548fbda0b2e"
+  },
+  "captures": {
+    "method": "Production menu/renderer via headless Java2D, 640x480; tools/capture-phone-gallery.sh target/phone-gallery-scenes target/speed-gallery",
+    "sha256": {
+      "docs/images/phone/pause.png": "e323c7e29e774a3909df55cb3efb03bea519d823be2836718cbf5b6bb4871266",
+      "docs/images/phone/settings.png": "3809414e5d8f0dd9f879df3e172540cd7d752164aa2f70a72ddd10c4c8faa5a7",
+      "docs/images/phone/speed.png": "88b200608857def045ba9a8faaf54f2b0efdcdc8942c512befc9f40a7e9a6aa0"
+    },
+    "speed_overlay": {
+      "game": "AGFE",
+      "title": "Golden Sun: The Lost Age",
+      "guest_frame": 7200,
+      "rom_sha256": "4199d82f845edf3e2e92f3783bca00190b5bc102d7c8aa339b951de280b1e6cc",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+      "extra_input_sha256": "e1e2831fdd14998e267ed41f0e70f0c3bffc2a4ef0645d541fe2490f64121d67",
+      "rgb_png_sha256": "ae7aa3203daaf2ae9a3895d9c228603dad418c3765d38b818af7283e810f3a6d",
+      "capture_png_sha256": "88b200608857def045ba9a8faaf54f2b0efdcdc8942c512befc9f40a7e9a6aa0",
+      "viewport": "0,27,640,426",
+      "scaling": "Fit; nearest neighbor; full canvas; no menu/header/footer",
+      "speed_overlay": "Production renderer at selected 4x, FPS off; original captured game checkpoint, not a measured accelerated playback run"
+    }
+  },
+  "limitations": "Selected factors are pacing targets limited by available CPU, not measured BlackBerry speed. SDK/API validation and host doubles do not establish actual MMAPI playback behavior or physical-device performance.",
+  "release_policy": "No tag or release ZIP created; source delivery only until the user approves this release."
+}

@@ -64,13 +64,20 @@ public final class PhoneRenderer {
             g.fill(8, 8, g.textWidth(screen.fps(), false) + 12, 32, BACKGROUND);
             g.text(screen.fps(), 14, 12, TEXT, false);
         }
+        var badgeY = screen.fps().length() == 0 ? 8 : 48;
+        if (screen.speed() != 1) {
+            var label = screen.speed() + "x / sound muted";
+            g.fill(8, badgeY, g.textWidth(label, false) + 12, 32, BACKGROUND);
+            g.text(label, 14, badgeY + 4, ACCENT, false);
+            badgeY += 40;
+        }
         if (screen.shoulderLocks() != 0) {
             var locks = screen.shoulderLocks();
             var label = locks == (Keypad.L | Keypad.R) ? "L+R locked" : locks == Keypad.L ? "L locked" : "R locked";
             var badgeWidth = g.textWidth(label, false) + 12;
             var x = width - badgeWidth - 8;
             if (x < 8) x = 8;
-            var y = screen.fps().length() == 0 ? 8 : 48;
+            var y = badgeY;
             g.fill(x, y, badgeWidth, 32, BACKGROUND);
             g.text(label, x + 6, y + 4, ACCENT, false);
         }

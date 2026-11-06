@@ -186,6 +186,13 @@ Returning from a phone interruption leaves the game paused until **Resume game**
 
 The pause menu provides:
 
+- **Speed:** cycle 1×, 2×, 4× and 8×. The same preference is in **Display & audio**,
+  where left/right changes it in either direction. It persists across restarts.
+  Above 1×, guest sound continues internally but output is muted; returning to
+  1× restores normal output unless Mute is enabled. A badge remains visible with
+  FPS off. Acceleration adjusts host pacing and display submission cadence;
+  device clocks, CPU work and save-state format remain unchanged. Actual speed
+  is limited by available CPU. Existing frame skip combines with the speed factor.
 - **Save state / Load state:** five slots, with confirmation before overwriting.
   Load restores the scene into the paused preview; choose **Resume game** to play.
 - **Cheats:** add a name, format and code, select a row to toggle it, or use

@@ -42,6 +42,9 @@ provides a home screen, pause menu, file browser and configurable controls.
   Pause, focus loss and game/state changes clear the locks. The mode is off by
   default; active locks remain visible with FPS off. [Golden Sun preview](docs/images/phone/shoulder-assist.png).
 - **Sound:** volume, mute and mono/stereo output, with a bounded MMAPI packet backend.
+- **Speed:** select **1×/2×/4×/8×** in the pause menu or **Display & audio → Speed**.
+  Accelerated play is silent; returning to 1× restores sound unless Mute is on.
+  A visible badge shows the selected factor. Actual speed depends on available CPU.
 - **Display:** full-screen play with no app header or footer. Choose **Full screen**
   to preserve GBA proportions, **Stretch** for edge-to-edge output, or native/integer
   scaling. Optional frame skip affects presentation; FPS is a small overlay.
@@ -77,7 +80,9 @@ Full-screen captures at **640×480**, rendered by the application.
 | ![Phone display and audio settings](docs/images/phone/settings.png) | ![Phone control mapping](docs/images/phone/controls.png) |
 
 [Save slots](docs/images/phone/slots.png) ·
-[Capture details](benchmarks/fullscreen-branding-2026-11-06.json)
+[4× speed overlay](docs/images/phone/speed.png) ·
+[Game capture details](benchmarks/fullscreen-branding-2026-11-06.json) ·
+[Current app menus](benchmarks/playback-speed-2026-11-06.json)
 
 ## Build and run
 

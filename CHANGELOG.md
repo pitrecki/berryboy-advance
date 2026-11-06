@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.9.0-SNAPSHOT — unreleased
+
+- Choose and persist any readable local ROM folder, plus last ROM/BIOS browser
+  selections. Separate asynchronous file/folder browsing from the canvas.
+- Add Show/Skip for BIOS startup presentation while preserving authentic BIOS
+  initialization, with identical startup state/RGB/PCM on three supplied games.
+- Add persistent 1×/2×/4×/8× playback in pause/settings. Mute accelerated output
+  and restore sound at 1× according to the user's mute preference; display the
+  selected factor and retain separate guest/draw FPS counters.
+- Separate phone input, settings, library, audio, video, playback and UI into
+  feature packages with matching tests. Keep timing experiments outside production.
+
 ## 0.8.2 — 2026-11-06 (preview)
 
 - Add optional sticky L/R controls for shoulder-plus-action/direction combinations,

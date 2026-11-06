@@ -1,6 +1,7 @@
 package berryboy.mobile.ui;
 
 import berryboy.mobile.settings.PhoneOptions;
+import berryboy.mobile.playback.PlaybackSpeed;
 
 import berryboy.input.Keypad;
 
@@ -18,6 +19,7 @@ public final class PhoneScreen {
     private String fps = "";
     private String notice = "";
     private int shoulderLocks;
+    private int speed = 1;
     public void menu(String title, String subtitle, String[] labels, String[] values, boolean[] enabled) {
         if (labels == null || values == null || enabled == null || labels.length != values.length || labels.length != enabled.length) {
             throw new IllegalArgumentException("Incomplete phone menu");
@@ -42,6 +44,7 @@ public final class PhoneScreen {
     public void setFps(String text) { fps = text; }
     public void setNotice(String text) { notice = text; }
     public void setShoulderLocks(int buttons) { shoulderLocks = buttons & (Keypad.L | Keypad.R); }
+    public void setSpeed(int value) { PlaybackSpeed.requireFactor(value); speed = value; }
     public String title() { return title; }
     public String subtitle() { return subtitle; }
     public String message() { return message; }
@@ -55,4 +58,5 @@ public final class PhoneScreen {
     public String fps() { return fps; }
     public String notice() { return notice; }
     public int shoulderLocks() { return shoulderLocks; }
+    public int speed() { return speed; }
 }

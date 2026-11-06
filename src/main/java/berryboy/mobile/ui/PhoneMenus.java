@@ -14,13 +14,16 @@ public final class PhoneMenus {
                 new String[]{">", ">", loaded ? ">" : "No game", ">", ">", ">", ">"}, new boolean[]{true, true, loaded, true, true, true, true});
     }
     public static void pause(PhoneScreen screen, String game) {
-        show(screen, "Paused", game, new String[]{"Resume game", "Save state", "Load state", "Cheats", "Display & audio", "Controls", "Restart game", "Home"},
-                new String[]{">", "5 slots", "5 slots", ">", ">", ">", ">", ">"}, null);
+        pause(screen, game, 1);
+    }
+    public static void pause(PhoneScreen screen, String game, int speed) {
+        show(screen, "Paused", game, new String[]{"Resume game", "Speed", "Save state", "Load state", "Cheats", "Display & audio", "Controls", "Restart game", "Home"},
+                new String[]{">", speed + "x", "5 slots", "5 slots", ">", ">", ">", ">", ">"}, null);
     }
     public static void settings(PhoneScreen screen, PhoneOptions options) {
-        show(screen, "Display & audio", "Left / Right to change", new String[]{"Volume", "Mute", "Sound", "Frame skip", "FPS counter", "Game image", "GBA boot animation"},
+        show(screen, "Display & audio", "Left / Right to change", new String[]{"Volume", "Mute", "Sound", "Frame skip", "FPS counter", "Game image", "GBA boot animation", "Speed"},
                 new String[]{options.volume() + "%", options.muted() ? "On" : "Off", options.mono() ? "Mono" : "Stereo",
-                    options.frameSkip() == 0 ? "Off" : "1 in " + (options.frameSkip() + 1), options.showFps() ? "On" : "Off", scalingName(options.scaling()), options.showBoot() ? "Show" : "Skip"}, null);
+                    options.frameSkip() == 0 ? "Off" : "1 in " + (options.frameSkip() + 1), options.showFps() ? "On" : "Off", scalingName(options.scaling()), options.showBoot() ? "Show" : "Skip", options.speed() + "x"}, null);
     }
     public static void controls(PhoneScreen screen, PhoneOptions options) {
         var labels = new String[11];

@@ -10,8 +10,8 @@ import berryboy.cheat.CheatList;
 import berryboy.mobile.video.FramePresentation;
 import berryboy.mobile.audio.OutputMixer;
 import berryboy.mobile.settings.PhoneOptions;
+import berryboy.mobile.playback.PlaybackSpeed;
 import berryboy.MachineState;
-import berryboy.timing.CycleScheduler;
 import berryboy.video.LcdTiming;
 
 /** One persistent guest owner. UI commands and owned settings/cheat snapshots form a bounded mailbox. */
@@ -97,7 +97,8 @@ final class PhoneSession implements Runnable {
                     }
                 }
                 try {
-                    if (pendingChanges()) { if (audio != null) audio.reset(); }
+                    boolean resetPacing = pendingChanges();
+                    if (resetPacing && audio != null) audio.reset();
                     if (operation != 0) {
                         if (audio != null) audio.reset();
                         flushBackup();
@@ -122,7 +123,7 @@ final class PhoneSession implements Runnable {
                         wasPaused = false;
                         continue; // Hidden boot has no presentation, MMAPI output or wall-clock wait.
                     }
-                    if (wasPaused || wallOrigin == 0) {
+                    if (wasPaused || wallOrigin == 0 || resetPacing) {
                         wallOrigin = System.currentTimeMillis(); cycleOrigin = machine.clock.now();
                         rateOrigin = wallOrigin; paintOrigin = view.paintedFrames(); drawTenths = 0;
                         presentation.reset(); wasPaused = false;
@@ -134,8 +135,8 @@ final class PhoneSession implements Runnable {
                     int samples = machine.memory.clockedAudio().availableFrames();
                     if (samples > pcm.length / 2 || machine.memory.clockedAudio().overruns() != 0) throw new IllegalStateException("Audio capture overflow");
                     machine.memory.clockedAudio().drain(pcm, samples);
-                    OutputMixer.apply(pcm, samples, options);
-                    if (!options.muted()) {
+                    if (options.speed() == 1 && !options.muted()) {
+                        OutputMixer.apply(pcm, samples, options);
                         if (audio == null) audio = new PhoneAudio();
                         if (audio.failure() == null) audio.append(pcm, samples);
                     }
@@ -145,13 +146,13 @@ final class PhoneSession implements Runnable {
                         drawTenths = (int) ((painted - paintOrigin) * 10000 / (now - rateOrigin));
                         rateOrigin = now; paintOrigin = painted;
                     }
-                    if (presentation.next(options.frameSkip(), now)) {
+                    if (presentation.next(options.frameSkip(), options.speed(), now)) {
                         int[] pixels = new int[240 * 160];
                         System.arraycopy(machine.memory.raster().completedFrame(), 0, pixels, 0, pixels.length);
                         view.present(pixels, presentation.guestTenths(), drawTenths, audio == null ? null : audio.failure());
                         view.awaitPresentation();
                     }
-                    long deadline = wallOrigin + (machine.clock.now() - cycleOrigin) * 1000 / CycleScheduler.CLOCK_HZ;
+                    long deadline = wallOrigin + PlaybackSpeed.wallMillis(machine.clock.now() - cycleOrigin, options.speed());
                     long remaining = deadline - System.currentTimeMillis();
                     if (remaining > 0) Thread.sleep(remaining > 20 ? 20 : remaining);
                 } catch (Exception error) {

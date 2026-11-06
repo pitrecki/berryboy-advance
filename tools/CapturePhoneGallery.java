@@ -58,13 +58,20 @@ public final class CapturePhoneGallery {
                 assisted.put("capture_png_sha256", ScenarioRunner.hash(Files.readAllBytes(output.resolve("shoulder-assist.png"))));
                 assisted.put("assist", "Production PhoneInput: enable sticky shoulders, tap/release L and R; FPS off");
                 Files.writeString(output.resolve("shoulder-assist.json"), JsonReport.encode(assisted)+"\n");
+                screen.setSpeed(4);
+                painter.write(screen, output.resolve("speed.png"));
+                screen.setSpeed(1);
+                var accelerated = new LinkedHashMap<String,Object>(metadata);
+                accelerated.put("capture_png_sha256", ScenarioRunner.hash(Files.readAllBytes(output.resolve("speed.png"))));
+                accelerated.put("speed_overlay", "Production renderer at selected 4x, FPS off; original captured game checkpoint, not a measured accelerated playback run");
+                Files.writeString(output.resolve("speed.json"), JsonReport.encode(accelerated)+"\n");
             }
             if (menuFrame == null) { menuFrame=pixels; menuTitle=stringField(details,"title"); }
         }
         screen = new PhoneScreen(); PhoneMenus.home(screen,false);
         screen.setMessage("Navigate: trackpad / I,K / Select: Enter / Back"); painter.write(screen,output.resolve("home.png"));
         screen.setFrame(menuFrame); PhoneMenus.pause(screen,menuTitle); painter.write(screen,output.resolve("pause.png"));
-        var options=new PhoneOptions(); options.setShowFps(true); PhoneMenus.settings(screen,options); screen.select(6);
+        var options=new PhoneOptions(); options.setShowFps(true); PhoneMenus.settings(screen,options); screen.select(7);
         painter.write(screen,output.resolve("settings.png"));
         options.setStickyShoulders(true); PhoneMenus.controls(screen,options);
         screen.setMessage("L/R: tap to lock, tap again to release / Back clears");

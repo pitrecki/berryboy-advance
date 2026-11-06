@@ -1,8 +1,9 @@
 package berryboy.phone;
 /** No physical audio device is supplied by the session test. */
-final class PhoneAudio {
+public final class PhoneAudio {
+    public static volatile int appends, resets;
     String failure(){return null;}
-    void append(short[] pcm,int count){}
-    void reset(){}
+    void append(short[] pcm,int count){appends++;}
+    void reset(){resets++;}
     void close(){}
 }

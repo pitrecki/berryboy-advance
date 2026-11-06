@@ -10,6 +10,7 @@ import berryboy.mobile.library.LibraryProfile;
 import berryboy.phone.library.FilePicker;
 import berryboy.phone.library.FileUrls;
 import berryboy.mobile.settings.PhoneOptions;
+import berryboy.mobile.playback.PlaybackSpeed;
 import berryboy.mobile.ui.PhoneRenderer;
 import berryboy.mobile.ui.PhoneScreen;
 import javax.microedition.lcdui.Canvas;
@@ -114,7 +115,7 @@ public final class PhoneCanvas extends Canvas implements CommandListener {
         screen.setFrame(ownedRgb); frameVersion++; show(PAUSE); message(status);
     }
     synchronized void present(int[] ownedRgb, int gbaTenths, int drawTenths, String audioError) {
-        screen.setFrame(ownedRgb); screen.setScaling(options.scaling()); frameVersion++;
+        screen.setFrame(ownedRgb); screen.setScaling(options.scaling()); screen.setSpeed(options.speed()); frameVersion++;
         if (page == GAME) {
             screen.setFps(options.showFps() ? "GBA " + rate(gbaTenths) + " / Draw " + rate(drawTenths) + " fps" : "");
             screen.setNotice(audioError == null ? "" : "Audio unavailable");
@@ -129,10 +130,11 @@ public final class PhoneCanvas extends Canvas implements CommandListener {
         else if (target == GAME) {
             PhoneMenus.game(screen, game);
             screen.setScaling(options.scaling());
+            screen.setSpeed(options.speed());
             screen.setFps(options.showFps() ? "GBA -- / Draw -- fps" : "");
             screen.setNotice("");
         }
-        else if (target == PAUSE) PhoneMenus.pause(screen, game);
+        else if (target == PAUSE) PhoneMenus.pause(screen, game, options.speed());
         else if (target == SETTINGS) PhoneMenus.settings(screen, options);
         else if (target == CONTROLS) PhoneMenus.controls(screen, options);
         else if (target == SAVE || target == LOAD) PhoneMenus.slots(screen, target == LOAD, slotSummaries, persistent);
@@ -218,12 +220,16 @@ public final class PhoneCanvas extends Canvas implements CommandListener {
             else message("BerryBoy " + application.getAppProperty("MIDlet-Version") + " / Demo in Diagnostics / Raw + CodeBreaker 3,8");
         } else if (page == PAUSE) {
             if (selected == 0) resume();
-            else if (selected == 1 || selected == 2) {
-                show(selected == 1 ? SAVE : LOAD); request(PhoneSession.SLOTS, 0, null, null);
-            } else if (selected == 3) show(CHEATS);
-            else if (selected == 4) show(SETTINGS);
-            else if (selected == 5) show(CONTROLS);
-            else if (selected == 6) confirmRestart();
+            else if (selected == 1) {
+                options.setSpeed(PlaybackSpeed.cycle(options.speed(), 1));
+                show(PAUSE); screen.select(1); saveOptions();
+                message(options.speed() == 1 ? "Normal speed / sound restored if enabled" : "Accelerated play / sound muted");
+            } else if (selected == 2 || selected == 3) {
+                show(selected == 2 ? SAVE : LOAD); request(PhoneSession.SLOTS, 0, null, null);
+            } else if (selected == 4) show(CHEATS);
+            else if (selected == 5) show(SETTINGS);
+            else if (selected == 6) show(CONTROLS);
+            else if (selected == 7) confirmRestart();
             else show(HOME);
         } else if (page == SETTINGS) changeSetting(1);
         else if (page == CONTROLS) {
@@ -251,9 +257,11 @@ public final class PhoneCanvas extends Canvas implements CommandListener {
         else if (selected == 3) options.setFrameSkip((options.frameSkip() + direction + 6) % 6);
         else if (selected == 4) options.setShowFps(!options.showFps());
         else if (selected == 5) options.setScaling((options.scaling() + direction + 4) % 4);
-        else options.setShowBoot(!options.showBoot());
+        else if (selected == 6) options.setShowBoot(!options.showBoot());
+        else options.setSpeed(PlaybackSpeed.cycle(options.speed(), direction));
         show(SETTINGS); screen.select(selected); saveOptions();
         if (selected == 6) message("Next start / restart: skip hides the animation and runs BIOS startup without pacing");
+        if (selected == 7) message("1x: normal sound / 2x, 4x, 8x: muted / speed depends on available CPU");
     }
     private void saveOptions() {
         input.setStickyShoulders(options.stickyShoulders());

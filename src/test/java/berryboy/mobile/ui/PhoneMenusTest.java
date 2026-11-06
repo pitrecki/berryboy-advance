@@ -11,6 +11,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Tag("core")
 class PhoneMenusTest {
     @ParameterizedTest
+    @ValueSource(ints = {1, 2, 4, 8})
+    void speedIsAvailableInPauseAndSettingsWithoutMovingBootPreference(int speed) {
+        var screen = new PhoneScreen(); var options = new PhoneOptions(); options.setSpeed(speed);
+        PhoneMenus.pause(screen, "Game", speed);
+        assertThat(screen.label(0)).isEqualTo("Resume game");
+        assertThat(screen.label(1)).isEqualTo("Speed");
+        assertThat(screen.value(1)).isEqualTo(speed + "x");
+        assertThat(screen.label(2)).isEqualTo("Save state");
+        assertThat(screen.label(3)).isEqualTo("Load state");
+        PhoneMenus.settings(screen, options);
+        assertThat(screen.label(6)).isEqualTo("GBA boot animation");
+        assertThat(screen.label(7)).isEqualTo("Speed");
+        assertThat(screen.value(7)).isEqualTo(speed + "x");
+    }
+    @ParameterizedTest
     @ValueSource(booleans = {false, true})
     void homeExposesTheGameFolderAndKeepsResumeAvailability(boolean loaded) {
         var screen = new PhoneScreen(); PhoneMenus.home(screen, loaded);

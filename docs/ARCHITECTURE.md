@@ -44,14 +44,20 @@ The phone frontend has separate feature packages and matching test directories:
 | `mobile.input` | Physical key state, sticky shoulders, key assignments and normalization |
 | `mobile.settings` | Preference values, versioned persistence and migration |
 | `mobile.library` | Saved ROM folder and last file selections, without device IO |
+| `mobile.playback` | Supported speed factors, host deadlines and display intervals |
 | `mobile.audio` | PCM output mixing and bounded WAV packet encoding |
 | `mobile.video` | Viewport geometry, frame scaling, submission cadence and rate counters |
 | `mobile.ui` | Menu content, view state, drawing port and renderer |
 
 `KeyBindings` owns key validation and its established ten-word storage layout;
 `PhoneOptions` delegates that responsibility. Input handling does not depend on
-the complete settings object. Settings depend on input bindings; audio/video
-consume settings; UI consumes settings and video. These dependencies are acyclic.
+the complete settings object. Settings depend on input bindings and playback;
+audio/video consume settings, video also consumes playback, and UI consumes
+settings/video/playback. Playback depends only on timing constants. These
+dependencies are acyclic. `boot.BiosStartup` owns bounded authentic BIOS execution
+until a complete cartridge frame is available; it does not fabricate hardware
+state or own presentation/audio. The native session suppresses those outputs
+and pacing during hidden startup.
 SDK-specific lifecycle, storage and MMAPI adapters remain under `platform/midp`.
 The native `phone.library` picker uses a selection callback, so directory IO does
 not depend on the application's canvas or guest session.

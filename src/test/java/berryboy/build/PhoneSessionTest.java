@@ -21,6 +21,53 @@ import org.junit.jupiter.params.provider.ValueSource;
 @Tag("build")
 class PhoneSessionTest {
     @TempDir Path temporary;
+    @Test
+    void mutesEveryAccelerationAndRestoresOutputAtNormalSpeedWithoutChangingUserMute() throws Exception {
+        var root = Path.of(System.getProperty("berryboy.projectRoot", ".")).toAbsolutePath();
+        var classes = temporary.resolve("classes");
+        assertThat(PhoneHarness.compile(root, classes, true)).isZero();
+        try (var loader = new URLClassLoader(new java.net.URL[]{classes.toUri().toURL()}, getClass().getClassLoader())) {
+            var uiType = loader.loadClass("berryboy.phone.PhoneCanvas"); var ui = uiType.getConstructor().newInstance();
+            var type = loader.loadClass("berryboy.phone.PhoneSession"); var audioType = loader.loadClass("berryboy.phone.PhoneAudio");
+            var ctor = type.getDeclaredConstructor(uiType, PhoneOptions.class); ctor.setAccessible(true);
+            var options = new PhoneOptions(); options.setSpeed(2);
+            var session = ctor.newInstance(ui, options);
+            var request = method(type,"request",int.class,int.class,String.class,String.class);
+            try {
+                assertThat((boolean)request.invoke(session,1,0,null,null)).isTrue();
+                waitFor(() -> number(uiType,ui,"frames") >= 2 || text(uiType,ui,"failure") != null);
+                assertThat(uiType.getField("failure").get(ui)).isNull();
+                pauseAndAwait(type, session, request, uiType, ui);
+                assertThat(number(audioType,null,"appends")).isZero();
+                var speeds = new int[]{1, 4, 1, 8, 1, 1};
+                for (var i = 0; i < speeds.length; i++) {
+                    var speed = speeds[i];
+                    options.setSpeed(speed);
+                    // The last transition keeps normal speed but tests the independent mute preference.
+                    options.setMuted(i == speeds.length - 1);
+                    method(type,"options",PhoneOptions.class).invoke(session, options);
+                    pauseAndAwait(type, session, request, uiType, ui);
+                    var before = number(audioType,null,"appends"); var frames = number(uiType,ui,"frames");
+                    method(type,"resume").invoke(session);
+                    waitFor(() -> number(uiType,ui,"frames") >= frames + 2 || text(uiType,ui,"failure") != null);
+                    pauseAndAwait(type, session, request, uiType, ui);
+                    assertThat(uiType.getField("failure").get(ui)).isNull();
+                    if (speed == 1 && !options.muted()) assertThat(number(audioType,null,"appends")).isGreaterThan(before);
+                    else assertThat(number(audioType,null,"appends")).isEqualTo(before);
+                }
+                assertThat(number(audioType,null,"resets")).isGreaterThan(0);
+            } finally {
+                method(type,"close").invoke(session);
+                assertThat((boolean)method(type,"awaitClosed",long.class).invoke(session,5000L)).isTrue();
+            }
+        }
+    }
+    private static void pauseAndAwait(Class<?> type, Object session, Method request, Class<?> uiType, Object ui) throws Exception {
+        var slots = number(uiType,ui,"slots"); waitRequest(request,session,7,0);
+        waitFor(() -> number(uiType,ui,"slots") > slots);
+        var busy = type.getDeclaredField("busy"); busy.setAccessible(true);
+        waitFor(() -> { synchronized(session) { try { return !busy.getBoolean(session); } catch(Exception e) { throw new IllegalStateException(e); } } });
+    }
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
     void presentsBiosFramesOnlyWhenBootAnimationIsEnabled(boolean showBoot) throws Exception {
@@ -98,10 +145,13 @@ class PhoneSessionTest {
                 var read=method(storage.getClass(),"read",String.class);
                 assertThat(((CheatList)method(storage.getClass(),"cheats").invoke(storage)).size()).isZero();
                 var saved=(byte[])read.invoke(storage,"st0");var expected=MachineState.load(rom,bios,saved);
+                options.setSpeed(4); method(type,"options",PhoneOptions.class).invoke(session,options);
                 var frames=number(uiType,ui,"frames");resume.invoke(session);waitFor(() -> number(uiType,ui,"frames")>=frames+2);
                 pause.invoke(session);waitRequest(request,session,4,0);waitFor(() -> text(uiType,ui,"message").startsWith("Loaded slot"));
                 var machineField=type.getDeclaredField("machine");machineField.setAccessible(true);var restored=(Machine)machineField.get(session);
                 assertThat(restored.clock.now()).isEqualTo(expected.clock.now());
+                var settingsField=type.getDeclaredField("options");settingsField.setAccessible(true);
+                assertThat(((PhoneOptions)settingsField.get(session)).speed()).isEqualTo(4);
                 waitRequest(request,session,5,0);waitFor(() -> text(uiType,ui,"message").equals("Game restarted"));
                 assertThat(((Machine)machineField.get(session)).clock.now()).isZero();
                 assertThat(((Machine)machineField.get(session)).memory.backup().type()).isEqualTo(berryboy.cartridge.CartridgeBackup.EEPROM_512);

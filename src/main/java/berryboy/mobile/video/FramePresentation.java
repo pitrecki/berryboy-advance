@@ -1,5 +1,7 @@
 package berryboy.mobile.video;
 
+import berryboy.mobile.playback.PlaybackSpeed;
+
 /** Presentation-only skipping and measured rates; all guest frames still execute. */
 public final class FramePresentation {
     private long started = -1;
@@ -8,9 +10,12 @@ public final class FramePresentation {
     private int untilPresentation;
 
     public boolean next(int skip, long nowMillis) {
-        if (skip < 0 || skip > 5) throw new IllegalArgumentException("Invalid frame skip");
+        return next(skip, 1, nowMillis);
+    }
+    public boolean next(int skip, int speed, long nowMillis) {
+        var interval = PlaybackSpeed.presentationInterval(skip, speed);
         var show = untilPresentation == 0;
-        untilPresentation = show ? skip : untilPresentation - 1;
+        untilPresentation = show ? interval - 1 : untilPresentation - 1;
         if (started < 0) { started = nowMillis; return show; }
         guest++;
         var elapsed = nowMillis - started;

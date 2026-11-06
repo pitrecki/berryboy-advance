@@ -1,6 +1,7 @@
 package berryboy.mobile.settings;
 
 import berryboy.mobile.input.KeyBindings;
+import berryboy.mobile.playback.PlaybackSpeed;
 import berryboy.state.StateBuffer;
 
 /** Frontend preferences; never change guest sound registers or hardware timing. */
@@ -16,6 +17,7 @@ public final class PhoneOptions {
     private boolean showFps;
     private boolean stickyShoulders;
     private boolean showBoot = true;
+    private int speed = 1;
     private int scaling = SCALE_FIT;
     private final KeyBindings keys = new KeyBindings();
 
@@ -26,6 +28,7 @@ public final class PhoneOptions {
     public boolean showFps() { return showFps; }
     public boolean stickyShoulders() { return stickyShoulders; }
     public boolean showBoot() { return showBoot; }
+    public int speed() { return speed; }
     public int scaling() { return scaling; }
     public int key(int button) { return keys.key(button); }
     public void setVolume(int value) {
@@ -41,6 +44,7 @@ public final class PhoneOptions {
     public void setShowFps(boolean value) { showFps = value; }
     public void setStickyShoulders(boolean value) { stickyShoulders = value; }
     public void setShowBoot(boolean value) { showBoot = value; }
+    public void setSpeed(int value) { PlaybackSpeed.requireFactor(value); speed = value; }
     public void setScaling(int value) {
         if (value < SCALE_NATIVE || value > SCALE_STRETCH) throw new IllegalArgumentException("Invalid image scaling mode");
         scaling = value;
@@ -54,19 +58,21 @@ public final class PhoneOptions {
         result.showFps = showFps; result.scaling = scaling;
         result.stickyShoulders = stickyShoulders;
         result.showBoot = showBoot;
+        result.speed = speed;
         result.keys.copyFrom(keys);
         return result;
     }
     public byte[] encode() {
         var state = new StateBuffer();
-        state.value(4); transfer(state, 4); return state.finish();
+        state.value(5); transfer(state, 5); return state.finish();
     }
     public static PhoneOptions decode(byte[] bytes) {
         var state = new StateBuffer(bytes);
         var version = state.value(0);
-        if (version < 1 || version > 4) throw new IllegalArgumentException("Unsupported settings version");
+        if (version < 1 || version > 5) throw new IllegalArgumentException("Unsupported settings version");
         var result = new PhoneOptions(); result.transfer(state, version); state.requireEnd();
         result.setVolume(result.volume); result.setFrameSkip(result.frameSkip); result.setScaling(result.scaling);
+        result.setSpeed(result.speed);
         return result;
     }
     private void transfer(StateBuffer state, int version) {
@@ -77,5 +83,6 @@ public final class PhoneOptions {
         keys.transferState(state);
         stickyShoulders = version >= 3 && state.flag(stickyShoulders);
         showBoot = version < 4 || state.flag(showBoot);
+        speed = version < 5 ? 1 : state.value(speed);
     }
 }

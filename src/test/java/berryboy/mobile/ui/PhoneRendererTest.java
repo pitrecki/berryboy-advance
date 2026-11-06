@@ -12,6 +12,23 @@ import org.junit.jupiter.params.provider.CsvSource;
 @Tag("core")
 class PhoneRendererTest {
     @ParameterizedTest
+    @CsvSource({"2,false", "4,true", "8,true"})
+    void accelerationStaysVisibleAndDoesNotOverlapFpsOrShoulderBadges(int speed, boolean fps) {
+        var screen = new PhoneScreen(); PhoneMenus.game(screen, "Game"); screen.setSpeed(speed);
+        screen.setShoulderLocks(768); screen.setFps(fps ? "GBA 120 / Draw 60 fps" : "");
+        var g = new RecordingGraphics(); PhoneRenderer.paint(g, screen, 640, 480);
+        if (fps) {
+            assertThat(g.text).containsExactly(screen.fps(), speed + "x / sound muted", "L+R locked");
+            assertThat(g.textY).containsExactly(12, 52, 92);
+        } else {
+            assertThat(g.text).containsExactly(speed + "x / sound muted", "L+R locked");
+            assertThat(g.textY).containsExactly(12, 52);
+        }
+        screen.setSpeed(1); screen.setShoulderLocks(0); screen.setFps("");
+        var normal = new RecordingGraphics(); PhoneRenderer.paint(normal, screen, 640, 480);
+        assertThat(normal.text).isEmpty();
+    }
+    @ParameterizedTest
     @CsvSource({"512,L locked", "256,R locked", "768,L+R locked"})
     void shoulderLocksRemainVisibleWithFpsOffAndDoNotOverlapTheFpsRow(int locks, String label) {
         var screen = new PhoneScreen(); PhoneMenus.game(screen, "Game"); screen.setFrame(new int[240 * 160]);
