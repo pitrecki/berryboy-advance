@@ -4,12 +4,13 @@ import berryboy.cheat.CheatList;
 public final class PhoneCanvas {
     public volatile boolean loaded,closed;
     public volatile int frames,slots,generation;
+    public volatile int firstFrameSample=-1;
     public volatile String message="",failure;
     synchronized long paintedFrames(){return frames;}
     void awaitPresentation(){}
     synchronized void loaded(String title,CheatList cheats,String[] values,boolean persistent,int generation){this.generation=generation;loaded=true;}
     synchronized void slots(String[] values,boolean supported){slots++;}
-    synchronized void present(int[] owned,int gba,int draw,String audio){frames++;notifyAll();}
+    synchronized void present(int[] owned,int gba,int draw,String audio){if(frames==0)firstFrameSample=owned[10];frames++;notifyAll();}
     synchronized void failed(String error){failure=error;notifyAll();}
     synchronized void message(String text){message=text;notifyAll();}
     synchronized void restored(int[] owned,String text){message=text;notifyAll();}

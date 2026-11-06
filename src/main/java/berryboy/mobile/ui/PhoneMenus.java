@@ -18,9 +18,9 @@ public final class PhoneMenus {
                 new String[]{">", "5 slots", "5 slots", ">", ">", ">", ">", ">"}, null);
     }
     public static void settings(PhoneScreen screen, PhoneOptions options) {
-        show(screen, "Display & audio", "Left / Right to change", new String[]{"Volume", "Mute", "Sound", "Frame skip", "FPS counter", "Game image"},
+        show(screen, "Display & audio", "Left / Right to change", new String[]{"Volume", "Mute", "Sound", "Frame skip", "FPS counter", "Game image", "GBA boot animation"},
                 new String[]{options.volume() + "%", options.muted() ? "On" : "Off", options.mono() ? "Mono" : "Stereo",
-                    options.frameSkip() == 0 ? "Off" : "1 in " + (options.frameSkip() + 1), options.showFps() ? "On" : "Off", scalingName(options.scaling())}, null);
+                    options.frameSkip() == 0 ? "Off" : "1 in " + (options.frameSkip() + 1), options.showFps() ? "On" : "Off", scalingName(options.scaling()), options.showBoot() ? "Show" : "Skip"}, null);
     }
     public static void controls(PhoneScreen screen, PhoneOptions options) {
         var labels = new String[11];

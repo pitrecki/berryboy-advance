@@ -1,0 +1,69 @@
+{
+  "date": "2026-11-06",
+  "version": "0.9.0-SNAPSHOT",
+  "source_base_commit": "56c1507e0f56e557f7888533e8165f83bd70364f",
+  "source_dirty": true,
+  "change": "Optional hidden BIOS startup preserving original initialization and complete guest execution",
+  "hardware": "Linux x86_64; Temurin 21.0.8; Maven 3.9.11",
+  "behavior": {
+    "default": "Show; existing settings versions 1-3 retain visible startup",
+    "skip": "No presentation, output PCM or wall pacing until cartridge entry and a complete game frame; original supplied BIOS still runs",
+    "persistence": "PhoneOptions version 4, independent of guest MachineState format 1",
+    "lifecycle": "Applies to fresh open/restart; state load restores exact scene; hidden work uses one frame budgets with input/commands/PCM draining between budgets",
+    "failure": "Report BIOS that does not reach cartridge within 10 guest seconds"
+  },
+  "validation": {
+    "host_tests": 2128,
+    "console_host_tests": 2128,
+    "exported_core_tests": 2004,
+    "actual_new_cldc_core_tests": 2004,
+    "failures": 0,
+    "skipped": 0,
+    "native_session_first_frame": "Synthetic red BIOS then white cartridge: Show submits red; Skip submits only white",
+    "sdk_and_rapc": "Passed; JDE 7.1 / ECJ 4.6.1; development COD/JAD, no release ZIP or tag"
+  },
+  "original_assets_replay": {
+    "Golden_Sun_A": {
+      "rom_sha256": "c14f1151897e8d73f25ffdd67e21eebb6dc57973ff2458872ee89fa9060aaca1",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "guest_frames_compared": 272,
+      "stereo_pcm_frames_compared": 149226,
+      "guest_cycles": 76403715,
+      "state_sha256": "260c66096e7e8e08f032c32b3d5cd4132536f6e3119a4b28302987c7374989d2",
+      "rgb_pcm_and_complete_state_identical_at_every_frame": true
+    },
+    "POKEMON LEAF": {
+      "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "guest_frames_compared": 272,
+      "stereo_pcm_frames_compared": 149226,
+      "guest_cycles": 76403713,
+      "state_sha256": "1b274feb33d52b5c76353e5b37cf9c85d17bf8e68dfd04e8aab5f4975d58856b",
+      "rgb_pcm_and_complete_state_identical_at_every_frame": true
+    },
+    "SONICADVANC3": {
+      "rom_sha256": "f937fa93b97b14b9fb9fce98844c534f936222d21d1fdb5f1af42292bad32c85",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "guest_frames_compared": 272,
+      "stereo_pcm_frames_compared": 149226,
+      "guest_cycles": 76403714,
+      "state_sha256": "fff128a162b964adc1cc8b127587eb32c98ad8d54293cb6a5c05fa4dc5b13dd9",
+      "rgb_pcm_and_complete_state_identical_at_every_frame": true
+    }
+  },
+  "reproduce": "Compile tools/BiosStartupReplayProbe.java against target/classes; pass report.json and local scenario.properties files identifying ROM/BIOS paths and SHA-256 values. Compare complete MachineState, RGB and drained PCM after every guest frame.",
+  "source_files_sha256": {
+    "src/main/java/berryboy/boot/BiosStartup.java": "0c12fc28cd7110eb555356c6871f6503a51121322f59c6d6cb2c68fdbf819512",
+    "platform/midp/berryboy/phone/PhoneSession.java": "71d0fcafff7ab37615d2259bf3303e7495a72cb8c719477f1a18b15d6cf522b7",
+    "src/main/java/berryboy/mobile/settings/PhoneOptions.java": "295d32afdfcc0684f014d3821bd4009f8f6d5f885eb6cc6b2bafeb9cfeac7f5e",
+    "tools/BiosStartupReplayProbe.java": "7c09f73318c624f86cf5abbefad350fd9dbd6b217bdec623c4445e1546664397",
+    "docs/images/phone/settings.png": "ee24f11433ea08b9a1a5dcf0a47b666430979031273dac5f36c31a14b9de6c8e"
+  },
+  "native_artifact_sha256": {
+    "BerryBoyAdvance.cod": "bbae463fe34b1e94b543f45a4ef633043de3fffa4594e043eb8c1716d6c68c4f",
+    "BerryBoyAdvance.jad": "b44080315da0b16a27fcb6d5922e4d2ac22b2f3987b3adc0924480a053027428",
+    "BerryBoyAdvance.jar": "e5198b943466768366b5471426c626854a0f3babb48f3384511422bbd1dd429c"
+  },
+  "capture": "Production menu/renderer via headless Java2D at 640x480; target/boot-gallery-current/settings.png",
+  "limitations": "Host/session-double and SDK results are separate from BBOS runtime measurements; skipping BIOS presentation does not remove computation cost."
+}

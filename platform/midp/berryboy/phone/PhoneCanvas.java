@@ -102,6 +102,7 @@ public final class PhoneCanvas extends Canvas implements CommandListener {
         loaded = true; game = title; this.cheats = cheats; slotSummaries = slots; this.persistent = persistent;
         gameGeneration = generation;
         screen.setFrame(null); frameVersion++; show(active ? GAME : PAUSE);
+        if (!options.showBoot()) screen.setNotice("Starting game...");
         if (active) display.setCurrent(this);
     }
     synchronized void slots(String[] values, boolean supported) {
@@ -249,8 +250,10 @@ public final class PhoneCanvas extends Canvas implements CommandListener {
         else if (selected == 2) options.setMono(!options.mono());
         else if (selected == 3) options.setFrameSkip((options.frameSkip() + direction + 6) % 6);
         else if (selected == 4) options.setShowFps(!options.showFps());
-        else options.setScaling((options.scaling() + direction + 4) % 4);
+        else if (selected == 5) options.setScaling((options.scaling() + direction + 4) % 4);
+        else options.setShowBoot(!options.showBoot());
         show(SETTINGS); screen.select(selected); saveOptions();
+        if (selected == 6) message("Next start / restart: skip hides the animation and runs BIOS startup without pacing");
     }
     private void saveOptions() {
         input.setStickyShoulders(options.stickyShoulders());

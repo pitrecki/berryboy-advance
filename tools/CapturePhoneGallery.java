@@ -64,7 +64,7 @@ public final class CapturePhoneGallery {
         screen = new PhoneScreen(); PhoneMenus.home(screen,false);
         screen.setMessage("Navigate: trackpad / I,K / Select: Enter / Back"); painter.write(screen,output.resolve("home.png"));
         screen.setFrame(menuFrame); PhoneMenus.pause(screen,menuTitle); painter.write(screen,output.resolve("pause.png"));
-        var options=new PhoneOptions(); options.setShowFps(true); PhoneMenus.settings(screen,options); screen.select(5);
+        var options=new PhoneOptions(); options.setShowFps(true); PhoneMenus.settings(screen,options); screen.select(6);
         painter.write(screen,output.resolve("settings.png"));
         options.setStickyShoulders(true); PhoneMenus.controls(screen,options);
         screen.setMessage("L/R: tap to lock, tap again to release / Back clears");

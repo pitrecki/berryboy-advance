@@ -2,6 +2,7 @@ package berryboy.phone;
 
 import berryboy.DemoRom;
 import berryboy.Machine;
+import berryboy.boot.BiosStartup;
 import berryboy.RuntimeChecks;
 import berryboy.cartridge.Cartridge;
 import berryboy.cartridge.CartridgeBackup;
@@ -38,6 +39,7 @@ final class PhoneSession implements Runnable {
     private byte[] bios;
     private PhoneStorage storage;
     private PhoneAudio audio;
+    private BiosStartup startup;
 
     PhoneSession(PhoneCanvas view, PhoneOptions options) {
         this.view = view; this.options = options.copy();
@@ -107,6 +109,18 @@ final class PhoneSession implements Runnable {
                         if (!wasPaused) { if (audio != null) audio.reset(); flushBackup(); }
                         if (machine != null) machine.memory.setPressedKeys(0);
                         wasPaused = true; continue;
+                    }
+                    if (startup != null) {
+                        machine.memory.setPressedKeys(held);
+                        cheats.apply(machine.memory);
+                        long bootTarget = (machine.clock.now() / LcdTiming.FRAME_CYCLES + 1) * LcdTiming.FRAME_CYCLES;
+                        startup.runCycles(bootTarget - machine.clock.now());
+                        int bootSamples = machine.memory.clockedAudio().availableFrames();
+                        if (bootSamples > pcm.length / 2 || machine.memory.clockedAudio().overruns() != 0) throw new IllegalStateException("Audio capture overflow");
+                        machine.memory.clockedAudio().drain(pcm, bootSamples);
+                        if (startup.complete()) { startup = null; wallOrigin = 0; }
+                        wasPaused = false;
+                        continue; // Hidden boot has no presentation, MMAPI output or wall-clock wait.
                     }
                     if (wasPaused || wallOrigin == 0) {
                         wallOrigin = System.currentTimeMillis(); cycleOrigin = machine.clock.now();
@@ -187,6 +201,7 @@ final class PhoneSession implements Runnable {
             }
             flushBackup();
             rom = nextRom; bios = nextBios; machine = candidate; storage = nextStorage; cheats = nextCheats;
+            startup = bios != null && !options.showBoot() ? new BiosStartup(machine) : null;
             machine.memory.clockedAudio().setCapture(true);
             synchronized (this) { gameGeneration++; }
             view.loaded(machine.cartridge.title(), nextCheats.copy(), storage == null ? emptySlots() : storage.slots(), storage != null, gameGeneration);
@@ -204,6 +219,7 @@ final class PhoneSession implements Runnable {
                 replacement.memory.setBackup(new CartridgeBackup(machine.memory.backup().type()));
                 replacement.memory.backup().restore(machine.memory.backup().snapshot());
                 machine = replacement; machine.memory.clockedAudio().setCapture(true);
+                startup = bios != null && !options.showBoot() ? new BiosStartup(machine) : null;
                 showRestored("Game restarted");
             } else {
                 if (storage == null) throw new IllegalStateException("State files require a game opened from storage");
@@ -216,6 +232,7 @@ final class PhoneSession implements Runnable {
                     if (bytes == null) throw new IllegalStateException("This slot is empty");
                     Machine replacement = MachineState.load(rom, bios, bytes);
                     flushBackup(); machine = replacement;
+                    startup = null; // Loading a state restores its exact screen; boot preference is for fresh starts.
                     machine.memory.clockedAudio().setCapture(true);
                     showRestored("Loaded slot " + (slot + 1));
                 }

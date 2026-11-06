@@ -14,7 +14,7 @@ class PhoneOptionsTest {
     void persistsPreferencesAndMapsAllTenButtons() {
         var options = new PhoneOptions();
         options.setFrameSkip(3); options.setShowFps(true); options.setMono(true); options.setVolume(30);
-        options.bind(0, 'Q'); options.setScaling(PhoneOptions.SCALE_STRETCH); options.setStickyShoulders(true);
+        options.bind(0, 'Q'); options.setScaling(PhoneOptions.SCALE_STRETCH); options.setStickyShoulders(true); options.setShowBoot(false);
         var copy = PhoneOptions.decode(options.encode());
         assertSoftly(s -> {
             s.assertThat(copy.frameSkip()).isEqualTo(3);
@@ -23,6 +23,7 @@ class PhoneOptionsTest {
             s.assertThat(copy.showFps()).isTrue();
             s.assertThat(copy.scaling()).isEqualTo(PhoneOptions.SCALE_STRETCH);
             s.assertThat(copy.stickyShoulders()).isTrue();
+            s.assertThat(copy.showBoot()).isFalse();
             s.assertThat(copy.buttonsFor('Q')).isEqualTo(Keypad.A);
             s.assertThat(copy.buttonsFor('\r')).isEqualTo(Keypad.START);
             for (var i = 0; i < 10; i++) s.assertThat(copy.buttonsFor(copy.key(i))).isEqualTo(1 << i);
@@ -30,6 +31,7 @@ class PhoneOptionsTest {
         copy.setVolume(90); copy.setStickyShoulders(false);
         assertThat(options.volume()).isEqualTo(30);
         assertThat(options.copy().stickyShoulders()).isTrue();
+        assertThat(options.copy().showBoot()).isFalse();
         assertThatThrownBy(() -> copy.bind(1, 'q')).hasMessageContaining("already assigned");
         assertThatThrownBy(() -> copy.bind(1, -11)).hasMessageContaining("reserved");
         assertThatThrownBy(() -> copy.setVolume(101)).isInstanceOf(IllegalArgumentException.class);
@@ -50,12 +52,21 @@ class PhoneOptionsTest {
                 s.assertThat(migrated.mono()).isTrue();
                 s.assertThat(migrated.scaling()).isEqualTo(integer ? PhoneOptions.SCALE_INTEGER : PhoneOptions.SCALE_NATIVE);
                 s.assertThat(migrated.buttonsFor('q')).isEqualTo(Keypad.A);
-                s.assertThat(migrated.encode()).hasSize(60);
+                s.assertThat(migrated.encode()).hasSize(61);
                 s.assertThat(migrated.stickyShoulders()).isFalse();
+                s.assertThat(migrated.showBoot()).isTrue();
                 s.assertThat(PhoneOptions.decode(migrated.encode()).scaling()).isEqualTo(migrated.scaling());
                 s.assertThat(bytes).isEqualTo(before);
             });
         }
+    }
+    @Test
+    void migratesVersionThreeWithoutChangingItsBootBehavior() {
+        var options = new PhoneOptions(); options.setStickyShoulders(true); options.setShowBoot(false);
+        var old = java.util.Arrays.copyOf(options.encode(), 60); old[0] = 3;
+        var copy = PhoneOptions.decode(old);
+        assertThat(copy.showBoot()).isTrue();
+        assertThat(copy.stickyShoulders()).isTrue();
     }
     @Test
     void migratesVersionTwoKeepingExistingSettingsAndLeavingAssistOff() {

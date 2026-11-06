@@ -15,10 +15,49 @@ import java.util.function.BooleanSupplier;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 @Tag("build")
 class PhoneSessionTest {
     @TempDir Path temporary;
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void presentsBiosFramesOnlyWhenBootAnimationIsEnabled(boolean showBoot) throws Exception {
+        var root = Path.of(System.getProperty("berryboy.projectRoot", ".")).toAbsolutePath();
+        var classes = temporary.resolve("classes");
+        assertThat(PhoneHarness.compile(root, classes, true)).isZero();
+        try (var loader = new URLClassLoader(new java.net.URL[]{classes.toUri().toURL()}, getClass().getClassLoader())) {
+            var uiType = loader.loadClass("berryboy.phone.PhoneCanvas"); var ui = uiType.getConstructor().newInstance();
+            var type = loader.loadClass("berryboy.phone.PhoneSession");
+            var ctor = type.getDeclaredConstructor(uiType, PhoneOptions.class); ctor.setAccessible(true);
+            var options = new PhoneOptions(); options.setMuted(true); options.setShowBoot(showBoot);
+            var bios = new byte[16384]; var rom = new byte[512];
+            // Red BIOS frame, a long CPU delay, then a cartridge that enables forced blank (white).
+            word(bios, 0, 0xe59f0078); word(bios, 0x80, 0x04000000);
+            word(bios, 4, 0xe3a01b01); word(bios, 8, 0xe2811003); word(bios, 12, 0xe1c010b0);
+            word(bios, 0x10, 0xe59f006c); word(bios, 0x84, 0x06000000);
+            word(bios, 0x14, 0xe3a0101f); word(bios, 0x18, 0xe1c010b0);
+            word(bios, 0x1c, 0xe59f2064); word(bios, 0x88, 100000);
+            word(bios, 0x20, 0xe2522001); word(bios, 0x24, 0x1afffffd);
+            word(bios, 0x28, 0xe59ff05c); word(bios, 0x8c, 0x08000000);
+            word(rom, 0, 0xe59f0018); word(rom, 0x20, 0x04000000);
+            word(rom, 4, 0xe3a01080); word(rom, 8, 0xe1c010b0); word(rom, 12, 0xeafffffe);
+            var romFile = temporary.resolve("boot.gba"); var biosFile = temporary.resolve("boot.bin");
+            Files.write(romFile, rom); Files.write(biosFile, bios);
+            var session = ctor.newInstance(ui, options);
+            try {
+                assertThat((boolean) method(type,"request",int.class,int.class,String.class,String.class)
+                        .invoke(session,2,0,romFile.toUri().toString(),biosFile.toUri().toString())).isTrue();
+                waitFor(() -> number(uiType,ui,"frames") > 0 || text(uiType,ui,"failure") != null);
+                assertThat(uiType.getField("failure").get(ui)).isNull();
+                assertThat(number(uiType,ui,"firstFrameSample")).isEqualTo(showBoot ? 0xff0000 : 0xffffff);
+            } finally {
+                method(type,"close").invoke(session);
+                assertThat((boolean) method(type,"awaitClosed",long.class).invoke(session,5000L)).isTrue();
+            }
+        }
+    }
     @Test
     void runsNativeSessionCommandsOnOneOwnerAndRestoresSavedProgress() throws Exception {
         var root = Path.of(System.getProperty("berryboy.projectRoot", ".")).toAbsolutePath();

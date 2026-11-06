@@ -15,6 +15,7 @@ public final class PhoneOptions {
     private boolean mono;
     private boolean showFps;
     private boolean stickyShoulders;
+    private boolean showBoot = true;
     private int scaling = SCALE_FIT;
     private final KeyBindings keys = new KeyBindings();
 
@@ -24,6 +25,7 @@ public final class PhoneOptions {
     public boolean mono() { return mono; }
     public boolean showFps() { return showFps; }
     public boolean stickyShoulders() { return stickyShoulders; }
+    public boolean showBoot() { return showBoot; }
     public int scaling() { return scaling; }
     public int key(int button) { return keys.key(button); }
     public void setVolume(int value) {
@@ -38,6 +40,7 @@ public final class PhoneOptions {
     public void setMono(boolean value) { mono = value; }
     public void setShowFps(boolean value) { showFps = value; }
     public void setStickyShoulders(boolean value) { stickyShoulders = value; }
+    public void setShowBoot(boolean value) { showBoot = value; }
     public void setScaling(int value) {
         if (value < SCALE_NATIVE || value > SCALE_STRETCH) throw new IllegalArgumentException("Invalid image scaling mode");
         scaling = value;
@@ -50,17 +53,18 @@ public final class PhoneOptions {
         result.muted = muted; result.mono = mono;
         result.showFps = showFps; result.scaling = scaling;
         result.stickyShoulders = stickyShoulders;
+        result.showBoot = showBoot;
         result.keys.copyFrom(keys);
         return result;
     }
     public byte[] encode() {
         var state = new StateBuffer();
-        state.value(3); transfer(state, 3); return state.finish();
+        state.value(4); transfer(state, 4); return state.finish();
     }
     public static PhoneOptions decode(byte[] bytes) {
         var state = new StateBuffer(bytes);
         var version = state.value(0);
-        if (version < 1 || version > 3) throw new IllegalArgumentException("Unsupported settings version");
+        if (version < 1 || version > 4) throw new IllegalArgumentException("Unsupported settings version");
         var result = new PhoneOptions(); result.transfer(state, version); state.requireEnd();
         result.setVolume(result.volume); result.setFrameSkip(result.frameSkip); result.setScaling(result.scaling);
         return result;
@@ -72,5 +76,6 @@ public final class PhoneOptions {
         scaling = version == 1 ? (state.flag(false) ? SCALE_INTEGER : SCALE_NATIVE) : state.value(scaling);
         keys.transferState(state);
         stickyShoulders = version >= 3 && state.flag(stickyShoulders);
+        showBoot = version < 4 || state.flag(showBoot);
     }
 }

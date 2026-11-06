@@ -200,6 +200,10 @@ The pause menu provides:
   display submissions. Full-screen aspect fit is the default; the game uses all
   canvas space without an app title/footer. Stretch fills the canvas edge to edge;
   native/integer modes retain pixel-sized scaling. Frame skip defaults to off.
+  **GBA boot animation → Show/Skip** applies on the next game open/restart.
+  Skip runs the supplied BIOS without presentation, output sound or wall-clock
+  pacing, then shows a complete game frame. It still requires the BIOS and its
+  normal initialization; loading a state restores that state directly.
 - **Restart game / Home:** restart preserves current battery data; Home leaves
   the session paused. Diagnostics remains available without a commercial ROM.
 

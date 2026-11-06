@@ -28,7 +28,7 @@ bottlenecks and preserves event ordering.
 
 ## Current validation
 
-- **2120 host tests**, **1998 exported-core tests**, and **1998 tests against the
+- **2128 host tests**, **2004 exported-core tests**, and **2004 tests against the
   actual new ECJ/CLDC classes** pass, with no failures or skips. Counts include
   parameterized invocations. Detailed build and artifact data is in the linked evidence.
 - Native Linux JDE 7.1 / ECJ 4.6.1 / RAPC verification passes and produces a
@@ -38,6 +38,11 @@ bottlenecks and preserves event ordering.
   there, supports other storage roots and Unicode names, filters ROM/BIOS files,
   and suppresses late callbacks after cancellation. Host doubles and native SDK
   compilation cover the new interface separately.
+- [Optional boot animation](../benchmarks/boot-animation-2026-11-06.json) hides
+  BIOS presentation without bypassing its initialization. Golden Sun, LeafGreen
+  and Sonic Advance 3 retain identical complete state, RGB and PCM at every
+  startup frame against visible execution; native-session tests verify the first
+  submitted frame belongs to the game when Skip is enabled.
 - The [phone feature boundaries](ARCHITECTURE.md#responsibilities) now separate
   input, settings, audio, video and UI, with matching test packages. Key mappings
   have their own state owner. Package moves preserve preference/state layouts and
@@ -134,7 +139,7 @@ and SDK/API compatibility, while target execution remains open.
 | --- | --- |
 | Menus, local games and controls | Implemented. Verify browsing/permissions, simultaneous keys, focus release, pause/resume and text/layout on BBOS. |
 | Configurable game folder | Implemented. Home → ROM folder persists the chosen local location; Open game → Browse ROM starts there. Last selected ROM/BIOS URLs persist independently. |
-| Boot animation | Requested next: optionally hide the BIOS startup animation while preserving actual BIOS initialization. |
+| Boot animation | Implemented. Show/Skip persists and applies on open/restart. Skip runs authentic BIOS startup without presentation/audio/pacing; state loading preserves the saved scene. |
 | Playback speed | Requested next: selectable 1×/2×/4×/8× pacing, with explicit accelerated-audio behavior and accurate guest/draw counters. |
 | Shoulder combinations | Implemented. Controls → L/R assist → Tap to lock keeps either shoulder held while using A/B and directions; a second tap releases it. Default off, mode persists, held locks never persist and clear at lifecycle boundaries. |
 | Five save slots | Implemented. Host replay and failed-write tests pass. Repeat save/load across application restart, low storage and interrupted writes on the target; keep a copy of the original player save. |
