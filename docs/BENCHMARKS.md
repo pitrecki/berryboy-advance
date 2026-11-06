@@ -79,6 +79,11 @@ bottlenecks and preserves event ordering.
   Forty-eight mGBA observations plus cancellation, GPIO selection and state replay
   regressions pass. Doom II completes the 1800-frame smoke route after both fixes;
   existing Tony Hawk/F-Zero/Mario & Luigi RGB/PCM captures remain unchanged.
+- [Four added stress titles](../benchmarks/stress-games-2026-11-06.json) expand
+  the uploaded library to fifteen games. Each completes a fresh 1800-frame route;
+  a separate 2400-frame Doom II route reaches the first level with movement,
+  turning and fire input. Strict RGB/PCM comparisons still fail. F-Zero reaches
+  vehicle selection and Mario & Luigi its intro; their gameplay routes remain open.
 - [Sticky shoulder controls](../benchmarks/shoulder-assist-2026-11-06.json)
   add optional independent L/R locks, repeat protection, visible active badges
   and release on pause/focus/game/state changes. Settings version 3 migrates
@@ -185,7 +190,7 @@ user settings do not relax that qualification protocol.
 | 2 / P0: Wider CPU/LCD timing | Extend prefetch coverage to cartridge-bus DMA, stream invalidation and address edges; qualify pipeline latching/self-modifying code and IRQ propagation/mask latency. Trace the LeafGreen frame-930 offset and HBlank at cycle 960 versus the reference's 1008. | Matching event/retirement observations with justified expected timing. Keep in-flight snapshots distinct from retired state. Do not adjust a constant solely to improve screenshot counts. |
 | 3 / P0: Graphics expected results | Resolve the 2244-case three-way disagreement on brightness rounding and palette bit 15 using independently justified outputs or hardware evidence. Then qualify combined raster/OBJ/window effects. | Explicit per-pixel expectations and regression scenes. The renderer remains unqualified until those expectations are established; no relaxed tolerances. |
 | 4 / P1: Audio correctness | Start with late Sonic Advance 3 and Wario Land 4 differences. Compare timer/DMA FIFO, PSG and sample-clock events before diagnosing gain/filter/resampling. | Repeatable sample/event checkpoints, justified comparison rules, listening review and no software-buffer loss. Timing-dependent fixes follow the timing gates. |
-| 5 / P1: Gameplay and saves | Extend LeafGreen to overworld/menu/save, Sonic or Wario to a level, Golden Sun to a battle and V-Rally to a race; then cover the remaining titles. | Named reference checkpoints, second save generations and cold cross-loads from isolated copies. Preserve strict binary and full-stream outcomes. |
+| 5 / P1: Gameplay and saves | Doom II now has a first-level input route. Extend F-Zero to a race and Mario & Luigi to player control; retain LeafGreen overworld/menu/save, Sonic/Wario level, Golden Sun battle and V-Rally race work. | Named reference checkpoints, second save generations and cold cross-loads from isolated copies. Preserve strict binary and full-stream outcomes; visible play alone does not qualify correctness. |
 | 6 / P2: Linux performance | Once selected routes pass correctness, profile CPU/PPU/presentation and optimize one demonstrated bottleneck at a time. Consider acceleration only with a supported backend and matching software output. | Three 10-minute runs after 30-second warmup, measured presentation/audio, bounded queues/memory and the gates below. |
 | 7 / Target-dependent: BlackBerry runtime | Run the new phone frontend in the simulator; qualify file access, slots, input and MMAPI output, then repeat correctness and sustained playback on a physical Bold. | Separate build, simulator and device reports; actual application results and physical measurements. |
 
@@ -207,7 +212,7 @@ safe failure injection using disposable save copies.
 ## Five-game qualification suite
 
 [benchmarks/suite.json](../benchmarks/suite.json) retains the original
-**planned-not-run** qualification entries. Eleven uploaded games do not replace
+**planned-not-run** qualification entries. Fifteen uploaded games do not replace
 this suite. Mario & Luigi and WarioWare: Twisted! assets are still missing;
 Twisted! also needs a deterministic sensor recording.
 

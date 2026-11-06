@@ -10,6 +10,8 @@
 - Model disconnected multiplayer-port initialization without synthesizing peer
   data or completion IRQs, allowing Doom II startup to continue. Preserve normal
   shifts, GPIO selection and the existing machine-state layout.
+- Add recorded cold-boot routes for Tony Hawk 2, Doom II, F-Zero GP Legend and
+  Mario & Luigi, plus a Doom first-level input route and strict reference results.
 
 ## 0.9.0 — 2026-11-06 (preview)
 
