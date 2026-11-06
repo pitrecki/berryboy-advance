@@ -1,6 +1,7 @@
 package berryboy.desktop;
 
 import berryboy.mobile.PhoneGraphics;
+import berryboy.mobile.FrameScaler;
 import berryboy.mobile.PhoneMenus;
 import berryboy.mobile.PhoneOptions;
 import berryboy.mobile.PhoneRenderer;
@@ -24,18 +25,29 @@ public final class CapturePhone implements PhoneGraphics {
     private final Graphics2D graphics = image.createGraphics();
     private final Font regular = new Font("Dialog",Font.PLAIN,16);
     private final Font heading = new Font("Dialog",Font.BOLD,24);
-    private CapturePhone() { graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,RenderingHints.VALUE_TEXT_ANTIALIAS_ON); }
+    private final FrameScaler scaler = new FrameScaler();
+    private final BufferedImage logo;
+    CapturePhone() throws Exception {
+        logo = ImageIO.read(Path.of("platform/midp/resources/berryboy-mark.png").toFile());
+        if (logo == null) throw new IllegalStateException("Missing application logo");
+        graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+    }
     public void fill(int x,int y,int width,int height,int rgb) { graphics.setColor(new Color(rgb));graphics.fillRect(x,y,width,height); }
     public void text(String value,int x,int y,int rgb,boolean large) {
         graphics.setFont(large?heading:regular);graphics.setColor(new Color(rgb));
         graphics.drawString(value,x,y+graphics.getFontMetrics().getAscent());
     }
     public int textWidth(String value,boolean large) { return graphics.getFontMetrics(large?heading:regular).stringWidth(value); }
-    public void pixels(int[] owned,int x,int y,int scale) {
-        var frame = new BufferedImage(240,160,BufferedImage.TYPE_INT_RGB);frame.setRGB(0,0,240,160,owned,0,240);
-        graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION,RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
-        graphics.drawImage(frame,x,y,240*scale,160*scale,null);
+    public void logo(int x, int y) { graphics.drawImage(logo, x, y, null); }
+    public void pixels(int[] owned,int x,int y,int width,int height) {
+        var frame = new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB);
+        frame.setRGB(0,0,width,height,scaler.scale(owned,width,height),0,width);
+        graphics.drawImage(frame,x,y,null);
     }
+    void write(PhoneScreen screen, Path output) throws Exception {
+        PhoneRenderer.paint(this, screen, 640, 480); ImageIO.write(image, "png", output.toFile());
+    }
+    void close() { graphics.dispose(); }
     public static void main(String[] args) throws Exception {
         if(args.length!=3)throw new IllegalArgumentException("Usage: CapturePhone scenario state.bbs outputFolder");
         var config=Path.of(args[0]).toAbsolutePath();var output=Path.of(args[2]);
@@ -62,7 +74,7 @@ public final class CapturePhone implements PhoneGraphics {
         PhoneMenus.slots(screen,false,new String[]{"Saved","Empty","Empty","Empty","Empty"},true);
         screen.setMessage("Saved slot 1");
         capture(painter,screen,output,"slots",report);
-        PhoneMenus.game(screen,machine.cartridge.title());screen.setMessage("GBA -- fps / Draw -- fps / Back: pause");
+        PhoneMenus.game(screen,machine.cartridge.title());screen.setFps("");
         capture(painter,screen,output,"game",report);
         Files.writeString(output.resolve("capture.json"),JsonReport.encode(report)+"\n");painter.graphics.dispose();
     }

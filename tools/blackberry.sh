@@ -90,7 +90,7 @@ if [[ $bb_compiler == ecj ]]; then
   "$java_command" -jar "$bb_ecj" -source 1.3 -target cldc1.1 -encoding UTF-8 \
     -bootclasspath "$bb_api" -classpath "$build_root/classes" -d "$build_root/classes" \
     "@$build_root/sources.args"
-  "$jar_command" cf "$midlet_jar" -C "$build_root/classes" .
+  "$jar_command" cf "$midlet_jar" -C "$build_root/classes" . -C "$project_root/platform/midp/resources" .
 else
   classes_win=$(windows_path "$build_root/classes")
   api_win=$(windows_path "$bb_api")
@@ -104,14 +104,15 @@ else
     echo 'Preverification produced no MIDlet class' >&2; exit 1;
   }
   wine "$bb_jdk6/bin/jar.exe" cf "$(windows_path "$midlet_jar")" \
-    -C "$(windows_path "$build_root/preverified")" .
+    -C "$(windows_path "$build_root/preverified")" . \
+    -C "$(windows_path "$project_root/platform/midp/resources")" .
 fi
 jar_size=$(wc -c < "$midlet_jar" | tr -d ' ')
 cat > "$build_root/output/BerryBoyAdvance.jad" <<JAD
 MIDlet-Name: BerryBoy Advance
 MIDlet-Version: $bb_version
 MIDlet-Vendor: BerryBoy
-MIDlet-1: BerryBoy Advance,,berryboy.BlackBerryMidlet
+MIDlet-1: BerryBoy Advance,/berryboy-icon.png,berryboy.BlackBerryMidlet
 MIDlet-Jar-URL: BerryBoyAdvance.jar
 MIDlet-Jar-Size: $jar_size
 MicroEdition-Profile: MIDP-2.0

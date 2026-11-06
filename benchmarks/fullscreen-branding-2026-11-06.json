@@ -1,0 +1,220 @@
+{
+  "date": "2026-11-06",
+  "version": "0.8.1-SNAPSHOT",
+  "source_base_commit": "a85be7fefbbd3a9d90739849aba84e8bebcae477",
+  "source_dirty": true,
+  "changes": [
+    "Original handheld/berry app icon in launcher, phone menus and README",
+    "Play uses the entire canvas without application header/footer; aspect-fit default, stretch/native/integer alternatives",
+    "Cached nearest-neighbor coordinate maps shared by native output and documentation rendering",
+    "FPS is an optional overlay, with runtime audio notices shown only when needed",
+    "Settings version 2 reads version 1 without losing mappings/audio settings or native/integer image choices",
+    "Five uploaded games replace the LeafGreen-only phone gallery; menus and gameplay have separate README sections",
+    "Repeated platform-validation disclaimers removed from README/gallery and the diagnostic screen; factual scope remains here and in canonical technical status"
+  ],
+  "validation": {
+    "host_tests": 1878,
+    "console_host_tests": 1878,
+    "exported_core_tests": 1770,
+    "actual_ecj_cldc_core_tests": 1770,
+    "new_core_cases": 11,
+    "failures": 0,
+    "skips": 0,
+    "coverage": "Eight viewport geometries, no game chrome/optional FPS, fractional sampler corners/source ownership, v1 preference migration, existing core/session/storage checks",
+    "syntax_rewrites": 583,
+    "sdk_build": "JDE 7.1 / ECJ 4.6.1 CLDC / vendor RAPC: BUILD SUCCESS, No errors",
+    "midlet_version": "0.8.1",
+    "launcher_icon": "/berryboy-icon.png",
+    "native_jar_contains_both_brand_pngs": true,
+    "shell_syntax": "passed",
+    "cod_bytes": 101830,
+    "cod_sha256": "44e045cbc5193e17d138d7614be4cd194b773f1d70696e4338a84ab92d0ba4eb",
+    "native_jar_sha256": "cda99688c827a67fbf81d1f8ef6da85c3a18440a591490c9524b71b7315e15b6"
+  },
+  "display": {
+    "canvas": [
+      640,
+      480
+    ],
+    "default_mode": "Full screen / aspect fit",
+    "fit_rectangle": [
+      0,
+      27,
+      640,
+      426
+    ],
+    "stretch_rectangle": [
+      0,
+      0,
+      640,
+      480
+    ],
+    "integer_rectangle": [
+      80,
+      80,
+      480,
+      320
+    ],
+    "native_rectangle": [
+      200,
+      160,
+      240,
+      160
+    ],
+    "game_header_footer": false,
+    "game_fps_overlay": "opt-in; no invented rates in screenshots",
+    "sampler": "nearest neighbor; cached columns/rows; owned UI output; no changes to guest timing or audio"
+  },
+  "branding": {
+    "origin": "Generated specifically for BerryBoy Advance with the image generation tool; original master preserved",
+    "master": "assets/branding/berryboy-icon-master.png",
+    "master_sha256": "9665d18f12e752011921dac0370d1503addd61c72fa449dbad09a7a86e3be021",
+    "readme_256_sha256": "a5614243bbc33b81d4e9d81f491811511a1c69201e89595a0360a251282a9ea1",
+    "launcher_64_sha256": "34e5bde58da0654d03c53382d6dd7daf28c578140228c8b52fded0727558089b",
+    "menu_40_sha256": "e005f0f1fcb4a1c6c328cb2d073c8eb6b258a6e27fe73281bb50bcd96a071349",
+    "asset_export": "tools/PrepareBrandAssets.java; preserves alpha and downsamples for target sizes"
+  },
+  "capture": {
+    "method": "Fresh deterministic local-ROM/BIOS/input emulation checkpoints, then production PhoneMenus/PhoneRenderer/FrameScaler via PhoneGraphics with Java2D fonts",
+    "canvas": [
+      640,
+      480
+    ],
+    "manifest": "benchmarks/phone-gallery.tsv",
+    "scenes": [
+      {
+        "game": "BMXE",
+        "title": "Metroid: Zero Mission",
+        "guest_frame": 7200,
+        "rom_sha256": "fc94f65380b65b870a30b9b04b39cca1dc63d6e46a4a373d3904adc0912ebc37",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "extra_input_sha256": "98915e1b2bf9570e4c27bc6e02c8e4ac09bc9efc264286313a0ce45f734715d2",
+        "rgb_png_sha256": "ff88653939fcd4e4ceddddd1ab5c81cef4c80bf47f759cd6a7b9b634f6a1a10d",
+        "capture_png_sha256": "61ad22cac5e876e184147843f8c5bad699f67a42ea9f8e1ad34ae0e457b0f21b",
+        "viewport": "0,27,640,426",
+        "scaling": "Fit; nearest neighbor; full canvas; no menu/header/footer",
+        "guest_cycles": 2022451200,
+        "scene": "gameplay/scene capture"
+      },
+      {
+        "game": "BGTE",
+        "title": "Grand Theft Auto Advance",
+        "guest_frame": 7200,
+        "rom_sha256": "215c574d5afbda0aadbf89dc76b765cfaaeb35953eab63f7687d8bfe8a8e0f4d",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "extra_input_sha256": "439bb85f6ee3c41dd1e59013db0f41efbb0f14a4d22d80b1480f8e542fe7afa6",
+        "rgb_png_sha256": "14a78e898dcd091732cff8ac0323d97c4dfe229856549d8eeda9babd1a618656",
+        "capture_png_sha256": "5dde9b5a1b974581f3aae5dc2a7e1f987cb1472c507dd93542a72ef8352df57a",
+        "viewport": "0,27,640,426",
+        "scaling": "Fit; nearest neighbor; full canvas; no menu/header/footer",
+        "guest_cycles": 2022451203,
+        "scene": "gameplay/scene capture"
+      },
+      {
+        "game": "AGFE",
+        "title": "Golden Sun: The Lost Age",
+        "guest_frame": 7200,
+        "rom_sha256": "4199d82f845edf3e2e92f3783bca00190b5bc102d7c8aa339b951de280b1e6cc",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "extra_input_sha256": "e1e2831fdd14998e267ed41f0e70f0c3bffc2a4ef0645d541fe2490f64121d67",
+        "rgb_png_sha256": "ae7aa3203daaf2ae9a3895d9c228603dad418c3765d38b818af7283e810f3a6d",
+        "capture_png_sha256": "74cc353eb7d3ffda431ee52b014cf93222399d182340256a40dedaee72b30f40",
+        "viewport": "0,27,640,426",
+        "scaling": "Fit; nearest neighbor; full canvas; no menu/header/footer",
+        "guest_cycles": 2022451201,
+        "scene": "gameplay/scene capture"
+      },
+      {
+        "game": "AWAE",
+        "title": "Wario Land 4",
+        "guest_frame": 9000,
+        "rom_sha256": "d16c7bf6e62bb84049fff1b387108fbd1e6e2cd38ca994ab5310dd9cbf9ba414",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "extra_input_sha256": "35bfe8c4fc83388845ca07684e17398979b96dbde8b7237ba662544900fe733a",
+        "rgb_png_sha256": "239cb9b202b9cf77d4e4f41cac9a4a36042410fd0d9aab3c9a744e6759b38d68",
+        "capture_png_sha256": "c4b8901f821bc0f822e3503360dfdbc7f71e8a2fb82ad2a62840da407719e7b8",
+        "viewport": "0,27,640,426",
+        "scaling": "Fit; nearest neighbor; full canvas; no menu/header/footer",
+        "guest_cycles": 2528064000,
+        "scene": "gameplay/scene capture"
+      },
+      {
+        "game": "AVRE",
+        "title": "V-Rally 3",
+        "guest_frame": 9000,
+        "rom_sha256": "5818fa74fdcacf39b53a1acea99432c4362979dd656c8153fd9861094aca51f7",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "extra_input_sha256": "09f50f27c0eaa716fcc7b42ba1ba5552b4897151c3a9588342c056262b122d10",
+        "rgb_png_sha256": "2ce5859f3beaa7dd5f78be2f75c3315a727ed8a6fb728e360ecc257b0dd22751",
+        "capture_png_sha256": "939381badfd613e395fa2e280800658b969462438066c91a0ff5be31e57f1a6c",
+        "viewport": "0,27,640,426",
+        "scaling": "Fit; nearest neighbor; full canvas; no menu/header/footer",
+        "guest_cycles": 2528064000,
+        "scene": "stage selection"
+      }
+    ],
+    "images_sha256": {
+      "metroid-zero-mission.png": "61ad22cac5e876e184147843f8c5bad699f67a42ea9f8e1ad34ae0e457b0f21b",
+      "settings.png": "e67ec417b9bf42d20e063028f822cf6d456fcc724e93b7666144384fc242557a",
+      "gta-advance.png": "5dde9b5a1b974581f3aae5dc2a7e1f987cb1472c507dd93542a72ef8352df57a",
+      "wario-land-4.png": "c4b8901f821bc0f822e3503360dfdbc7f71e8a2fb82ad2a62840da407719e7b8",
+      "controls.png": "2c99d62f71668130717a2119a11be648a6be17f5740210edeb689aaca75d9880",
+      "v-rally-3.png": "939381badfd613e395fa2e280800658b969462438066c91a0ff5be31e57f1a6c",
+      "home.png": "c8e8ec71194c2b80cabaf48a00de164b18bf29d2a583edd9c663b69df893ede6",
+      "golden-sun-lost-age.png": "74cc353eb7d3ffda431ee52b014cf93222399d182340256a40dedaee72b30f40",
+      "slots.png": "37ec6d5e3d81c35103db77bfa01113c9cf779cf1cf075fa179d28302df68cbb3",
+      "pause.png": "1fad124861a6b476feabb68da5e9b12fe9b1674467fa0e7386b1946125cba317"
+    },
+    "save_policy": "Fresh cartridge backups; no original save files imported or written",
+    "font_scope": "Java2D capture font; native MIDP font metrics may differ",
+    "qualification": "Application component captures, not physical-device or simulator screenshots; no measured Bold FPS or independent game-accuracy claim"
+  },
+  "compatibility": {
+    "preferences": "Version 2 emitted; version 1 native/integer values preserved; all ten mappings retained",
+    "machine_state_format": 1,
+    "guest_core_execution": "Unchanged; only frontend presentation/preferences and resource packaging changed",
+    "prior_state_replay_evidence": "benchmarks/phone-ui-2026-11-06.json"
+  },
+  "remaining_platform_scope": "SDK/API/RAPC compilation verified. BBOS application execution, hardware input, file permissions, audible MMAPI behavior and physical performance remain unqualified.",
+  "source_files_sha256": {
+    "benchmarks/inputs/phone-gallery-AGFE.tsv": "e1e2831fdd14998e267ed41f0e70f0c3bffc2a4ef0645d541fe2490f64121d67",
+    "benchmarks/inputs/phone-gallery-AVRE.tsv": "09f50f27c0eaa716fcc7b42ba1ba5552b4897151c3a9588342c056262b122d10",
+    "benchmarks/inputs/phone-gallery-AWAE.tsv": "35bfe8c4fc83388845ca07684e17398979b96dbde8b7237ba662544900fe733a",
+    "benchmarks/inputs/phone-gallery-BGTE.tsv": "439bb85f6ee3c41dd1e59013db0f41efbb0f14a4d22d80b1480f8e542fe7afa6",
+    "benchmarks/inputs/phone-gallery-BMXE.tsv": "98915e1b2bf9570e4c27bc6e02c8e4ac09bc9efc264286313a0ce45f734715d2",
+    "benchmarks/phone-gallery.tsv": "09a21082da1e51c18849fdfdebdec386c521a941af7c734b3b0b03e91e2a6527",
+    "platform/midp/berryboy/phone/MidpGraphics.java": "7093b1ac100f859a2528d61632ca853821c6653c715aaaa3f38c7ce8cfdd19dc",
+    "platform/midp/berryboy/phone/PhoneCanvas.java": "a2e32131570fce882366f95766db18b40a7bbe0fa963e64c6904e49260d8ffe8",
+    "pom.xml": "80b62b433d5526816c47c3520d611384d6e91bfb92f6d40ed8c3732112e8cf61",
+    "src/main/java/berryboy/mobile/FrameScaler.java": "d606eb465642a93373d302784b4d6baafb27b2da9577fa87fb9e0c1d2f0296aa",
+    "src/main/java/berryboy/mobile/GameViewport.java": "e25d2156d2bf4de8a86f2cc6b602e8edae9e7da36bc7624b1bc87a732589e6ca",
+    "src/main/java/berryboy/mobile/PhoneGraphics.java": "6d426ecdcad8a4c076c88ff55be1e2dc643c096fe71941c23e0c9dc4d6a15fb4",
+    "src/main/java/berryboy/mobile/PhoneMenus.java": "4e6b5f60b38d7e4dfb08428e75dbde0d856cd8c8caf53b261fb8c89c49f55dd1",
+    "src/main/java/berryboy/mobile/PhoneOptions.java": "ad522d4e1d88582d869d30a92722a48f52c25bebec297546c605ac3cff9b3dab",
+    "src/main/java/berryboy/mobile/PhoneRenderer.java": "d50d9d89c031f93c6ac7468af4f4fc5fb9fb18affa8d62d6ff104ad426e346e9",
+    "src/main/java/berryboy/mobile/PhoneScreen.java": "03addd581f4d0b822d06ecef069e509a062c4672b661031f69af05244813e308",
+    "src/test/java/berryboy/mobile/GameViewportTest.java": "ccd860e0cf9b0aa92ee846b97f3aec5314a56fba3d29ebe34a44a2502b13c9dd",
+    "src/test/java/berryboy/mobile/PhoneOptionsTest.java": "db6e603fd3b70a3a4ba7cbd2ea0c46b3ad625febfa5c656df62af672f5de5652",
+    "tools/CaptureGalleryScenes.java": "d295dd9779f0345b3b39b73870da072c05591882beee79ba8ab5e427216ebceb",
+    "tools/CapturePhone.java": "293648bde81942b80bb285b5d92df3bca2183727da49da1797c27d31afded975",
+    "tools/CapturePhoneGallery.java": "3d6c95feb891dad54a7893403cb50daa2ca1482da582af320291a977d81e3e57",
+    "tools/PrepareBrandAssets.java": "dbe72c59de0af201023252badfacde623c4d9283797f45f8ca8c588f2a5c65b6",
+    "tools/blackberry.sh": "cfcdbc42f3ae73210e42de964b912d9314acd7d2533b062ccf9d81345399cbc8",
+    "tools/capture-phone-gallery.sh": "b2aa1888a5af554c3fb7c46df089f4d022ee799603a928014f690915f2a7e5e7"
+  },
+  "local_outputs": {
+    "scenes": "target/phone-gallery-scenes",
+    "gallery": "target/branded-phone-gallery-final"
+  },
+  "local_logs": {
+    "host": "/workspace/scratch/fullscreen-host.log",
+    "console": "/workspace/scratch/fullscreen-console.log",
+    "native": "/workspace/scratch/fullscreen-native.log",
+    "cldc": "/workspace/scratch/fullscreen-cldc.log"
+  }
+}

@@ -10,7 +10,9 @@ public final class PhoneScreen {
     private boolean[] enabled = new boolean[0];
     private int selection;
     private int[] frame;
-    private boolean integerScale = true;
+    private int scaling = PhoneOptions.SCALE_FIT;
+    private String fps = "";
+    private String notice = "";
     public void menu(String title, String subtitle, String[] labels, String[] values, boolean[] enabled) {
         if (labels == null || values == null || enabled == null || labels.length != values.length || labels.length != enabled.length) {
             throw new IllegalArgumentException("Incomplete phone menu");
@@ -31,7 +33,9 @@ public final class PhoneScreen {
         if (ownedRgb != null && ownedRgb.length != 240 * 160) throw new IllegalArgumentException("GBA frame required");
         frame = ownedRgb;
     }
-    public void setIntegerScale(boolean value) { integerScale = value; }
+    public void setScaling(int value) { scaling = value; }
+    public void setFps(String text) { fps = text; }
+    public void setNotice(String text) { notice = text; }
     public String title() { return title; }
     public String subtitle() { return subtitle; }
     public String message() { return message; }
@@ -41,5 +45,7 @@ public final class PhoneScreen {
     public boolean enabled(int i) { return enabled[i]; }
     public int selection() { return selection; }
     public int[] frame() { return frame; }
-    public boolean integerScale() { return integerScale; }
+    public int scaling() { return scaling; }
+    public String fps() { return fps; }
+    public String notice() { return notice; }
 }

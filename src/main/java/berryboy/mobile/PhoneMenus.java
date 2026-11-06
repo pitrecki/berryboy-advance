@@ -18,7 +18,7 @@ public final class PhoneMenus {
     public static void settings(PhoneScreen screen, PhoneOptions options) {
         show(screen, "Display & audio", "Left / Right to change", new String[]{"Volume", "Mute", "Sound", "Frame skip", "FPS counter", "Game image"},
                 new String[]{options.volume() + "%", options.muted() ? "On" : "Off", options.mono() ? "Mono" : "Stereo",
-                    options.frameSkip() == 0 ? "Off" : "1 in " + (options.frameSkip() + 1), options.showFps() ? "On" : "Off", options.integerScale() ? "Integer fit" : "Native 1x"}, null);
+                    options.frameSkip() == 0 ? "Off" : "1 in " + (options.frameSkip() + 1), options.showFps() ? "On" : "Off", scalingName(options.scaling())}, null);
     }
     public static void controls(PhoneScreen screen, PhoneOptions options) {
         var keys = new String[10];
@@ -44,6 +44,10 @@ public final class PhoneMenus {
     }
     public static void game(PhoneScreen screen, String game) {
         show(screen, "Playing", game, new String[0], new String[0], null);
+    }
+    private static String scalingName(int mode) {
+        return mode == PhoneOptions.SCALE_NATIVE ? "Native 1x" : mode == PhoneOptions.SCALE_INTEGER ? "Integer fit"
+                : mode == PhoneOptions.SCALE_FIT ? "Full screen" : "Stretch";
     }
     private static void show(PhoneScreen screen, String title, String subtitle, String[] labels, String[] values, boolean[] enabled) {
         if (enabled == null) {

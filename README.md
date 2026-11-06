@@ -1,21 +1,17 @@
-# BerryBoy Advance — 0.8 development
+<p align="center">
+  <img src="docs/images/brand/berryboy-icon.png" width="144" alt="BerryBoy Advance logo">
+</p>
 
-An experimental Game Boy Advance emulator for classic BlackBerry, targeting the
-Bold 9900 and BBOS 7.1. Develop and run the desktop tools on **Linux, JDK 21 and
-Maven 3.9.x**. ARM/Thumb execution, software graphics, sound, keypad input and
-cartridge saves are implemented; commercial-game accuracy is still being qualified.
+# BerryBoy Advance — 0.8.1 development
 
-![Four games recorded in the BerryBoy Advance desktop GUI](docs/images/desktop-games.gif)
+Game Boy Advance emulation for the BlackBerry Bold 9900 and BBOS 7.1, with
+local games, save states, cheats and configurable controls. Desktop tools run
+on **Linux, JDK 21 and Maven 3.9.x**.
 
-Sonic Advance 3, Metroid Fusion, Golden Sun and Pokémon LeafGreen, recorded from
-real emulation into the production Swing view. This silent 12-second montage
-samples every six guest frames; the GUI was painted headlessly. LeafGreen uses
-a restored player save and recorded keyboard actions. It demonstrates the view
-and game output; it is not a real-time performance measurement.
-[Capture metadata](docs/images/desktop-games.json) ·
-[Current status and roadmap](docs/BENCHMARKS.md) · [Changelog](CHANGELOG.md)
+[Changelog](CHANGELOG.md) · [Roadmap](docs/BENCHMARKS.md) ·
+[BlackBerry setup](docs/BLACKBERRY.md)
 
-## Phone interface in 0.8
+## Phone interface
 
 The BBOS frontend now opens local `.gba` files with a supplied 16 KiB BIOS and
 provides a home screen, pause menu, file browser and configurable controls.
@@ -27,28 +23,34 @@ provides a home screen, pause menu, file browser and configurable controls.
   3/8. Encrypted GameShark/Action Replay and other command types are not supported.
 - **Controls:** remap all ten buttons; mappings and preferences persist.
 - **Sound:** volume, mute and mono/stereo output, with a bounded MMAPI packet backend.
-- **Display:** native/integer scaling, optional presentation-only frame skip 0–5,
-  and separate GBA-frame and GUI-draw FPS counters. Default frame skip is off.
+- **Display:** full-screen play with no app header or footer. Choose **Full screen**
+  to preserve GBA proportions, **Stretch** for edge-to-edge output, or native/integer
+  scaling. Optional frame skip affects presentation; FPS is a small overlay.
 
-The SDK build and host replay tests pass. Simulator execution, file permissions,
-keyboard behavior and physical audio/performance still need target validation.
 See [phone usage and storage](docs/BLACKBERRY.md#phone-interface).
 
 ## Phone screenshots
 
-These are the production phone renderer at **640×480**, painted headlessly with
-Java2D fonts and a real restored LeafGreen frame. They are component captures;
-simulator and physical-phone screenshots remain pending.
+Full-screen captures at **640×480**, rendered by the application.
+
+| Metroid: Zero Mission | Grand Theft Auto Advance |
+| --- | --- |
+| ![Metroid Zero Mission full-screen](docs/images/phone/metroid-zero-mission.png) | ![GTA Advance full-screen](docs/images/phone/gta-advance.png) |
+| Golden Sun: The Lost Age | Wario Land 4 |
+| ![Golden Sun The Lost Age full-screen](docs/images/phone/golden-sun-lost-age.png) | ![Wario Land 4 full-screen](docs/images/phone/wario-land-4.png) |
+
+[V-Rally 3 — stage selection](docs/images/phone/v-rally-3.png)
+
+### App screens
 
 | Home | Pause menu |
 | --- | --- |
 | ![Phone home screen](docs/images/phone/home.png) | ![Phone pause menu](docs/images/phone/pause.png) |
 | Display and audio | Controls |
 | ![Phone display and audio settings](docs/images/phone/settings.png) | ![Phone control mapping](docs/images/phone/controls.png) |
-| Save slots | Game view |
-| ![Phone save slots](docs/images/phone/slots.png) | ![Phone game view](docs/images/phone/game.png) |
 
-[Capture and validation evidence](benchmarks/phone-ui-2026-11-06.json).
+[Save slots](docs/images/phone/slots.png) ·
+[Capture details](benchmarks/fullscreen-branding-2026-11-06.json)
 
 ## Build and run
 
@@ -114,9 +116,9 @@ export BB_ECJ_JAR=/path/to/ecj-4.6.1.jar
 mvn -Pbb-sim verify -Dbb.compiler=ecj -Dbb.ecj="$BB_ECJ_JAR" -Dbb.launch=false
 ```
 
-SDK/API compilation and COD generation pass. Simulator application execution,
-device audio and physical Bold performance remain unverified. The alternative
-Wine/JDK 6 route and runtime setup are documented in [BLACKBERRY.md](docs/BLACKBERRY.md).
+The output is `target/blackberry/output/BerryBoyAdvance.cod`, with the application
+icon packaged in the MIDlet. The Wine/JDK 6 route and installation details are in
+[BLACKBERRY.md](docs/BLACKBERRY.md).
 The MIDlet starts at the phone home screen. Open a local game, or use
 **Diagnostics** for the original demo and eight portable checks.
 
@@ -139,6 +141,17 @@ Guest state stays on one deterministic emulation owner. Parallel host work uses
 bounded snapshot queues for encoding and I/O. See [ARCHITECTURE.md](docs/ARCHITECTURE.md)
 and [AGENTS.md](AGENTS.md) for design and delivery conventions.
 
+## Desktop preview
+
+![Four games recorded in the BerryBoy Advance desktop GUI](docs/images/desktop-games.gif)
+
+Sonic Advance 3, Metroid Fusion, Golden Sun and Pokémon LeafGreen, recorded from
+real emulation into the production Swing view. This silent 12-second montage
+samples every six guest frames; the GUI was painted headlessly. LeafGreen uses
+a restored player save and recorded keyboard actions. It shows the desktop view and game output.
+[Capture metadata](docs/images/desktop-games.json) ·
+[Current status and roadmap](docs/BENCHMARKS.md) · [Changelog](CHANGELOG.md)
+
 ## Reproduce the GIF
 
 After `mvn verify`, install Python Pillow and prepare local `<game-code>.properties`
@@ -156,14 +169,21 @@ as a GIF with adjacent JSON provenance. The capture does not require a display s
 
 ## Reproduce the phone screenshots
 
-Build with `mvn verify`, then use a local ROM/BIOS scenario mapping and matching
-version-1 machine state. The tool checks asset hashes and uses the same menus
-and renderer as the MIDlet:
+Build with `mvn verify`. The gallery manifest selects five local games and their
+recorded inputs. Capture the required frame checkpoints, then render them through
+the application's phone UI:
 
 ```bash
-tools/capture-phone.sh /path/to/game.properties /path/to/state.bbs target/phone-captures
+tools/capture-phone-gallery.sh /path/to/local/scenes target/phone-captures
 ```
 
-`tools/StateRoundTrip.java` produces local states and verifies their continuation
-against the original running machine. Capture provenance records hashes and scope;
-no ROM, BIOS or state bytes are committed.
+`tools/CaptureGalleryScenes.java` creates those checkpoints from verified ROM/BIOS
+mappings, the baseline input and the additional recordings in `benchmarks/inputs/`.
+[phone-gallery.tsv](benchmarks/phone-gallery.tsv) defines the selected frames.
+For a single saved state, `tools/capture-phone.sh` remains available.
+
+Regenerate compact app/logo assets from the brand master with:
+
+```bash
+java -Djava.awt.headless=true tools/PrepareBrandAssets.java
+```

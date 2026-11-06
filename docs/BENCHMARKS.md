@@ -1,6 +1,6 @@
 # Current status and roadmap
 
-Updated **2026-11-06**, for **0.8.0-SNAPSHOT**. This is the canonical current
+Updated **2026-11-06**, for **0.8.1-SNAPSHOT**. This is the canonical current
 validation and work queue. [CHANGELOG](../CHANGELOG.md) records version highlights;
 linked JSON records and Git history preserve detailed measurements.
 
@@ -28,19 +28,21 @@ bottlenecks and preserves event ordering.
 
 ## Current validation
 
-- **1867 host tests**, **1759 exported-core tests**, and **1759 tests against the
+- **1878 host tests**, **1770 exported-core tests**, and **1770 tests against the
   actual new ECJ/CLDC classes** pass, with no failures or skips. Counts include
   parameterized invocations. Detailed build and artifact data is in the linked evidence.
 - Native Linux JDE 7.1 / ECJ 4.6.1 / RAPC verification passes and produces a
-  **0.8.0** JAD/COD. Host: Linux x86_64, Temurin 21.0.8, Maven 3.9.11.
+  **0.8.1** JAD/COD. Host: Linux x86_64, Temurin 21.0.8, Maven 3.9.11.
 - [Phone frontend evidence](../benchmarks/phone-ui-2026-11-06.json): full-state
   save/load preserves the next 60 frames, PCM and complete final machine state
   in Sonic, Golden Sun and LeafGreen. Original saves remain unchanged. Native
   session commands and failed file/RMS commits are exercised with host doubles;
   actual SDK compilation is checked separately.
-- [Phone screenshots](../README.md#phone-screenshots) use the production renderer
-  and a verified restored frame, with Java2D fonts. They do not demonstrate
-  execution in the simulator or on a physical phone.
+- [Branding/full-screen delivery](../benchmarks/fullscreen-branding-2026-11-06.json)
+  adds an app/launcher icon, four scaling modes, hidden game chrome and preference
+  migration. The five-game gallery uses the shared production renderer/scaler.
+  Captures are generated headlessly with Java2D fonts; device execution is not
+  inferred from the gallery. Exact source/asset hashes and results are in the record.
 - Earlier IRQ source waits and prefetch/page-edge observations now match the pinned,
   unmodified NanoBoyAdvance reference. Earlier CPU/DMA matrices are retained.
   [Latest timing and game evidence](../benchmarks/irq-fetch-waits-2026-11-05.json).
@@ -71,8 +73,8 @@ and SDK/API compatibility, while target execution remains open.
 | Five save slots | Implemented. Host replay and failed-write tests pass. Repeat save/load across application restart, low storage and interrupted writes on the target; keep a copy of the original player save. |
 | Cheat support | Raw 8/16/32-bit RAM writes and unencrypted CodeBreaker 3/8 are implemented. Other CodeBreaker commands and encrypted GameShark/Action Replay require explicit format specifications and independent fixtures before support. |
 | Audio settings and MMAPI | Volume/mute/mono and bounded packet output are implemented. Qualify actual format support, audible gaps, latency and pause/load cancellation; a gapless backend needs target evidence. |
-| Frame skip and FPS | Implemented. Skipping affects display submissions only; the PPU, guest clock and audio continue. GBA FPS counts executed guest frames, draw FPS counts distinct game frames painted by the canvas, not instruction throughput or certified physical presentations. |
-| Application gallery | Six headless component captures are available. Add actual simulator/phone screenshots when the application can be observed there. |
+| Frame skip and FPS | Implemented, with full-canvas aspect-fit/stretch/native/integer modes. Skipping affects display submissions only; the PPU, guest clock and audio continue. GBA FPS counts executed guest frames, draw FPS counts distinct game frames painted by the canvas, not instruction throughput or certified physical presentations. |
+| Application gallery | Five game views and refreshed app menus are available. Capture details identify the headless renderer and original input/asset hashes. |
 
 The no-skips sustained-playback gate below still requires frame skip **off**, full
 sound, measured physical presentation/audio and correct game output. Optional
@@ -158,6 +160,8 @@ push and verify the remote revision. Do not mute sound, skip frames or normalize
 unexplained failures into a pass.
 
 ## Evidence and references
+
+- [Branding, full-screen rendering and the refreshed gallery](../benchmarks/fullscreen-branding-2026-11-06.json)
 
 - [Phone UI, state replay and SDK checks](../benchmarks/phone-ui-2026-11-06.json)
 

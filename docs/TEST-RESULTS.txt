@@ -1,5 +1,5 @@
 Current validation and limitations: docs/BENCHMARKS.md#current-validation
-Latest detailed evidence: benchmarks/phone-ui-2026-11-06.json
+Latest detailed evidence: benchmarks/fullscreen-branding-2026-11-06.json
 
 Reproduce:
   mvn verify

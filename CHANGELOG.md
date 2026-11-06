@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.8.1-SNAPSHOT — 2026-11-06
+
+- Add an original BerryBoy icon to the phone launcher, menus and README.
+- Use the entire canvas during play, with no app header/footer. Add aspect-fit
+  and edge-to-edge stretch alongside native/integer modes; FPS is an optional overlay.
+- Preserve version-1 control/audio/image preferences while writing version 2.
+- Replace the single-game phone gallery with Metroid: Zero Mission, GTA Advance,
+  The Lost Age, Wario Land 4 and V-Rally 3 captures. Simplify README captions.
+
 ## 0.8.0-SNAPSHOT — 2026-11-06
 
 - Replace the phone diagnostic screen with a home/pause frontend, local ROM/BIOS

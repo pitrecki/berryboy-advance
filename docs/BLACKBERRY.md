@@ -40,7 +40,7 @@ are recorded in [BENCHMARKS.md](BENCHMARKS.md#current-validation) and
 The [original SDK build record](../benchmarks/blackberry-sdk-build-2026-10-22.json)
 preserves initial tool/output hashes. Its test counts and application size are
 historical. The application now starts at the phone home screen described below;
-SDK compilation still does not establish simulator or device execution.
+The canonical platform results are in the linked validation record.
 
 ## Vendor preverification and current simulator outcome
 
@@ -147,10 +147,12 @@ The pause menu provides:
   supported, for example `82000100 03E7`; unsupported/encrypted commands fail
   explicitly. Writes are restricted to aligned EWRAM/IWRAM and applied by the
   guest owner between frames. Profiles are stored per cartridge/location.
-- **Display & audio:** output volume 0–100%, mute, mono/stereo, native/integer
-  scaling, presentation frame skip 0–5 and a GBA/draw FPS overlay. Left/right
+- **Display & audio:** output volume 0–100%, mute, mono/stereo, full-screen aspect
+  fit/stretch/native/integer scaling, presentation frame skip 0–5 and a GBA/draw FPS overlay. Left/right
   changes a setting. Synthesis and guest timing continue when muted or skipping
-  display submissions. Frame skip defaults to off.
+  display submissions. Full-screen aspect fit is the default; the game uses all
+  canvas space without an app title/footer. Stretch fills the canvas edge to edge;
+  native/integer modes retain pixel-sized scaling. Frame skip defaults to off.
 - **Restart game / Home:** restart preserves current battery data; Home leaves
   the session paused. Diagnostics remains available without a commercial ROM.
 
@@ -185,12 +187,12 @@ pending output. This is packet playback, not a verified gapless stream. Format
 support, audible gaps, latency and A/V drift need simulator/device measurements.
 Java Sound remains desktop-only and cannot establish BlackBerry audio behavior.
 
-[The README gallery](../README.md#phone-screenshots) paints the actual portable
-phone menus/renderer at Bold geometry with Java2D fonts and real restored pixels.
-It is a headless component capture, not a simulator screenshot. Reproduce it with:
+[The README gallery](../README.md#phone-screenshots) shows the new icon, app menus
+and full-screen game output. Source/input hashes and capture methodology are
+kept in [the delivery record](../benchmarks/fullscreen-branding-2026-11-06.json).
 
 ```bash
-tools/capture-phone.sh /path/to/game.properties /path/to/state.bbs target/phone-captures
+tools/capture-phone-gallery.sh /path/to/local/scenes target/phone-captures
 ```
 
 ## Source export boundaries

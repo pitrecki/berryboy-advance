@@ -100,11 +100,10 @@ public final class PhoneCanvas extends Canvas implements CommandListener {
         screen.setFrame(ownedRgb); frameVersion++; show(PAUSE); message(status);
     }
     synchronized void present(int[] ownedRgb, int gbaTenths, int drawTenths, String audioError) {
-        screen.setFrame(ownedRgb); screen.setIntegerScale(options.integerScale()); frameVersion++;
+        screen.setFrame(ownedRgb); screen.setScaling(options.scaling()); frameVersion++;
         if (page == GAME) {
-            screen.setMessage(options.showFps()
-                    ? "GBA " + rate(gbaTenths) + " fps / Draw " + rate(drawTenths) + " fps" + (audioError == null ? " / Back: pause" : " / Audio unavailable")
-                    : audioError != null ? audioError : "Back / Menu: pause" + (options.muted() ? " / Muted" : ""));
+            screen.setFps(options.showFps() ? "GBA " + rate(gbaTenths) + " / Draw " + rate(drawTenths) + " fps" : "");
+            screen.setNotice(audioError == null ? "" : "Audio unavailable");
             repaint();
         }
     }
@@ -113,7 +112,12 @@ public final class PhoneCanvas extends Canvas implements CommandListener {
     private synchronized void show(int target) {
         page = target; captureButton = -1;
         if (target == HOME) PhoneMenus.home(screen, loaded);
-        else if (target == GAME) PhoneMenus.game(screen, game);
+        else if (target == GAME) {
+            PhoneMenus.game(screen, game);
+            screen.setScaling(options.scaling());
+            screen.setFps(options.showFps() ? "GBA -- / Draw -- fps" : "");
+            screen.setNotice("");
+        }
         else if (target == PAUSE) PhoneMenus.pause(screen, game);
         else if (target == SETTINGS) PhoneMenus.settings(screen, options);
         else if (target == CONTROLS) PhoneMenus.controls(screen, options);
@@ -224,7 +228,7 @@ public final class PhoneCanvas extends Canvas implements CommandListener {
         else if (selected == 2) options.setMono(!options.mono());
         else if (selected == 3) options.setFrameSkip((options.frameSkip() + direction + 6) % 6);
         else if (selected == 4) options.setShowFps(!options.showFps());
-        else options.setIntegerScale(!options.integerScale());
+        else options.setScaling((options.scaling() + direction + 4) % 4);
         show(SETTINGS); screen.select(selected); saveOptions();
     }
     private void saveOptions() {
@@ -294,7 +298,7 @@ public final class PhoneCanvas extends Canvas implements CommandListener {
         final Form form = new Form("Diagnostics");
         final Command demo = new Command("Run demo", Command.SCREEN, 2);
         final Command checks = new Command("Run checks", Command.SCREEN, 1);
-        form.append("Portable CPU, graphics, RAM and keypad checks. Device audio and performance require separate testing.");
+        form.append("Run the built-in checks, or open the demo cartridge.");
         form.addCommand(demo); form.addCommand(checks); form.addCommand(back);
         form.setCommandListener(new CommandListener() {
             public void commandAction(Command command, Displayable source) {
