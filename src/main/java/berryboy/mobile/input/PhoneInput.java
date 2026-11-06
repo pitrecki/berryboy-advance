@@ -1,7 +1,5 @@
 package berryboy.mobile.input;
 
-import berryboy.mobile.settings.PhoneOptions;
-
 import berryboy.input.Keypad;
 
 /** UI-owned physical keys and optional shoulder locks; sends only button masks to the guest. */
@@ -19,7 +17,7 @@ public final class PhoneInput {
     }
 
     public void press(int code, int mapped) {
-        code = PhoneOptions.normalizeKey(code);
+        code = KeyBindings.normalizeKey(code);
         mapped &= Keypad.ALL_BUTTONS;
         if (mapped == 0 || count == keys.length) return;
         for (var i = 0; i < count; i++) if (keys[i] == code) return;
@@ -32,7 +30,7 @@ public final class PhoneInput {
     }
 
     public void release(int code) {
-        code = PhoneOptions.normalizeKey(code);
+        code = KeyBindings.normalizeKey(code);
         for (var i = 0; i < count; i++) if (keys[i] == code) {
             count--;
             keys[i] = keys[count];

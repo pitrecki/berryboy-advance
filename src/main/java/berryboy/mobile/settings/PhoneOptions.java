@@ -1,6 +1,6 @@
 package berryboy.mobile.settings;
 
-import berryboy.input.Keypad;
+import berryboy.mobile.input.KeyBindings;
 import berryboy.state.StateBuffer;
 
 /** Frontend preferences; never change guest sound registers or hardware timing. */
@@ -16,7 +16,7 @@ public final class PhoneOptions {
     private boolean showFps;
     private boolean stickyShoulders;
     private int scaling = SCALE_FIT;
-    private final int[] keys = {'z', 'x', '\b', '\n', 'l', 'j', 'i', 'k', 's', 'a'};
+    private final KeyBindings keys = new KeyBindings();
 
     public int volume() { return volume; }
     public int frameSkip() { return frameSkip; }
@@ -25,7 +25,7 @@ public final class PhoneOptions {
     public boolean showFps() { return showFps; }
     public boolean stickyShoulders() { return stickyShoulders; }
     public int scaling() { return scaling; }
-    public int key(int button) { return keys[button]; }
+    public int key(int button) { return keys.key(button); }
     public void setVolume(int value) {
         if (value < 0 || value > 100) throw new IllegalArgumentException("Volume must be 0..100");
         volume = value;
@@ -42,33 +42,15 @@ public final class PhoneOptions {
         if (value < SCALE_NATIVE || value > SCALE_STRETCH) throw new IllegalArgumentException("Invalid image scaling mode");
         scaling = value;
     }
-    public void bind(int button, int key) {
-        key = normalizeKey(key);
-        if (button < 0 || button >= keys.length || key == 0 || key == -11 || key == 27 || key == '#') {
-            throw new IllegalArgumentException("Choose a game key; Back is reserved for the menu");
-        }
-        for (var i = 0; i < keys.length; i++) if (i != button && keys[i] == key) {
-            throw new IllegalArgumentException("Key already assigned to another button");
-        }
-        keys[button] = key;
-    }
-    public int buttonsFor(int code) {
-        code = normalizeKey(code);
-        var buttons = 0;
-        for (var i = 0; i < keys.length; i++) if (keys[i] == code) buttons |= 1 << i;
-        return buttons & Keypad.ALL_BUTTONS;
-    }
-    public static int normalizeKey(int code) {
-        if (code >= 'A' && code <= 'Z') code += 'a' - 'A';
-        return code == '\r' ? '\n' : code;
-    }
+    public void bind(int button, int key) { keys.bind(button, key); }
+    public int buttonsFor(int code) { return keys.buttonsFor(code); }
     public PhoneOptions copy() {
         var result = new PhoneOptions();
         result.volume = volume; result.frameSkip = frameSkip;
         result.muted = muted; result.mono = mono;
         result.showFps = showFps; result.scaling = scaling;
         result.stickyShoulders = stickyShoulders;
-        System.arraycopy(keys, 0, result.keys, 0, keys.length);
+        result.keys.copyFrom(keys);
         return result;
     }
     public byte[] encode() {
@@ -81,7 +63,6 @@ public final class PhoneOptions {
         if (version < 1 || version > 3) throw new IllegalArgumentException("Unsupported settings version");
         var result = new PhoneOptions(); result.transfer(state, version); state.requireEnd();
         result.setVolume(result.volume); result.setFrameSkip(result.frameSkip); result.setScaling(result.scaling);
-        for (var i = 0; i < result.keys.length; i++) result.bind(i, result.keys[i]);
         return result;
     }
     private void transfer(StateBuffer state, int version) {
@@ -89,7 +70,7 @@ public final class PhoneOptions {
         muted = state.flag(muted); mono = state.flag(mono);
         showFps = state.flag(showFps);
         scaling = version == 1 ? (state.flag(false) ? SCALE_INTEGER : SCALE_NATIVE) : state.value(scaling);
-        state.ints(keys);
+        keys.transferState(state);
         stickyShoulders = version >= 3 && state.flag(stickyShoulders);
     }
 }
