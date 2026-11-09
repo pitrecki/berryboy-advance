@@ -62,9 +62,11 @@ See [phone usage and storage](docs/BLACKBERRY.md#phone-interface).
 
 ![Launch, game selection and Golden Sun running](docs/images/phone/golden-sun-walkthrough.gif)
 
-A 15-second walkthrough: Home, Golden Sun selection and ten seconds of real
-emulation. The selection screen is illustrative; the game segment resumes a
-recorded state and omits BIOS boot. [Recording details](docs/images/phone/golden-sun-walkthrough.json).
+A continuous 29-second cold launch: Home → BIOS selection and validation → ROM
+selection → the complete GBA boot animation → Golden Sun. After boot, the pause
+menu selects 4× and play continues into the opening village scene. This runs the
+application controller, file picker and session headlessly; LCDUI widgets and fonts
+use host adapters. [Recording details](docs/images/phone/golden-sun-walkthrough.json).
 
 ## Phone screenshots
 
@@ -92,6 +94,7 @@ mode in **Display & audio → Game image**.
 
 [Save slots](docs/images/phone/slots.png) ·
 [4× speed overlay](docs/images/phone/speed.png) ·
+[BIOS settings](docs/images/phone/bios-settings.png) ·
 [Game capture details](benchmarks/fullscreen-branding-2026-11-06.json) ·
 [Current app menus](benchmarks/playback-speed-2026-11-06.json)
 
@@ -195,10 +198,21 @@ a restored player save and recorded keyboard actions. It shows the desktop view 
 [Capture metadata](docs/images/desktop-games.json) ·
 [Current status and roadmap](docs/BENCHMARKS.md) · [Changelog](CHANGELOG.md)
 
-## Reproduce the GIF
+## Reproduce the GIFs
 
 After `mvn verify`, install Python Pillow and prepare local `<game-code>.properties`
-files as described in [SCENARIOS.md](docs/SCENARIOS.md). Supply B3SE, AMTE, AGSE
+files as described in [SCENARIOS.md](docs/SCENARIOS.md). To record the phone's
+complete launch, supply a Golden Sun AGSE mapping:
+
+```bash
+tools/capture-launch-walkthrough.sh /path/to/scenarios/AGSE.properties target/golden-sun-walkthrough.gif
+```
+
+The tool drives the production phone controller with local LCDUI/filesystem/RMS
+adapters. It uses owned ROM/BIOS copies and a fresh backup, records the original
+boot animation at 1×, then changes speed through the application's pause menu.
+
+For the desktop montage, supply B3SE, AMTE, AGSE
 and BPGE mappings matching [showcase.tsv](benchmarks/showcase.tsv). BPGE requires
 the recorded continuation input and a matching initial player save; the other
 clips start with fresh backups. Asset hashes are checked and save files are never written.
