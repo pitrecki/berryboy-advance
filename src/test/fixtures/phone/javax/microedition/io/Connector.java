@@ -7,6 +7,8 @@ import javax.microedition.io.file.FileConnection;
 public final class Connector {
     public static final int READ=1,READ_WRITE=3;
     public static boolean failWrite;
+    public static int failAfterBytes=-1;
+    public static boolean failTruncate,failFlush,failOutputClose,failConnectionClose;
     public static volatile boolean failList;
     public static volatile java.util.concurrent.CountDownLatch listingEntered, releaseListing;
     public static Object open(String url,int mode) throws IOException {
@@ -17,14 +19,33 @@ public final class Connector {
             public long fileSize() throws IOException{return Files.size(path);}
             public InputStream openInputStream() throws IOException{return Files.newInputStream(path);}
             public OutputStream openOutputStream() throws IOException {
-                if(failWrite){failWrite=false;return new OutputStream(){
-                    public void write(int b) throws IOException {throw new IOException("Injected partial write");}
-                };}
-                return Files.newOutputStream(path);
+                final int limit=failWrite?0:failAfterBytes;failWrite=false;failAfterBytes=-1;
+                final boolean flushFailure=failFlush,closeFailure=failOutputClose;
+                failFlush=false;failOutputClose=false;
+                final OutputStream delegate=Files.newOutputStream(path);
+                if(limit<0&&!flushFailure&&!closeFailure)return delegate;
+                return new OutputStream(){
+                    private int written;
+                    public void write(int b)throws IOException{write(new byte[]{(byte)b},0,1);}
+                    public void write(byte[] bytes,int offset,int length)throws IOException{
+                        java.util.Objects.checkFromIndexSize(offset,length,bytes.length);
+                        if(length==0)return;
+                        int allowed=limit<0?length:Math.min(length,Math.max(0,limit-written));
+                        delegate.write(bytes,offset,allowed);written+=allowed;
+                        if(allowed<length||limit>=0&&written==limit)throw new IOException("Injected partial write after "+written+" bytes");
+                    }
+                    public void flush()throws IOException{delegate.flush();if(flushFailure)throw new IOException("Injected flush failure");}
+                    public void close()throws IOException{delegate.close();if(closeFailure)throw new IOException("Injected output close failure");}
+                };
             }
             public void create() throws IOException{Files.createFile(path);}
-            public void truncate(long size) throws IOException{try(var f=new RandomAccessFile(path.toFile(),"rw")){f.setLength(size);}}
-            public void close(){}
+            public void truncate(long size) throws IOException{
+                try(var f=new RandomAccessFile(path.toFile(),"rw")){f.setLength(size);}
+                if(failTruncate){failTruncate=false;throw new IOException("Injected truncate failure");}
+            }
+            public void close()throws IOException{
+                if(mode==READ_WRITE&&failConnectionClose){failConnectionClose=false;throw new IOException("Injected connection close failure");}
+            }
             public java.util.Enumeration list(String filter, boolean hidden) throws IOException {
                 var entered=listingEntered;var release=releaseListing;
                 if(entered!=null)entered.countDown();

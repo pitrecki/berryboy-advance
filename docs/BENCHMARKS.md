@@ -29,7 +29,7 @@ bottlenecks and preserves event ordering.
 
 ## Current validation
 
-- **2421 host tests**, **2240 exported-core tests**, and **2240 tests against the
+- **2438 host tests**, **2240 exported-core tests**, and **2240 tests against the
   actual new ECJ/CLDC classes** pass, with no failures or skips. Counts include
   parameterized invocations. Detailed build and artifact data is in the linked evidence.
 - Native Linux JDE 7.1 / ECJ 4.6.1 / RAPC verification passes and produces a
@@ -190,7 +190,7 @@ and SDK/API compatibility, while target execution remains open.
 | Boot animation | Implemented. Show/Skip persists and applies on open/restart. Skip runs authentic BIOS startup without presentation/audio/pacing; state loading preserves the saved scene. |
 | Playback speed | Implemented. Pause/settings select 1×/2×/4×/8×; faster modes mute output and 1× restores it according to Mute. Guest clocks and save-state format remain unchanged. Submission intervals combine speed and frame skip; FPS remains measured. Selected factors are pacing targets, not achieved phone performance claims. |
 | Shoulder combinations | Implemented. Controls → L/R assist → Tap to lock keeps either shoulder held while using A/B and directions; a second tap releases it. Default off, mode persists, held locks never persist and clear at lifecycle boundaries. |
-| Five save slots | Implemented. Host replay and failed-write tests pass. Repeat save/load across application restart, low storage and interrupted writes on the target; keep a copy of the original player save. |
+| Five save slots | Implemented. [Host storage failure injection](../benchmarks/phone-storage-interruption-2026-11-09.json) covers partial/truncate/flush/close failures and failed RMS publication for slots and battery saves. Reopening and retries preserve committed data and the original `.sav`. Target restart, low-storage and power-loss checks remain open. |
 | Cheat support | Raw 8/16/32-bit RAM writes and unencrypted CodeBreaker 3/8 are implemented. Other CodeBreaker commands and encrypted GameShark/Action Replay require explicit format specifications and independent fixtures before support. |
 | Audio settings and MMAPI | Volume/mute/mono and bounded packet output are implemented. Qualify actual format support, audible gaps, latency and pause/load cancellation; a gapless backend needs target evidence. |
 | Frame skip and FPS | Implemented, with full-canvas aspect-fit/stretch/native/integer modes. Skipping affects display submissions only; the PPU, guest clock and audio continue. GBA FPS counts executed guest frames, draw FPS counts distinct game frames painted by the canvas, not instruction throughput or certified physical presentations. |

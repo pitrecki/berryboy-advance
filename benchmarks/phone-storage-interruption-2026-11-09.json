@@ -1,0 +1,254 @@
+{
+  "date": "2026-11-09",
+  "source_base_commit": "2f21c0d570173055a73c3a936ce32bb93942fc9b",
+  "source_dirty": true,
+  "scope": "Production phone sidecar-generation storage under host filesystem and atomic RMS test doubles. New storage instances reopen committed records. Not a phone process restart, physical power-loss or native filesystem durability qualification.",
+  "production_sources": {
+    "platform/midp/berryboy/phone/PhoneFiles.java": "8d2d1bdeaf93cdd7c7e1eefac317c357d8b89e21bb1b544cccc8a770955ed758",
+    "platform/midp/berryboy/phone/PhoneRecords.java": "c243786f56213f07563de1d2a720b789f2802c4dc03cd0b9e658644073354080",
+    "platform/midp/berryboy/phone/PhoneStorage.java": "bc04c5ca75f501fadf24fe4b37d540557e125003befb68976fa56934d9ff794c"
+  },
+  "fixture": "src/test/fixtures/phone/javax/microedition/io/Connector.java",
+  "test": "src/test/java/berryboy/build/PhoneStorageInterruptionTest.java",
+  "payloads": {
+    "sav_bytes": 131072,
+    "st0_bytes": 8192,
+    "original_standard_sav_bytes": 131072,
+    "original_standard_sav_sha256": "51caac4c4a2a04ba6ec6d56b20b017456aa31bf8232f06ec3d78297c920ea831",
+    "synthetic_only": true
+  },
+  "replacement_cases": [
+    {
+      "phase": "truncate",
+      "kind": "st0",
+      "committed_generation_before_failure": 1,
+      "staged_generation": 0,
+      "asserted_staged_bytes_after_failure": 0,
+      "staged_prefix_matches_candidate": true,
+      "commit_metadata_byte_unchanged": true,
+      "active_file_byte_unchanged": true,
+      "reopened_value_matches_previous": true,
+      "retry_publishes_complete_candidate": true,
+      "original_standard_save_unchanged": true
+    },
+    {
+      "phase": "truncate",
+      "kind": "sav",
+      "committed_generation_before_failure": 1,
+      "staged_generation": 0,
+      "asserted_staged_bytes_after_failure": 0,
+      "staged_prefix_matches_candidate": true,
+      "commit_metadata_byte_unchanged": true,
+      "active_file_byte_unchanged": true,
+      "reopened_value_matches_previous": true,
+      "retry_publishes_complete_candidate": true,
+      "original_standard_save_unchanged": true
+    },
+    {
+      "phase": "partial",
+      "kind": "st0",
+      "committed_generation_before_failure": 1,
+      "staged_generation": 0,
+      "asserted_staged_bytes_after_failure": 13,
+      "staged_prefix_matches_candidate": true,
+      "commit_metadata_byte_unchanged": true,
+      "active_file_byte_unchanged": true,
+      "reopened_value_matches_previous": true,
+      "retry_publishes_complete_candidate": true,
+      "original_standard_save_unchanged": true
+    },
+    {
+      "phase": "partial",
+      "kind": "sav",
+      "committed_generation_before_failure": 1,
+      "staged_generation": 0,
+      "asserted_staged_bytes_after_failure": 13,
+      "staged_prefix_matches_candidate": true,
+      "commit_metadata_byte_unchanged": true,
+      "active_file_byte_unchanged": true,
+      "reopened_value_matches_previous": true,
+      "retry_publishes_complete_candidate": true,
+      "original_standard_save_unchanged": true
+    },
+    {
+      "phase": "flush",
+      "kind": "st0",
+      "committed_generation_before_failure": 1,
+      "staged_generation": 0,
+      "asserted_staged_bytes_after_failure": 8192,
+      "staged_prefix_matches_candidate": true,
+      "commit_metadata_byte_unchanged": true,
+      "active_file_byte_unchanged": true,
+      "reopened_value_matches_previous": true,
+      "retry_publishes_complete_candidate": true,
+      "original_standard_save_unchanged": true
+    },
+    {
+      "phase": "flush",
+      "kind": "sav",
+      "committed_generation_before_failure": 1,
+      "staged_generation": 0,
+      "asserted_staged_bytes_after_failure": 131072,
+      "staged_prefix_matches_candidate": true,
+      "commit_metadata_byte_unchanged": true,
+      "active_file_byte_unchanged": true,
+      "reopened_value_matches_previous": true,
+      "retry_publishes_complete_candidate": true,
+      "original_standard_save_unchanged": true
+    },
+    {
+      "phase": "output_close",
+      "kind": "st0",
+      "committed_generation_before_failure": 1,
+      "staged_generation": 0,
+      "asserted_staged_bytes_after_failure": 8192,
+      "staged_prefix_matches_candidate": true,
+      "commit_metadata_byte_unchanged": true,
+      "active_file_byte_unchanged": true,
+      "reopened_value_matches_previous": true,
+      "retry_publishes_complete_candidate": true,
+      "original_standard_save_unchanged": true
+    },
+    {
+      "phase": "output_close",
+      "kind": "sav",
+      "committed_generation_before_failure": 1,
+      "staged_generation": 0,
+      "asserted_staged_bytes_after_failure": 131072,
+      "staged_prefix_matches_candidate": true,
+      "commit_metadata_byte_unchanged": true,
+      "active_file_byte_unchanged": true,
+      "reopened_value_matches_previous": true,
+      "retry_publishes_complete_candidate": true,
+      "original_standard_save_unchanged": true
+    },
+    {
+      "phase": "file_close",
+      "kind": "st0",
+      "committed_generation_before_failure": 1,
+      "staged_generation": 0,
+      "asserted_staged_bytes_after_failure": 8192,
+      "staged_prefix_matches_candidate": true,
+      "commit_metadata_byte_unchanged": true,
+      "active_file_byte_unchanged": true,
+      "reopened_value_matches_previous": true,
+      "retry_publishes_complete_candidate": true,
+      "original_standard_save_unchanged": true
+    },
+    {
+      "phase": "file_close",
+      "kind": "sav",
+      "committed_generation_before_failure": 1,
+      "staged_generation": 0,
+      "asserted_staged_bytes_after_failure": 131072,
+      "staged_prefix_matches_candidate": true,
+      "commit_metadata_byte_unchanged": true,
+      "active_file_byte_unchanged": true,
+      "reopened_value_matches_previous": true,
+      "retry_publishes_complete_candidate": true,
+      "original_standard_save_unchanged": true
+    },
+    {
+      "phase": "pointer",
+      "kind": "st0",
+      "committed_generation_before_failure": 1,
+      "staged_generation": 0,
+      "asserted_staged_bytes_after_failure": 8192,
+      "staged_prefix_matches_candidate": true,
+      "commit_metadata_byte_unchanged": true,
+      "active_file_byte_unchanged": true,
+      "reopened_value_matches_previous": true,
+      "retry_publishes_complete_candidate": true,
+      "original_standard_save_unchanged": true
+    },
+    {
+      "phase": "pointer",
+      "kind": "sav",
+      "committed_generation_before_failure": 1,
+      "staged_generation": 0,
+      "asserted_staged_bytes_after_failure": 131072,
+      "staged_prefix_matches_candidate": true,
+      "commit_metadata_byte_unchanged": true,
+      "active_file_byte_unchanged": true,
+      "reopened_value_matches_previous": true,
+      "retry_publishes_complete_candidate": true,
+      "original_standard_save_unchanged": true
+    }
+  ],
+  "first_publication_cases": [
+    {
+      "phase": "partial",
+      "kind": "st0",
+      "metadata_absent_after_failure": true,
+      "read_returns_none_after_reopen": true,
+      "original_backup_still_imported_read_only": true,
+      "retry_succeeds": true,
+      "first_slot_remains_empty": true
+    },
+    {
+      "phase": "partial",
+      "kind": "sav",
+      "metadata_absent_after_failure": true,
+      "read_returns_none_after_reopen": true,
+      "original_backup_still_imported_read_only": true,
+      "retry_succeeds": true,
+      "first_slot_remains_empty": true
+    },
+    {
+      "phase": "pointer",
+      "kind": "st0",
+      "metadata_absent_after_failure": true,
+      "read_returns_none_after_reopen": true,
+      "original_backup_still_imported_read_only": true,
+      "retry_succeeds": true,
+      "first_slot_remains_empty": true
+    },
+    {
+      "phase": "pointer",
+      "kind": "sav",
+      "metadata_absent_after_failure": true,
+      "read_returns_none_after_reopen": true,
+      "original_backup_still_imported_read_only": true,
+      "retry_succeeds": true,
+      "first_slot_remains_empty": true
+    }
+  ],
+  "namespace_isolation": {
+    "battery_write_failure_preserves_battery_and_slot": true,
+    "slot_pointer_failure_preserves_battery_and_slot": true,
+    "original_standard_save_unchanged": true
+  },
+  "validation": {
+    "host_tests": 2438,
+    "exported_core_tests": 2240,
+    "new_host_cases": 17,
+    "failures": 0,
+    "skips": 0,
+    "suite_test_cases": [
+      "failedReplacementKeepsTheCommittedGenerationAndCanBeRetried(String, String)[1]",
+      "failedReplacementKeepsTheCommittedGenerationAndCanBeRetried(String, String)[2]",
+      "failedReplacementKeepsTheCommittedGenerationAndCanBeRetried(String, String)[3]",
+      "failedReplacementKeepsTheCommittedGenerationAndCanBeRetried(String, String)[4]",
+      "failedReplacementKeepsTheCommittedGenerationAndCanBeRetried(String, String)[5]",
+      "failedReplacementKeepsTheCommittedGenerationAndCanBeRetried(String, String)[6]",
+      "failedReplacementKeepsTheCommittedGenerationAndCanBeRetried(String, String)[7]",
+      "failedReplacementKeepsTheCommittedGenerationAndCanBeRetried(String, String)[8]",
+      "failedReplacementKeepsTheCommittedGenerationAndCanBeRetried(String, String)[9]",
+      "failedReplacementKeepsTheCommittedGenerationAndCanBeRetried(String, String)[10]",
+      "failedReplacementKeepsTheCommittedGenerationAndCanBeRetried(String, String)[11]",
+      "failedReplacementKeepsTheCommittedGenerationAndCanBeRetried(String, String)[12]",
+      "batteryAndStateSlotFailuresKeepTheirSeparateCommitPointers",
+      "anInterruptedFirstWriteIsNotPublishedAndDoesNotHideTheOriginalSave(String, String)[1]",
+      "anInterruptedFirstWriteIsNotPublishedAndDoesNotHideTheOriginalSave(String, String)[2]",
+      "anInterruptedFirstWriteIsNotPublishedAndDoesNotHideTheOriginalSave(String, String)[3]",
+      "anInterruptedFirstWriteIsNotPublishedAndDoesNotHideTheOriginalSave(String, String)[4]"
+    ],
+    "production_code_changes": false,
+    "native_adapter_api_changes": false
+  },
+  "interpretation": "All injected pre-publication failures leave the prior committed generation readable. A complete staged file is still ignored when flush/close/RMS commit fails. Retrying replaces only the inactive generation and publishes after successful close.",
+  "remaining_gates": [
+    "Physical JSR-75/RMS behavior, actual low storage and abrupt device/process termination remain target checks.",
+    "The failure matrix does not qualify power loss after a successful RMS commit or the desktop SaveFile atomic-move fallback."
+  ]
+}
