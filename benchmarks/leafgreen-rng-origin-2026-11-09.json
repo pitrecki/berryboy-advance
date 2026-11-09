@@ -1,0 +1,173 @@
+{
+  "date": "2026-11-09",
+  "source_base_commit": "22f852c9d2359d9f6dc24b52950865d8bf8bc461",
+  "trace_tools_commit": "48c40ac371ae29dbc43cd64f3c9eeb29068d5e73",
+  "scope": "LeafGreen RNG seed and call-order diagnosis; no production timing or guest-seed change",
+  "assets": {
+    "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+    "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+    "input_sha256": "9aa6fdb357675a515ae9e6d61de932b76b0143f6d82808fffb2ae72c8e008fab",
+    "initial_save_sha256": "8f192f66ac21928523cb295e1353b6f0bd3ce6dc2adc40e34cc5f4b8455b8961"
+  },
+  "rng_address": "0x03005000",
+  "lcg": {
+    "multiplier": "0x41c64e6d",
+    "increment": "0x6073",
+    "matching_value_and_caller_prefix": 630,
+    "all_other_changed_writes_obey_the_lcg": true
+  },
+  "first_different_seed": {
+    "zero_based_change_index": 630,
+    "guest_frame": 901,
+    "host": {
+      "cycle_before": "253044769",
+      "cycle_after": "253044774",
+      "pc_before": "134500098",
+      "pc_after": "134500100",
+      "lr_before": "134219141",
+      "lr_after": "134219141",
+      "old": "621573086",
+      "value": "5729",
+      "cpsr_after": "63",
+      "instruction_in_flight": "false"
+    },
+    "reference": {
+      "cycle": "253044569",
+      "pc": "134500100",
+      "lr": "134219141",
+      "old": "621573086",
+      "value": "5780",
+      "cpsr": "63"
+    },
+    "timer1_values": [
+      5729,
+      5780
+    ],
+    "source": "SeedRngAndSetTrainerId reads Timer1 at 0x04000104, then calls SeedRng; this precedes the first frame-931 RGB mismatch."
+  },
+  "first_different_caller_order": {
+    "zero_based_change_index": 1282,
+    "guest_frame": 1548,
+    "host_context": [
+      {
+        "cycle_before": "434793657",
+        "cycle_after": "434793660",
+        "pc_before": "134500072",
+        "pc_after": "134500074",
+        "lr_before": "134219681",
+        "lr_after": "134219681",
+        "old": "3865675506",
+        "value": "322474365",
+        "cpsr_after": "63",
+        "instruction_in_flight": "false"
+      },
+      {
+        "cycle_before": "434803257",
+        "cycle_after": "434803260",
+        "pc_before": "134500072",
+        "pc_after": "134500074",
+        "lr_before": "134529143",
+        "lr_after": "134529143",
+        "old": "322474365",
+        "value": "2937612460",
+        "cpsr_after": "2147483711",
+        "instruction_in_flight": "false"
+      }
+    ],
+    "reference_context": [
+      {
+        "cycle": "434686389",
+        "pc": "134500074",
+        "lr": "134529143",
+        "old": "733771745",
+        "value": "3838572864",
+        "cpsr": "2147483711"
+      },
+      {
+        "cycle": "434793745",
+        "pc": "134500074",
+        "lr": "134219681",
+        "old": "3838572864",
+        "value": "2555052211",
+        "cpsr": "2147483711"
+      }
+    ],
+    "host_order": [
+      "VBlank Random",
+      "save-block relocation Random"
+    ],
+    "reference_order": [
+      "save-block relocation Random",
+      "VBlank Random"
+    ],
+    "relocation_return_lr": "0x0804c077"
+  },
+  "rom_symbol_provenance": {
+    "Random": "0x08044edc",
+    "SeedRng": "0x08044efc",
+    "timer1_read": "0x0800057c",
+    "relocation_call": "0x0804c072",
+    "code_span_sha256": {
+      "0x8044edc": "2e0140c0ea7af45aa8265473ba686c0422b071b47a3c40fe519c9f86e4dc073e",
+      "0x8000578": "4888ac0615706b48fbacf2ada4866e7f7a65b9b70b3c18f8b7b35ae4b3a785f9",
+      "0x804c06c": "6ca4489f814a72c3cbef9bbd417502f7b4506ae454d1b04458ca388c2c3348ad"
+    }
+  },
+  "counterfactual": {
+    "not_an_accuracy_pass": true,
+    "change": "Force only the RAM seed from 5729 to 5780 after the first SeedRng store; assert one injection and zero additional guest cycles.",
+    "report": {
+      "source_commit": "22f852c9d2359d9f6dc24b52950865d8bf8bc461",
+      "source_dirty": "true",
+      "frames": 4190,
+      "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "9aa6fdb357675a515ae9e6d61de932b76b0143f6d82808fffb2ae72c8e008fab",
+      "initial_save_sha256": "8f192f66ac21928523cb295e1353b6f0bd3ce6dc2adc40e34cc5f4b8455b8961",
+      "backup_sha256": "8cfbdba3297035b60264055876e4811ae1b1b705da1573540014b16e050b1fdf",
+      "original_save_unchanged": true,
+      "address": 50352128,
+      "capacity": 16384,
+      "rows": 3950,
+      "guest_cycles": 1176954241,
+      "audio_frames": 2298738,
+      "video_sha256": "60461f60459899a98c50ef1bd5cb6bd7f9abb3c040525c78bddde8e9d5e38bd4",
+      "audio_sha256": "0f101cab84a8e3ba177a68041538b20a6967cae7bec752edcad6aa2126ae0bd1",
+      "final_state_sha256": "575b7cd54e1ab831209a970c610e3a71948e116ac83ece59b65ec3ac8f28d37d",
+      "counterfactual": true,
+      "diagnostic_seed_injections": 1,
+      "scope": "COUNTERFACTUAL forced RNG seed; not a production or correctness result. Only the RAM seed is changed, with no clock advancement."
+    },
+    "matching_lcg_values_for_shared_prefix": 3948,
+    "call_order_still_diverges_at": 1282,
+    "host_changes": 3950,
+    "reference_changes": 3948,
+    "raw_save_different_bytes": 705,
+    "raw_save_difference_categories": {
+      "rekeyed_encrypted_fields": 654,
+      "encryption_key": 4,
+      "play_time": 1,
+      "section_checksum": 8,
+      "unexplained": 38
+    },
+    "seed_override_is_not_shipped": true,
+    "diagnostic_patch": "--- RamChangeProbe.java\n+++ RamChangeProbe.java\n@@ -48,11 +48,18 @@\n         rows.add(\"cycle_before,cycle_after,pc_before,pc_after,lr_before,lr_after,old,value,cpsr_after,instruction_in_flight\");\n         var video = MessageDigest.getInstance(\"SHA-256\"); var audio = MessageDigest.getInstance(\"SHA-256\");\n         var rgb = new byte[240 * 160 * 3]; var pcmBytes = new byte[4096]; var pcm = new short[2048];\n-        var previous = word(machine,address); long audioFrames = 0;\n+        var previous = word(machine,address); long audioFrames = 0; int diagnosticInjections = 0;\n         for (var frame = 1; frame <= frames; frame++) {\n             while (machine.clock.now() < frame * (long) LcdTiming.FRAME_CYCLES) {\n                 var before = machine.clock.now(); var pc = machine.cpu.pc(); var lr = machine.cpu.register(14);\n                 machine.cpu.step(); var value = word(machine,address);\n+                if (machine.cpu.pc() == 0x08044f04 && value != previous && value == 5729) {\n+                    if (++diagnosticInjections != 1) throw new IllegalStateException(\"Repeated diagnostic injection\");\n+                    long at = machine.clock.now(); machine.memory.write32(address,5780);\n+                    if (machine.clock.now() != at) throw new IllegalStateException(\"Diagnostic injection advanced guest time\");\n+                    value = word(machine,address);\n+                }\n+\n                 if (value == previous) continue;\n                 if (rows.size() > capacity) throw new IllegalStateException(\"RAM change trace capacity exceeded\");\n                 rows.add(before + \",\" + machine.clock.now() + \",\" + unsigned(pc) + \",\" + unsigned(machine.cpu.pc())\n@@ -85,8 +92,8 @@\n         result.put(\"guest_cycles\",machine.clock.now()); result.put(\"audio_frames\",audioFrames);\n         result.put(\"video_sha256\",HexFormat.of().formatHex(video.digest())); result.put(\"audio_sha256\",HexFormat.of().formatHex(audio.digest()));\n         result.put(\"final_state_sha256\",recording.lastCycle() <= machine.clock.now() ? hash(MachineState.save(machine)) : null);\n-        result.put(\"scope\",\"RAM changes observed between public CPU steps, not exact bus timestamps or retirement events; unchanged stores are absent. \"\n-                + \"No observation callbacks or guest writes. Input save is read only; full RGB/PCM hashes are retained.\");\n+        result.put(\"counterfactual\",true); result.put(\"diagnostic_seed_injections\",diagnosticInjections);\n+        result.put(\"scope\",\"COUNTERFACTUAL forced RNG seed; not a production or correctness result. Only the RAM seed is changed, with no clock advancement.\");\n         Files.writeString(output.resolve(\"report.json\"),JsonReport.encode(result)+\"\\n\"); System.out.println(JsonReport.encode(result));\n     }\n \n",
+    "base_source_sha256": "da840d07291d66e5c0415da9c2504e6e396e7b74668d2a4a666a7f6b572e340e",
+    "variant_source_sha256": "fd6017053664442be4483ea208a761f54ee29d68be3282dd675cab76cf2e77b1",
+    "reproduce": "Copy the tracked probe into a temporary directory, apply this patch there, compile to an isolated classes directory and run the same verified scenario. The resulting report is explicitly counterfactual."
+  },
+  "remaining_gates": [
+    "The hardware-expected CPU/IRQ/bus timing around Timer1 enable/read remains unqualified.",
+    "Equalizing the RNG seed does not fix subsequent caller allocation or NPC state; do not ship a fixed seed or relax comparisons.",
+    "Trace execution around frame 543 Timer1 enable and frame 1548 save-block relocation/VBlank ordering. Full RGB/PCM and strict save comparison remain failing."
+  ],
+  "independent_source": {
+    "repository": "https://github.com/pret/pokefirered",
+    "commit": "ce6406d8c2eaf46d543c8a2606de0c3cb1951982",
+    "files_sha256": {
+      "src/random.c": "e7e90cc070d1fbf09579f5f91762cd8875d5bbe1d7a90f468bcd870df73b9de2",
+      "src/main.c": "0bfa6c662b1cbd49bd31020b6c2509208004611e6701ad64badce22eca371139",
+      "src/load_save.c": "b6a07136288f9330cf2b56f3a101fb62fd99fb23d76c9ab8de81e8cba458c012"
+    }
+  }
+}

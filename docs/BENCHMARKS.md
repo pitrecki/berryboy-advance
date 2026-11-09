@@ -208,7 +208,7 @@ user settings do not relax that qualification protocol.
 | 2 / P0: Wider CPU/LCD timing | Cartridge DMA during discarded IRQ fetches now matches 144 independent cold/warm/page-edge observations. Extend coverage to subsequent stream invalidation and pipeline latching/self-modifying code, then IRQ propagation/mask latency. Trace the LeafGreen frame-930 offset and HBlank at cycle 960 versus the reference's 1008. | Matching event/retirement observations with justified expected timing. Keep in-flight snapshots distinct from retired state. Do not adjust a constant solely to improve screenshot counts. |
 | 3 / P0: Graphics expected results | Resolve the 2244-case three-way disagreement on brightness rounding and palette bit 15 using independently justified outputs or hardware evidence. Then qualify combined raster/OBJ/window effects. | Explicit per-pixel expectations and regression scenes. The renderer remains unqualified until those expectations are established; no relaxed tolerances. |
 | 4 / P1: Audio correctness | Start with late Sonic Advance 3 and Wario Land 4 differences. Compare timer/DMA FIFO, PSG and sample-clock events before diagnosing gain/filter/resampling. | Repeatable sample/event checkpoints, justified comparison rules, listening review and no software-buffer loss. Timing-dependent fixes follow the timing gates. |
-| 5 / P1: Gameplay and saves | LeafGreen now covers repeated indoor saves, a Pallet Town save with four cold cross-loads and a 120-frame state replay, plus three interrupted-write phases in both engines. Trace RNG/field timing at NPC 2's first differing Quest Log command; extend to counter wrap, host-file recovery and further gameplay. Extend Mario/Luigi movement/battle, Sonic/Wario level, Golden Sun battle and V-Rally race work. Doom II first level, F-Zero race and Mario & Luigi Toad control retain named routes and state replays. | Preserve strict binary and full-stream outcomes; visible play or a successful full-state replay alone does not qualify game accuracy or cartridge-save compatibility. |
+| 5 / P1: Gameplay and saves | LeafGreen now covers repeated indoor saves, a Pallet Town save with four cold cross-loads and a 120-frame state replay, plus three interrupted-write phases in both engines. Trace CPU/IRQ timing around Timer1 seeding and frame-1548 relocation/VBlank RNG ordering; extend to counter wrap, host-file recovery and further gameplay. Extend Mario/Luigi movement/battle, Sonic/Wario level, Golden Sun battle and V-Rally race work. Doom II first level, F-Zero race and Mario & Luigi Toad control retain named routes and state replays. | Preserve strict binary and full-stream outcomes; visible play or a successful full-state replay alone does not qualify game accuracy or cartridge-save compatibility. |
 | 6 / P2: Linux performance | Once selected routes pass correctness, profile CPU/PPU/presentation and optimize one demonstrated bottleneck at a time. Consider acceleration only with a supported backend and matching software output. | Three 10-minute runs after 30-second warmup, measured presentation/audio, bounded queues/memory and the gates below. |
 | 7 / Target-dependent: BlackBerry runtime | Run the new phone frontend in the simulator; qualify file access, slots, input and MMAPI output, then repeat correctness and sustained playback on a physical Bold. | Separate build, simulator and device reports; actual application results and physical measurements. |
 
@@ -331,3 +331,15 @@ unexplained failures into a pass.
 
 Earlier roadmap snapshots, implementation-stage counts and synthetic profiling
 are retained in Git history. They are not current qualification results.
+
+## LeafGreen RNG origin checkpoint
+
+[Seed/caller diagnosis](../benchmarks/leafgreen-rng-origin-2026-11-09.json) finds
+630 identical RNG changes and callers before Timer1 seeds the generators with
+5729 versus 5780 at frame 901. The ROM uses the same LCG arithmetic in both runs.
+At frame 1548, save-block relocation and VBlank consume RNG values in reversed
+order. A diagnostic-only equal-seed experiment still produces different NPC
+state and 38 unclassified payload bytes. It is rejected as a production fix.
+Trace CPU/IRQ execution around Timer1 enable/read and that relocation boundary;
+retain strict failing RGB/PCM/save outcomes. The read-only production probes do
+not alter guest RAM or timing.
