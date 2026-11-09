@@ -840,3 +840,20 @@ isolated `target/blackberry/classes` checks immediate/final state on actual CLDC
 classes; it does not compare per-frame RGB/PCM. Asset identities, save payload
 differences and both continuation results are in
 [the outdoor-save record](../benchmarks/leafgreen-overworld-save-2026-11-06.json).
+
+Add `--activity` to inspect saved object coordinates/directions and the supported
+non-battle Quest Log commands in each active scene:
+
+```bash
+python3 tools/inspect_leafgreen_save.py /path/to/berryboy-outdoor.sav \
+  --compare /path/to/reference-outdoor.sav --activity
+```
+
+The view follows logical sections across physical rotation, uses signed grid
+coordinates and bounds each script to its 256-byte buffer and scene-end command.
+It supports input, graphics change, movement, departed/arrived, wait and scene
+end. Other events, repeat headers and malformed/truncated scripts fail this
+optional view explicitly; plain Flash inspection remains available. The activity
+view never normalizes bytes or changes strict comparison/exit status. See
+[the NPC/timeline diagnosis](../benchmarks/leafgreen-activity-2026-11-09.json)
+for the outdoor case and independently pinned field/command sources.

@@ -1,0 +1,516 @@
+{
+  "date": "2026-11-09",
+  "source_base_commit": "139102768ff19b3eb3ce5c6c13d4c8f343872b1d",
+  "source_dirty": true,
+  "scope": "Read-only description of the retained and reproduced LeafGreen outdoor save differences; no emulation or tolerance change",
+  "assets": {
+    "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+    "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+    "input_sha256": "9aa6fdb357675a515ae9e6d61de932b76b0143f6d82808fffb2ae72c8e008fab",
+    "initial_save_sha256": "8f192f66ac21928523cb295e1353b6f0bd3ce6dc2adc40e34cc5f4b8455b8961"
+  },
+  "strict_binary_comparison": {
+    "raw_equal": false,
+    "raw_different_bytes": 709,
+    "raw_difference_categories": {
+      "rekeyed_encrypted_fields": 654,
+      "encryption_key": 4,
+      "play_time": 1,
+      "section_checksum": 8,
+      "unexplained": 42
+    }
+  },
+  "npc": {
+    "local_id": 2,
+    "map_group": 3,
+    "map_number": 0,
+    "source_map_name": "LOCALID_PALLET_FAT_MAN",
+    "changed_world_fields": [
+      {
+        "offset": "0x6f8",
+        "field": "current_grid.x"
+      },
+      {
+        "offset": "0x6fc",
+        "field": "previous_grid.x"
+      },
+      {
+        "offset": "0x700",
+        "field": "packed facing/movement direction"
+      },
+      {
+        "offset": "0x708",
+        "field": "previous_movement_direction"
+      }
+    ],
+    "changed_raw_bytes": 4,
+    "berryboy": {
+      "slot": 2,
+      "local_id": 2,
+      "map_number": 0,
+      "map_group": 3,
+      "graphics_id": 27,
+      "movement_type": 2,
+      "initial_grid": {
+        "x": 20,
+        "y": 24
+      },
+      "current_grid": {
+        "x": 20,
+        "y": 25
+      },
+      "current_map": {
+        "x": 13,
+        "y": 18
+      },
+      "previous_grid": {
+        "x": 20,
+        "y": 25
+      },
+      "facing_direction": 1,
+      "movement_direction": 1,
+      "previous_movement_direction": 1
+    },
+    "mgba": {
+      "slot": 2,
+      "local_id": 2,
+      "map_number": 0,
+      "map_group": 3,
+      "graphics_id": 27,
+      "movement_type": 2,
+      "initial_grid": {
+        "x": 20,
+        "y": 24
+      },
+      "current_grid": {
+        "x": 18,
+        "y": 25
+      },
+      "current_map": {
+        "x": 11,
+        "y": 18
+      },
+      "previous_grid": {
+        "x": 18,
+        "y": 25
+      },
+      "facing_direction": 3,
+      "movement_direction": 3,
+      "previous_movement_direction": 3
+    }
+  },
+  "quest_log": {
+    "scene": 0,
+    "script_start_world_offset": "0x1868",
+    "changed_raw_bytes": 38,
+    "sides": {
+      "berryboy": {
+        "command_count": 14,
+        "npc2_movement_records": 7,
+        "sum_action_durations": 510,
+        "walk_delta": {
+          "x": 0,
+          "y": 1
+        },
+        "walk_delta_matches_saved_npc_coordinates": true,
+        "commands": [
+          {
+            "world_offset": 6248,
+            "command_id": 2,
+            "kind": "movement",
+            "duration": 0,
+            "local_id": 0,
+            "map_number": 0,
+            "map_group": 0,
+            "action": 0
+          },
+          {
+            "world_offset": 6256,
+            "command_id": 0,
+            "kind": "input",
+            "duration": 0,
+            "field_input": [
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "world_offset": 6264,
+            "command_id": 35,
+            "kind": "departed",
+            "action_index": 2,
+            "event_data": [
+              88,
+              0
+            ]
+          },
+          {
+            "world_offset": 6270,
+            "command_id": 2,
+            "kind": "movement",
+            "duration": 0,
+            "local_id": 1,
+            "map_number": 0,
+            "map_group": 3,
+            "action": 1
+          },
+          {
+            "world_offset": 6278,
+            "command_id": 2,
+            "kind": "movement",
+            "duration": 93,
+            "local_id": 2,
+            "map_number": 0,
+            "map_group": 3,
+            "action": 1
+          },
+          {
+            "world_offset": 6286,
+            "command_id": 2,
+            "kind": "movement",
+            "duration": 127,
+            "local_id": 2,
+            "map_number": 0,
+            "map_group": 3,
+            "action": 18
+          },
+          {
+            "world_offset": 6294,
+            "command_id": 2,
+            "kind": "movement",
+            "duration": 16,
+            "local_id": 2,
+            "map_number": 0,
+            "map_group": 3,
+            "action": 2
+          },
+          {
+            "world_offset": 6302,
+            "command_id": 2,
+            "kind": "movement",
+            "duration": 63,
+            "local_id": 2,
+            "map_number": 0,
+            "map_group": 3,
+            "action": 19
+          },
+          {
+            "world_offset": 6310,
+            "command_id": 2,
+            "kind": "movement",
+            "duration": 16,
+            "local_id": 2,
+            "map_number": 0,
+            "map_group": 3,
+            "action": 3
+          },
+          {
+            "world_offset": 6318,
+            "command_id": 2,
+            "kind": "movement",
+            "duration": 127,
+            "local_id": 2,
+            "map_number": 0,
+            "map_group": 3,
+            "action": 16
+          },
+          {
+            "world_offset": 6326,
+            "command_id": 2,
+            "kind": "movement",
+            "duration": 16,
+            "local_id": 2,
+            "map_number": 0,
+            "map_group": 3,
+            "action": 0
+          },
+          {
+            "world_offset": 6334,
+            "command_id": 0,
+            "kind": "input",
+            "duration": 51,
+            "field_input": [
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "world_offset": 6342,
+            "command_id": 41,
+            "kind": "wait",
+            "duration": 1
+          },
+          {
+            "world_offset": 6346,
+            "command_id": 39,
+            "kind": "scene_end"
+          }
+        ]
+      },
+      "mgba": {
+        "command_count": 18,
+        "npc2_movement_records": 11,
+        "sum_action_durations": 511,
+        "walk_delta": {
+          "x": -2,
+          "y": 1
+        },
+        "walk_delta_matches_saved_npc_coordinates": true,
+        "commands": [
+          {
+            "world_offset": 6248,
+            "command_id": 2,
+            "kind": "movement",
+            "duration": 0,
+            "local_id": 0,
+            "map_number": 0,
+            "map_group": 0,
+            "action": 0
+          },
+          {
+            "world_offset": 6256,
+            "command_id": 0,
+            "kind": "input",
+            "duration": 0,
+            "field_input": [
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "world_offset": 6264,
+            "command_id": 35,
+            "kind": "departed",
+            "action_index": 2,
+            "event_data": [
+              88,
+              0
+            ]
+          },
+          {
+            "world_offset": 6270,
+            "command_id": 2,
+            "kind": "movement",
+            "duration": 0,
+            "local_id": 1,
+            "map_number": 0,
+            "map_group": 3,
+            "action": 1
+          },
+          {
+            "world_offset": 6278,
+            "command_id": 2,
+            "kind": "movement",
+            "duration": 61,
+            "local_id": 2,
+            "map_number": 0,
+            "map_group": 3,
+            "action": 16
+          },
+          {
+            "world_offset": 6286,
+            "command_id": 2,
+            "kind": "movement",
+            "duration": 16,
+            "local_id": 2,
+            "map_number": 0,
+            "map_group": 3,
+            "action": 0
+          },
+          {
+            "world_offset": 6294,
+            "command_id": 2,
+            "kind": "movement",
+            "duration": 31,
+            "local_id": 2,
+            "map_number": 0,
+            "map_group": 3,
+            "action": 16
+          },
+          {
+            "world_offset": 6302,
+            "command_id": 2,
+            "kind": "movement",
+            "duration": 16,
+            "local_id": 2,
+            "map_number": 0,
+            "map_group": 3,
+            "action": 0
+          },
+          {
+            "world_offset": 6310,
+            "command_id": 2,
+            "kind": "movement",
+            "duration": 127,
+            "local_id": 2,
+            "map_number": 0,
+            "map_group": 3,
+            "action": 18
+          },
+          {
+            "world_offset": 6318,
+            "command_id": 2,
+            "kind": "movement",
+            "duration": 16,
+            "local_id": 2,
+            "map_number": 0,
+            "map_group": 3,
+            "action": 2
+          },
+          {
+            "world_offset": 6326,
+            "command_id": 2,
+            "kind": "movement",
+            "duration": 95,
+            "local_id": 2,
+            "map_number": 0,
+            "map_group": 3,
+            "action": 17
+          },
+          {
+            "world_offset": 6334,
+            "command_id": 2,
+            "kind": "movement",
+            "duration": 16,
+            "local_id": 2,
+            "map_number": 0,
+            "map_group": 3,
+            "action": 1
+          },
+          {
+            "world_offset": 6342,
+            "command_id": 2,
+            "kind": "movement",
+            "duration": 31,
+            "local_id": 2,
+            "map_number": 0,
+            "map_group": 3,
+            "action": 18
+          },
+          {
+            "world_offset": 6350,
+            "command_id": 2,
+            "kind": "movement",
+            "duration": 16,
+            "local_id": 2,
+            "map_number": 0,
+            "map_group": 3,
+            "action": 2
+          },
+          {
+            "world_offset": 6358,
+            "command_id": 2,
+            "kind": "movement",
+            "duration": 31,
+            "local_id": 2,
+            "map_number": 0,
+            "map_group": 3,
+            "action": 2
+          },
+          {
+            "world_offset": 6366,
+            "command_id": 0,
+            "kind": "input",
+            "duration": 54,
+            "field_input": [
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "world_offset": 6374,
+            "command_id": 41,
+            "kind": "wait",
+            "duration": 1
+          },
+          {
+            "world_offset": 6378,
+            "command_id": 39,
+            "kind": "scene_end"
+          }
+        ]
+      }
+    },
+    "first_different_command": {
+      "zero_based_index": 4,
+      "berryboy": {
+        "world_offset": 6278,
+        "command_id": 2,
+        "kind": "movement",
+        "duration": 93,
+        "local_id": 2,
+        "map_number": 0,
+        "map_group": 3,
+        "action": 1
+      },
+      "mgba": {
+        "world_offset": 6278,
+        "command_id": 2,
+        "kind": "movement",
+        "duration": 61,
+        "local_id": 2,
+        "map_number": 0,
+        "map_group": 3,
+        "action": 16
+      }
+    }
+  },
+  "independent_source": {
+    "repository": "https://github.com/pret/pokefirered",
+    "commit": "ce6406d8c2eaf46d543c8a2606de0c3cb1951982",
+    "files_sha256": {
+      "include/global.h": "044325b90e7c79146cc0cf73d31b6be3e4840059e2e778b63d9b5448fe538429",
+      "include/global.fieldmap.h": "34a8c91e10803ba48b97a2df8a721ca37fad7572b2ff951a4ab7ec15a5f050eb",
+      "include/quest_log.h": "0bfe5b360ea2a888534d25c00a0084781821b975fd01475b0d1074021c89ffb5",
+      "include/constants/quest_log.h": "90cceec5883201c3d3d2bdb420d1f7b3ebef21f4716eef0760bba507559be2dc",
+      "include/constants/event_object_movement.h": "3d12e9868383a42afef346e968031a12504dc8fc4dda12a17623af3f9df6ecba",
+      "src/quest_log_events.c": "e6cade44e4c41d0c2a0b27a718ffaee16a9485d36e7f09d6adc9da752b7b7e36",
+      "src/quest_log.c": "75f19a2193d991754b48fc5a859a5731a7ddb853372dd3992842912b44a19d4e",
+      "src/quest_log_objects.c": "0760cbb59f64714d9d8c2098debcf2e12f2d4fb3ff5252f91b311366e7a3c7e6",
+      "src/event_object_movement.c": "920f96b45569e702dd00997e7984effb3a7677ba2b68512b939eda69c2294254",
+      "data/maps/PalletTown/map.json": "2816338934241bac34f52dae8b101ac3add59e0ebdde3e3fb6575f3b525b01c3"
+    },
+    "observation": "WanderAround uses Random() for both delay and direction. The recorded commands reproduce the two different final positions; their underlying RNG/timing divergence is not yet traced."
+  },
+  "repeatability": {
+    "berryboy": {
+      "frames": 4190,
+      "backup_sha256": "d614d8d71d797aba5820f00c8aea7b8bd777f4014da3b664d02232c3697e74e5",
+      "retained_backup_sha256": "d614d8d71d797aba5820f00c8aea7b8bd777f4014da3b664d02232c3697e74e5",
+      "backup_byte_identical": true,
+      "rgb_stream_sha256": "60461f60459899a98c50ef1bd5cb6bd7f9abb3c040525c78bddde8e9d5e38bd4",
+      "pcm_stream_sha256": "92c89769c9805ff55659bbff5baf966c1c67629661733d6f8ae3cc1dc4416429",
+      "retained_rgb_pcm_exact": true
+    },
+    "mgba": {
+      "frames": 4190,
+      "backup_sha256": "fe1e39a17511d060f897fb6477f548a432b1b0f5bdc87fa0c6e41bff1364c799",
+      "retained_backup_sha256": "fe1e39a17511d060f897fb6477f548a432b1b0f5bdc87fa0c6e41bff1364c799",
+      "backup_byte_identical": true,
+      "rgb_stream_sha256": "184ba37098e03f8d26a236143923fa2b74cb6f05f5fb44f6039535f67f4c732c",
+      "pcm_stream_sha256": "0cf3a8ec3c1268f4e1f62bbc94713f8904292bc41ce09e7573e144a974479281",
+      "retained_rgb_pcm_exact": true
+    }
+  },
+  "validation": {
+    "host_tests": 2421,
+    "exported_core_tests": 2240,
+    "new_host_cases": 11,
+    "failures": 0,
+    "skips": 0,
+    "portable_or_native_sources_changed": false
+  },
+  "remaining_gates": [
+    "Strict binary equality still fails in 709 bytes, with the same 42 bytes outside the rekey/time/checksum classification.",
+    "NPC and timeline interpretation identifies differing execution, not its root cause or acceptable hardware behavior.",
+    "Trace RNG/field timing before the first differing NPC2 movement (duration 93/61, face-up/walk-down). Full RGB/PCM comparisons remain failing."
+  ]
+}

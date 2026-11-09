@@ -139,9 +139,17 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("save", type=Path)
     parser.add_argument("--compare", type=Path, help="Diagnose differences; exit 1 unless raw files match")
+    parser.add_argument("--activity", action="store_true", help="Decode active objects and supported non-battle Quest Log commands")
     args = parser.parse_args()
     data = args.save.read_bytes()
-    result = compare(data, args.compare.read_bytes()) if args.compare else inspect(data)
+    other = args.compare.read_bytes() if args.compare else None
+    result = compare(data, other) if args.compare else inspect(data)
+    if args.activity:
+        from leafgreen_activity import inspect_activity
+        images = ((data, result["left"]), (other, result["right"])) if args.compare else ((data, result),)
+        for image, summary in images:
+            _, generations = parse(image)
+            summary["activity"] = inspect_activity(generations[summary["latest_generation"]])
     print(json.dumps(result, indent=2))
     return 1 if args.compare and not result["raw_equal"] else 0
 
