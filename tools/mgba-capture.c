@@ -54,6 +54,7 @@ struct LcdRecord {
     uint32_t cycle, dispatchCycle, before, pc, cpsr, vcount, dispstat, dispcnt, bldcnt, bldalpha, bldy, ie, irq, ime, halted;
     uint32_t bg2cnt, bg2pa, bg2pb, bg2pc, bg2pd, bg2x, bg2y;
 };
+struct RamRecord { uint32_t cycle, pc, lr, oldValue, value, cpsr; };
 struct Capture {
     struct mCore* core;
     color_t* pixels;
@@ -70,10 +71,50 @@ struct Capture {
     unsigned long long traceDropped;
     const char* tracePath;
     void (*lcdCallback)(struct mTiming*, void*, uint32_t);
+    struct RamRecord* ramRecords;
+    uint32_t ramAddress, ramCapacity, ramRows;
+    unsigned long long ramDropped;
+    const char* ramPath;
+    void (*store32)(struct ARMCore*, uint32_t, int32_t, int*);
 };
 /* One core per adapter process. The original event's context/priority/deadline
  * remain unchanged. Buffer primitive snapshots, never write IO during dispatch. */
 static struct Capture* tracedCapture;
+static struct Capture* ramCapture;
+
+static void tracedStore32(struct ARMCore* cpu, uint32_t address, int32_t value, int* cycles) {
+    struct Capture* c = ramCapture;
+    if (address == c->ramAddress) {
+        if (c->ramRows == c->ramCapacity) ++c->ramDropped;
+        else c->ramRecords[c->ramRows++] = (struct RamRecord){
+            mTimingCurrentTime(c->core->timing), cpu->gprs[15] - (cpu->executionMode == MODE_THUMB ? 2 : 4),
+            cpu->gprs[14], c->core->rawRead32(c->core, address, -1), (uint32_t)value, cpu->cpsr.packed
+        };
+    }
+    c->store32(cpu, address, value, cycles);
+}
+
+static int writeRamTrace(struct Capture* c) {
+    FILE* output = fopen(c->ramPath, "wx");
+    if (!output) return 16;
+    fputs("cycle,pc,lr,old,value,cpsr\n", output);
+    for (uint32_t i = 0; i < c->ramRows; ++i) {
+        const struct RamRecord* r = &c->ramRecords[i];
+        fprintf(output, "%u,%u,%u,%u,%u,%u\n", r->cycle, r->pc, r->lr, r->oldValue, r->value, r->cpsr);
+    }
+    int failed = ferror(output);
+    if (fclose(output) || failed) return 16;
+    char* summary = malloc(strlen(c->ramPath) + 6);
+    if (!summary) return 16;
+    sprintf(summary, "%s.json", c->ramPath);
+    output = fopen(summary, "wx"); free(summary);
+    if (!output) return 16;
+    fprintf(output, "{\"address\":%u,\"capacity\":%u,\"rows\":%u,\"dropped_rows\":%llu,"
+        "\"scope\":\"Before CPU store32 callbacks to one RAM word, including unchanged stores; excludes DMA and other widths\"}\n",
+        c->ramAddress, c->ramCapacity, c->ramRows, c->ramDropped);
+    failed = ferror(output);
+    return fclose(output) || failed || c->ramDropped ? 16 : 0;
+}
 
 static void recordLcd(struct mTiming* timing, uint32_t late, unsigned before) {
     struct Capture* c = tracedCapture;
@@ -216,8 +257,8 @@ int main(int argc, char** argv) {
         fprintf(stderr, "This adapter requires mGBA 0.10.5, got %s\n", projectVersion);
         return 2;
     }
-    if (argc < 7 || (argc > 9 && argc != 13)) {
-        fprintf(stderr, "Usage: mgba-capture <rom> <bios> <input.tsv> <frames> <save-output> <devices:0|1> [initial-save|- [checkpoint-frames|- [event-trace.tsv start-cycle end-cycle capacity]]]\n");
+    if (argc < 7 || (argc > 9 && argc != 13 && argc != 16)) {
+        fprintf(stderr, "Usage: mgba-capture <rom> <bios> <input.tsv> <frames> <save-output> <devices:0|1> [initial-save|- [checkpoint-frames|- [event-trace.tsv|- start-cycle end-cycle capacity [ram-trace.csv address capacity]]]]\n");
         return 2;
     }
     char* end;
@@ -228,7 +269,7 @@ int main(int argc, char** argv) {
     unsigned char* videoFrames = calloc(frames + 1, 1);
     if (!videoFrames) return 4;
     unsigned traceStart = 0, traceEnd = 0, traceCapacity = 0;
-    if (argc == 13) {
+    if (argc >= 13) {
         unsigned* fields[] = {&traceStart, &traceEnd, &traceCapacity};
         for (int i = 0; i < 3; ++i) {
             if (argv[10 + i][0] < '0' || argv[10 + i][0] > '9') return 2;
@@ -236,8 +277,23 @@ int main(int argc, char** argv) {
             if (*end || value > INT32_MAX) return 2;
             *fields[i] = value;
         }
-        if (traceEnd <= traceStart || traceEnd > (unsigned)frames * FRAME_CYCLES + 1
+        if (!strcmp(argv[9], "-")) {
+            if (traceStart || traceEnd || traceCapacity) return 2;
+        } else if (traceEnd <= traceStart || traceEnd > (unsigned)frames * FRAME_CYCLES + 1
                 || traceCapacity < 1 || traceCapacity > 1000000) return 2;
+    }
+    unsigned ramAddress = 0, ramCapacity = 0;
+    if (argc == 16) {
+        if (argv[14][0] < '0' || argv[14][0] > '9') return 2;
+        unsigned long address = strtoul(argv[14], &end, 0);
+        if (*end || address > UINT32_MAX || (address & 3)
+                || !((address >= 0x02000000 && address <= 0x0203fffc)
+                    || (address >= 0x03000000 && address <= 0x03007ffc))) return 2;
+        ramAddress = address;
+        if (argv[15][0] < '0' || argv[15][0] > '9') return 2;
+        unsigned long capacityValue = strtoul(argv[15], &end, 10);
+        if (*end || capacityValue < 1 || capacityValue > 65536) return 2;
+        ramCapacity = capacityValue;
     }
     if (argc >= 9 && strcmp(argv[8], "-")) {
         const char* next = argv[8];
@@ -325,13 +381,25 @@ int main(int argc, char** argv) {
     mTimingScheduleAbsolute(core->timing, &capture.frameEvent, FRAME_CYCLES);
     if (count && events[0].cycle <= (unsigned long long)frames * FRAME_CYCLES)
         mTimingScheduleAbsolute(core->timing, &capture.inputEvent, events[0].cycle);
+    if (ramCapacity) {
+        capture.ramRecords = calloc(ramCapacity, sizeof(*capture.ramRecords));
+        if (!capture.ramRecords) return 4;
+        capture.ramAddress = ramAddress; capture.ramCapacity = ramCapacity; capture.ramPath = argv[13];
+        ramCapture = &capture;
+        struct ARMCore* cpu = core->cpu;
+        capture.store32 = cpu->memory.store32; cpu->memory.store32 = tracedStore32;
+    }
     while (capture.frame < capture.frames) core->runLoop(core);
+    if (ramCapacity) {
+        ((struct ARMCore*)core->cpu)->memory.store32 = capture.store32;
+        if (writeRamTrace(&capture)) return 16;
+    }
     if (capture.traceCapacity && writeLcdTrace(&capture)) return 15;
     if (capture.saveSize && capture.save) {
         FILE* output = fopen(argv[5], "wb");
         if (!output || fwrite(capture.save, 1, capture.saveSize, output) != capture.saveSize || fclose(output)) return 12;
     }
-    free(capture.save); free(capture.lcdRecords); free(pixels); free(events); free(videoFrames);
+    free(capture.save); free(capture.lcdRecords); free(capture.ramRecords); free(pixels); free(events); free(videoFrames);
     mCoreConfigDeinit(&core->config); core->deinit(core);
     if (fflush(stdout)) return 10;
     return 0;

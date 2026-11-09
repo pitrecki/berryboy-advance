@@ -1,0 +1,92 @@
+{
+  "date": "2026-11-09",
+  "source_base_commit": "22f852c9d2359d9f6dc24b52950865d8bf8bc461",
+  "source_dirty": true,
+  "scope": "Read-only host RAM-change samples and mGBA CPU word-store callback observations. Sample points differ and are not equated with retired instruction or hardware bus timing.",
+  "limits": {
+    "frames": [
+      1,
+      7000
+    ],
+    "address": "One aligned EWRAM/IWRAM word",
+    "max_capacity": 65536,
+    "overflow": "Fails without publishing a passing capture report"
+  },
+  "tools": [
+    "tools/RamChangeProbe.java",
+    "tools/mgba-capture.c",
+    "tools/reference_capture.py"
+  ],
+  "asset_identity": {
+    "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+    "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+    "input_sha256": "9aa6fdb357675a515ae9e6d61de932b76b0143f6d82808fffb2ae72c8e008fab",
+    "initial_save_sha256": "8f192f66ac21928523cb295e1353b6f0bd3ce6dc2adc40e34cc5f4b8455b8961"
+  },
+  "host_control": {
+    "frames": 4190,
+    "ram_changes": 3944,
+    "video_sha256": "60461f60459899a98c50ef1bd5cb6bd7f9abb3c040525c78bddde8e9d5e38bd4",
+    "audio_sha256": "92c89769c9805ff55659bbff5baf966c1c67629661733d6f8ae3cc1dc4416429",
+    "backup_sha256": "d614d8d71d797aba5820f00c8aea7b8bd777f4014da3b664d02232c3697e74e5",
+    "final_state_sha256": "6a597c2500858a2be0da5a09708271ddc2d5b7d45d64e89baf65a9ad322af0fe",
+    "rgb_pcm_and_backup_exact_to_retained_run": true,
+    "final_state_exact_to_retained_state_snapshot": true
+  },
+  "reference_control": {
+    "frames": 4190,
+    "cpu_word_stores": 3948,
+    "dropped_rows": 0,
+    "video_sha256": "184ba37098e03f8d26a236143923fa2b74cb6f05f5fb44f6039535f67f4c732c",
+    "audio_sha256": "0cf3a8ec3c1268f4e1f62bbc94713f8904292bc41ce09e7573e144a974479281",
+    "backup_sha256": "fe1e39a17511d060f897fb6477f548a432b1b0f5bdc87fa0c6e41bff1364c799",
+    "rgb_pcm_backup_and_all_frame_cpu_headers_exact_to_retained_run": true
+  },
+  "native_reference_builds": {
+    "rgb555": {
+      "library_sha256": "8a2eb439e339c6f2672fc5083f671c6c1da21354fe470e51b4d0e2ed69c2221e",
+      "binary_sha256": "5977c5abfde613b150947274686485b587e21ff17026db842e3bf3680e117c2d"
+    },
+    "rgb888": {
+      "library_sha256": "b47af07b62f97b0dacb9e48f0feeed90d7038e45c14564437c1d38bafdee7bb3",
+      "binary_sha256": "042ad7f0df5de5c905819cca5e0bdee928474df5aaecc93903c8b5825ed7e884",
+      "one_frame_smoke": true
+    }
+  },
+  "compatibility_checks": {
+    "legacy_lcd_cli_and_rgb_frames": true,
+    "combined_lcd_ram_300_frame_rgb_pcm_exact": true,
+    "invalid_cli_combinations_rejected_before_asset_io": 6,
+    "reference_capacity_one_rejected": true,
+    "overflow_dropped_rows": 27,
+    "overflow_passing_report_absent": true
+  },
+  "validation": {
+    "host_tests": 2450,
+    "exported_core_tests": 2240,
+    "new_host_cases": 12,
+    "failures": 0,
+    "skips": 0,
+    "portable_and_native_app_changes": false
+  },
+  "reproduce": {
+    "host": [
+      "mkdir -p target/ram-tools",
+      "javac --release 21 -cp target/classes -d target/ram-tools tools/RamChangeProbe.java",
+      "java -cp target/ram-tools:target/classes berryboy.desktop.RamChangeProbe scenario.properties freshOutput"
+    ],
+    "host_properties": {
+      "frames": 4190,
+      "trace_ram_address": "0x03005000",
+      "trace_ram_capacity": 16384
+    },
+    "reference_flags": [
+      "--ram-trace",
+      "--ram-address",
+      "0x03005000",
+      "--ram-capacity",
+      "16384"
+    ]
+  },
+  "qualification": "Observer stability and bounded diagnostic behavior only. Full game RGB/PCM accuracy remains failing."
+}

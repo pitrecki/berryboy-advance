@@ -857,3 +857,41 @@ optional view explicitly; plain Flash inspection remains available. The activity
 view never normalizes bytes or changes strict comparison/exit status. See
 [the NPC/timeline diagnosis](../benchmarks/leafgreen-activity-2026-11-09.json)
 for the outdoor case and independently pinned field/command sources.
+
+## Read-only RAM observations
+
+For a seeded scenario with verified ROM/BIOS/input/save identities, add
+`trace_ram_address=0x03005000` and optional `trace_ram_capacity=16384` to the
+properties. Keep `frames` between 1 and 7000, zero warmup, default RTC and no
+peripherals; include `commit` and `source_dirty` metadata. Capture to a fresh folder:
+
+```bash
+mkdir -p target/ram-tools
+javac --release 21 -cp target/classes -d target/ram-tools tools/RamChangeProbe.java
+java -cp target/ram-tools:target/classes berryboy.desktop.RamChangeProbe \
+  /path/to/scenario.properties target/local-ram-observation
+```
+
+The tool samples one aligned EWRAM/IWRAM word between public CPU steps and
+records changed values with before/after cycles, PCs, LRs and in-flight status.
+It installs no clock callbacks, retains full RGB/PCM and final-backup hashes,
+and never writes the source save. A final machine-state hash is included only
+when all recorded input has run. An asset-free control checks complete state
+against unobserved execution, including unchanged stores and audio draining.
+
+Recompile `tools/mgba-capture.c` against the matching pixel ABI, then add
+`--ram-trace --ram-address 0x03005000 --ram-capacity 16384` to
+`tools/reference_capture.py`. This produces `ram.csv` and its metadata alongside
+the normal capture and can be combined with `--event-trace`. The reference
+observes exact-address CPU `store32` callbacks before delegation, including
+unchanged stores; DMA and other widths are outside that view. The host samples
+all observable word changes between steps. These are different observation
+points: compare values/callers within the supported scope, not raw timestamps
+as if they were identical bus or retirement events.
+
+Both tools cap trace capacity at 65536; overflow fails the run. Addresses must
+be canonical RAM words, excluding IO and unaligned addresses. The underlying
+16/32-bit reference pixel modes and 7000-frame bound stay unchanged.
+[Observer checks](../benchmarks/ram-tracing-2026-11-09.json) retain byte-identical
+game RGB/PCM/backup output, reference frame CPU/cycle headers, and the host final
+machine state. They do not qualify independent game accuracy.

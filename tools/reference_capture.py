@@ -42,7 +42,12 @@ def read_exact(stream, count):
     return bytes(data)
 
 
-def capture(binary, properties, output, frames, initial_save=None, initial_save_sha256=None, state_frames=(), event_trace=None):
+def capture(binary, properties, output, frames, initial_save=None, initial_save_sha256=None, state_frames=(), event_trace=None, ram_trace=None):
+    if ram_trace:
+        address, capacity = ram_trace
+        if (address & 3 or not (0x02000000 <= address <= 0x0203FFFC or 0x03000000 <= address <= 0x03007FFC)
+                or not 1 <= capacity <= 65536):
+            raise ValueError("RAM trace requires an aligned EWRAM/IWRAM word and capacity 1..65536")
     settings = dict(line.split("=", 1) for line in properties.read_text().splitlines()
                     if "=" in line and not line.startswith("#"))
     if int(settings.get("devices", "0")) not in (0, 1) or settings.get("rtc", "2000-01-01T00:00:00") != "2000-01-01T00:00:00":
@@ -66,12 +71,16 @@ def capture(binary, properties, output, frames, initial_save=None, initial_save_
         local_save = output / "initial.sav"
         shutil.copyfile(initial_save, local_save)
         args.append(str(local_save))
-    if state_frames or event_trace:
+    if state_frames or event_trace or ram_trace:
         if not initial_save:
             args.append("-")
         args.append(",".join(map(str, state_frames)) if state_frames else "-")
     if event_trace:
         args.extend([str(output / "events.tsv"), *map(str, event_trace)])
+    elif ram_trace:
+        args.extend(["-", "0", "0", "0"])
+    if ram_trace:
+        args.extend([str(output / "ram.csv"), str(ram_trace[0]), str(ram_trace[1])])
     reference_video = hashlib.sha256()
     reference_audio = hashlib.sha256()
     checkpoints = []
@@ -138,6 +147,8 @@ def capture(binary, properties, output, frames, initial_save=None, initial_save_
                   sensors="stationary; no recorded peripheral motion")
     if event_trace:
         report["event_trace"] = json.loads((output / "events.tsv.json").read_text())
+    if ram_trace:
+        report["ram_trace"] = json.loads((output / "ram.csv.json").read_text())
     (output / "report.json").write_text(json.dumps(report, indent=2) + "\n")
     return report, checkpoints
 
@@ -178,6 +189,9 @@ def main():
     parser.add_argument("--trace-start-cycle", type=int, default=0)
     parser.add_argument("--trace-end-cycle", type=int)
     parser.add_argument("--trace-capacity", type=int, default=65536)
+    parser.add_argument("--ram-trace", action="store_true", help="Observe CPU word stores to one RAM address")
+    parser.add_argument("--ram-address", type=lambda value: int(value, 0))
+    parser.add_argument("--ram-capacity", type=int, default=16384)
     args = parser.parse_args()
     if not 1 <= args.frames <= 7000:
         parser.error("frames must be 1..7000")
@@ -196,9 +210,18 @@ def main():
     if not args.event_trace and (args.trace_start_cycle or args.trace_end_cycle is not None or args.trace_capacity != 65536):
         parser.error("trace settings require --event-trace")
     event_trace = (args.trace_start_cycle, end_cycle, args.trace_capacity) if args.event_trace else None
+    ram_trace = (args.ram_address, args.ram_capacity) if args.ram_trace else None
+    if args.ram_trace:
+        address = args.ram_address
+        if (address is None or address & 3
+                or not (0x02000000 <= address <= 0x0203FFFC or 0x03000000 <= address <= 0x03007FFC)
+                or not 1 <= args.ram_capacity <= 65536):
+            parser.error("RAM trace requires an aligned EWRAM/IWRAM word and capacity 1..65536")
+    elif args.ram_address is not None or args.ram_capacity != 16384:
+        parser.error("RAM trace settings require --ram-trace")
     report, checkpoints = capture(args.binary.resolve(), args.scenario.resolve(), args.output.resolve(), args.frames,
                                   args.initial_save.resolve() if args.initial_save else None, args.initial_save_sha256,
-                                  state_frames, event_trace)
+                                  state_frames, event_trace, ram_trace)
     if args.compare:
         result = compare(report, checkpoints, args.compare.resolve())
         (args.output / "comparison.json").write_text(json.dumps(result, indent=2) + "\n")
