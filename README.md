@@ -29,6 +29,11 @@ provides a home screen, pause menu, file browser and configurable controls.
 - **ROM folder:** choose **Home → ROM folder**, browse any readable local folder
   and save it. **Open game → Browse ROM** starts there; the folder and last browser
   selections survive application restart. Internal storage and SD-card paths are supported.
+- **BIOS:** choose **Display & audio → BIOS file → Browse BIOS → Load BIOS**.
+  Supply your own unpacked 16 KiB `.bin`; loading checks readability and exact size,
+  then remembers its location for **Open game**. BIOS files are never bundled.
+  Changing this preference applies to the next game you open; restart/state loading
+  keep the current game's BIOS.
 - **Boot animation:** choose **Display & audio → GBA boot animation → Show/Skip**.
   Skip hides startup and runs it without the normal playback wait. The supplied
   BIOS still performs its original initialization; this applies to the next open/restart.

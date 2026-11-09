@@ -10,6 +10,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("core")
 class PhoneMenusTest {
+    @Test
+    void biosSelectionIsAvailableBeforeOpeningAGame() {
+        var screen = new PhoneScreen(); var options = new PhoneOptions();
+        PhoneMenus.settings(screen, options);
+        assertThat(screen.label(8)).isEqualTo("BIOS file");
+        assertThat(screen.value(8)).isEqualTo("Not set");
+        assertThat(screen.enabled(8)).isTrue();
+        PhoneMenus.settings(screen, options, "Selected");
+        assertThat(screen.value(8)).isEqualTo("Selected");
+    }
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 4, 8})
     void speedIsAvailableInPauseAndSettingsWithoutMovingBootPreference(int speed) {

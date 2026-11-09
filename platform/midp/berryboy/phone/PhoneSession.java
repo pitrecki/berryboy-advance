@@ -16,7 +16,7 @@ import berryboy.video.LcdTiming;
 
 /** One persistent guest owner. UI commands and owned settings/cheat snapshots form a bounded mailbox. */
 final class PhoneSession implements Runnable {
-    static final int DEMO = 1, OPEN = 2, SAVE = 3, LOAD = 4, RESTART = 5, CHECKS = 6, SLOTS = 7;
+    static final int DEMO = 1, OPEN = 2, SAVE = 3, LOAD = 4, RESTART = 5, CHECKS = 6, SLOTS = 7, BIOS = 8;
     private final PhoneCanvas view;
     private final FramePresentation presentation = new FramePresentation();
     private PhoneOptions options;
@@ -159,7 +159,8 @@ final class PhoneSession implements Runnable {
                     synchronized (this) { paused = true; busy = false; buttons = 0; }
                     if (audio != null) audio.reset();
                     wasPaused = true;
-                    view.failed(error.toString());
+                    if (operation == BIOS) view.biosFailed(error.toString());
+                    else view.failed(error.toString());
                 }
             }
         } catch (InterruptedException stopped) { view.failed("Session interrupted"); }
@@ -186,7 +187,7 @@ final class PhoneSession implements Runnable {
     private void perform(int operation, int slot, String path, String biosPath) throws Exception {
         if (operation == DEMO || operation == OPEN) {
             byte[] nextRom = operation == DEMO ? DemoRom.create() : PhoneFiles.read(path, Cartridge.MAX_SIZE);
-            byte[] nextBios = operation == DEMO ? null : PhoneFiles.read(biosPath, 16384);
+            byte[] nextBios = operation == DEMO ? null : PhoneFiles.readBios(biosPath);
             Machine candidate = new Machine(nextRom, nextBios);
             PhoneStorage nextStorage = operation == DEMO ? null : new PhoneStorage(path, candidate.cartridge.checksum());
             CheatList nextCheats = new CheatList();
@@ -205,9 +206,13 @@ final class PhoneSession implements Runnable {
             startup = bios != null && !options.showBoot() ? new BiosStartup(machine) : null;
             machine.memory.clockedAudio().setCapture(true);
             synchronized (this) { gameGeneration++; }
+            if (operation == OPEN) view.pathsOpened(path, biosPath);
             view.loaded(machine.cartridge.title(), nextCheats.copy(), storage == null ? emptySlots() : storage.slots(), storage != null, gameGeneration);
             synchronized (this) { paused = background; }
             presentation.reset();
+        } else if (operation == BIOS) {
+            PhoneFiles.readBios(biosPath); // Validate on the IO/guest owner; never replace the running machine's BIOS.
+            view.biosSelected(biosPath);
         } else if (operation == CHECKS) {
             int passed = RuntimeChecks.run(); view.message("PASS: " + passed + " portable runtime checks");
         } else if (operation == SLOTS) {

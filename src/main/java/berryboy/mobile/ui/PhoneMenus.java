@@ -21,9 +21,12 @@ public final class PhoneMenus {
                 new String[]{">", speed + "x", "5 slots", "5 slots", ">", ">", ">", ">", ">"}, null);
     }
     public static void settings(PhoneScreen screen, PhoneOptions options) {
-        show(screen, "Display & audio", "Left / Right to change", new String[]{"Volume", "Mute", "Sound", "Frame skip", "FPS counter", "Game image", "GBA boot animation", "Speed"},
+        settings(screen, options, "Not set");
+    }
+    public static void settings(PhoneScreen screen, PhoneOptions options, String biosName) {
+        show(screen, "Display & audio", "Left / Right to change / Select BIOS to browse", new String[]{"Volume", "Mute", "Sound", "Frame skip", "FPS counter", "Game image", "GBA boot animation", "Speed", "BIOS file"},
                 new String[]{options.volume() + "%", options.muted() ? "On" : "Off", options.mono() ? "Mono" : "Stereo",
-                    options.frameSkip() == 0 ? "Off" : "1 in " + (options.frameSkip() + 1), options.showFps() ? "On" : "Off", scalingName(options.scaling()), options.showBoot() ? "Show" : "Skip", options.speed() + "x"}, null);
+                    options.frameSkip() == 0 ? "Off" : "1 in " + (options.frameSkip() + 1), options.showFps() ? "On" : "Off", scalingName(options.scaling()), options.showBoot() ? "Show" : "Skip", options.speed() + "x", biosName}, null);
     }
     public static void controls(PhoneScreen screen, PhoneOptions options) {
         var labels = new String[11];

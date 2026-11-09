@@ -173,8 +173,16 @@ establish success; the MIDlet must display its on-runtime checks result.
 
 ## Phone interface
 
-Open **BerryBoy Advance → Open game**. Browse to an unpacked `.gba` and a local
-16 KiB GBA BIOS, then choose **Start game**. The picker lists the actual device
+First choose **Display & audio → BIOS file → Browse BIOS → Load BIOS**. Supply
+your own unpacked GBA BIOS: the worker checks that it is readable and exactly
+16384 bytes before saving its path. Missing, truncated or oversized files leave
+the previous setting intact. The app/package contains no BIOS. The setting applies
+to the next game you open; restarting or loading a state keeps the current game's BIOS.
+
+Open **BerryBoy Advance → Open game**. Browse to an unpacked `.gba`; the BIOS
+field is prefilled from settings and can also be changed for this launch. Choose
+**Start game**. Successfully opened paths are remembered, including typed URLs.
+The picker lists the actual device
 storage roots; example URLs are `file:///SDCard/roms/game.gba` and
 `file:///SDCard/gba_bios.bin`. ZIP extraction and network downloads are not part
 of the phone frontend. File-access permission failures are shown in the application.

@@ -1,6 +1,6 @@
 # Current status and roadmap
 
-Updated **2026-11-06**, for **0.9.1-SNAPSHOT** (published: **0.9.0 preview**). This is the canonical current
+Updated **2026-11-09**, for **0.9.1-SNAPSHOT** (published: **0.9.0 preview**). This is the canonical current
 validation and work queue. [CHANGELOG](../CHANGELOG.md) records version highlights;
 linked JSON records and Git history preserve detailed measurements.
 
@@ -29,11 +29,16 @@ bottlenecks and preserves event ordering.
 
 ## Current validation
 
-- **2450 host tests**, **2240 exported-core tests**, and **2240 tests against the
+- **2456 host tests**, **2241 exported-core tests**, and **2241 tests against the
   actual new ECJ/CLDC classes** pass, with no failures or skips. Counts include
   parameterized invocations. Detailed build and artifact data is in the linked evidence.
 - Native Linux JDE 7.1 / ECJ 4.6.1 / RAPC verification passes and produces a
   **0.9.1 development** JAD/COD. Host: Linux x86_64, Temurin 21.0.8, Maven 3.9.11.
+- [BIOS settings](../benchmarks/bios-settings-2026-11-09.json) validate a separate
+  local 16 KiB file on the worker before persisting its path. Controller tests
+  cover browsing, cancellation, restart persistence, invalid files and RMS failure;
+  session tests preserve the paused machine byte-for-byte when selecting a BIOS.
+  The native JAR contains neither ROM/BIOS files nor the supplied BIOS payload.
 - [Release 0.9.0](../benchmarks/release-0.9.0-2026-11-06.json) is published with
   two raw COD modules, JAD/ALX, native JAR, installation instructions and checksums.
   The public ZIP's SHA-256, every internal checksum and its clean tagged source

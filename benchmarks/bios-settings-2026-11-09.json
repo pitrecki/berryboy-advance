@@ -1,0 +1,46 @@
+{
+  "date": "2026-11-09",
+  "version": "0.9.1-SNAPSHOT",
+  "source_base_commit": "90c9ba3805a0e54050416678ac89303ca3585589",
+  "source_dirty": true,
+  "change": "Independent BIOS selection in Display & audio; validate on the session worker, then persist the URL for future game opens",
+  "behavior": {
+    "menu": "Display & audio / BIOS file / Browse BIOS / Load BIOS",
+    "validation": "Readable unpacked local file, exactly 16384 bytes; no official BIOS hash is required",
+    "persistence": "Existing version-1 LibraryProfile RMS record; save only after validation; failure retains previous preference",
+    "scope": "Next Open game uses the saved path. Current machine, restart and state loading keep their existing BIOS. No ROM required to configure BIOS.",
+    "open_game": "Successful OPEN remembers validated typed or browsed ROM/BIOS URLs. Browsing a BIOS alone does not persist unvalidated bytes."
+  },
+  "validation": {
+    "maven_host": 2456,
+    "console_host": 2456,
+    "exported_core": 2241,
+    "actual_ecj_cldc_core": 2241,
+    "failures": 0,
+    "skipped": 0,
+    "controller_tests": 4,
+    "paused_session_state_exact": true,
+    "native_sdk_rapc": "Passed with JDE 7.1 / ECJ 4.6.1",
+    "scope": "Production controller/session/picker with host LCDUI/filesystem/RMS doubles; actual SDK compilation separately"
+  },
+  "packaging": {
+    "jar_entries": 110,
+    "rom_bios_save_or_state_file_entries": [],
+    "supplied_bios_payload_matches": [],
+    "vendor_or_player_assets_committed": false
+  },
+  "artifacts_sha256": {
+    "BerryBoyAdvance.cod": "db74b7a9d1b036bc5fb312bc6795c8fe3e1540172f682678f18c574d41bc9314",
+    "BerryBoyAdvance.jad": "cf27dfeb6230d7268e5f37b7175f661297ba205cdc285c0df5e8b33062781b8e",
+    "BerryBoyAdvance.jar": "f9a5cac146e94e66369e3e1a6d459236eac6a5dcfe3229d71094b664428e699e"
+  },
+  "source_files_sha256": {
+    "platform/midp/berryboy/phone/PhoneCanvas.java": "3b4d9a5b1752ca2a861a2139682c6c717202b2cc7446a8c1acc521071aec8a27",
+    "platform/midp/berryboy/phone/PhoneFiles.java": "ea24b2c15c18b704093bcacff921ee13a8063572efa7e7f16b5c4f8bdf812684",
+    "platform/midp/berryboy/phone/PhoneSession.java": "9474583f210539cc9ac16e378283f727a63f2dcbb319732a6e87e11830296ca9",
+    "platform/midp/berryboy/phone/settings/BiosSettings.java": "e006eabaa19b43a2e83ee5dc96b48af00f1927137b70f0d03cf01259dbe8c50a",
+    "src/main/java/berryboy/mobile/ui/PhoneMenus.java": "06b32cce796165899872c9ba877a9dd407320cd628292c023c4a060e1b82493a",
+    "src/test/java/berryboy/build/PhoneBiosSettingsTest.java": "417eaaf8a2d7ad6274ab24dfc98e38dee5c5fceaf115736d460e2dc7fad4dc36",
+    "src/test/java/berryboy/build/PhoneSessionTest.java": "9c83bef6f4cc3a8859cd7e973455dac401a891f04cd934ca647a89a4a01a4e82"
+  }
+}

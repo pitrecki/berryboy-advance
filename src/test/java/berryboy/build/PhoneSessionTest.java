@@ -62,6 +62,45 @@ class PhoneSessionTest {
             }
         }
     }
+    @Test
+    void selectingBiosValidatesOnWorkerWithoutReplacingOrAdvancingThePausedMachine() throws Exception {
+        var root = Path.of(System.getProperty("berryboy.projectRoot", ".")).toAbsolutePath();
+        var classes = temporary.resolve("classes");
+        assertThat(PhoneHarness.compile(root, classes, true)).isZero();
+        try (var loader = new URLClassLoader(new java.net.URL[]{classes.toUri().toURL()}, getClass().getClassLoader())) {
+            var uiType = loader.loadClass("berryboy.phone.PhoneCanvas"); var ui = uiType.getConstructor().newInstance();
+            var type = loader.loadClass("berryboy.phone.PhoneSession");
+            var ctor = type.getDeclaredConstructor(uiType, PhoneOptions.class); ctor.setAccessible(true);
+            var options = new PhoneOptions(); options.setMuted(true);
+            var session = ctor.newInstance(ui, options);
+            var request = method(type, "request", int.class, int.class, String.class, String.class);
+            try {
+                assertThat((boolean) request.invoke(session, 1, 0, null, null)).isTrue();
+                waitFor(() -> number(uiType, ui, "frames") >= 2);
+                pauseAndAwait(type, session, request, uiType, ui);
+                var field = type.getDeclaredField("machine"); field.setAccessible(true);
+                var original = (Machine) field.get(session); var state = MachineState.save(original);
+                var bios = temporary.resolve("new.bin"); Files.write(bios, new byte[16384]);
+                assertThat((boolean) request.invoke(session, 8, 0, null, bios.toUri().toASCIIString())).isTrue();
+                waitFor(() -> text(uiType, ui, "biosPath") != null);
+                pauseAndAwait(type, session, request, uiType, ui);
+                assertThat(uiType.getField("failure").get(ui)).isNull();
+                assertThat(text(uiType, ui, "biosPath")).isEqualTo(bios.toUri().toASCIIString());
+                assertThat(field.get(session)).isSameAs(original);
+                assertThat(MachineState.save(original)).isEqualTo(state);
+                assertThat(number(uiType, ui, "generation")).isEqualTo(1);
+                assertThat((boolean) request.invoke(session, 8, 0, null, temporary.resolve("missing.bin").toUri().toASCIIString())).isTrue();
+                waitFor(() -> text(uiType, ui, "failure") != null);
+                pauseAndAwait(type, session, request, uiType, ui);
+                assertThat(text(uiType, ui, "biosPath")).isEqualTo(bios.toUri().toASCIIString());
+                assertThat(field.get(session)).isSameAs(original);
+                assertThat(MachineState.save(original)).isEqualTo(state);
+            } finally {
+                method(type, "close").invoke(session);
+                assertThat((boolean) method(type, "awaitClosed", long.class).invoke(session, 5000L)).isTrue();
+            }
+        }
+    }
     private static void pauseAndAwait(Class<?> type, Object session, Method request, Class<?> uiType, Object ui) throws Exception {
         var slots = number(uiType,ui,"slots"); waitRequest(request,session,7,0);
         waitFor(() -> number(uiType,ui,"slots") > slots);

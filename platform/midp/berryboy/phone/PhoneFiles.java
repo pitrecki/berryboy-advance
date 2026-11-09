@@ -10,6 +10,12 @@ import javax.microedition.io.file.FileConnection;
 /** Bounded JSR-75 IO. The caller owns file permissions and the target generation. */
 final class PhoneFiles {
     private PhoneFiles() { }
+    static byte[] readBios(String url) throws IOException {
+        if (url == null || url.length() == 0) throw new IOException("Select a GBA BIOS in Display & audio > BIOS file");
+        byte[] bytes = read(url, 16384);
+        if (bytes.length != 16384) throw new IOException("GBA BIOS must be exactly 16 KiB (16384 bytes)");
+        return bytes;
+    }
     static String childUrl(String directory, String name) throws IOException {
         return FileUrls.child(directory, name);
     }

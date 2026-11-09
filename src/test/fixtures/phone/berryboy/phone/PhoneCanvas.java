@@ -6,6 +6,10 @@ public final class PhoneCanvas {
     public volatile int frames,slots,generation;
     public volatile int firstFrameSample=-1;
     public volatile String message="",failure;
+    public volatile String biosPath,romPath;
+    synchronized void pathsOpened(String rom,String bios){romPath=rom;biosPath=bios;}
+    synchronized void biosSelected(String url){biosPath=url;message="BIOS saved";}
+    synchronized void biosFailed(String error){failure=error;}
     synchronized long paintedFrames(){return frames;}
     void awaitPresentation(){}
     synchronized void loaded(String title,CheatList cheats,String[] values,boolean persistent,int generation){this.generation=generation;loaded=true;}

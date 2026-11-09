@@ -9,6 +9,7 @@ import berryboy.mobile.input.PhoneInput;
 import berryboy.mobile.library.LibraryProfile;
 import berryboy.phone.library.FilePicker;
 import berryboy.phone.library.FileUrls;
+import berryboy.phone.settings.BiosSettings;
 import berryboy.mobile.settings.PhoneOptions;
 import berryboy.mobile.playback.PlaybackSpeed;
 import berryboy.mobile.ui.PhoneRenderer;
@@ -124,6 +125,21 @@ public final class PhoneCanvas extends Canvas implements CommandListener {
     }
     synchronized void failed(String error) { releaseKeys(); if (loaded) show(PAUSE); message(error); if (active) display.setCurrent(this); }
     synchronized void message(String text) { screen.setMessage(text); repaint(); }
+    synchronized void pathsOpened(String rom, String bios) {
+        try {
+            LibraryProfile next = library.copy(); next.setRom(rom); next.setBios(bios);
+            PhoneRecords.write("berryboy-library", next.encode()); library = next;
+        } catch (Exception error) { message("Paths not saved: " + error.toString()); }
+    }
+    synchronized void biosSelected(String url) {
+        try {
+            LibraryProfile next = library.copy(); next.setBios(url);
+            PhoneRecords.write("berryboy-library", next.encode()); library = next;
+            biosStatus("BIOS saved / Open a game to use it");
+        } catch (Exception error) { biosStatus("BIOS path not saved: " + error.toString()); }
+    }
+    synchronized void biosFailed(String text) { biosStatus(text); }
+    private void biosStatus(String text) { show(SETTINGS); screen.select(8); message(text); }
     private synchronized void show(int target) {
         page = target; captureButton = -1;
         if (target == HOME) PhoneMenus.home(screen, loaded);
@@ -135,7 +151,7 @@ public final class PhoneCanvas extends Canvas implements CommandListener {
             screen.setNotice("");
         }
         else if (target == PAUSE) PhoneMenus.pause(screen, game, options.speed());
-        else if (target == SETTINGS) PhoneMenus.settings(screen, options);
+        else if (target == SETTINGS) PhoneMenus.settings(screen, options, library.bios().length() == 0 ? "Not set" : "Selected");
         else if (target == CONTROLS) PhoneMenus.controls(screen, options);
         else if (target == SAVE || target == LOAD) PhoneMenus.slots(screen, target == LOAD, slotSummaries, persistent);
         else if (target == CHEATS) PhoneMenus.cheats(screen, cheats);
@@ -251,6 +267,7 @@ public final class PhoneCanvas extends Canvas implements CommandListener {
     }
     private void changeSetting(int direction) {
         int selected = screen.selection();
+        if (selected == 8) { openBiosSettings(); return; }
         if (selected == 0) { int value = options.volume() + direction * 10; options.setVolume(value < 0 ? 0 : value > 100 ? 100 : value); }
         else if (selected == 1) options.setMuted(!options.muted());
         else if (selected == 2) options.setMono(!options.mono());
@@ -271,7 +288,7 @@ public final class PhoneCanvas extends Canvas implements CommandListener {
     }
     private synchronized void request(int operation, int slot, String rom, String bios) {
         releaseKeys();
-        boolean accepted = operation == PhoneSession.OPEN || operation == PhoneSession.DEMO || operation == PhoneSession.CHECKS
+        boolean accepted = operation == PhoneSession.OPEN || operation == PhoneSession.DEMO || operation == PhoneSession.CHECKS || operation == PhoneSession.BIOS
                 ? session.request(operation, slot, rom, bios) : session.requestForGame(operation, slot, gameGeneration);
         if (accepted) message("Working...");
         else message("An operation is already in progress");
@@ -320,11 +337,18 @@ public final class PhoneCanvas extends Canvas implements CommandListener {
         session.pause(); releaseKeys();
         openForm = new Form("Open game");
         romPath = new TextField("ROM (.gba)", library.rom().length() == 0 ? library.directory() : library.rom(), 512, TextField.ANY);
-        biosPath = new TextField("GBA BIOS (16 KiB)", library.bios().length() == 0 ? FileUrls.ROOTS : library.bios(), 512, TextField.ANY);
+        biosPath = new TextField("GBA BIOS (16 KiB)", library.bios(), 512, TextField.ANY);
         openForm.append(romPath); openForm.append(biosPath);
         openForm.append("Choose unpacked local files. Save slots use sidecar files next to the ROM.");
         openForm.addCommand(start); openForm.addCommand(browseRom); openForm.addCommand(browseBios); openForm.addCommand(back);
         openForm.setCommandListener(this); display.setCurrent(openForm);
+    }
+    private void openBiosSettings() {
+        session.pause(); releaseKeys();
+        new BiosSettings(display, library.bios(), new BiosSettings.Selection() {
+            public void load(String url) { synchronized (PhoneCanvas.this) { display.setCurrent(PhoneCanvas.this); request(PhoneSession.BIOS, 0, null, url); } }
+            public void cancelled() { synchronized (PhoneCanvas.this) { display.setCurrent(PhoneCanvas.this); } }
+        });
     }
     private void cheatForm() {
         cheatFormGeneration = gameGeneration;
@@ -365,8 +389,7 @@ public final class PhoneCanvas extends Canvas implements CommandListener {
                     if (bios) biosPath.setString(url); else romPath.setString(url);
                     try {
                         LibraryProfile next = library.copy();
-                        if (bios) next.setBios(url); else next.setRom(url);
-                        PhoneRecords.write("berryboy-library", next.encode()); library = next;
+                        if (!bios) { next.setRom(url); PhoneRecords.write("berryboy-library", next.encode()); library = next; }
                     } catch (Exception error) { target.setTitle("Path not saved: " + error.toString()); }
                     display.setCurrent(target);
                 }
