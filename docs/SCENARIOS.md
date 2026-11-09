@@ -755,7 +755,10 @@ python3 tools/inspect_leafgreen_save.py /path/to/berryboy-second.sav \
 The inspector checks the 128 KiB geometry, signatures, section identities,
 checksums and complete generations before reporting latest position, play time
 and decoded money. Unknown/corrupt data fails explicitly. It targets this
-LeafGreen layout; counter-wrap/recovery behavior is outside its scope.
+LeafGreen layout. For two complete generations, zero is newer than `0xFFFFFFFF`,
+matching the game's explicit wrap case; other counter pairs use unsigned maximum.
+This is not a general modular serial-number comparison. Incomplete or corrupt
+generations still fail strict inspection, including at the wrap boundary.
 
 `--compare` diagnoses every physical byte difference across both generations.
 Known XOR fields are decoded using each generation's own key; ciphertext counts

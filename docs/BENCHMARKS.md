@@ -29,7 +29,7 @@ bottlenecks and preserves event ordering.
 
 ## Current validation
 
-- **2456 host tests**, **2241 exported-core tests**, and **2241 tests against the
+- **2468 host tests**, **2241 exported-core tests**, and **2241 tests against the
   actual new ECJ/CLDC classes** pass, with no failures or skips. Counts include
   parameterized invocations. Detailed build and artifact data is in the linked evidence.
 - Native Linux JDE 7.1 / ECJ 4.6.1 / RAPC verification passes and produces a
@@ -192,6 +192,7 @@ and SDK/API compatibility, while target execution remains open.
 | --- | --- |
 | Menus, local games and controls | Implemented. Verify browsing/permissions, simultaneous keys, focus release, pause/resume and text/layout on BBOS. |
 | Configurable game folder | Implemented. Home → ROM folder persists the chosen local location; Open game → Browse ROM starts there. Last selected ROM/BIOS URLs persist independently. |
+| BIOS settings | Implemented. Display & audio → BIOS file validates an external 16 KiB file before saving its path; the next Open game uses it. Current-game restart/state loading retain the active BIOS. |
 | Boot animation | Implemented. Show/Skip persists and applies on open/restart. Skip runs authentic BIOS startup without presentation/audio/pacing; state loading preserves the saved scene. |
 | Playback speed | Implemented. Pause/settings select 1×/2×/4×/8×; faster modes mute output and 1× restores it according to Mute. Guest clocks and save-state format remain unchanged. Submission intervals combine speed and frame skip; FPS remains measured. Selected factors are pacing targets, not achieved phone performance claims. |
 | Shoulder combinations | Implemented. Controls → L/R assist → Tap to lock keeps either shoulder held while using A/B and directions; a second tap releases it. Default off, mode persists, held locks never persist and clear at lifecycle boundaries. |
@@ -213,7 +214,7 @@ user settings do not relax that qualification protocol.
 | 2 / P0: Wider CPU/LCD timing | Cartridge DMA during discarded IRQ fetches now matches 144 independent cold/warm/page-edge observations. Extend coverage to subsequent stream invalidation and pipeline latching/self-modifying code, then IRQ propagation/mask latency. Trace the LeafGreen frame-930 offset and HBlank at cycle 960 versus the reference's 1008. | Matching event/retirement observations with justified expected timing. Keep in-flight snapshots distinct from retired state. Do not adjust a constant solely to improve screenshot counts. |
 | 3 / P0: Graphics expected results | Resolve the 2244-case three-way disagreement on brightness rounding and palette bit 15 using independently justified outputs or hardware evidence. Then qualify combined raster/OBJ/window effects. | Explicit per-pixel expectations and regression scenes. The renderer remains unqualified until those expectations are established; no relaxed tolerances. |
 | 4 / P1: Audio correctness | Start with late Sonic Advance 3 and Wario Land 4 differences. Compare timer/DMA FIFO, PSG and sample-clock events before diagnosing gain/filter/resampling. | Repeatable sample/event checkpoints, justified comparison rules, listening review and no software-buffer loss. Timing-dependent fixes follow the timing gates. |
-| 5 / P1: Gameplay and saves | LeafGreen now covers repeated indoor saves, a Pallet Town save with four cold cross-loads and a 120-frame state replay, plus three interrupted-write phases in both engines. Trace CPU/IRQ timing around Timer1 seeding and frame-1548 relocation/VBlank RNG ordering; extend to counter wrap, host-file recovery and further gameplay. Extend Mario/Luigi movement/battle, Sonic/Wario level, Golden Sun battle and V-Rally race work. Doom II first level, F-Zero race and Mario & Luigi Toad control retain named routes and state replays. | Preserve strict binary and full-stream outcomes; visible play or a successful full-state replay alone does not qualify game accuracy or cartridge-save compatibility. |
+| 5 / P1: Gameplay and saves | LeafGreen now covers repeated indoor saves, a Pallet Town save with four cold cross-loads and a 120-frame state replay, plus interrupted writes and counter wrap through 0/1 in both engines. Trace CPU/IRQ timing around Timer1 seeding and frame-1548 relocation/VBlank RNG ordering; extend to both-slot corruption, host-file recovery and further gameplay. Extend Mario/Luigi movement/battle, Sonic/Wario level, Golden Sun battle and V-Rally race work. Doom II first level, F-Zero race and Mario & Luigi Toad control retain named routes and state replays. | Preserve strict binary and full-stream outcomes; visible play or a successful full-state replay alone does not qualify game accuracy or cartridge-save compatibility. |
 | 6 / P2: Linux performance | Once selected routes pass correctness, profile CPU/PPU/presentation and optimize one demonstrated bottleneck at a time. Consider acceleration only with a supported backend and matching software output. | Three 10-minute runs after 30-second warmup, measured presentation/audio, bounded queues/memory and the gates below. |
 | 7 / Target-dependent: BlackBerry runtime | Run the new phone frontend in the simulator; qualify file access, slots, input and MMAPI output, then repeat correctness and sustained playback on a physical Bold. | Separate build, simulator and device reports; actual application results and physical measurements. |
 
@@ -238,8 +239,18 @@ and final-sector interruptions retain the complete generation-3 slot. All six
 BerryBoy/mGBA cold loads restore its exact room pixels; two completed-save
 controls restore the new position. Injected bytes stay unchanged after every
 load. Strict inspection still rejects incomplete files, and full RGB/PCM streams
-still differ. Counter wrap, both-slot corruption and host-file interruption
+still differ. Counter wrap is recorded below; both-slot corruption and host-file interruption
 remain open; these observations do not qualify physical power-loss timing.
+
+[Counter-wrap saves](../benchmarks/leafgreen-counter-wrap-2026-11-09.json)
+start from a disposable copy with only generation-2/3 trailer counters changed to
+`0xFFFFFFFE`/`0xFFFFFFFF`. Both engines actually save counter 0, then counter 1.
+All eight cold cross-loads retain the source save bytes and restore exact expected
+room pixels. The inspector now selects zero over `0xFFFFFFFF` using the game's
+specific rule, while incomplete/corrupt generations still fail. Generated save
+pairs differ in 666/667 bytes, with no unexplained payload changes; strict whole-file
+and full RGB/PCM streams still fail. Both-slot corruption and host-file publication
+failures remain separate gates.
 
 [LeafGreen outdoor save](../benchmarks/leafgreen-overworld-save-2026-11-06.json)
 extends the route through downstairs to Pallet Town and writes generation 4 at

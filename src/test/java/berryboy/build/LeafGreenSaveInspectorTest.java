@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.CsvSource;
 
 /** Synthetic Flash images only; no game data or player saves are required. */
 class LeafGreenSaveInspectorTest {
@@ -25,6 +26,60 @@ class LeafGreenSaveInspectorTest {
         assertThat(result.exit).isZero();
         assertThat(result.output).contains("\"valid_sectors\": 14", "\"latest_generation\": 1",
                 "\"x\": 7", "\"y\": 6", "\"money\": 3000", "\"frames\": 51");
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "4294967295,0,0,22", "0,4294967295,0,11",
+        "4294967294,4294967295,4294967295,22", "4294967295,4294967294,4294967295,11",
+        "0,1,1,22", "1,0,1,11",
+        "4294967294,0,4294967294,11", "0,4294967294,4294967294,22"
+    })
+    void selectsTheGameCounterIncludingItsSpecificWrapPair(long first, long second, long latest, int x) throws Exception {
+        var bytes = fixture(0x11223344, 0x55667788);
+        counter(bytes, 0, first); counter(bytes, 1, second);
+        buffer(bytes).putShort(0x1000, (short) 11); checksum(bytes, 1, 1);
+        buffer(bytes).putShort(15 * 0x1000, (short) 22); checksum(bytes, 15, 1);
+        var result = run(bytes, null);
+        assertThat(result.exit).isZero();
+        assertThat(result.output).contains("\"latest_generation\": " + latest + ",", "\"x\": " + x + ",");
+    }
+
+    @ParameterizedTest
+    @ValueSource(longs = {0, 4294967295L})
+    void aSingleCompleteBoundaryCounterIsNotMistakenForEmptyFlash(long generation) throws Exception {
+        var bytes = fixture(0x11223344); counter(bytes, 0, generation);
+        var result = run(bytes, null);
+        assertThat(result.exit).isZero();
+        assertThat(result.output).contains("\"valid_sectors\": 14", "\"latest_generation\": " + generation + ",");
+    }
+
+    @Test
+    void wrappingStillComparesTheOlderGenerationAndRejectsCorruptPayloads() throws Exception {
+        var left = fixture(0x11223344, 0x55667788); counter(left, 0, 0xFFFFFFFFL); counter(left, 1, 0);
+        assertThat(run(left, left).exit).isZero();
+        var right = left.clone(); right[0x5045] = 17; checksum(right, 5, 5);
+        var comparison = run(left, right);
+        assertThat(comparison.exit).isEqualTo(1);
+        assertThat(comparison.output).contains("\"latest_generation\": 0", "\"generation\": 4294967295",
+                "\"raw_equal\": false", "\"unexplained\": 1");
+        right[0x5045] ^= 1;
+        var invalid = run(left, right);
+        assertThat(invalid.exit).isEqualTo(2);
+        assertThat(invalid.output).contains("Checksum mismatch").doesNotContain("raw_equal");
+    }
+
+    @Test
+    void wrappingDoesNotAcceptAnIncompleteGeneration() throws Exception {
+        var bytes = fixture(0x11223344, 0x55667788); counter(bytes, 0, 0xFFFFFFFFL); counter(bytes, 1, 0);
+        Arrays.fill(bytes, 27 * 0x1000, 28 * 0x1000, (byte) 0xFF);
+        var result = run(bytes, null);
+        assertThat(result.exit).isEqualTo(2);
+        assertThat(result.output).contains("Incomplete saved generation").doesNotContain("latest_generation");
+    }
+
+    private static void counter(byte[] bytes, int slot, long value) {
+        for (var section = 0; section < 14; section++) buffer(bytes).putInt((slot * 14 + section) * 0x1000 + 0xFFC, (int) value);
     }
 
     @Test

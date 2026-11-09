@@ -46,11 +46,12 @@ def parse(data):
         valid_sectors += 1
     if not generations:
         raise ValueError("No valid saved generation")
-    if 0 in generations and 0xFFFFFFFF in generations:
-        raise ValueError("Save-counter wrap is outside this diagnostic's scope")
     if any(set(parts) != set(range(SECTION_COUNT)) for parts in generations.values()):
         raise ValueError("Incomplete saved generation")
-    latest = max(generations)
+    # GetSaveValidStatus in the pinned pret/pokefirered src/save.c chooses zero
+    # over UINT32_MAX only for this exact pair. Other pairs use unsigned max;
+    # a general serial-number comparison would disagree with the game.
+    latest = 0 if 0 in generations and 0xFFFFFFFF in generations else max(generations)
     trainer, world = generations[latest][0][1], generations[latest][1][1]
     hours, minutes, seconds, frames = struct.unpack_from("<HBBB", trainer, PLAY_TIME_OFFSET)
     if minutes >= 60 or seconds >= 60 or frames >= 60:
