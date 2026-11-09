@@ -29,7 +29,7 @@ bottlenecks and preserves event ordering.
 
 ## Current validation
 
-- **2468 host tests**, **2241 exported-core tests**, and **2241 tests against the
+- **2487 host tests**, **2241 exported-core tests**, and **2241 tests against the
   actual new ECJ/CLDC classes** pass, with no failures or skips. Counts include
   parameterized invocations. Detailed build and artifact data is in the linked evidence.
 - Native Linux JDE 7.1 / ECJ 4.6.1 / RAPC verification passes and produces a
@@ -214,7 +214,7 @@ user settings do not relax that qualification protocol.
 | 2 / P0: Wider CPU/LCD timing | Cartridge DMA during discarded IRQ fetches now matches 144 independent cold/warm/page-edge observations. Extend coverage to subsequent stream invalidation and pipeline latching/self-modifying code, then IRQ propagation/mask latency. Trace the LeafGreen frame-930 offset and HBlank at cycle 960 versus the reference's 1008. | Matching event/retirement observations with justified expected timing. Keep in-flight snapshots distinct from retired state. Do not adjust a constant solely to improve screenshot counts. |
 | 3 / P0: Graphics expected results | Resolve the 2244-case three-way disagreement on brightness rounding and palette bit 15 using independently justified outputs or hardware evidence. Then qualify combined raster/OBJ/window effects. | Explicit per-pixel expectations and regression scenes. The renderer remains unqualified until those expectations are established; no relaxed tolerances. |
 | 4 / P1: Audio correctness | Start with late Sonic Advance 3 and Wario Land 4 differences. Compare timer/DMA FIFO, PSG and sample-clock events before diagnosing gain/filter/resampling. | Repeatable sample/event checkpoints, justified comparison rules, listening review and no software-buffer loss. Timing-dependent fixes follow the timing gates. |
-| 5 / P1: Gameplay and saves | LeafGreen now covers repeated indoor saves, a Pallet Town save with four cold cross-loads and a 120-frame state replay, plus interrupted writes and counter wrap through 0/1 in both engines. Trace CPU/IRQ timing around Timer1 seeding and frame-1548 relocation/VBlank RNG ordering; extend to both-slot corruption, host-file recovery and further gameplay. Extend Mario/Luigi movement/battle, Sonic/Wario level, Golden Sun battle and V-Rally race work. Doom II first level, F-Zero race and Mario & Luigi Toad control retain named routes and state replays. | Preserve strict binary and full-stream outcomes; visible play or a successful full-state replay alone does not qualify game accuracy or cartridge-save compatibility. |
+| 5 / P1: Gameplay and saves | LeafGreen now covers repeated indoor saves, a Pallet Town save with four cold cross-loads and a 120-frame state replay, plus interrupted writes and counter wrap through 0/1 in both engines. Trace CPU/IRQ timing around Timer1 seeding and frame-1548 relocation/VBlank RNG ordering; extend to both-slot corruption and further gameplay; host-file publication now has failure/retry coverage. Extend Mario/Luigi movement/battle, Sonic/Wario level, Golden Sun battle and V-Rally race work. Doom II first level, F-Zero race and Mario & Luigi Toad control retain named routes and state replays. | Preserve strict binary and full-stream outcomes; visible play or a successful full-state replay alone does not qualify game accuracy or cartridge-save compatibility. |
 | 6 / P2: Linux performance | Once selected routes pass correctness, profile CPU/PPU/presentation and optimize one demonstrated bottleneck at a time. Consider acceleration only with a supported backend and matching software output. | Three 10-minute runs after 30-second warmup, measured presentation/audio, bounded queues/memory and the gates below. |
 | 7 / Target-dependent: BlackBerry runtime | Run the new phone frontend in the simulator; qualify file access, slots, input and MMAPI output, then repeat correctness and sustained playback on a physical Bold. | Separate build, simulator and device reports; actual application results and physical measurements. |
 
@@ -239,8 +239,8 @@ and final-sector interruptions retain the complete generation-3 slot. All six
 BerryBoy/mGBA cold loads restore its exact room pixels; two completed-save
 controls restore the new position. Injected bytes stay unchanged after every
 load. Strict inspection still rejects incomplete files, and full RGB/PCM streams
-still differ. Counter wrap is recorded below; both-slot corruption and host-file interruption
-remain open; these observations do not qualify physical power-loss timing.
+still differ. Counter wrap and host-file publication are recorded below; both-slot corruption
+remains open; these observations do not qualify physical power-loss timing.
 
 [Counter-wrap saves](../benchmarks/leafgreen-counter-wrap-2026-11-09.json)
 start from a disposable copy with only generation-2/3 trailer counters changed to
@@ -249,8 +249,16 @@ All eight cold cross-loads retain the source save bytes and restore exact expect
 room pixels. The inspector now selects zero over `0xFFFFFFFF` using the game's
 specific rule, while incomplete/corrupt generations still fail. Generated save
 pairs differ in 666/667 bytes, with no unexplained payload changes; strict whole-file
-and full RGB/PCM streams still fail. Both-slot corruption and host-file publication
-failures remain separate gates.
+and full RGB/PCM streams still fail. Both-slot corruption remains a separate gate.
+
+[Host save publication](../benchmarks/atomic-save-publication-2026-11-09.json)
+forces and closes a temporary sibling before atomic replacement, and refuses a
+non-atomic fallback. Nineteen real-file fault cases cover partial writes,
+force/close errors, unsupported rename, lost acknowledgement, cleanup failure and
+retry. A committed file remains loadable; pending backup data stays dirty after
+failure. Repeating the 2750-frame LeafGreen counter-1 save through the new writer
+preserves every RGB/frame checkpoint, all PCM and all 128 KiB of Flash exactly.
+This qualifies injected IO failures; physical power-loss durability remains open.
 
 [LeafGreen outdoor save](../benchmarks/leafgreen-overworld-save-2026-11-06.json)
 extends the route through downstairs to Pallet Town and writes generation 4 at

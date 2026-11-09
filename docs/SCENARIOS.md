@@ -38,6 +38,13 @@ the existing `save` file before restoring cartridge bytes or running the guest.
 A missing file, mismatched hash or absent `save` path fails the capture. Without
 that property, a missing `save` file still starts a fresh cartridge backup.
 
+Dirty backups are written to a temporary sibling file, forced to storage and
+closed before an atomic replacement. Choose a save folder whose filesystem
+supports atomic moves; unsupported replacement fails without a non-atomic retry.
+Failures leave the in-memory backup dirty for retry. Temporary files are never
+chosen as load sources. File force/rename alone does not qualify physical
+power-loss durability.
+
 Optional `devices` is a bit mask: RTC=1, solar=2, gyro=4, tilt=8, rumble=16.
 Gyro cannot share pins with RTC/solar. Optional `rtc` is a deterministic ISO local
 datetime, default `2000-01-01T00:00:00`; it advances from guest cycles.

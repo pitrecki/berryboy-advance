@@ -1,0 +1,107 @@
+{
+  "date": "2026-11-09",
+  "version": "0.9.1-SNAPSHOT",
+  "source_base_commit": "919714f56518f7ee6cb916cf1827cc44e4d5f46d",
+  "source_dirty": true,
+  "scope": "Desktop cartridge-backup file publication: force and close a sibling temporary before atomic rename; refuse unsupported atomic replacement",
+  "hardware": "Linux x86_64 host; Temurin 21.0.8; Maven 3.9.11",
+  "behavior": {
+    "owner": "The emulation caller snapshots its own backup. IO receives owned bytes and markSaved occurs only after successful publication.",
+    "prepublication_failure": "Prior save remains byte-identical, or no target is created; pending backup remains dirty. Retry publishes the full snapshot.",
+    "unsupported_atomic_move": "Actionable IOException. No non-atomic fallback, previous save preserved.",
+    "lost_acknowledgement_after_rename": "A complete new target may already be present; report the failure, keep pending backup dirty, permit retry. No rollback to stale data.",
+    "cleanup_failure": "Keep the primary IO error and attach cleanup as a suppressed exception. Orphan temporaries are never adopted by load.",
+    "durability_scope": "FileChannel.force(true) precedes close and rename. No simulated process or physical power-loss guarantee, no parent-directory sync qualification."
+  },
+  "tests": {
+    "added_host_cases": 19,
+    "matrix": "8 failures x first publication / replacement = 16 cases",
+    "failures": [
+      "temporary creation",
+      "open",
+      "partial 13-byte write",
+      "force",
+      "close",
+      "rename before publication",
+      "unsupported atomic rename",
+      "lost acknowledgement after atomic rename"
+    ],
+    "other_cases": [
+      "cleanup failure retains primary error and committed file; fresh load ignores partial temporary; retry succeeds",
+      "force plus close failures retain suppression order",
+      "clean backup performs no IO"
+    ],
+    "fixture": "src/test/java/berryboy/desktop/storage/AtomicSaveWriterTest.java",
+    "storage": "Real temp files and real disk writer; composition injects one failure at the IO boundary. No vendor tools or player assets required."
+  },
+  "validation": {
+    "host_tests": 2487,
+    "console_host_tests": 2487,
+    "exported_core_tests": 2241,
+    "actual_cldc_core_unchanged": true,
+    "failures": 0,
+    "skipped": 0,
+    "sdk_rebuild": "Not required: only desktop storage and host tests changed; portable/MIDP sources and state format are unchanged."
+  },
+  "game_replay": {
+    "route": "LeafGreen USA Rev-A counter-0 seed -> move left -> counter-1 save",
+    "baseline": "benchmarks/leafgreen-counter-wrap-2026-11-09.json / save-one / host",
+    "captures_root": "target/atomic-file-publication-2026-11-09",
+    "report": {
+      "status": "captured",
+      "correctness": "unverified",
+      "qualification": "headless-only; physical presentation and playback unverified",
+      "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "ae8cda0d3582307cda8b9986ea1f623ab22301348a7ad3a5c12062856e2f7b52",
+      "rtc_seed": "2000-01-01T00:00:00",
+      "initial_save_sha256": "4154486f4e69ff8dfed9cdda95053368feb361879c251189897094c4b3d350ec",
+      "backup_sha256": "3c740cca1bc38ac7b6f1e906a1eb5af48652654b6eb8ccd7b50084cec5b0275b",
+      "backup_type": 2,
+      "backup_bytes": 131072,
+      "save_written": true,
+      "devices": 0,
+      "rumble_active": false,
+      "commit": "919714f56518f7ee6cb916cf1827cc44e4d5f46d",
+      "source_dirty": "true",
+      "frames": 2750,
+      "warmup_frames": 0,
+      "guest_cycles": 772464003,
+      "audio_frames": 1508718,
+      "audio_overruns": 0,
+      "audio_underruns": 0,
+      "produced_audio_frames": 1508718,
+      "consumed_audio_frames": 1508718,
+      "dropped_guest_frames": 0,
+      "video_sha256": "10b511dea46b6925c3debf8e9de2a6464756b569893d9dc78c6873f612cfa503",
+      "audio_sha256": "a6e7deb9619d8c17e1683b4df1bbb44f8ca315a8d913aab55f3460dd45f02d5b",
+      "work_p50_ns": 12039211,
+      "work_p95_ns": 15350934,
+      "work_p99_ns": 33501985,
+      "work_max_ns": 76898427,
+      "work_deadline_misses": 105,
+      "physically_presented_frames": null,
+      "physical_audio_underruns": null,
+      "java": "21.0.8+9-LTS",
+      "os": "Linux",
+      "architecture": "amd64",
+      "hardware": "Linux x86_64 cloud host; deterministic counter-wrap route, no physical presentation measurement",
+      "os_version": "6.18.57"
+    },
+    "all_frame_headers_rgb_hashes_exact_to_baseline": true,
+    "full_pcm_wav_byte_exact_to_baseline": true,
+    "flash_file_byte_exact_to_baseline": true,
+    "published_save_bytes": 131072,
+    "leftover_temporaries": [],
+    "strict_reference_gate": "Existing full RGB/PCM and whole-save differences against mGBA remain unchanged; this validates host file publication only."
+  },
+  "source_files_sha256": {
+    "src/main/java/berryboy/desktop/SaveFile.java": "0938611425b102547a30b0f5d7fd81622270feec4f81a2a77f4a71ffe2737f82",
+    "src/main/java/berryboy/desktop/storage/AtomicSaveWriter.java": "10017b17c70544ff24a256fc82cb633f36d34b78e2351cd393b7d3c63b83e302",
+    "src/test/java/berryboy/desktop/storage/AtomicSaveWriterTest.java": "91b7fc1d6ae1e5c6b3b0c11f2e5ff142027f0958f241f41a4df835d303c82b63"
+  },
+  "reproduction": {
+    "synthetic_tests": "mvn -Dtest=AtomicSaveWriterTest,SaveFileTest test; mvn verify; tools/test-with-console.sh",
+    "real_game": "Repeat save-one from the counter-wrap record with an owned copy of the counter-0 seed and fresh output. Compare all frames.jsonl bytes, audio.wav bytes and the final 128 KiB save to the baseline."
+  }
+}
