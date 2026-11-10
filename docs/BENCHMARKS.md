@@ -29,11 +29,16 @@ bottlenecks and preserves event ordering.
 
 ## Current validation
 
-- **2653 host tests**, **2407 exported-core tests**, and **2407 tests against the
+- **2668 host tests**, **2407 exported-core tests**, and **2407 tests against the
   actual new ECJ/CLDC classes** pass, with no failures or skips. Counts include
   parameterized invocations. Detailed build and artifact data is in the linked evidence.
 - Native Linux JDE 7.1 / ECJ 4.6.1 / RAPC verification passes and produces a
   **0.9.1 development** JAD/COD. Host: Linux x86_64, Temurin 21.0.8, Maven 3.9.11.
+- [IRQ refill comparison](../benchmarks/irq-refill-comparison-2026-11-10.json)
+  aligns a retired handler NOP, retains 196 shared reference observations and 92
+  disputed ones, and exposes 56 host/shared mismatches. Default adapter output
+  is preserved; expanded page coverage is explicit. The comparator rejects
+  incomplete traces and cannot report a full pass while references disagree.
 - [Physical instruction fetches](../benchmarks/physical-fetch-2026-11-10.json) now
   time the two-slot pipeline lookahead. All 162 post-IRQ observations match NBA,
   mGBA, host and actual CLDC; four full-state replays cover the return stream.

@@ -22,8 +22,13 @@ static void word(unsigned char* bytes, unsigned offset, unsigned value) {
 }
 
 int main(int argc, char** argv) {
-    const int full = argc == 2 && !strcmp(argv[1], "--full-trace");
-    if ((argc != 1 && !full) || strcmp(projectVersion, "0.10.5")) return 2;
+    int full = 0, extended = 0;
+    if (strcmp(projectVersion, "0.10.5")) return 2;
+    for (int i = 1; i < argc; i++) {
+        if (!strcmp(argv[i], "--full-trace") && !full) full = 1;
+        else if (!strcmp(argv[i], "--extended-pages") && !extended) extended = 1;
+        else { fputs("Usage: mgba-cpu-irq-return-probe [--full-trace] [--extended-pages]\n", stderr); return 2; }
+    }
     struct mLogger logger = {.log = quiet}; mLogSetDefaultLogger(&logger);
     puts(full ? "mode,code,prefetch,idle,stage,cycle,pc,cpsr,lr,r0"
               : "mode,code,prefetch,idle,add,cycles_since_return,pc,cpsr,lr,r0");
@@ -47,10 +52,11 @@ int main(int argc, char** argv) {
         GBALoadBIOS(core->board, VFileMemChunk(bios, sizeof(bios)));
         if (!((struct GBA*) core->board)->memory.fullBios) return 6;
         const unsigned banks[] = {0x08000000, 0x0a000000, 0x0c000000};
-        const unsigned offsets[] = {0x20, 0x20000 - width, 0x20000};
+        const unsigned offsets[] = {0x20, 0x20000 - width * 2, 0x20000 - width, 0x20000};
         for (unsigned bank = 0; bank < 3; bank++)
-          for (unsigned offset = 0; offset < 3; offset++)
+          for (unsigned offset = 0; offset < 4; offset++)
             for (unsigned setup = 0; setup < 3; setup++) {
+                if (!extended && offsets[offset] == 0x20000 - width * 2) continue;
                 core->reset(core);
                 unsigned status = 0xa000005f | (thumb ? 0x20 : 0);
                 unsigned pc = banks[bank] + offsets[offset] - width, zero = 0;

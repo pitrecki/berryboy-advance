@@ -6,13 +6,20 @@ import berryboy.cpu.Cpu;
 /** Asset-free fetch observations timed from retired IRQ return; --full-trace retains entry/refill differences. */
 public final class CpuIrqReturnProbe {
     public static void main(String[] args) {
-        var full = args.length == 1 && args[0].equals("--full-trace");
-        if (args.length != 0 && !full) throw new IllegalArgumentException("Usage: berryboy.bus.CpuIrqReturnProbe [--full-trace]");
+        var full = false; var extended = false;
+        for (var arg : args) {
+            if (arg.equals("--full-trace") && !full) full = true;
+            else if (arg.equals("--extended-pages") && !extended) extended = true;
+            else throw new IllegalArgumentException("Usage: berryboy.bus.CpuIrqReturnProbe [--full-trace] [--extended-pages]");
+        }
         System.out.println("mode,code,prefetch,idle," + (full ? "stage,cycle" : "add,cycles_since_return") + ",pc,cpsr,lr,r0");
         for (var thumb : new boolean[]{false, true})
             for (var bank : new int[]{0x08000000, 0x0a000000, 0x0c000000})
-                for (var offset : new int[]{0x20, 0x20000 - (thumb ? 2 : 4), 0x20000})
-                    for (var setup = 0; setup < 3; setup++) capture(thumb, bank + offset, setup, full);
+                for (var offset : new int[]{0x20, 0x20000 - (thumb ? 4 : 8), 0x20000 - (thumb ? 2 : 4), 0x20000})
+                    for (var setup = 0; setup < 3; setup++) {
+                        if (!extended && offset == 0x20000 - (thumb ? 4 : 8)) continue;
+                        capture(thumb, bank + offset, setup, full);
+                    }
         if (System.out.checkError()) throw new IllegalStateException("Cannot write IRQ return observations");
     }
     private static void capture(boolean thumb, int pc, int setup, boolean full) {

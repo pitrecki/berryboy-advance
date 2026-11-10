@@ -3,14 +3,19 @@
 #include <cstring>
 
 int main(int argc, char** argv) {
-    const bool full = argc == 2 && !std::strcmp(argv[1], "--full-trace");
-    if (argc != 1 && !full) throw std::runtime_error("Usage: nba-cpu-irq-return-probe [--full-trace]");
+    bool full = false, extended = false;
+    for (int i = 1; i < argc; ++i) {
+        if (!std::strcmp(argv[i], "--full-trace") && !full) full = true;
+        else if (!std::strcmp(argv[i], "--extended-pages") && !extended) extended = true;
+        else { std::fputs("Usage: nba-cpu-irq-return-probe [--full-trace] [--extended-pages]\n", stderr); return 2; }
+    }
     std::puts(full ? "mode,code,prefetch,idle,stage,cycle,pc,cpsr,lr,r0"
                    : "mode,code,prefetch,idle,add,cycles_since_return,pc,cpsr,lr,r0");
     for (unsigned thumb : {0, 1})
       for (u32 bank : {0x08000000, 0x0a000000, 0x0c000000})
-        for (u32 offset : {0x20U, 0x20000U - (thumb ? 2U : 4U), 0x20000U})
+        for (u32 offset : {0x20U, 0x20000U - (thumb ? 4U : 8U), 0x20000U - (thumb ? 2U : 4U), 0x20000U})
           for (unsigned setup : {0, 1, 2}) {
+            if (!extended && offset == 0x20000U - (thumb ? 4U : 8U)) continue;
             auto m = std::make_unique<ProbeMachine>();
             const unsigned width = thumb ? 2 : 4;
             const u32 add = thumb ? 0x3001 : 0xe2800001;

@@ -624,6 +624,23 @@ aligned. Even after the handler NOP, models disagree on some return/refill timin
 the default scope qualifies only subsequent fetches. Do not treat the shared
 post-return clock origin as a pass for complete IRQ latency or opcode latching.
 
+To inspect the return itself, save the three `--full-trace --extended-pages`
+outputs and run:
+
+```bash
+python3 tools/compare_irq_refill.py nba-full.csv mgba-full.csv host-full.csv \
+  --shared-fixture fresh-shared.csv > refill-comparison.json
+```
+
+This aligns the retired handler NOP and checks every cycle/register field. The
+expanded matrix has 72 scenarios, 196 shared observations and 92 disputed ones.
+`--extended-pages` adds targets two instructions before the page boundary;
+without it, the existing 54-scenario/default output remains unchanged. The fixture uses
+only reference agreements; host values never select or define expectations.
+Exit 1 preserves either host mismatches or unresolved reference differences,
+even when the shared subset matches. Invalid/incomplete traces or stale fixture
+paths fail with exit 2. No empty shared fixture or partial trace is accepted.
+
 ## Original FIFO DMA timing probes
 
 These probes generate pattern cartridges in memory and require no external ROM,
