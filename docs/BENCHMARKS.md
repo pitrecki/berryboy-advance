@@ -29,22 +29,22 @@ bottlenecks and preserves event ordering.
 
 ## Current validation
 
-- **2668 host tests**, **2407 exported-core tests**, and **2407 tests against the
+- **2868 host tests**, **2607 exported-core tests**, and **2607 tests against the
   actual new ECJ/CLDC classes** pass, with no failures or skips. Counts include
   parameterized invocations. Detailed build and artifact data is in the linked evidence.
 - Native Linux JDE 7.1 / ECJ 4.6.1 / RAPC verification passes and produces a
   **0.9.1 development** JAD/COD. Host: Linux x86_64, Temurin 21.0.8, Maven 3.9.11.
-- [IRQ refill comparison](../benchmarks/irq-refill-comparison-2026-11-10.json)
-  aligns a retired handler NOP, retains 196 shared reference observations and 92
-  disputed ones, and exposes 56 host/shared mismatches. Default adapter output
-  is preserved; expanded page coverage is explicit. The comparator rejects
-  incomplete traces and cannot report a full pass while references disagree.
-- [Physical instruction fetches](../benchmarks/physical-fetch-2026-11-10.json) now
-  time the two-slot pipeline lookahead. All 162 post-IRQ observations match NBA,
-  mGBA, host and actual CLDC; four full-state replays cover the return stream.
-  Fifteen game routes retain every prior exact frame across 56400 frames, gaining
-  one Sonic frame. The 4190-frame LeafGreen save route retains its 3611 exact
-  frames and both cold reloads work; strict RGB/PCM/save differences remain open.
+- [Prefetch-aware refills](../benchmarks/prefetch-refill-2026-11-10.json) share the
+  normal fetch burst for both physical reads. All 196 shared reference observations
+  now match; the 92 disputed observations retain their prior host outcomes. Four
+  state replays cover DMA between reads. Fifteen routes retain every prior exact
+  frame across 56400 frames, gaining two more Sonic frames. The LeafGreen route
+  keeps all 3611 exact frames and both new-save cold loads restore exact city pixels.
+- [IRQ comparison](../benchmarks/irq-refill-comparison-2026-11-10.json) preserves
+  all model disagreements and rejects partial traces/stale oracle paths. A shared
+  subset match cannot turn the full disputed phase into a pass.
+- [Physical fetch lookahead](../benchmarks/physical-fetch-2026-11-10.json) remains
+  covered by the earlier 162 shared observations and four return-state replays.
 - [BIOS settings](../benchmarks/bios-settings-2026-11-09.json) validate a separate
   local 16 KiB file on the worker before persisting its path. Controller tests
   cover browsing, cancellation, restart persistence, invalid files and RMS failure;
@@ -222,7 +222,7 @@ user settings do not relax that qualification protocol.
 | Order | Next work | Completion evidence |
 | --- | --- | --- |
 | 1 / P0: DMA activation and lifecycle | Natural LCD probes now separate status, readiness, writes and IF publication. NBA/mGBA disagree on those phases; resolve the expected timing with hardware evidence or an independently justified specification before choosing a model. Then repeat game/CPU/state gates. | Keep 96 CPU, 66 lifecycle and eight shared natural-LCD terminal observations, previously exact frame sets and software frame/audio continuity. The Sonic-only phase experiment has no lost exact frames; wider validation remains open. Production activation remains immediate and machine-state format remains 1. |
-| 2 / P0: Wider CPU/LCD timing | Cartridge DMA discarded-fetch timing has 144 observations, and corrected post-return physical fetches have 162 observations agreed by all three emulators. Qualify the remaining IRQ return/refill disagreements, pipeline latching/self-modifying code, then IRQ propagation/mask latency. Trace the LeafGreen frame-930 offset and HBlank at cycle 960 versus the reference's 1008. | Matching event/retirement observations with justified expected timing. Keep in-flight snapshots distinct from retired state. Do not adjust a constant solely to improve screenshot counts. |
+| 2 / P0: Wider CPU/LCD timing | Cartridge DMA discarded-fetch timing has 144 observations, and corrected post-return physical fetches have 162 observations agreed by all three emulators. Prefetch-aware refills now match 196 shared observations; qualify the remaining 92 disputed observations, pipeline latching/self-modifying code, then IRQ propagation/mask latency. Trace the LeafGreen frame-930 offset and HBlank at cycle 960 versus the reference's 1008. | Matching event/retirement observations with justified expected timing. Keep in-flight snapshots distinct from retired state. Do not adjust a constant solely to improve screenshot counts. |
 | 3 / P0: Graphics expected results | Resolve the 2244-case three-way disagreement on brightness rounding and palette bit 15 using independently justified outputs or hardware evidence. Then qualify combined raster/OBJ/window effects. | Explicit per-pixel expectations and regression scenes. The renderer remains unqualified until those expectations are established; no relaxed tolerances. |
 | 4 / P1: Audio correctness | Start with late Sonic Advance 3 and Wario Land 4 differences. Compare timer/DMA FIFO, PSG and sample-clock events before diagnosing gain/filter/resampling. | Repeatable sample/event checkpoints, justified comparison rules, listening review and no software-buffer loss. Timing-dependent fixes follow the timing gates. |
 | 5 / P1: Gameplay and saves | LeafGreen now covers repeated indoor saves, a Pallet Town save with four cold cross-loads and a 120-frame state replay, plus interrupted writes and counter wrap through 0/1 in both engines. Trace CPU/IRQ timing around Timer1 seeding and frame-1548 relocation/VBlank RNG ordering; extend longer gameplay and isolate the remaining RNG/field timing differences. Counter wrap, both-slot corruption and host-file publication now have bounded recovery coverage. Extend Mario/Luigi movement/battle, Sonic/Wario level, Golden Sun battle and V-Rally race work. Doom II first level, F-Zero race and Mario & Luigi Toad control retain named routes and state replays. | Preserve strict binary and full-stream outcomes; visible play or a successful full-state replay alone does not qualify game accuracy or cartridge-save compatibility. |
@@ -377,22 +377,18 @@ are retained in Git history. They are not current qualification results.
 
 ## LeafGreen RNG origin checkpoint
 
-The November 9 [seed/caller diagnosis](../benchmarks/leafgreen-rng-origin-2026-11-09.json)
-records the earlier behavior: 630 identical RNG changes and callers before Timer1
-seeds the generators with
-5729 versus 5780 at frame 901. The ROM uses the same LCG arithmetic in both runs.
-At frame 1548, save-block relocation and VBlank consume RNG values in reversed
-order. A diagnostic-only equal-seed experiment still produces different NPC
-state and 38 unclassified payload bytes. It is rejected as a production fix.
-Trace CPU/IRQ execution around Timer1 enable/read and that relocation boundary;
-retain strict failing RGB/PCM/save outcomes. The read-only production probes do
-not alter guest RAM or timing.
+The earlier [seed/caller diagnosis](../benchmarks/leafgreen-rng-origin-2026-11-09.json)
+and [physical-fetch correction](../benchmarks/physical-fetch-2026-11-10.json)
+retain the preceding traces. The current
+[prefetch-refill checkpoint](../benchmarks/prefetch-refill-2026-11-10.json) still
+has 630 matching RNG changes before Timer1 seeds 5726 versus 5780. The first
+caller-order difference remains change 1282 around save-block relocation/VBlank.
+Read-only tracing retains identical RGB, PCM, backup bytes and counts.
 
-The [physical-fetch correction](../benchmarks/physical-fetch-2026-11-10.json)
-refreshes the same read-only trace: 630 changes still agree before Timer1 seeds
-5723 versus 5780, and the first caller-order difference remains change 1282.
-The route's entire RGB stream is unchanged; its new Flash image has 35 unclassified
-activity bytes against the reference, versus 42 before. Both cold reloads preserve
-the new bytes and reach exact city pixels. These are retained mismatches, not a
-seed/RNG fix. Continue CPU/IRQ tracing at Timer1 enable/read and the relocation
-boundary, using the new source/save hashes and the open return/refill timing gate.
+The route's entire RGB stream remains unchanged. Its new Flash image has 37
+unclassified activity bytes against the reference, versus 35 before; both cold
+loads preserve its bytes and restore exact city pixels. Strict save and full
+RGB/PCM outcomes still fail. Continue CPU/IRQ tracing at Timer1 enable/read and
+the relocation boundary using the new source/save hashes. Resolve the disputed
+IRQ return/refill expectations before changing that policy; do not force seeds
+or normalize away NPC/Quest Log data.

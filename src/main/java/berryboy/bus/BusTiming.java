@@ -130,9 +130,8 @@ public final class BusTiming {
         if (!refilling()) throw new EmulationException("No pending pipeline refill");
         var second = refillRemaining == 1;
         var address = refillAddress + (second ? refillWidth : 0);
-        var cycles = accessCycles(address, refillWidth, second && nextFetchSequential);
-        nextFetchSequential = true;
-        clock.advance(cycles);
+        // Refill reads already name the physical addresses, and share the prefetch burst.
+        fetch(address, address, refillWidth);
         if (--refillRemaining == 0) expectedFetch = refillAddress;
     }
 

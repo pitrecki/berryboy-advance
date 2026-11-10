@@ -3791,7 +3791,7 @@
     "tool": "tools/compare_irq_refill.py",
     "inputs": "Three complete five-stage CSV traces with --full-trace --extended-pages",
     "normalization": "Subtract only each scenario handler-NOP retirement clock. All PC/CPSR/LR/r0 anchor fields must agree before alignment.",
-    "oracle": "Use complete NBA/mGBA agreements on cycle/PC/CPSR/LR/r0, independently of the host. Retain all 64 disputed observations in JSON.",
+    "oracle": "Use complete NBA/mGBA agreements on cycle/PC/CPSR/LR/r0, independently of the host. Retain all 92 disputed observations in JSON.",
     "fixture": "src/test/resources/berryboy/bus/irq-refill-shared.csv",
     "fixture_sha256": "dec2a486e8eaa81be2944e9fa1c5ab84e372fd5ce65200e9225aa142ae6ad411",
     "exit_codes": "0 = complete shared phase exact with no reference disagreement; 1 = unqualified; 2 = invalid inputs/stale output. Matching only the shared subset cannot return 0."
