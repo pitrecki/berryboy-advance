@@ -1,0 +1,566 @@
+{
+  "date": "2026-11-10",
+  "version": "0.9.1-SNAPSHOT",
+  "source_base_commit": "5b91ebf133ab7308bd16fedd670c977aa80b12f7",
+  "source_dirty": true,
+  "scope": "Independent asset-free cartridge fetch observations after a retired IRQ return; diagnostic probes only",
+  "hardware": "Linux x86_64 cloud host; Temurin 21.0.8; C/C++ -O2 -Wall -Wextra -Werror",
+  "assets": "Generated ADD streams and a 16 KiB NOP/SUBS handler, no external ROM/BIOS/save",
+  "production_timing_changed": false,
+  "references": {
+    "nba": {
+      "commit": "55b5cf0ae3d929582ac5bfd486558173502b8354",
+      "library_source_clean": true,
+      "binary_sha256": "540d32a9f64a10b78127e8db6d1d57ec989e924b5d64e1666ff6f247cc19cfb4"
+    },
+    "mgba": {
+      "version": "0.10.5",
+      "library_sha256": "8a2eb439e339c6f2672fc5083f671c6c1da21354fe470e51b4d0e2ed69c2221e",
+      "binary_sha256": "371cd46699d663620b494f3d534f7159c1514877e5abbf1da77c4f323840d5e1"
+    }
+  },
+  "matrix": {
+    "scenarios": 54,
+    "observations": 162,
+    "modes": [
+      "ARM",
+      "Thumb"
+    ],
+    "banks": [
+      "0x08000000",
+      "0x0A000000",
+      "0x0C000000"
+    ],
+    "offsets": [
+      "0x20",
+      "128 KiB minus instruction width",
+      "128 KiB"
+    ],
+    "prefetch": [
+      "off",
+      "enabled cold",
+      "enabled plus 24 internal idle cycles"
+    ],
+    "observations_per_scenario": 3,
+    "state": "PC, CPSR and banked LR restored by SUBS pc,lr,#4 before three ADD retirements; primer effects on r0 and Thumb flags reset",
+    "clock_origin": "Immediately after the return instruction retires in each engine. No interrupt-entry/refill latency equivalence is implied.",
+    "irq_setup": "NBA CPU IRQ line, mGBA ARMRaiseIRQ with synthetic BIOS loaded through GBALoadBIOS, BerryBoy enabled IF; IRQ deasserted/acknowledged before return."
+  },
+  "results": {
+    "nba_mgba_default_output_byte_exact": true,
+    "fixture": "src/test/resources/berryboy/bus/irq-return-fetch.csv",
+    "fixture_sha256": "54c3ff09c23b886db7d51fe2cec58031124628cb03e08d37906d0488fce6ae11",
+    "baseline_matching_observations": 118,
+    "baseline_different_observations": 44,
+    "architecture_fields_match": true,
+    "counterexamples": [
+      {
+        "setup": {
+          "mode": "arm",
+          "code": "0x0801fffc",
+          "prefetch": "0",
+          "idle": "0",
+          "add": "2"
+        },
+        "expected_cycles": 12,
+        "baseline_cycles": 14
+      },
+      {
+        "setup": {
+          "mode": "arm",
+          "code": "0x0801fffc",
+          "prefetch": "0",
+          "idle": "0",
+          "add": "3"
+        },
+        "expected_cycles": 18,
+        "baseline_cycles": 20
+      },
+      {
+        "setup": {
+          "mode": "arm",
+          "code": "0x08020000",
+          "prefetch": "0",
+          "idle": "0",
+          "add": "1"
+        },
+        "expected_cycles": 6,
+        "baseline_cycles": 8
+      },
+      {
+        "setup": {
+          "mode": "arm",
+          "code": "0x08020000",
+          "prefetch": "0",
+          "idle": "0",
+          "add": "2"
+        },
+        "expected_cycles": 12,
+        "baseline_cycles": 14
+      },
+      {
+        "setup": {
+          "mode": "arm",
+          "code": "0x08020000",
+          "prefetch": "0",
+          "idle": "0",
+          "add": "3"
+        },
+        "expected_cycles": 18,
+        "baseline_cycles": 20
+      },
+      {
+        "setup": {
+          "mode": "arm",
+          "code": "0x08020000",
+          "prefetch": "1",
+          "idle": "0",
+          "add": "1"
+        },
+        "expected_cycles": 6,
+        "baseline_cycles": 8
+      },
+      {
+        "setup": {
+          "mode": "arm",
+          "code": "0x08020000",
+          "prefetch": "1",
+          "idle": "0",
+          "add": "2"
+        },
+        "expected_cycles": 12,
+        "baseline_cycles": 14
+      },
+      {
+        "setup": {
+          "mode": "arm",
+          "code": "0x08020000",
+          "prefetch": "1",
+          "idle": "0",
+          "add": "3"
+        },
+        "expected_cycles": 18,
+        "baseline_cycles": 20
+      },
+      {
+        "setup": {
+          "mode": "arm",
+          "code": "0x08020000",
+          "prefetch": "1",
+          "idle": "24",
+          "add": "1"
+        },
+        "expected_cycles": 6,
+        "baseline_cycles": 8
+      },
+      {
+        "setup": {
+          "mode": "arm",
+          "code": "0x08020000",
+          "prefetch": "1",
+          "idle": "24",
+          "add": "2"
+        },
+        "expected_cycles": 12,
+        "baseline_cycles": 14
+      },
+      {
+        "setup": {
+          "mode": "arm",
+          "code": "0x08020000",
+          "prefetch": "1",
+          "idle": "24",
+          "add": "3"
+        },
+        "expected_cycles": 18,
+        "baseline_cycles": 20
+      },
+      {
+        "setup": {
+          "mode": "arm",
+          "code": "0x0c01fffc",
+          "prefetch": "0",
+          "idle": "0",
+          "add": "2"
+        },
+        "expected_cycles": 36,
+        "baseline_cycles": 32
+      },
+      {
+        "setup": {
+          "mode": "arm",
+          "code": "0x0c01fffc",
+          "prefetch": "0",
+          "idle": "0",
+          "add": "3"
+        },
+        "expected_cycles": 54,
+        "baseline_cycles": 50
+      },
+      {
+        "setup": {
+          "mode": "arm",
+          "code": "0x0c020000",
+          "prefetch": "0",
+          "idle": "0",
+          "add": "1"
+        },
+        "expected_cycles": 18,
+        "baseline_cycles": 14
+      },
+      {
+        "setup": {
+          "mode": "arm",
+          "code": "0x0c020000",
+          "prefetch": "0",
+          "idle": "0",
+          "add": "2"
+        },
+        "expected_cycles": 36,
+        "baseline_cycles": 32
+      },
+      {
+        "setup": {
+          "mode": "arm",
+          "code": "0x0c020000",
+          "prefetch": "0",
+          "idle": "0",
+          "add": "3"
+        },
+        "expected_cycles": 54,
+        "baseline_cycles": 50
+      },
+      {
+        "setup": {
+          "mode": "arm",
+          "code": "0x0c020000",
+          "prefetch": "1",
+          "idle": "0",
+          "add": "1"
+        },
+        "expected_cycles": 18,
+        "baseline_cycles": 14
+      },
+      {
+        "setup": {
+          "mode": "arm",
+          "code": "0x0c020000",
+          "prefetch": "1",
+          "idle": "0",
+          "add": "2"
+        },
+        "expected_cycles": 36,
+        "baseline_cycles": 32
+      },
+      {
+        "setup": {
+          "mode": "arm",
+          "code": "0x0c020000",
+          "prefetch": "1",
+          "idle": "0",
+          "add": "3"
+        },
+        "expected_cycles": 54,
+        "baseline_cycles": 50
+      },
+      {
+        "setup": {
+          "mode": "arm",
+          "code": "0x0c020000",
+          "prefetch": "1",
+          "idle": "24",
+          "add": "1"
+        },
+        "expected_cycles": 18,
+        "baseline_cycles": 14
+      },
+      {
+        "setup": {
+          "mode": "arm",
+          "code": "0x0c020000",
+          "prefetch": "1",
+          "idle": "24",
+          "add": "2"
+        },
+        "expected_cycles": 36,
+        "baseline_cycles": 32
+      },
+      {
+        "setup": {
+          "mode": "arm",
+          "code": "0x0c020000",
+          "prefetch": "1",
+          "idle": "24",
+          "add": "3"
+        },
+        "expected_cycles": 54,
+        "baseline_cycles": 50
+      },
+      {
+        "setup": {
+          "mode": "thumb",
+          "code": "0x0801fffe",
+          "prefetch": "0",
+          "idle": "0",
+          "add": "2"
+        },
+        "expected_cycles": 6,
+        "baseline_cycles": 8
+      },
+      {
+        "setup": {
+          "mode": "thumb",
+          "code": "0x0801fffe",
+          "prefetch": "0",
+          "idle": "0",
+          "add": "3"
+        },
+        "expected_cycles": 9,
+        "baseline_cycles": 11
+      },
+      {
+        "setup": {
+          "mode": "thumb",
+          "code": "0x08020000",
+          "prefetch": "0",
+          "idle": "0",
+          "add": "1"
+        },
+        "expected_cycles": 3,
+        "baseline_cycles": 5
+      },
+      {
+        "setup": {
+          "mode": "thumb",
+          "code": "0x08020000",
+          "prefetch": "0",
+          "idle": "0",
+          "add": "2"
+        },
+        "expected_cycles": 6,
+        "baseline_cycles": 8
+      },
+      {
+        "setup": {
+          "mode": "thumb",
+          "code": "0x08020000",
+          "prefetch": "0",
+          "idle": "0",
+          "add": "3"
+        },
+        "expected_cycles": 9,
+        "baseline_cycles": 11
+      },
+      {
+        "setup": {
+          "mode": "thumb",
+          "code": "0x08020000",
+          "prefetch": "1",
+          "idle": "0",
+          "add": "1"
+        },
+        "expected_cycles": 3,
+        "baseline_cycles": 5
+      },
+      {
+        "setup": {
+          "mode": "thumb",
+          "code": "0x08020000",
+          "prefetch": "1",
+          "idle": "0",
+          "add": "2"
+        },
+        "expected_cycles": 6,
+        "baseline_cycles": 8
+      },
+      {
+        "setup": {
+          "mode": "thumb",
+          "code": "0x08020000",
+          "prefetch": "1",
+          "idle": "0",
+          "add": "3"
+        },
+        "expected_cycles": 9,
+        "baseline_cycles": 11
+      },
+      {
+        "setup": {
+          "mode": "thumb",
+          "code": "0x08020000",
+          "prefetch": "1",
+          "idle": "24",
+          "add": "1"
+        },
+        "expected_cycles": 3,
+        "baseline_cycles": 5
+      },
+      {
+        "setup": {
+          "mode": "thumb",
+          "code": "0x08020000",
+          "prefetch": "1",
+          "idle": "24",
+          "add": "2"
+        },
+        "expected_cycles": 6,
+        "baseline_cycles": 8
+      },
+      {
+        "setup": {
+          "mode": "thumb",
+          "code": "0x08020000",
+          "prefetch": "1",
+          "idle": "24",
+          "add": "3"
+        },
+        "expected_cycles": 9,
+        "baseline_cycles": 11
+      },
+      {
+        "setup": {
+          "mode": "thumb",
+          "code": "0x0c01fffe",
+          "prefetch": "0",
+          "idle": "0",
+          "add": "2"
+        },
+        "expected_cycles": 18,
+        "baseline_cycles": 14
+      },
+      {
+        "setup": {
+          "mode": "thumb",
+          "code": "0x0c01fffe",
+          "prefetch": "0",
+          "idle": "0",
+          "add": "3"
+        },
+        "expected_cycles": 27,
+        "baseline_cycles": 23
+      },
+      {
+        "setup": {
+          "mode": "thumb",
+          "code": "0x0c020000",
+          "prefetch": "0",
+          "idle": "0",
+          "add": "1"
+        },
+        "expected_cycles": 9,
+        "baseline_cycles": 5
+      },
+      {
+        "setup": {
+          "mode": "thumb",
+          "code": "0x0c020000",
+          "prefetch": "0",
+          "idle": "0",
+          "add": "2"
+        },
+        "expected_cycles": 18,
+        "baseline_cycles": 14
+      },
+      {
+        "setup": {
+          "mode": "thumb",
+          "code": "0x0c020000",
+          "prefetch": "0",
+          "idle": "0",
+          "add": "3"
+        },
+        "expected_cycles": 27,
+        "baseline_cycles": 23
+      },
+      {
+        "setup": {
+          "mode": "thumb",
+          "code": "0x0c020000",
+          "prefetch": "1",
+          "idle": "0",
+          "add": "1"
+        },
+        "expected_cycles": 9,
+        "baseline_cycles": 5
+      },
+      {
+        "setup": {
+          "mode": "thumb",
+          "code": "0x0c020000",
+          "prefetch": "1",
+          "idle": "0",
+          "add": "2"
+        },
+        "expected_cycles": 18,
+        "baseline_cycles": 14
+      },
+      {
+        "setup": {
+          "mode": "thumb",
+          "code": "0x0c020000",
+          "prefetch": "1",
+          "idle": "0",
+          "add": "3"
+        },
+        "expected_cycles": 27,
+        "baseline_cycles": 23
+      },
+      {
+        "setup": {
+          "mode": "thumb",
+          "code": "0x0c020000",
+          "prefetch": "1",
+          "idle": "24",
+          "add": "1"
+        },
+        "expected_cycles": 9,
+        "baseline_cycles": 5
+      },
+      {
+        "setup": {
+          "mode": "thumb",
+          "code": "0x0c020000",
+          "prefetch": "1",
+          "idle": "24",
+          "add": "2"
+        },
+        "expected_cycles": 18,
+        "baseline_cycles": 14
+      },
+      {
+        "setup": {
+          "mode": "thumb",
+          "code": "0x0c020000",
+          "prefetch": "1",
+          "idle": "24",
+          "add": "3"
+        },
+        "expected_cycles": 27,
+        "baseline_cycles": 23
+      }
+    ]
+  },
+  "full_trace": {
+    "rows_per_engine": 270,
+    "option": "--full-trace",
+    "scope": "Handler NOP, return, then three ADD retirements. Absolute IRQ-entry origins differ by adapter setup.",
+    "nba_mgba_different_rows_after_aligning_handler_NOP": 64,
+    "remaining_gate": "Return/refill timing needs independently justified expectations; do not choose a model by matching screenshot counts.",
+    "sha256": {
+      "nba-full.csv": "a120b71428757636a101f0c129540d117e92c41609989a8f95a2a75d8d67b72d",
+      "mgba-full.csv": "8af7cb0db134b4c9d7a4fc54b4c50edc2ae0f47e7a3bc37c943fcc6cf3dad282",
+      "host-full-before.csv": "09457366cf89f6c0b6b6a1328a8be3867a5c7c32b1d24c5d9b848506547d70ce"
+    }
+  },
+  "reproduction": {
+    "guide": "docs/SCENARIOS.md#cartridge-fetch-stream-after-irq-return",
+    "baseline": "On the recorded source base, compile/run CpuIrqReturnProbe against target/classes. Default CSV differs from either independent reference in 44 observations; a nonzero cmp is the recorded counterexample.",
+    "references": "Build nba-cpu-irq-return-probe through tools/nba-reference CMake and mgba-cpu-irq-return-probe.c with the unmodified mGBA static/include flags. Their default outputs must match the fixture byte-for-byte."
+  },
+  "source_files_sha256": {
+    "tools/CpuIrqReturnProbe.java": "b0f5e88596744271e1505e1483416f75058ae23e3b8a7c2002cbe821b582959e",
+    "tools/nba-cpu-irq-return-probe.cc": "57457221c434d33b60e9185134c398890486ec2e1275b6966a1d4db00eaab8cf",
+    "tools/mgba-cpu-irq-return-probe.c": "273a0cee2e0e5fa0354386fe89755d6c49cf65b1959e62e25aec0627948d5829",
+    "tools/nba-reference/CMakeLists.txt": "d51b5732e2fd8ee1f7ee10ff0305e553fbb7a5850a9481e76a6263bde3a2eb2a"
+  }
+}

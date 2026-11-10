@@ -592,13 +592,38 @@ and aligned to the asserted reference count. Code PC is region+0x20, away
 from page boundaries. Both sides stop at the first synthetic handler NOP,
 requiring no external BIOS/ROM/save.
 
-Currently all six IWRAM controls match. Twelve wider-memory cases differ only
-in cycles; registers and DMA completion agree. Host/retained CLDC observations
-are identical, as are those on the pre-waiting-fetch-fix CPU. Both adapters
-compile/exit successfully; a nonzero `diff` is the recorded counterexample.
-This measures source wait states after normalized readiness, not activation,
-peripheral IRQ latency, prefetch-enabled behavior or full pipeline latching.
+All 18 current observations match after the discarded-fetch wait correction.
+The original six-match/twelve-mismatch counterexample remains in the linked
+historical diagnosis. This measures source wait states after normalized readiness,
+not activation, peripheral IRQ latency or full pipeline latching.
 See [the timing table and next correction](REFERENCE-VALIDATION.md#discarded-irq-fetch-wait-state-counterexample-2026-11-05).
+
+## Cartridge fetch stream after IRQ return
+
+The ARM/Thumb adapters generate ADD streams and a synthetic BIOS containing NOP
+and `SUBS pc,lr,#4`; no user assets are required. They cover all three Game Pak
+wait regions, ordinary/page-final/page-first addresses and prefetch off/cold/warm.
+Default output starts its clock after the return has retired, then records three
+ADD retirements. NBA and mGBA agree byte-for-byte on all 162 observations.
+
+```bash
+cmake --build target/nba-reference --target nba-cpu-irq-return-probe --parallel 4
+target/nba-reference/nba-cpu-irq-return-probe > target/nba-reference/irq-return.csv
+javac -Xlint:all -Werror -cp target/classes -d target/docs-tools tools/CpuIrqReturnProbe.java
+java -cp target/classes:target/docs-tools berryboy.bus.CpuIrqReturnProbe > target/nba-reference/irq-return-host.csv
+cmp target/nba-reference/irq-return.csv target/nba-reference/irq-return-host.csv
+```
+
+Build `tools/mgba-cpu-irq-return-probe.c` with the same unmodified mGBA static
+library/include flags as the FIFO adapter below. Its default CSV must match the
+NBA output. The recorded pre-correction CPU differs in 44 observations; a
+nonzero host `cmp` is that counterexample until the physical-fetch correction.
+All three adapters also accept `--full-trace`, preserving handler,
+return and subsequent observations. IRQ setup differs: NBA uses its CPU IRQ line,
+mGBA calls `ARMRaiseIRQ`, and Java uses enabled IF. Absolute entry times are not
+aligned. Even after the handler NOP, models disagree on some return/refill timing;
+the default scope qualifies only subsequent fetches. Do not treat the shared
+post-return clock origin as a pass for complete IRQ latency or opcode latching.
 
 ## Original FIFO DMA timing probes
 
