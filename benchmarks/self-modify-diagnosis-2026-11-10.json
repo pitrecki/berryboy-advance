@@ -1,0 +1,329 @@
+{
+  "date": "2026-11-10",
+  "version": "0.9.1-SNAPSHOT",
+  "source_base_commit": "9b8bc0f02fad8e4f72d27e2eac6a6bdf71e2fd8b",
+  "source_dirty": true,
+  "scope": "Asset-free architectural opcode-latching diagnosis; no production changes or user assets.",
+  "host": "Linux x86_64, Temurin 21.0.8; emulated guest cycles, no physical presentation/audio measurement",
+  "references": {
+    "nba_commit": "55b5cf0ae3d929582ac5bfd486558173502b8354",
+    "mgba_version": "0.10.5",
+    "production_cores_modified": false
+  },
+  "matrix": {
+    "modes": [
+      "arm",
+      "thumb"
+    ],
+    "code": [
+      "0x02000100",
+      "0x03000100"
+    ],
+    "store_width_bytes": [
+      1,
+      2,
+      4
+    ],
+    "target_distance_instructions": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "scenarios": 48,
+    "retired_observations_per_scenario": 7,
+    "observations": 336
+  },
+  "program": "BX r4 primes the program; STRB/STRH/STR changes one MOVS to #9, four MOVS execute, then BX r3 flushes and re-executes the patch. Thumb word stores preserve the adjacent halfword at an aligned destination.",
+  "clock_origin": "After entry BX retires in each engine; reset/refill setup is excluded. Every subsequent cycle, PC, CPSR, r0 and patched opcode is compared.",
+  "result": {
+    "reference_equal": true,
+    "shared_observations": 336,
+    "host_mismatches": 24,
+    "mismatching_fields": [
+      "r0"
+    ],
+    "first_visit": "All references retain the old opcode at distances 1 and 2; distances 3 and 4 see the new opcode.",
+    "after_branch": "Both references and the current host execute the patched #9 after BX.",
+    "full_pipeline_qualified": false
+  },
+  "mismatches": [
+    {
+      "scenario": {
+        "mode": "arm",
+        "code": "0x02000100",
+        "store_width": "1",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "observed_r0": 9
+    },
+    {
+      "scenario": {
+        "mode": "arm",
+        "code": "0x02000100",
+        "store_width": "1",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "observed_r0": 9
+    },
+    {
+      "scenario": {
+        "mode": "arm",
+        "code": "0x02000100",
+        "store_width": "2",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "observed_r0": 9
+    },
+    {
+      "scenario": {
+        "mode": "arm",
+        "code": "0x02000100",
+        "store_width": "2",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "observed_r0": 9
+    },
+    {
+      "scenario": {
+        "mode": "arm",
+        "code": "0x02000100",
+        "store_width": "4",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "observed_r0": 9
+    },
+    {
+      "scenario": {
+        "mode": "arm",
+        "code": "0x02000100",
+        "store_width": "4",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "observed_r0": 9
+    },
+    {
+      "scenario": {
+        "mode": "arm",
+        "code": "0x03000100",
+        "store_width": "1",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "observed_r0": 9
+    },
+    {
+      "scenario": {
+        "mode": "arm",
+        "code": "0x03000100",
+        "store_width": "1",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "observed_r0": 9
+    },
+    {
+      "scenario": {
+        "mode": "arm",
+        "code": "0x03000100",
+        "store_width": "2",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "observed_r0": 9
+    },
+    {
+      "scenario": {
+        "mode": "arm",
+        "code": "0x03000100",
+        "store_width": "2",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "observed_r0": 9
+    },
+    {
+      "scenario": {
+        "mode": "arm",
+        "code": "0x03000100",
+        "store_width": "4",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "observed_r0": 9
+    },
+    {
+      "scenario": {
+        "mode": "arm",
+        "code": "0x03000100",
+        "store_width": "4",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "observed_r0": 9
+    },
+    {
+      "scenario": {
+        "mode": "thumb",
+        "code": "0x02000100",
+        "store_width": "1",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "observed_r0": 9
+    },
+    {
+      "scenario": {
+        "mode": "thumb",
+        "code": "0x02000100",
+        "store_width": "1",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "observed_r0": 9
+    },
+    {
+      "scenario": {
+        "mode": "thumb",
+        "code": "0x02000100",
+        "store_width": "2",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "observed_r0": 9
+    },
+    {
+      "scenario": {
+        "mode": "thumb",
+        "code": "0x02000100",
+        "store_width": "2",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "observed_r0": 9
+    },
+    {
+      "scenario": {
+        "mode": "thumb",
+        "code": "0x02000100",
+        "store_width": "4",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "observed_r0": 9
+    },
+    {
+      "scenario": {
+        "mode": "thumb",
+        "code": "0x02000100",
+        "store_width": "4",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "observed_r0": 9
+    },
+    {
+      "scenario": {
+        "mode": "thumb",
+        "code": "0x03000100",
+        "store_width": "1",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "observed_r0": 9
+    },
+    {
+      "scenario": {
+        "mode": "thumb",
+        "code": "0x03000100",
+        "store_width": "1",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "observed_r0": 9
+    },
+    {
+      "scenario": {
+        "mode": "thumb",
+        "code": "0x03000100",
+        "store_width": "2",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "observed_r0": 9
+    },
+    {
+      "scenario": {
+        "mode": "thumb",
+        "code": "0x03000100",
+        "store_width": "2",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "observed_r0": 9
+    },
+    {
+      "scenario": {
+        "mode": "thumb",
+        "code": "0x03000100",
+        "store_width": "4",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "observed_r0": 9
+    },
+    {
+      "scenario": {
+        "mode": "thumb",
+        "code": "0x03000100",
+        "store_width": "4",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "observed_r0": 9
+    }
+  ],
+  "fixture": "src/test/resources/berryboy/cpu/self-modify.csv",
+  "captures": {
+    "target/self-modify-2026-11-10/nba.csv": "0f83384eb5ec6ebdb9914b8b77310ce6e6344b0fd8e39cc98905f6880e858296",
+    "target/self-modify-2026-11-10/mgba.csv": "0f83384eb5ec6ebdb9914b8b77310ce6e6344b0fd8e39cc98905f6880e858296",
+    "target/self-modify-2026-11-10/host.csv": "2667f4686b93c6bd08996471ef75c01757bd2190c2b6fa64b8fc3d01c16925b2"
+  },
+  "source_files_sha256": {
+    "tools/CpuSelfModifyProbe.java": "2d5c651d1dde4c1e429f101885ebba675dd9c40e0f665cd04f59ddcc4790aa9f",
+    "tools/nba-cpu-self-modify-probe.cc": "ea7fb920bb8926fc19c18567eee49d9a892be381e2ddb83d51eb366aea31a326",
+    "tools/mgba-cpu-self-modify-probe.c": "ed5986ac7cd52feaa61de42ee42a6f0af371e4943e93aa47d37fdf06e57e3fd0",
+    "src/test/resources/berryboy/cpu/self-modify.csv": "0f83384eb5ec6ebdb9914b8b77310ce6e6344b0fd8e39cc98905f6880e858296"
+  },
+  "next_step": "Store WRAM opcodes independently from RAM, including both refill reads and DMA interleaving. A versioned state extension is required; preserve format-1 loading with an explicit legacy reconstruction policy. Repeat portable/state/game gates before production adoption."
+}

@@ -34,6 +34,11 @@ bottlenecks and preserves event ordering.
   parameterized invocations. Detailed build and artifact data is in the linked evidence.
 - Native Linux JDE 7.1 / ECJ 4.6.1 / RAPC verification passes and produces a
   **0.9.1 development** JAD/COD. Host: Linux x86_64, Temurin 21.0.8, Maven 3.9.11.
+- [WRAM self-modifying programs](../benchmarks/self-modify-diagnosis-2026-11-10.json)
+  expose 24 early-opcode changes in the current host. NBA and mGBA agree on all
+  336 retired observations across ARM/Thumb, both WRAMs and byte/halfword/word
+  stores. Instructions already fetched survive a store until a branch flushes
+  them. Production adoption needs captured opcodes and a versioned state extension.
 - [Prefetch-aware refills](../benchmarks/prefetch-refill-2026-11-10.json) share the
   normal fetch burst for both physical reads. All 196 shared reference observations
   now match; the 92 disputed observations retain their prior host outcomes. Four

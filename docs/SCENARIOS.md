@@ -641,6 +641,25 @@ Exit 1 preserves either host mismatches or unresolved reference differences,
 even when the shared subset matches. Invalid/incomplete traces or stale fixture
 paths fail with exit 2. No empty shared fixture or partial trace is accepted.
 
+## Self-modifying WRAM instruction streams
+
+`tools/CpuSelfModifyProbe.java`, `tools/nba-cpu-self-modify-probe.cc` and
+`tools/mgba-cpu-self-modify-probe.c` execute the same asset-free programs. Build
+the reference adapters using the preceding NBA target/mGBA static-library flags,
+with target `nba-cpu-self-modify-probe`. The Java main is
+`berryboy.cpu.CpuSelfModifyProbe`. They take no arguments and fail on extra ones.
+
+Each scenario enters IWRAM or EWRAM through BX, stores into one of the next four
+MOVS instructions, executes the stream, then branches back to the patched opcode.
+ARM/Thumb and 8/16/32-bit stores give 48 scenarios and 336 retired observations.
+Thumb word stores use aligned destinations and preserve the adjacent instruction.
+The clock starts after the entry BX; compare every subsequent cycle, PC, CPSR,
+r0 and patched opcode. No reset-cycle alignment or IRQ injection is involved.
+Both unmodified references produce the same complete CSV, retained in
+`src/test/resources/berryboy/cpu/self-modify.csv`. The old host changes 24 results
+too early; all remaining fields agree. This diagnoses WRAM opcode latching,
+without qualifying IRQ latency, other writable regions or peripheral fetches.
+
 ## Original FIFO DMA timing probes
 
 These probes generate pattern cartridges in memory and require no external ROM,
