@@ -616,9 +616,8 @@ cmp target/nba-reference/irq-return.csv target/nba-reference/irq-return-host.csv
 
 Build `tools/mgba-cpu-irq-return-probe.c` with the same unmodified mGBA static
 library/include flags as the FIFO adapter below. Its default CSV must match the
-NBA output. The recorded pre-correction CPU differs in 44 observations; a
-nonzero host `cmp` is that counterexample until the physical-fetch correction.
-All three adapters also accept `--full-trace`, preserving handler,
+NBA output. The corrected host and isolated actual CLDC classes match all 162
+rows; the recorded pre-correction CPU fails 44. All three adapters also accept `--full-trace`, preserving handler,
 return and subsequent observations. IRQ setup differs: NBA uses its CPU IRQ line,
 mGBA calls `ARMRaiseIRQ`, and Java uses enabled IF. Absolute entry times are not
 aligned. Even after the handler NOP, models disagree on some return/refill timing;

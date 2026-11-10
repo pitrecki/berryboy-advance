@@ -17,10 +17,10 @@ class BusTimingTest {
         var clock = new CycleScheduler();
         var bus = new BusTiming(clock);
         bus.setWaitControl(0x4000);
-        bus.fetch(0x0dfffff8, 4);
+        bus.fetch(0x0dfffff4, 4); // Physical read still lies in Game Pak at 0x0dfffffc.
         bus.internal(24, false);
         var before = clock.now();
-        bus.discardedFetch(0x0dfffffc, 4); // Physical pipeline read reaches SRAM at 0x0e000004.
+        bus.discardedFetch(0x0dfffff8, 4); // The next physical read reaches SRAM at 0x0e000000.
         assertThat(clock.now() - before).isEqualTo(5);
     }
 

@@ -59,13 +59,14 @@ public final class BusTiming {
         ewramCycles = 16 - ((value >>> 24) & 15);
     }
 
+    /** Execute/decode use logical PC; the physical fetch is two pipeline slots ahead. */
     public void fetch(int address, int width) {
-        fetch(address, address, width);
+        fetch(address, address + width * 2, width);
     }
 
     /** IRQ discards a pipeline fetch two instruction slots beyond logical PC. */
     public void discardedFetch(int address, int width) {
-        fetch(address, address + width * 2, width);
+        fetch(address, width);
     }
 
     private void fetch(int address, int busAddress, int width) {
