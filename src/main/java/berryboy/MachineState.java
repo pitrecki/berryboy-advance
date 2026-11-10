@@ -7,7 +7,7 @@ import berryboy.cartridge.CartridgeBackup;
 /** Versioned complete machine state between CPU steps, including unfinished work. */
 public final class MachineState {
     private static final int MAGIC = 0x53594242; // BBYS, little endian.
-    private static final int VERSION = 1;
+    private static final int VERSION = 2;
     private MachineState() { }
 
     /** Call on the emulation owner; guest cycles and scheduled event order do not change. */
@@ -20,6 +20,7 @@ public final class MachineState {
         state.value(machine.memory.backup().type());
         machine.memory.transferState(state);
         machine.cpu.transferState(state);
+        machine.cpu.transferPipelineState(state);
         var payload = state.finish();
         state.value(StateChecksum.bytes(payload, payload.length));
         return state.finish();
@@ -37,7 +38,9 @@ public final class MachineState {
                 | ((data[last + 2] & 255) << 16) | ((data[last + 3] & 255) << 24);
         if (checksum != StateChecksum.bytes(data, last)) throw new IllegalArgumentException("State checksum mismatch");
         var state = new StateBuffer(data);
-        if (state.value(0) != MAGIC || state.value(0) != VERSION) throw new IllegalArgumentException("Unsupported state format/version");
+        if (state.value(0) != MAGIC) throw new IllegalArgumentException("Unsupported state format/version");
+        var version = state.value(0);
+        if (version < 1 || version > VERSION) throw new IllegalArgumentException("Unsupported state format/version");
         var machine = new Machine(rom, bios);
         if (state.value(0) != machine.cartridge.size() || state.value(0) != machine.cartridge.checksum()) {
             throw new IllegalArgumentException("State belongs to another ROM");
@@ -48,6 +51,7 @@ public final class MachineState {
         machine.memory.setBackup(new CartridgeBackup(state.value(0)));
         machine.memory.transferState(state);
         machine.cpu.transferState(state);
+        if (version >= 2) machine.cpu.transferPipelineState(state);
         state.value(0); // CRC already verified before constructing the replacement.
         state.requireEnd();
         return machine;

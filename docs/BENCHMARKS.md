@@ -18,7 +18,7 @@ separately. Neither platform has passed sustained-playback qualification.
 | Audio | Four PSG channels, Direct Sound A/B, timer/DMA FIFO feed and bounded PCM output | Reference divergences, sequencer/PWM edges and physical playback; phone MMAPI packet transport is implemented but unqualified |
 | Cartridges | SRAM, Flash 64/128 KiB, EEPROM sizes, persistence, RTC/GPIO and deterministic sensor state | Busy/ADC timing, RTC IRQ, calibration and wider real-player save coverage |
 | Desktop | Keypad, Swing output, clock pacing, scenario recording and bounded host workers | Native-window/audio integration and sustained presentation measurements |
-| Save states | Versioned complete snapshots, identity/CRC checks, pending CPU/DMA work and hardware event order | Wider gameplay coverage, format migration and device storage behavior |
+| Save states | Format-2 complete snapshots with format-1 loading, identity/CRC checks, pending CPU/DMA work and hardware event order | Wider gameplay coverage and device storage behavior |
 | Serial | Normal disconnected shifts, multiplayer-port status with no cable, JOY/GPIO registers | UART backend, peer communication and physical port timing |
 | Phone frontend | Home/pause UI, ROM/BIOS browser, five slots, cheats, key remapping, volume/mono/mute, scaling, frame skip and FPS | Simulator/device UI, permissions, native keyboard, audio latency/gaps and performance |
 | BlackBerry build | Legacy export, actual CLDC compilation and vendor RAPC COD | Simulator application execution and physical Bold testing |
@@ -29,16 +29,18 @@ bottlenecks and preserves event ordering.
 
 ## Current validation
 
-- **2868 host tests**, **2607 exported-core tests**, and **2607 tests against the
+- **3250 host tests**, **2989 exported-core tests**, and **2989 tests against the
   actual new ECJ/CLDC classes** pass, with no failures or skips. Counts include
   parameterized invocations. Detailed build and artifact data is in the linked evidence.
 - Native Linux JDE 7.1 / ECJ 4.6.1 / RAPC verification passes and produces a
   **0.9.1 development** JAD/COD. Host: Linux x86_64, Temurin 21.0.8, Maven 3.9.11.
-- [WRAM self-modifying programs](../benchmarks/self-modify-diagnosis-2026-11-10.json)
-  expose 24 early-opcode changes in the current host. NBA and mGBA agree on all
-  336 retired observations across ARM/Thumb, both WRAMs and byte/halfword/word
-  stores. Instructions already fetched survive a store until a branch flushes
-  them. Production adoption needs captured opcodes and a versioned state extension.
+- [WRAM opcode latching](../benchmarks/wram-opcode-latching-2026-11-10.json)
+  now matches all 336 NBA/mGBA observations, correcting the
+  [24 early changes](../benchmarks/self-modify-diagnosis-2026-11-10.json).
+  Separate CPU-owned slots retain fetched instructions across stores and DMA.
+  Format 2 saves those slots; format 1 still loads using RAM for its missing
+  opcodes. Fifteen game routes preserve complete RGB/PCM/Flash and guest counts
+  across 56400 frames; old/new states retain their checked continuations.
 - [Prefetch-aware refills](../benchmarks/prefetch-refill-2026-11-10.json) share the
   normal fetch burst for both physical reads. All 196 shared reference observations
   now match; the 92 disputed observations retain their prior host outcomes. Four
@@ -133,13 +135,15 @@ bottlenecks and preserves event ordering.
   retain all backup hashes and software frame/audio continuity, but Sonic gains
   three exact frames and loses frame **3555**. The prototype is rejected pending
   diagnosis. Its source patch and observations are retained; production request
-  activation and machine-state format 1 remain unchanged. The 96 readiness-only
+  activation remains immediate; this experiment did not change state format 1.
+  The later WRAM opcode correction independently adds format 2. The 96 readiness-only
   observations are now portable regressions for the existing CPU arbitration.
 - [Repeated DMA count reload](../benchmarks/dma-repeat-count-2026-11-06.json)
   matches 288 independent reference observations across four channels, both
   widths, write timing and count-mask/zero edges. The 108 portable regressions
   also cover suspended and completed bursts across save/load. A state generated
-  with the released 0.8.1 DMA implementation still loads byte-exactly.
+  with the released 0.8.1 DMA implementation loaded byte-exactly in format 1;
+  the later format-2 migration retains its fields and adds the opcode extension.
   Readiness-normalized activation observations now match 96/96 rows with the
   current CPU arbitration; production request activation remains immediate.
   Eleven fresh-backup 3600-frame before/after routes retain identical full
@@ -226,8 +230,8 @@ user settings do not relax that qualification protocol.
 
 | Order | Next work | Completion evidence |
 | --- | --- | --- |
-| 1 / P0: DMA activation and lifecycle | Natural LCD probes now separate status, readiness, writes and IF publication. NBA/mGBA disagree on those phases; resolve the expected timing with hardware evidence or an independently justified specification before choosing a model. Then repeat game/CPU/state gates. | Keep 96 CPU, 66 lifecycle and eight shared natural-LCD terminal observations, previously exact frame sets and software frame/audio continuity. The Sonic-only phase experiment has no lost exact frames; wider validation remains open. Production activation remains immediate and machine-state format remains 1. |
-| 2 / P0: Wider CPU/LCD timing | Cartridge DMA discarded-fetch timing has 144 observations, and corrected post-return physical fetches have 162 observations agreed by all three emulators. Prefetch-aware refills now match 196 shared observations; qualify the remaining 92 disputed observations, pipeline latching/self-modifying code, then IRQ propagation/mask latency. Trace the LeafGreen frame-930 offset and HBlank at cycle 960 versus the reference's 1008. | Matching event/retirement observations with justified expected timing. Keep in-flight snapshots distinct from retired state. Do not adjust a constant solely to improve screenshot counts. |
+| 1 / P0: DMA activation and lifecycle | Natural LCD probes now separate status, readiness, writes and IF publication. NBA/mGBA disagree on those phases; resolve the expected timing with hardware evidence or an independently justified specification before choosing a model. Then repeat game/CPU/state gates. | Keep 96 CPU, 66 lifecycle and eight shared natural-LCD terminal observations, previously exact frame sets and software frame/audio continuity. The Sonic-only phase experiment has no lost exact frames; wider validation remains open. Production activation remains immediate; WRAM opcode latching separately adds state format 2. |
+| 2 / P0: Wider CPU/LCD timing | Cartridge DMA discarded-fetch timing has 144 observations, and corrected post-return physical fetches have 162 observations agreed by all three emulators. Prefetch-aware refills match 196 shared observations; 92 remain disputed. WRAM opcode latching now matches 336 shared observations. Extend latching to WRAM aliases/other writable regions, then IRQ propagation/mask latency. Trace the LeafGreen frame-930 offset and HBlank at cycle 960 versus the reference's 1008. | Matching event/retirement observations with justified expected timing. Keep in-flight snapshots distinct from retired state. Do not adjust a constant solely to improve screenshot counts. |
 | 3 / P0: Graphics expected results | Resolve the 2244-case three-way disagreement on brightness rounding and palette bit 15 using independently justified outputs or hardware evidence. Then qualify combined raster/OBJ/window effects. | Explicit per-pixel expectations and regression scenes. The renderer remains unqualified until those expectations are established; no relaxed tolerances. |
 | 4 / P1: Audio correctness | Start with late Sonic Advance 3 and Wario Land 4 differences. Compare timer/DMA FIFO, PSG and sample-clock events before diagnosing gain/filter/resampling. | Repeatable sample/event checkpoints, justified comparison rules, listening review and no software-buffer loss. Timing-dependent fixes follow the timing gates. |
 | 5 / P1: Gameplay and saves | LeafGreen now covers repeated indoor saves, a Pallet Town save with four cold cross-loads and a 120-frame state replay, plus interrupted writes and counter wrap through 0/1 in both engines. Trace CPU/IRQ timing around Timer1 seeding and frame-1548 relocation/VBlank RNG ordering; extend longer gameplay and isolate the remaining RNG/field timing differences. Counter wrap, both-slot corruption and host-file publication now have bounded recovery coverage. Extend Mario/Luigi movement/battle, Sonic/Wario level, Golden Sun battle and V-Rally race work. Doom II first level, F-Zero race and Mario & Luigi Toad control retain named routes and state replays. | Preserve strict binary and full-stream outcomes; visible play or a successful full-state replay alone does not qualify game accuracy or cartridge-save compatibility. |

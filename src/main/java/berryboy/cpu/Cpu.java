@@ -32,6 +32,7 @@ public final class Cpu {
     private final ArmInterpreter arm;
     private final ThumbInterpreter thumb;
     private final CpuDataTransfers transfers;
+    private final InstructionPipeline pipeline;
     private long instructionCount;
     private boolean instructionInFlight;
     private int remainingInternalCycles;
@@ -47,6 +48,7 @@ public final class Cpu {
         this.memory = memory;
         this.state = new CpuState();
         this.transfers = new CpuDataTransfers(state, memory);
+        this.pipeline = new InstructionPipeline(memory);
         this.arm = new ArmInterpreter(state, memory, transfers);
         this.thumb = new ThumbInterpreter(state, memory, transfers);
     }
@@ -99,7 +101,7 @@ public final class Cpu {
                 resumeRefill();
                 return;
             }
-            opcode = memory.fetch(address, thumbMode);
+            opcode = pipeline.fetch(address, thumbMode);
             pendingOpcode = opcode;
             transfers.reset();
             busGranted = false;
@@ -155,6 +157,7 @@ public final class Cpu {
 
     private void beginRefill() {
         busGranted = false;
+        pipeline.beginRefill(state.programCounter(), state.isThumb() ? 2 : 4);
         memory.busTiming().beginRefill(state.programCounter(), state.isThumb() ? 2 : 4);
     }
 
@@ -162,6 +165,7 @@ public final class Cpu {
         while (memory.busTiming().refilling()) {
             if (waitForBus()) return;
             memory.busTiming().refillNext();
+            pipeline.refillNext();
         }
         if (instructionInFlight) retireInstruction();
     }
@@ -202,6 +206,7 @@ public final class Cpu {
         // Completed accesses remain visible; never replay them after a fault.
         state.writeRegister(CpuState.PROGRAM_COUNTER, address);
         memory.busTiming().cancelRefill();
+        pipeline.clear();
         instructionInFlight = false;
         fetchPending = false;
         pendingIrq = false;
@@ -229,6 +234,7 @@ public final class Cpu {
     }
 
     public void setRegister(int index, int value) {
+        if (index == CpuState.PROGRAM_COUNTER) pipeline.clear();
         state.writeRegister(index, value);
     }
 
@@ -238,6 +244,7 @@ public final class Cpu {
 
     public void setPc(int address) {
         memory.busTiming().invalidateFetch();
+        pipeline.clear();
         state.writeRegister(CpuState.PROGRAM_COUNTER, address);
     }
 
@@ -246,7 +253,9 @@ public final class Cpu {
     }
 
     public void setCpsr(int value) {
+        var changedIsa = ((state.status() ^ value) & T) != 0;
         state.writeStatus(value);
+        if (changedIsa) pipeline.clear();
     }
 
     public long instructions() {
@@ -288,4 +297,7 @@ public final class Cpu {
         this.state.transferState(state);
         transfers.transferState(state);
     }
+
+    /** Format 2 appends captured WRAM instructions; format 1 reconstructs them on entry. */
+    public void transferPipelineState(StateBuffer state) { pipeline.transferState(state); }
 }

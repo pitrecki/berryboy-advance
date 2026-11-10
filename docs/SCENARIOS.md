@@ -656,8 +656,9 @@ Thumb word stores use aligned destinations and preserve the adjacent instruction
 The clock starts after the entry BX; compare every subsequent cycle, PC, CPSR,
 r0 and patched opcode. No reset-cycle alignment or IRQ injection is involved.
 Both unmodified references produce the same complete CSV, retained in
-`src/test/resources/berryboy/cpu/self-modify.csv`. The old host changes 24 results
-too early; all remaining fields agree. This diagnoses WRAM opcode latching,
+`src/test/resources/berryboy/cpu/self-modify.csv`. The `9b8bc0f` host changes 24
+results too early; all remaining fields agree. The corrected host and isolated
+actual CLDC classes match all 336 rows. This qualifies the tested WRAM streams,
 without qualifying IRQ latency, other writable regions or peripheral fetches.
 
 ## Original FIFO DMA timing probes
@@ -910,6 +911,17 @@ isolated `target/blackberry/classes` checks immediate/final state on actual CLDC
 classes; it does not compare per-frame RGB/PCM. Asset identities, save payload
 differences and both continuation results are in
 [the outdoor-save record](../benchmarks/leafgreen-overworld-save-2026-11-06.json).
+
+New machine snapshots use format 2, appending 20 bytes for fetched WRAM opcodes.
+Format-1 files still load without changing their existing device/CPU fields or
+advancing the clock; missing opcodes come from RAM on entry, as in the old engine.
+An old file cannot recover a stale instruction that it never stored. Saving the
+loaded machine produces format 2, which earlier releases cannot read.
+`VerifyStateResume` accepts either input format, checks a canonical save/load
+round trip, and requires byte-exact immediate serialization for format 2. The
+expected future-state hash must come from the current core. The original file
+is read-only. Current migration and replay evidence is in
+[the WRAM latch record](../benchmarks/wram-opcode-latching-2026-11-10.json).
 
 Add `--activity` to inspect saved object coordinates/directions and the supported
 non-battle Quest Log commands in each active scene:

@@ -14,7 +14,12 @@ public final class VerifyStateResume {
         try (var reader = Files.newBufferedReader(config)) { properties.load(reader); }
         var rom = verified(config, properties, "rom"); var bios = verified(config, properties, "bios");
         var state = Files.readAllBytes(Path.of(args[1])); var machine = MachineState.load(rom, bios, state);
-        if (!sha(MachineState.save(machine)).equals(sha(state))) throw new IllegalStateException("State changed immediately after loading");
+        var canonical = MachineState.save(machine);
+        // Format 1 intentionally gains the captured-opcode extension when saved as format 2.
+        // The loader already validated the complete version word and original checksum.
+        if (state[4] != 1 && !sha(canonical).equals(sha(state))) throw new IllegalStateException("State changed immediately after loading");
+        if (!sha(canonical).equals(sha(MachineState.save(MachineState.load(rom, bios, canonical)))))
+            throw new IllegalStateException("Canonical state changed after round trip");
         var first = Integer.parseInt(args[2]); var count = Integer.parseInt(args[3]);
         if (first < 0 || count < 1 || count > 3600) throw new IllegalArgumentException("Invalid replay interval");
         var pcm = new short[2048];

@@ -1,0 +1,840 @@
+{
+  "date": "2026-11-10",
+  "version": "0.9.1-SNAPSHOT",
+  "review_base_commit": "17d2aae0e379ae82f99d61a4cdb48da30a923404",
+  "source_dirty": true,
+  "prototype_base_commit": "9b8bc0f02fad8e4f72d27e2eac6a6bdf71e2fd8b",
+  "prototype_production_sources_identical_to_reviewed_sources": true,
+  "hardware": "Linux x86_64, Temurin 21.0.8, Maven 3.9.11; deterministic guest cycles and software RGB/PCM only. Physical BBOS execution/presentation/audio unmeasured.",
+  "scope": "CPU-owned two-slot opcode latching for IWRAM/EWRAM; established bus timing preserved. No general pipeline, other writable-region, DMA activation or IRQ-latency qualification.",
+  "change": {
+    "owner": "berryboy.cpu.InstructionPipeline",
+    "captures": "Each refill read captures an opcode after its bus access and before another DMA grant. Sequential execution retains the next two words before CPU data stores. Branch/exception refill and debugger PC/ISA changes invalidate old words.",
+    "wram_only": true,
+    "immutable_rom_bios_fetch_path_changed": false,
+    "bus_waits_or_event_constants_changed": false,
+    "guest_memory_patched_for_accuracy": false
+  },
+  "state": {
+    "writer_version": 2,
+    "reader_versions": [
+      1,
+      2
+    ],
+    "extension_bytes": 20,
+    "extension_fields": [
+      "logical_front_address",
+      "instruction_width",
+      "captured_slot_count",
+      "first_opcode",
+      "second_opcode"
+    ],
+    "legacy_policy": "Keep existing CPU/device fields and clock byte-exact. Format 1 did not store stale opcodes; reconstruct from RAM on entry using the historical lookup policy. Missing historical instruction data cannot be recovered. Saving writes format 2, rejected by earlier releases.",
+    "malformed_versions_extensions_and_fields_rejected": true,
+    "original_machine_unchanged_on_failed_load": true,
+    "public_verifier": "VerifyStateResume checks the canonical migrated round trip for format 1, retains byte-exact immediate serialization for format 2, and requires the current-core future-state hash."
+  },
+  "oracle": {
+    "diagnosis": "benchmarks/self-modify-diagnosis-2026-11-10.json",
+    "nba_commit": "55b5cf0ae3d929582ac5bfd486558173502b8354",
+    "mgba_version": "0.10.5",
+    "reference_cores_modified": false,
+    "scenarios": 48,
+    "retired_observations": 336,
+    "full_field_reference_disagreements": 0,
+    "baseline_mismatches": 24,
+    "corrected_host_mismatches": 0,
+    "actual_cldc_mismatches": 0,
+    "expected": "Stores at distances 1/2 retain fetched MOVS opcodes; distances 3/4 see the patch. BX refetches #9 at every distance. Compare cycles, PC, CPSR, r0 and RAM bytes.",
+    "fixture": "src/test/resources/berryboy/cpu/self-modify.csv",
+    "fixture_sha256": "0f83384eb5ec6ebdb9914b8b77310ce6e6344b0fd8e39cc98905f6880e858296",
+    "baseline_new_regressions_failed": 52,
+    "baseline_new_regressions_total": 364,
+    "existing_expanded_irq_observations_unchanged": 360,
+    "remaining_irq_model_disagreements": 92
+  },
+  "validation": {
+    "maven_verify": {
+      "host_tests": 3250,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "console": {
+      "host_tests": 3250,
+      "exported_core_tests": 2989,
+      "failures": 0,
+      "skipped": 0
+    },
+    "actual_new_ecj_cldc": {
+      "core_tests": 2989,
+      "failures": 0,
+      "skipped": 0
+    },
+    "new_core_tests": 382,
+    "new_state_replays": {
+      "populated_post_store_slots": 24,
+      "dma_between_refill_reads": 4
+    },
+    "new_state_codec_and_migration_tests": 18,
+    "native_jde_ecj_rapc": "pass",
+    "release_tag_or_zip_created": false
+  },
+  "game_gate": {
+    "cases": [
+      {
+        "code": "AGFE",
+        "scenario": "target/dma-lifecycle-game-regression-2026-11-06/before/AGFE/scenario.properties",
+        "baseline_output": "target/irq-refill-2026-11-10/games/AGFE/physical-fetch/capture",
+        "reference_output": "target/independent-reference-audio-fixed-2026-10-22/AGFE",
+        "assets": {
+          "rom_sha256": "4199d82f845edf3e2e92f3783bca00190b5bc102d7c8aa339b951de280b1e6cc",
+          "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+          "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9"
+        },
+        "frames": 3600,
+        "guest_cycles": 1011225600,
+        "audio_frames": 1975050,
+        "candidate": {
+          "video_sha256": "5254ea34cf7925296cb7034e7cbc89c6d2c14e59dc5db554a7973f497031f388",
+          "audio_sha256": "eca54d1443dacfea8f53836c84be7a16792e0e17893bcb24dece79a7bbd3d998",
+          "backup_sha256": "71189f7fb6aed638640078fba3a35fda6c39c8962e74dcc75935aac948da9063"
+        },
+        "reference": {
+          "video_sha256": "8b18d1b06d7e57168483c58a9965f430ec40936bbff089aa57fa4da7c3a9cb62",
+          "audio_sha256": "d8134f110eed2e9c9799516836d076049e78749c27c1b55ecfbf70634114df64",
+          "backup_sha256": null
+        },
+        "reference_exact_rgb_frames_before": 2133,
+        "reference_exact_rgb_frames_after": 2133,
+        "lost_exact_frames": [],
+        "gained_exact_frames": [],
+        "full_rgb_exact": false,
+        "full_pcm_exact": false,
+        "baseline_rgb_pcm_backup_cycles_and_sample_counts_unchanged": true,
+        "assets_unchanged": true
+      },
+      {
+        "code": "AGSE",
+        "scenario": "target/dma-lifecycle-game-regression-2026-11-06/before/AGSE/scenario.properties",
+        "baseline_output": "target/irq-refill-2026-11-10/games/AGSE/physical-fetch/capture",
+        "reference_output": "target/independent-reference-audio-fixed-2026-10-22/AGSE",
+        "assets": {
+          "rom_sha256": "c14f1151897e8d73f25ffdd67e21eebb6dc57973ff2458872ee89fa9060aaca1",
+          "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+          "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9"
+        },
+        "frames": 3600,
+        "guest_cycles": 1011225600,
+        "audio_frames": 1975050,
+        "candidate": {
+          "video_sha256": "2c9952eeab4b0504c34103485d40f0745add797dcc81e47fc75cc5a55a331eb0",
+          "audio_sha256": "981d445212c8f7a0fe0bc8b567e5df9de5aac0bffdf3f52490474d8c874ca162",
+          "backup_sha256": "71189f7fb6aed638640078fba3a35fda6c39c8962e74dcc75935aac948da9063"
+        },
+        "reference": {
+          "video_sha256": "d0564a71ec0b716908cdb64b63996b88c05470021d82e7b394eddd3de00b9b11",
+          "audio_sha256": "091e1f1f8cf1558463537c837877badf0c55c63a5e7357cc1610a5247529cfca",
+          "backup_sha256": null
+        },
+        "reference_exact_rgb_frames_before": 911,
+        "reference_exact_rgb_frames_after": 911,
+        "lost_exact_frames": [],
+        "gained_exact_frames": [],
+        "full_rgb_exact": false,
+        "full_pcm_exact": false,
+        "baseline_rgb_pcm_backup_cycles_and_sample_counts_unchanged": true,
+        "assets_unchanged": true
+      },
+      {
+        "code": "AMTE",
+        "scenario": "target/dma-lifecycle-game-regression-2026-11-06/before/AMTE/scenario.properties",
+        "baseline_output": "target/irq-refill-2026-11-10/games/AMTE/physical-fetch/capture",
+        "reference_output": "target/independent-reference-audio-fixed-2026-10-22/AMTE",
+        "assets": {
+          "rom_sha256": "a56ce3d7f8f3f4f4d0468d421fff5dd3ee3aec99a58244377e43aae769dc3fe8",
+          "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+          "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9"
+        },
+        "frames": 3600,
+        "guest_cycles": 1011225600,
+        "audio_frames": 1975050,
+        "candidate": {
+          "video_sha256": "7c63270973194cc973b139295f1e1a313954184941e7f9378f3d9d4cefe54759",
+          "audio_sha256": "4887bd88f22b9f4f2fe28a575247dc78b2e24a19a2a56d6712c7be5ac36e7ba6",
+          "backup_sha256": "5b7becd1c51999f6f13359f1515672056849788383af8a2834a6ce69b94aa4f0"
+        },
+        "reference": {
+          "video_sha256": "90f8da6c457156cc523c088b5cf7ebeded9ecc6840b72d149f1e6d6722c4af8e",
+          "audio_sha256": "63133a3f19728ea4a575df346a003f116cbb818aa66cb60db6d6efd473fa4986",
+          "backup_sha256": null
+        },
+        "reference_exact_rgb_frames_before": 699,
+        "reference_exact_rgb_frames_after": 699,
+        "lost_exact_frames": [],
+        "gained_exact_frames": [],
+        "full_rgb_exact": false,
+        "full_pcm_exact": false,
+        "baseline_rgb_pcm_backup_cycles_and_sample_counts_unchanged": true,
+        "assets_unchanged": true
+      },
+      {
+        "code": "AVRE",
+        "scenario": "target/dma-lifecycle-game-regression-2026-11-06/before/AVRE/scenario.properties",
+        "baseline_output": "target/irq-refill-2026-11-10/games/AVRE/physical-fetch/capture",
+        "reference_output": "target/independent-reference-audio-fixed-2026-10-22/AVRE",
+        "assets": {
+          "rom_sha256": "5818fa74fdcacf39b53a1acea99432c4362979dd656c8153fd9861094aca51f7",
+          "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+          "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9"
+        },
+        "frames": 3600,
+        "guest_cycles": 1011225649,
+        "audio_frames": 1975050,
+        "candidate": {
+          "video_sha256": "e2838706344d957244b817123e6502d67d24b9c0fbb1d6bebdb88bd15204eb73",
+          "audio_sha256": "0c2647aea23623c71e179de487539b661a446a0bb6a00eefc867f7c2098c7670",
+          "backup_sha256": "7d2c7ac4888bfd75cd5f56e8d61f69595121183afc81556c876732fd3782c62f"
+        },
+        "reference": {
+          "video_sha256": "afd546e2dadc4df34a6d55e0846a872f591c040d41cc5b423a63a1542dc83132",
+          "audio_sha256": "650229ef4db5856f69a0ad28f4fd199107d243da5181ddb761cce722030110a8",
+          "backup_sha256": null
+        },
+        "reference_exact_rgb_frames_before": 3231,
+        "reference_exact_rgb_frames_after": 3231,
+        "lost_exact_frames": [],
+        "gained_exact_frames": [],
+        "full_rgb_exact": false,
+        "full_pcm_exact": false,
+        "baseline_rgb_pcm_backup_cycles_and_sample_counts_unchanged": true,
+        "assets_unchanged": true
+      },
+      {
+        "code": "AWAE",
+        "scenario": "target/dma-lifecycle-game-regression-2026-11-06/before/AWAE/scenario.properties",
+        "baseline_output": "target/irq-refill-2026-11-10/games/AWAE/physical-fetch/capture",
+        "reference_output": "target/independent-reference-audio-fixed-2026-10-22/AWAE",
+        "assets": {
+          "rom_sha256": "d16c7bf6e62bb84049fff1b387108fbd1e6e2cd38ca994ab5310dd9cbf9ba414",
+          "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+          "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9"
+        },
+        "frames": 3600,
+        "guest_cycles": 1011225600,
+        "audio_frames": 1975050,
+        "candidate": {
+          "video_sha256": "607471de81655b1834b765c46f268ca4adca4943db7e0f818745ca85b2e9a00d",
+          "audio_sha256": "259e32855d137b62c7b83821b79dabffc34a7d8e46f9bd6cbf751548d20940cc",
+          "backup_sha256": "fe405055a8c4a9d22ae94d03f6ee4f851b7869ac4f76eb3254c7888398b37903"
+        },
+        "reference": {
+          "video_sha256": "72ad2b12d80d84aa3534fd92db16b88825d10a5cfbf05be36e8705466cb596df",
+          "audio_sha256": "b86c28bc0c1eda8ffe4f0b1b534f3c07348b6bb265c9df4bac8e7d514fd0f604",
+          "backup_sha256": null
+        },
+        "reference_exact_rgb_frames_before": 2144,
+        "reference_exact_rgb_frames_after": 2144,
+        "lost_exact_frames": [],
+        "gained_exact_frames": [],
+        "full_rgb_exact": false,
+        "full_pcm_exact": false,
+        "baseline_rgb_pcm_backup_cycles_and_sample_counts_unchanged": true,
+        "assets_unchanged": true
+      },
+      {
+        "code": "AZEE",
+        "scenario": "target/dma-lifecycle-game-regression-2026-11-06/before/AZEE/scenario.properties",
+        "baseline_output": "target/irq-refill-2026-11-10/games/AZEE/physical-fetch/capture",
+        "reference_output": "target/independent-reference-audio-fixed-2026-10-22/AZEE",
+        "assets": {
+          "rom_sha256": "114fff29e5642300a9b3698916ecd86682aa6da0fd821065b7431ba8c059f0f2",
+          "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+          "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9"
+        },
+        "frames": 3600,
+        "guest_cycles": 1011225600,
+        "audio_frames": 1975050,
+        "candidate": {
+          "video_sha256": "c6a3f09dfcd0f2743d8fd0a2e64597176a456eb4346c0b2b7b19342307bd0447",
+          "audio_sha256": "53b7940415426bf5ee233a87fa9332e0608ff806474e380be530672d56ca0061",
+          "backup_sha256": "71189f7fb6aed638640078fba3a35fda6c39c8962e74dcc75935aac948da9063"
+        },
+        "reference": {
+          "video_sha256": "faf6ad054ef25dfcde418c3a08060c722c5f1d4fa717162c7f60fa519cca24f3",
+          "audio_sha256": "2dd46ab793a529ce2134c01055912e5e84252163fd712b94ee7a1118245dc727",
+          "backup_sha256": null
+        },
+        "reference_exact_rgb_frames_before": 578,
+        "reference_exact_rgb_frames_after": 578,
+        "lost_exact_frames": [],
+        "gained_exact_frames": [],
+        "full_rgb_exact": false,
+        "full_pcm_exact": false,
+        "baseline_rgb_pcm_backup_cycles_and_sample_counts_unchanged": true,
+        "assets_unchanged": true
+      },
+      {
+        "code": "B3SE",
+        "scenario": "target/dma-lifecycle-game-regression-2026-11-06/before/B3SE/scenario.properties",
+        "baseline_output": "target/irq-refill-2026-11-10/games/B3SE/physical-fetch/capture",
+        "reference_output": "target/independent-reference-audio-fixed-2026-10-22/B3SE",
+        "assets": {
+          "rom_sha256": "f937fa93b97b14b9fb9fce98844c534f936222d21d1fdb5f1af42292bad32c85",
+          "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+          "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9"
+        },
+        "frames": 3600,
+        "guest_cycles": 1011225603,
+        "audio_frames": 1975050,
+        "candidate": {
+          "video_sha256": "270a76b143d3273c86e2b2f6d30d24abe3089f30cfb8277b4b6b684ac87ab7da",
+          "audio_sha256": "e6dbcacedd40b2132a341f5f50a8e5fde2fcf1e4d76e61dd142e5eceb978c7ce",
+          "backup_sha256": "9d900aa5fddfccd3d528a98d7bf2aa44cb9613640cfb900c6c100e0606318d90"
+        },
+        "reference": {
+          "video_sha256": "f31fc35d06e5802a647be78fb8162828bec7f8f8aeffaabfc2a88e1cefae51ef",
+          "audio_sha256": "dd1d8f8256a0c5ec53aca3e9b8d4f3abc2d7efffff617e9619885b22b6d938c7",
+          "backup_sha256": null
+        },
+        "reference_exact_rgb_frames_before": 2832,
+        "reference_exact_rgb_frames_after": 2832,
+        "lost_exact_frames": [],
+        "gained_exact_frames": [],
+        "full_rgb_exact": false,
+        "full_pcm_exact": false,
+        "baseline_rgb_pcm_backup_cycles_and_sample_counts_unchanged": true,
+        "assets_unchanged": true
+      },
+      {
+        "code": "BGTE",
+        "scenario": "target/dma-lifecycle-game-regression-2026-11-06/before/BGTE/scenario.properties",
+        "baseline_output": "target/irq-refill-2026-11-10/games/BGTE/physical-fetch/capture",
+        "reference_output": "target/independent-reference-audio-fixed-2026-10-22/BGTE",
+        "assets": {
+          "rom_sha256": "215c574d5afbda0aadbf89dc76b765cfaaeb35953eab63f7687d8bfe8a8e0f4d",
+          "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+          "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9"
+        },
+        "frames": 3600,
+        "guest_cycles": 1011225600,
+        "audio_frames": 1975050,
+        "candidate": {
+          "video_sha256": "e8485ab2fd04a12892aa545e909e1f340f78ce381cff494ae52cd08e7961886b",
+          "audio_sha256": "3d4193ae962eae1dea27a91e1577765ba7f5c4b08afd3250fe43eff0209fef82",
+          "backup_sha256": "9f56cda75fefeab90f6fa5d5ddc9601544b121732c5ecccab32e631060453a5d"
+        },
+        "reference": {
+          "video_sha256": "538c0bf3463c27ef186666d8e06237c127e807c8a98d5cdf38217b6dda74a23f",
+          "audio_sha256": "a5704d54b603c8110ddebe9eefad9777e6e8e7fcfb11c3fd93c22b52d56afdea",
+          "backup_sha256": null
+        },
+        "reference_exact_rgb_frames_before": 3409,
+        "reference_exact_rgb_frames_after": 3409,
+        "lost_exact_frames": [],
+        "gained_exact_frames": [],
+        "full_rgb_exact": false,
+        "full_pcm_exact": false,
+        "baseline_rgb_pcm_backup_cycles_and_sample_counts_unchanged": true,
+        "assets_unchanged": true
+      },
+      {
+        "code": "BMXE",
+        "scenario": "target/dma-lifecycle-game-regression-2026-11-06/before/BMXE/scenario.properties",
+        "baseline_output": "target/irq-refill-2026-11-10/games/BMXE/physical-fetch/capture",
+        "reference_output": "target/independent-reference-audio-fixed-2026-10-22/BMXE",
+        "assets": {
+          "rom_sha256": "fc94f65380b65b870a30b9b04b39cca1dc63d6e46a4a373d3904adc0912ebc37",
+          "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+          "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9"
+        },
+        "frames": 3600,
+        "guest_cycles": 1011225600,
+        "audio_frames": 1975050,
+        "candidate": {
+          "video_sha256": "b94a1673deb442521e935055b975db807068b042a4ed8acab76cfa4aaf8a7f84",
+          "audio_sha256": "42b9f58d4b18ab6d0af2056fc17d3e17c8930bb71c9e14a6b01b904e28b63f6f",
+          "backup_sha256": "e7ef5933b70b4e5866829363eeb0fa4799f43c152c3b39f3e9ca0e1ffe53df89"
+        },
+        "reference": {
+          "video_sha256": "cc90089f448a43beafc881e3fd51e489daea4ae3fa3f971ff4ead8fb292d17f7",
+          "audio_sha256": "7df71331713bbecd1554e196d4df45780e80ed0c8101c13aa023c0d603bc6fe0",
+          "backup_sha256": null
+        },
+        "reference_exact_rgb_frames_before": 3196,
+        "reference_exact_rgb_frames_after": 3196,
+        "lost_exact_frames": [],
+        "gained_exact_frames": [],
+        "full_rgb_exact": false,
+        "full_pcm_exact": false,
+        "baseline_rgb_pcm_backup_cycles_and_sample_counts_unchanged": true,
+        "assets_unchanged": true
+      },
+      {
+        "code": "BPEE",
+        "scenario": "target/dma-lifecycle-game-regression-2026-11-06/before/BPEE/scenario.properties",
+        "baseline_output": "target/irq-refill-2026-11-10/games/BPEE/physical-fetch/capture",
+        "reference_output": "target/independent-reference-audio-fixed-2026-10-22/BPEE",
+        "assets": {
+          "rom_sha256": "a9dec84dfe7f62ab2220bafaef7479da0929d066ece16a6885f6226db19085af",
+          "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+          "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9"
+        },
+        "frames": 3600,
+        "guest_cycles": 1011225601,
+        "audio_frames": 1975050,
+        "candidate": {
+          "video_sha256": "5dcd5d4b1ead03da7ac0bd4514374ec64cdccff9d63739aa89046710ce944d1e",
+          "audio_sha256": "f8abf5857cfc6186c077caeed2bcedb0f46f388d691f97a2402ef908b224c6f6",
+          "backup_sha256": "b5a41c3758763bbec72769fab4a2533bf2db0b6312d93d25a695f9e4b9e02260"
+        },
+        "reference": {
+          "video_sha256": "a64ec31945e552a662eb169783a55058b53a42f20e08547efe0967f6eaaab926",
+          "audio_sha256": "cd894726ec69cd24bde62b28a80f78dfec15d4e669be611e944cd7f6b67a1e11",
+          "backup_sha256": null
+        },
+        "reference_exact_rgb_frames_before": 2971,
+        "reference_exact_rgb_frames_after": 2971,
+        "lost_exact_frames": [],
+        "gained_exact_frames": [],
+        "full_rgb_exact": false,
+        "full_pcm_exact": false,
+        "baseline_rgb_pcm_backup_cycles_and_sample_counts_unchanged": true,
+        "assets_unchanged": true
+      },
+      {
+        "code": "BPGE",
+        "scenario": "target/dma-lifecycle-game-regression-2026-11-06/before/BPGE/scenario.properties",
+        "baseline_output": "target/irq-refill-2026-11-10/games/BPGE/physical-fetch/capture",
+        "reference_output": "target/independent-reference-audio-fixed-2026-10-22/BPGE",
+        "assets": {
+          "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+          "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+          "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9"
+        },
+        "frames": 3600,
+        "guest_cycles": 1011225600,
+        "audio_frames": 1975050,
+        "candidate": {
+          "video_sha256": "d49919c30dab14080db1057861ea66c8ad5ae104d868fd66de2c4f41b0799945",
+          "audio_sha256": "3cc8067d9e3b52485d7897e3306c7ddbcf65ef8e457b6b25dc6c1af05e6e6f3b",
+          "backup_sha256": "b5a41c3758763bbec72769fab4a2533bf2db0b6312d93d25a695f9e4b9e02260"
+        },
+        "reference": {
+          "video_sha256": "4f9e4ca5a4050b170eb2d2cf3bf1035555d998bd4c02183ad1f1a6af62793375",
+          "audio_sha256": "11ecb16654eec91acf4a75b37df611aa4325d88ed2230a689a1b8de3fa8f47d2",
+          "backup_sha256": null
+        },
+        "reference_exact_rgb_frames_before": 3475,
+        "reference_exact_rgb_frames_after": 3475,
+        "lost_exact_frames": [],
+        "gained_exact_frames": [],
+        "full_rgb_exact": false,
+        "full_pcm_exact": false,
+        "baseline_rgb_pcm_backup_cycles_and_sample_counts_unchanged": true,
+        "assets_unchanged": true
+      },
+      {
+        "code": "ATHE",
+        "scenario": "target/stress-games-2026-11-06/ATHE-confirmed.properties",
+        "baseline_output": "target/irq-refill-2026-11-10/games/ATHE/physical-fetch/capture",
+        "reference_output": "target/stress-games-2026-11-06/reference-ATHE",
+        "assets": {
+          "rom_sha256": "2b499d56f17ffe895ce9fb56154a2c5274048400462790b383212a69fa184b16",
+          "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+          "input_sha256": "4e2d3d059ccc070232beb41e0e782ed20f664b1398173c67f70a3724b6b3b057"
+        },
+        "frames": 1800,
+        "guest_cycles": 505612800,
+        "audio_frames": 987525,
+        "candidate": {
+          "video_sha256": "80d43550a5aca223a501951c4d4f1767aad49a1c8f0c87a1520f142456325650",
+          "audio_sha256": "3eb2de5595fdeca4db383e07e2e7676bc70b21662826f54a20249c338c44b79f",
+          "backup_sha256": "9f56cda75fefeab90f6fa5d5ddc9601544b121732c5ecccab32e631060453a5d"
+        },
+        "reference": {
+          "video_sha256": "2136bb1eb395da82198c8caba055af65c9b0ea6b2b7ea80cd19f7651696bd18d",
+          "audio_sha256": "50b0b33e54ae6d96b40143a5e6f6aef2471c8132ee6f62d6a0d56b4061927642",
+          "backup_sha256": null
+        },
+        "reference_exact_rgb_frames_before": 829,
+        "reference_exact_rgb_frames_after": 829,
+        "lost_exact_frames": [],
+        "gained_exact_frames": [],
+        "full_rgb_exact": false,
+        "full_pcm_exact": false,
+        "baseline_rgb_pcm_backup_cycles_and_sample_counts_unchanged": true,
+        "assets_unchanged": true
+      },
+      {
+        "code": "A9DE",
+        "scenario": "target/stress-games-2026-11-06/A9DE-gameplay-confirmed.properties",
+        "baseline_output": "target/irq-refill-2026-11-10/games/A9DE/physical-fetch/capture",
+        "reference_output": "target/stress-games-2026-11-06/reference-A9DE-gameplay",
+        "assets": {
+          "rom_sha256": "2a4c00510638659b6b207a7d2aa51cbd17bbad9a63f42bc2dc01c121eb83cf95",
+          "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+          "input_sha256": "62ae23d5fefa6ac388138b0ebe6e84293cb3d0c48df772db4d7f77561957b5e1"
+        },
+        "frames": 2400,
+        "guest_cycles": 674150401,
+        "audio_frames": 1316700,
+        "candidate": {
+          "video_sha256": "98fc3de93aaeac672dea217ade151fe4069150f278bd4c591275f9c70cbe6fbd",
+          "audio_sha256": "1f620c5212c596f424a50dbab13492642b53411755605dee01d988099d24da90",
+          "backup_sha256": "c958d25958f00db95c8c8928f4f92b19e1a3199c9b3547d574701f5a180d8a40"
+        },
+        "reference": {
+          "video_sha256": "4d08e88290c419ff82a21d7494d1f27bd916938d0ed12f873410df3096e20a85",
+          "audio_sha256": "fe8dd48bd059d0fbd48985b397fa35a63b048eb9009816c1a986b06fd7ab5d1b",
+          "backup_sha256": null
+        },
+        "reference_exact_rgb_frames_before": 1495,
+        "reference_exact_rgb_frames_after": 1495,
+        "lost_exact_frames": [],
+        "gained_exact_frames": [],
+        "full_rgb_exact": false,
+        "full_pcm_exact": false,
+        "baseline_rgb_pcm_backup_cycles_and_sample_counts_unchanged": true,
+        "assets_unchanged": true
+      },
+      {
+        "code": "BFZE",
+        "scenario": "target/roadmap-gameplay-2026-11-06/BFZE-race.properties",
+        "baseline_output": "target/irq-refill-2026-11-10/games/BFZE/physical-fetch/capture",
+        "reference_output": "target/roadmap-gameplay-2026-11-06/reference-BFZE-race",
+        "assets": {
+          "rom_sha256": "f499a88fae072452a1b157b266ff516f033eb792b6a442d28e273bb2eeee4391",
+          "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+          "input_sha256": "d81df65a8ca379a6ba3c130c2be8407d8a5da8f70db6d69b671d8a92ea2fe8c1"
+        },
+        "frames": 6000,
+        "guest_cycles": 1685376000,
+        "audio_frames": 3291750,
+        "candidate": {
+          "video_sha256": "990d55b2f8e2a68c8a8522bb4bfd96db801d23689465fe6c36d11e0d3e4673c7",
+          "audio_sha256": "3fbf207c42ccdc2a8c013e5b5d3d3ba202be6b10581e88c0100620c77cb89722",
+          "backup_sha256": "b63f270d4c3548172df194dbb5ba3398796e049e5a621b0ac1d021a046e489c9"
+        },
+        "reference": {
+          "video_sha256": "3265d6063f454e6a63139e4d954b1a6e6aff86b3de690fe28ebbf1e30bb3a88e",
+          "audio_sha256": "b8a107b997f1d191ba3454ace390a84e42945f997b883bbd46955fb586b5f2e9",
+          "backup_sha256": null
+        },
+        "reference_exact_rgb_frames_before": 3999,
+        "reference_exact_rgb_frames_after": 3999,
+        "lost_exact_frames": [],
+        "gained_exact_frames": [],
+        "full_rgb_exact": false,
+        "full_pcm_exact": false,
+        "baseline_rgb_pcm_backup_cycles_and_sample_counts_unchanged": true,
+        "assets_unchanged": true
+      },
+      {
+        "code": "A88E",
+        "scenario": "target/roadmap-gameplay-2026-11-06/A88E-house.properties",
+        "baseline_output": "target/irq-refill-2026-11-10/games/A88E/physical-fetch/capture",
+        "reference_output": "target/roadmap-gameplay-2026-11-06/reference-A88E-house",
+        "assets": {
+          "rom_sha256": "af9066e7eacdab919e92987db8856d038e4b75d4ed011259c893702085a886be",
+          "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+          "input_sha256": "525c2a5f737a5a67a65f7823a053761afc38a25db8d2737e4842d860d2e416fe"
+        },
+        "frames": 6600,
+        "guest_cycles": 1853913602,
+        "audio_frames": 3620925,
+        "candidate": {
+          "video_sha256": "4ec4493a8d5a7be1fd9552d4e2d4f8247d74cf645fe866e8bc25722150f1f65c",
+          "audio_sha256": "6086adcace7c480a883e3f2bbd89b1fa257002102bb7a03efee849c1577a5c8d",
+          "backup_sha256": "ac18c6cd5aa62d1797bd9cae00239300ec6b9a702e155368c39caa5a25dd5878"
+        },
+        "reference": {
+          "video_sha256": "d4e234568c40ec2e1d8e1d8aa63d317c1c7a31467ddc340069baf591a88b8489",
+          "audio_sha256": "d8762accfca21f84f2f79d6e429d7423693b336e61066b6c5f5daee8d2f3fa9e",
+          "backup_sha256": null
+        },
+        "reference_exact_rgb_frames_before": 3512,
+        "reference_exact_rgb_frames_after": 3512,
+        "lost_exact_frames": [],
+        "gained_exact_frames": [],
+        "full_rgb_exact": false,
+        "full_pcm_exact": false,
+        "baseline_rgb_pcm_backup_cycles_and_sample_counts_unchanged": true,
+        "assets_unchanged": true
+      }
+    ],
+    "total_guest_frames": 56400,
+    "lost_reference_exact_frames": 0,
+    "gained_reference_exact_frames": 0,
+    "all_complete_rgb_pcm_flash_cycles_and_sample_counts_unchanged": true,
+    "assets_unchanged": true,
+    "software_audio_or_guest_frame_losses": 0,
+    "full_game_accuracy_qualified": false,
+    "scope": "Fresh prototype captures use production-identical sources and isolated owned machines/output files. Baselines are the preceding prefetch-refill checkpoint with identical assets/inputs/budgets. Strict reference outcomes are retained without masks/tolerance. Null reference backup hashes were not supplied by that capture; host before/after Flash equality is independently retained."
+  },
+  "player_save": {
+    "scenario": "target/self-modify-2026-11-10/player-save/scenario.properties",
+    "report": {
+      "status": "captured",
+      "correctness": "unverified",
+      "qualification": "headless-only; physical presentation and playback unverified",
+      "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "9aa6fdb357675a515ae9e6d61de932b76b0143f6d82808fffb2ae72c8e008fab",
+      "rtc_seed": "2000-01-01T00:00:00",
+      "initial_save_sha256": "8f192f66ac21928523cb295e1353b6f0bd3ce6dc2adc40e34cc5f4b8455b8961",
+      "backup_sha256": "9c668a35c5599fb4d29d0287aada26d3ae592091752b1aa33441d54acd94e88a",
+      "backup_type": 2,
+      "backup_bytes": 131072,
+      "save_written": true,
+      "devices": 0,
+      "rumble_active": false,
+      "commit": "17d2aae0e379ae82f99d61a4cdb48da30a923404",
+      "source_dirty": "true",
+      "frames": 4190,
+      "warmup_frames": 0,
+      "guest_cycles": 1176954243,
+      "audio_frames": 2298738,
+      "audio_overruns": 0,
+      "audio_underruns": 0,
+      "produced_audio_frames": 2298738,
+      "consumed_audio_frames": 2298738,
+      "dropped_guest_frames": 0,
+      "video_sha256": "60461f60459899a98c50ef1bd5cb6bd7f9abb3c040525c78bddde8e9d5e38bd4",
+      "audio_sha256": "fc05e98e8173663f81607c716260db1e60ba5a9572724dcb2717906660340acd",
+      "work_p50_ns": 15050175,
+      "work_p95_ns": 32342829,
+      "work_p99_ns": 60304059,
+      "work_max_ns": 173497818,
+      "work_deadline_misses": 1150,
+      "physically_presented_frames": null,
+      "physical_audio_underruns": null,
+      "java": "21.0.8+9-LTS",
+      "os": "Linux",
+      "architecture": "amd64",
+      "hardware": "Linux x86_64 cloud host; WRAM opcode-latching save gate; physical presentation unmeasured",
+      "os_version": "6.18.57"
+    },
+    "entire_rgb_pcm_flash_and_counts_unchanged": true,
+    "previous_reference_exact_frames_retained": 3611,
+    "strict_save_raw_equal": false,
+    "strict_save_raw_different_bytes": 704,
+    "strict_save_difference_categories": {
+      "rekeyed_encrypted_fields": 654,
+      "encryption_key": 4,
+      "play_time": 1,
+      "section_checksum": 8,
+      "unexplained": 37
+    },
+    "previous_evidence": "benchmarks/prefetch-refill-2026-11-10.json",
+    "fresh_cold_loads": {
+      "berryboy_and_mgba": true,
+      "frames_each": 1700,
+      "final_city_rgb_exact": true,
+      "final_city_rgb_sha256": "db31a0ef652967f1ce419b6ab6c5c41d3c463be221fda00d563fe6e35d6c0b2a",
+      "source_and_runtime_backups_unchanged": true,
+      "strict_stream_comparison": {
+        "status": "mismatch",
+        "exact_video_frames": 1384,
+        "total_video_frames": 1700,
+        "first_video_mismatch": 931,
+        "whole_video_hash_match": false,
+        "whole_audio_hash_match": false,
+        "reference_audio_frames": 932664,
+        "berryboy_audio_frames": 932662,
+        "note": "Exact hashes expose differences; mGBA filtering and guest timing can both affect audio. No perceptual tolerance is applied."
+      }
+    },
+    "rng_scope": "No new RNG trace was run. Complete RGB/PCM/Flash and guest/sample counts match the preceding checkpoint; its seed/caller and 37-byte NPC/Quest Log differences remain unresolved."
+  },
+  "legacy_states": [
+    {
+      "game": "golden-sun",
+      "scenario": "target/final-long-compatibility-2026-10-22/AGSE.properties",
+      "input_state": "target/phone-states/golden-sun/state.bbs",
+      "input_state_sha256": "8addb5a3604d879d329dc750a98fc668097ebfa55d929245533db68c22ed983f",
+      "migrated_state_sha256": "0c0f411c3fdb7f3a5d209357eeffb989f0a2aded28185f847beff3dc92c64f76",
+      "migrated_state_bytes": 838767,
+      "original_cpu_device_fields_byte_exact": true,
+      "input_state_unchanged": true,
+      "clock_unchanged_on_load": true,
+      "snapshot_clock": 926956800,
+      "resumed_frame_boundaries": 120,
+      "final_clock": 960664320,
+      "final_state_sha256": "177672d70251cc714eef9a04f3d64366c5d649251b15ac358b41d0f2cb54abae",
+      "rgb_sha256": "4ba48c049966a58061b5168d116b45632f4bac20db49b88048751d8b13700427",
+      "pcm_sha256": "3acb05a0774e4111b8c0a5651f0de855e3eab1110708d9faadfefe50b2daf43e",
+      "audio_frames": 65835,
+      "host_actual_cldc_complete_state_rgb_pcm_exact": true,
+      "legacy_and_migrated_inputs_accepted_by_public_verifier_on_both_cores": true,
+      "preceding_checkpoint_rgb_pcm_sample_counts_unchanged": true
+    },
+    {
+      "game": "sonic",
+      "scenario": "target/final-long-compatibility-2026-10-22/B3SE.properties",
+      "input_state": "target/phone-states/sonic/state.bbs",
+      "input_state_sha256": "c79f716cff9ec5720d74b660456a326038518b7244efbd81be66b0ca26ad50bc",
+      "migrated_state_sha256": "3d9647c48dec636a01fec3d2a23dca4b5b5d06162369609d020c5cbeda19afb9",
+      "migrated_state_bytes": 838767,
+      "original_cpu_device_fields_byte_exact": true,
+      "input_state_unchanged": true,
+      "clock_unchanged_on_load": true,
+      "snapshot_clock": 926956800,
+      "resumed_frame_boundaries": 120,
+      "final_clock": 960664321,
+      "final_state_sha256": "f081114ee48c8cf84f365ed853257d1399ee21c49d6a17965aa041ccbae1033c",
+      "rgb_sha256": "fc6ae18cededaf306124ad6c4936cead7ca86db52e146c7d3050f4db90bb993a",
+      "pcm_sha256": "d6702c6917ef9397949994c718e8618fadffc393f897d31ee0845638d53f5df1",
+      "audio_frames": 65835,
+      "host_actual_cldc_complete_state_rgb_pcm_exact": true,
+      "legacy_and_migrated_inputs_accepted_by_public_verifier_on_both_cores": true,
+      "preceding_checkpoint_rgb_pcm_sample_counts_unchanged": true
+    },
+    {
+      "game": "leafgreen",
+      "scenario": "target/final-long-compatibility-2026-10-22/BPGE.properties",
+      "input_state": "target/phone-states/leafgreen-verified/state.bbs",
+      "input_state_sha256": "c9e855f8008cdc4a6ca469ce7dec83677817c7c02944d5dc0fac7e9fa1de8adb",
+      "migrated_state_sha256": "2f99c819fb749972bb2c496eccba4f286125b9561f12ec933813fc111d99b366",
+      "migrated_state_bytes": 904303,
+      "original_cpu_device_fields_byte_exact": true,
+      "input_state_unchanged": true,
+      "clock_unchanged_on_load": true,
+      "snapshot_clock": 357299715,
+      "resumed_frame_boundaries": 120,
+      "final_clock": 391007233,
+      "final_state_sha256": "6d3761a412e45225fbe882a75ad59d73b4955080dd5c208c02a4ae2178b3edbf",
+      "rgb_sha256": "37a82bf6c774f33d3f21b520b474c755bd6fbddae9c8958adc9637724cfb0a37",
+      "pcm_sha256": "b90cb96dc194236ffc1bd68aa6813180f413656a4a8e9038eaee00e8d364afbd",
+      "audio_frames": 65835,
+      "host_actual_cldc_complete_state_rgb_pcm_exact": true,
+      "legacy_and_migrated_inputs_accepted_by_public_verifier_on_both_cores": true,
+      "preceding_checkpoint_rgb_pcm_sample_counts_unchanged": true
+    }
+  ],
+  "new_states": [
+    {
+      "game": "golden-sun",
+      "scenario": "target/self-modify-2026-11-10/new-states/golden-sun/scenario.properties",
+      "report": {
+        "title": "Golden_Sun_A",
+        "rom_sha256": "c14f1151897e8d73f25ffdd67e21eebb6dc57973ff2458872ee89fa9060aaca1",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "initial_save_sha256": null,
+        "snapshot_frame": 3300,
+        "snapshot_cycles": 926956800,
+        "resumed_frames": 120,
+        "resumed_audio_frames": 65835,
+        "state_bytes": 838767,
+        "state_sha256": "a9b2bd77e139b7d48d16945a6892858ad962702a50f2f79af579dfcd71a93021",
+        "final_state_sha256": "68c8e25f37e0f8eb7498e1d95bda08228b248621d542cb0687f5da3970ec2197",
+        "immediate_and_future_full_state_exact": true,
+        "all_resumed_rgb_pcm_exact": true,
+        "original_save_unchanged": true,
+        "scope": "Host core save/load replay, not independent game accuracy or physical phone validation"
+      },
+      "actual_cldc_future_state_exact": true,
+      "snapshot_opcode_slots": 0,
+      "snapshot_opcode_width": 0,
+      "scope": "Host checks every resumed RGB/PCM frame and immediate/final complete state; actual CLDC checks immediate/final complete state. These frame-boundary game snapshots have no active WRAM slots; 28 synthetic state replays exercise populated slots and interrupted reads."
+    },
+    {
+      "game": "sonic",
+      "scenario": "target/self-modify-2026-11-10/new-states/sonic/scenario.properties",
+      "report": {
+        "title": "SONICADVANC3",
+        "rom_sha256": "f937fa93b97b14b9fb9fce98844c534f936222d21d1fdb5f1af42292bad32c85",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "initial_save_sha256": null,
+        "snapshot_frame": 3300,
+        "snapshot_cycles": 926956800,
+        "resumed_frames": 120,
+        "resumed_audio_frames": 65835,
+        "state_bytes": 838767,
+        "state_sha256": "57e44a70767fcf2207ab8f027ddcadaba0a987f01ab59d6c29291370cf3737cb",
+        "final_state_sha256": "2c3d049fd92b8a38d9e0f323a7a3ddf64b1f0487c1370ba3ccae124c0b462c50",
+        "immediate_and_future_full_state_exact": true,
+        "all_resumed_rgb_pcm_exact": true,
+        "original_save_unchanged": true,
+        "scope": "Host core save/load replay, not independent game accuracy or physical phone validation"
+      },
+      "actual_cldc_future_state_exact": true,
+      "snapshot_opcode_slots": 0,
+      "snapshot_opcode_width": 0,
+      "scope": "Host checks every resumed RGB/PCM frame and immediate/final complete state; actual CLDC checks immediate/final complete state. These frame-boundary game snapshots have no active WRAM slots; 28 synthetic state replays exercise populated slots and interrupted reads."
+    },
+    {
+      "game": "leafgreen",
+      "scenario": "target/self-modify-2026-11-10/new-states/leafgreen/scenario.properties",
+      "report": {
+        "title": "POKEMON LEAF",
+        "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "9aa6fdb357675a515ae9e6d61de932b76b0143f6d82808fffb2ae72c8e008fab",
+        "initial_save_sha256": "8f192f66ac21928523cb295e1353b6f0bd3ce6dc2adc40e34cc5f4b8455b8961",
+        "snapshot_frame": 4190,
+        "snapshot_cycles": 1176954243,
+        "resumed_frames": 120,
+        "resumed_audio_frames": 65835,
+        "state_bytes": 904303,
+        "state_sha256": "a143b23bec2d1ac7c13ef3ffb210066715ce2089288017de681323c81e7c1ce0",
+        "final_state_sha256": "b0c7043f1eab6434a79e2faf6ab22fb2430a051cbe59b15b20ae62a4f614d34a",
+        "immediate_and_future_full_state_exact": true,
+        "all_resumed_rgb_pcm_exact": true,
+        "original_save_unchanged": true,
+        "scope": "Host core save/load replay, not independent game accuracy or physical phone validation"
+      },
+      "actual_cldc_future_state_exact": true,
+      "snapshot_opcode_slots": 0,
+      "snapshot_opcode_width": 0,
+      "scope": "Host checks every resumed RGB/PCM frame and immediate/final complete state; actual CLDC checks immediate/final complete state. These frame-boundary game snapshots have no active WRAM slots; 28 synthetic state replays exercise populated slots and interrupted reads."
+    }
+  ],
+  "source_files_sha256": {
+    "src/main/java/berryboy/MachineState.java": "cc0c277a3868d42022f83c0878339f673049d8a5fe13c8081d11a8952782b9ec",
+    "src/main/java/berryboy/cpu/Cpu.java": "3a84402bccc46d25eb5378deecce68e08fecfed3f9bd0cd33ff4cce11218c123",
+    "src/main/java/berryboy/cpu/InstructionPipeline.java": "cb4e359a92c6ef2e9514614f4fb7c16eaa2246625777b359af1f37475ae0bb02",
+    "src/test/java/berryboy/cpu/SelfModifyingCodeTest.java": "e11bd6839d569b6e3a0d48eaf7fab11f0d47cd52a3b42a0e482c9a6ec8502d23",
+    "src/test/java/berryboy/state/MachineStateVersionTest.java": "3172ee0e09fb3daaab23fbc478e5943a4ba353c318dd32e39d4fde1efbb71bba",
+    "tools/VerifyStateResume.java": "9e3d8175d82312b246effab327225a3d9b406ca73f4cfb27df3cdd07f652d649"
+  },
+  "trace_sha256": {
+    "nba.csv": "0f83384eb5ec6ebdb9914b8b77310ce6e6344b0fd8e39cc98905f6880e858296",
+    "mgba.csv": "0f83384eb5ec6ebdb9914b8b77310ce6e6344b0fd8e39cc98905f6880e858296",
+    "host.csv": "2667f4686b93c6bd08996471ef75c01757bd2190c2b6fa64b8fc3d01c16925b2",
+    "host-reviewed.csv": "0f83384eb5ec6ebdb9914b8b77310ce6e6344b0fd8e39cc98905f6880e858296",
+    "cldc-reviewed.csv": "0f83384eb5ec6ebdb9914b8b77310ce6e6344b0fd8e39cc98905f6880e858296",
+    "irq-host.csv": "a0a1bd81d4c3352996cc13d3cf57a57228f0287d095b3cea898f39bdb1b88a29",
+    "irq-cldc.csv": "a0a1bd81d4c3352996cc13d3cf57a57228f0287d095b3cea898f39bdb1b88a29"
+  },
+  "native_source_receipt": {
+    "path": "target/blackberry/output/build-record.json",
+    "commit": "17d2aae0e379ae82f99d61a4cdb48da30a923404",
+    "source_dirty": true,
+    "inputs": {
+      "src/main/java/berryboy/MachineState.java": "cc0c277a3868d42022f83c0878339f673049d8a5fe13c8081d11a8952782b9ec",
+      "src/main/java/berryboy/cpu/Cpu.java": "3a84402bccc46d25eb5378deecce68e08fecfed3f9bd0cd33ff4cce11218c123",
+      "src/main/java/berryboy/cpu/InstructionPipeline.java": "cb4e359a92c6ef2e9514614f4fb7c16eaa2246625777b359af1f37475ae0bb02"
+    }
+  },
+  "native_artifacts_sha256": {
+    "target/blackberry/output/BerryBoyAdvance.cod": "76ad42b6f219515cfc64ec98c7062f526c55fb019b0c4c8411265a6be6af8bf7",
+    "target/blackberry/output/BerryBoyAdvance.cso": "90186fd3ae88dd6dc5dd47cc1880a971b23077c70afd52d34fd8d7d1e95ce66d",
+    "target/blackberry/output/BerryBoyAdvance.debug": "dba5e0314ab222b838d3d1f5bd8f98298356bbcf497216bc52ba1fcece39e9e9",
+    "target/blackberry/output/BerryBoyAdvance.jad": "aff3a0c8f814f678f519de7588a4922d9c885d13cd3485a1d2f234a4173ee61d",
+    "target/blackberry/output/BerryBoyAdvance.jar": "e690d4ad65f7346f1c1b91aecc6f1de82f2c192aa8993f90f1e19b8f1aa6094f"
+  },
+  "native_jar_contains_external_rom_bios_saves_or_vendor_installer": false,
+  "reproduction": [
+    "Compile/run CpuSelfModifyProbe and both unmodified reference adapters as documented in docs/SCENARIOS.md; require identical 336-row CSVs.",
+    "mvn -B -ntp verify",
+    "tools/test-with-console.sh",
+    "bash tools/blackberry.sh --sdk target/release-sdk/sdk --compiler ecj --ecj target/release-sdk/ecj-4.6.1.jar --launch false",
+    "tools/test-cldc-core.sh",
+    "Use StateRoundTrip for the three listed fresh snapshots. VerifyStateResume accepts both preserved format-1 and canonical format-2 inputs on host/isolated actual CLDC.",
+    "Repeat the 15 named scenarios against the preceding checkpoint, preserving assets, full RGB/PCM/backup results and previously exact reference frames."
+  ],
+  "next_work": "Independently probe WRAM mirrors/other writable instruction regions, then IRQ propagation/mask latency. Keep 92 disputed refill observations and LeafGreen strict save/RGB/PCM gates open; do not select timing solely to improve game pixels."
+}
