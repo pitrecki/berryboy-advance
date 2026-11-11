@@ -924,16 +924,18 @@ classes; it does not compare per-frame RGB/PCM. Asset identities, save payload
 differences and both continuation results are in
 [the outdoor-save record](../benchmarks/leafgreen-overworld-save-2026-11-06.json).
 
-New machine snapshots use format 2, appending 20 bytes for fetched WRAM opcodes.
-Format-1 files still load without changing their existing device/CPU fields or
-advancing the clock; missing opcodes come from RAM on entry, as in the old engine.
-An old file cannot recover a stale instruction that it never stored. Saving the
-loaded machine produces format 2, which earlier releases cannot read.
-`VerifyStateResume` accepts either input format, checks a canonical save/load
-round trip, and requires byte-exact immediate serialization for format 2. The
-expected future-state hash must come from the current core. The original file
-is read-only. Current migration and replay evidence is in
-[the WRAM latch record](../benchmarks/wram-opcode-latching-2026-11-10.json).
+New machine snapshots use format 3. The 20-byte opcode extension introduced by
+format 2 retains its layout and now also admits palette/VRAM/OAM addresses;
+format 2 remains restricted to WRAM. Mislabelled video slots fail validation.
+Format-1/2 files still load without changing saved device/CPU fields or advancing
+the clock. Missing opcodes come from memory on entry, as in the old engine;
+format-2 WRAM words remain intact. An old file cannot recover a stale instruction
+that it never stored. Saving writes format 3, which earlier readers reject.
+`VerifyStateResume` accepts all three formats, checks a canonical save/load round
+trip, and requires byte-exact immediate serialization when the input already has
+the current format. Its expected future-state hash must come from the current
+core. Original files remain read-only. Current migration and replay evidence is
+in [the writable-memory latch record](../benchmarks/video-opcode-latching-2026-11-11.json).
 
 Add `--activity` to inspect saved object coordinates/directions and the supported
 non-battle Quest Log commands in each active scene:

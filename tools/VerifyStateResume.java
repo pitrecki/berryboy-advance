@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.util.HexFormat;
 import java.util.Properties;
+import java.util.Arrays;
 
 /** Verify a recorded save state's continuation on host OR isolated actual CLDC classes. */
 public final class VerifyStateResume {
@@ -15,9 +16,10 @@ public final class VerifyStateResume {
         var rom = verified(config, properties, "rom"); var bios = verified(config, properties, "bios");
         var state = Files.readAllBytes(Path.of(args[1])); var machine = MachineState.load(rom, bios, state);
         var canonical = MachineState.save(machine);
-        // Format 1 intentionally gains the captured-opcode extension when saved as format 2.
+        // Older formats intentionally migrate to the current opcode/address contract on save.
         // The loader already validated the complete version word and original checksum.
-        if (state[4] != 1 && !sha(canonical).equals(sha(state))) throw new IllegalStateException("State changed immediately after loading");
+        if (Arrays.equals(state, 4, 8, canonical, 4, 8) && !sha(canonical).equals(sha(state)))
+            throw new IllegalStateException("State changed immediately after loading");
         if (!sha(canonical).equals(sha(MachineState.save(MachineState.load(rom, bios, canonical)))))
             throw new IllegalStateException("Canonical state changed after round trip");
         var first = Integer.parseInt(args[2]); var count = Integer.parseInt(args[3]);

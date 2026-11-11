@@ -7,7 +7,7 @@ import berryboy.cartridge.CartridgeBackup;
 /** Versioned complete machine state between CPU steps, including unfinished work. */
 public final class MachineState {
     private static final int MAGIC = 0x53594242; // BBYS, little endian.
-    private static final int VERSION = 2;
+    private static final int VERSION = 3;
     private MachineState() { }
 
     /** Call on the emulation owner; guest cycles and scheduled event order do not change. */
@@ -20,7 +20,7 @@ public final class MachineState {
         state.value(machine.memory.backup().type());
         machine.memory.transferState(state);
         machine.cpu.transferState(state);
-        machine.cpu.transferPipelineState(state);
+        machine.cpu.transferPipelineState(state, true);
         var payload = state.finish();
         state.value(StateChecksum.bytes(payload, payload.length));
         return state.finish();
@@ -51,7 +51,7 @@ public final class MachineState {
         machine.memory.setBackup(new CartridgeBackup(state.value(0)));
         machine.memory.transferState(state);
         machine.cpu.transferState(state);
-        if (version >= 2) machine.cpu.transferPipelineState(state);
+        if (version >= 2) machine.cpu.transferPipelineState(state, version >= 3);
         state.value(0); // CRC already verified before constructing the replacement.
         state.requireEnd();
         return machine;

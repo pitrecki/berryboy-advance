@@ -1,5 +1,10 @@
 package berryboy.cpu;
 
+import static berryboy.cpu.SelfModifyingCodeFixture.opcode;
+import static berryboy.cpu.SelfModifyingCodeFixture.program;
+import static berryboy.cpu.SelfModifyingCodeFixture.put;
+import static berryboy.cpu.SelfModifyingCodeFixture.retire;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
@@ -64,7 +69,9 @@ class SelfModifyingCodeTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"false,0x02000100", "false,0x03000100", "true,0x02000100", "true,0x03000100"})
+    @CsvSource({"false,0x02000100", "false,0x03000100", "true,0x02000100", "true,0x03000100",
+            "false,0x05000100", "true,0x05000100", "false,0x06000100", "true,0x06000100",
+            "false,0x07000100", "true,0x07000100"})
     void capturesEachRefillReadOnItsOwnSideOfDma(boolean thumb, long codeAddress) {
         var code = (int) codeAddress; var width = thumb ? 2 : 4;
         var machine = new Machine(new byte[512]);
@@ -75,7 +82,8 @@ class SelfModifyingCodeTest {
         machine.memory.write32(0x040000d4, 0x03001000); machine.memory.write32(0x040000d8, code);
         machine.memory.write16(0x040000dc, 2); machine.memory.write16(0x040000de, 0xa400);
         machine.cpu.setRegister(4, code | (thumb ? 1 : 0)); machine.cpu.setPc(0x03000080);
-        var firstReadCycles = code >>> 24 == 2 ? (thumb ? 3 : 6) : 1;
+        var region = code >>> 24;
+        var firstReadCycles = region == 2 ? (thumb ? 3 : 6) : !thumb && (region == 5 || region == 6) ? 2 : 1;
         machine.clock.schedule(() -> machine.memory.dma().request(2), machine.clock.now() + 1 + firstReadCycles);
         machine.cpu.step(); // First refill captured; DMA has changed its RAM word before the second read.
         assertSoftly(s -> {
@@ -95,37 +103,4 @@ class SelfModifyingCodeTest {
         assertThat(machine.cpu.register(0)).isEqualTo(10);
     }
 
-    private static Machine program(boolean thumb, int code, int store, int distance) {
-        var machine = new Machine(new byte[512]); var width = thumb ? 2 : 4;
-        var target = code + distance * width;
-        var operation = thumb ? (store == 1 ? 0x7011 : store == 2 ? 0x8011 : 0x6011)
-                : (store == 1 ? 0xe5c21000 : store == 2 ? 0xe1c210b0 : 0xe5821000);
-        machine.memory.write32(0x03000080, 0xe12fff14);
-        put(machine, code, operation, thumb);
-        for (var i = 1; i <= 4; i++) put(machine, code + i * width, thumb ? 0x2000 | i : 0xe3b00000 | i, thumb);
-        put(machine, code + 5 * width, thumb ? 0x4718 : 0xe12fff13, thumb);
-        var patch = thumb ? 0x2009 : 0xe3b00009;
-        if (thumb && store == 4) patch = (target & 2) != 0
-                ? 0x20090000 | (distance == 1 ? operation : 0x2000 | (distance - 1))
-                : patch | (distance == 4 ? 0x4718 : 0x2000 | (distance + 1)) << 16;
-        machine.cpu.setCpsr(Cpu.SYSTEM | 0xc0);
-        machine.cpu.setRegister(1, patch); machine.cpu.setRegister(2, store == 4 ? target & ~3 : target);
-        machine.cpu.setRegister(3, target | (thumb ? 1 : 0)); machine.cpu.setRegister(4, code | (thumb ? 1 : 0));
-        machine.cpu.setPc(0x03000080); retire(machine, 1);
-        assertThat(machine.cpu.pc()).isEqualTo(code);
-        return machine;
-    }
-    private static int opcode(Machine machine, int address, boolean thumb) {
-        return thumb ? machine.memory.read16(address) : machine.memory.read32(address);
-    }
-    private static void put(Machine machine, int address, int value, boolean thumb) {
-        if (thumb) machine.memory.write16(address, value); else machine.memory.write32(address, value);
-    }
-    private static void retire(Machine machine, int count) {
-        var limit = machine.clock.now() + 1000;
-        while (machine.cpu.instructions() < count) {
-            if (machine.clock.now() >= limit) throw new IllegalStateException("Retirement stalled");
-            machine.cpu.step();
-        }
-    }
 }

@@ -298,6 +298,6 @@ public final class Cpu {
         transfers.transferState(state);
     }
 
-    /** Format 2 appends captured WRAM instructions; format 1 reconstructs them on entry. */
-    public void transferPipelineState(StateBuffer state) { pipeline.transferState(state); }
+    /** The older opcode extension admitted only WRAM; the current format also admits video memory. */
+    public void transferPipelineState(StateBuffer state, boolean videoMemory) { pipeline.transferState(state, videoMemory); }
 }

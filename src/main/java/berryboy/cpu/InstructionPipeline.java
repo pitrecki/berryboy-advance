@@ -4,7 +4,7 @@ import berryboy.bus.Memory;
 import berryboy.EmulationException;
 import berryboy.state.StateBuffer;
 
-/** Two fetched WRAM opcodes. Stores and DMA cannot replace words already in the CPU. */
+/** Two fetched writable-memory opcodes. Stores and DMA cannot replace words already in the CPU. */
 final class InstructionPipeline {
     private final Memory memory;
     private int address;
@@ -16,7 +16,7 @@ final class InstructionPipeline {
     InstructionPipeline(Memory memory) { this.memory = memory; }
 
     int fetch(int pc, boolean thumb) {
-        if (!wram(pc)) { clear(); return memory.fetch(pc, thumb); }
+        if (!writableCode(pc)) { clear(); return memory.fetch(pc, thumb); }
         var step = thumb ? 2 : 4;
         if (address != pc || width != step || count != 2) {
             // Debugger/development entry and format-1 states have no captured opcodes.
@@ -28,13 +28,13 @@ final class InstructionPipeline {
         first = second;
         second = read(pc + step * 2);
         address += step;
-        if (!wram(address)) clear();
+        if (!writableCode(address)) clear();
         return opcode;
     }
 
     void beginRefill(int pc, int step) {
         clear();
-        if (wram(pc)) { address = pc; width = step; }
+        if (writableCode(pc)) { address = pc; width = step; }
     }
 
     /** Call after the corresponding bus read completes, before another DMA grant. */
@@ -53,17 +53,26 @@ final class InstructionPipeline {
         return width == 2 ? value : value | (memory.peek16(pc + 2) << 16);
     }
 
-    private static boolean wram(int pc) { return (pc >>> 24) == 2 || (pc >>> 24) == 3; }
+    private static boolean writableCode(int pc) {
+        var region = pc >>> 24;
+        return region == 2 || region == 3 || (region >= 5 && region <= 7);
+    }
 
-    void transferState(StateBuffer state) {
+    void transferState(StateBuffer state, boolean videoMemory) {
         address = state.value(address); width = state.value(width); count = state.value(count);
         first = state.value(first); second = state.value(second);
-        if (state.reading() && (count < 0 || count > 2
-                || (width == 0 ? address != 0 || count != 0 || first != 0 || second != 0
-                : (width != 2 && width != 4) || !wram(address) || (address & (width - 1)) != 0
-                || (count == 0 && first != 0) || (count < 2 && second != 0)
-                || (width == 2 && ((first | second) & 0xffff0000) != 0)))) {
+        if (state.reading() && !validState(videoMemory)) {
             throw new IllegalArgumentException("Invalid opcode pipeline state");
         }
+    }
+
+    private boolean validState(boolean videoMemory) {
+        if (count < 0 || count > 2) return false;
+        if (width == 0) return address == 0 && count == 0 && first == 0 && second == 0;
+        if (width != 2 && width != 4) return false;
+        if (!writableCode(address) || (!videoMemory && (address >>> 24) >= 5)
+                || (address & (width - 1)) != 0) return false;
+        if ((count == 0 && first != 0) || (count < 2 && second != 0)) return false;
+        return width == 4 || ((first | second) & 0xffff0000) == 0;
     }
 }

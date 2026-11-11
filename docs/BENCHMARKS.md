@@ -18,7 +18,7 @@ separately. Neither platform has passed sustained-playback qualification.
 | Audio | Four PSG channels, Direct Sound A/B, timer/DMA FIFO feed and bounded PCM output | Reference divergences, sequencer/PWM edges and physical playback; phone MMAPI packet transport is implemented but unqualified |
 | Cartridges | SRAM, Flash 64/128 KiB, EEPROM sizes, persistence, RTC/GPIO and deterministic sensor state | Busy/ADC timing, RTC IRQ, calibration and wider real-player save coverage |
 | Desktop | Keypad, Swing output, clock pacing, scenario recording and bounded host workers | Native-window/audio integration and sustained presentation measurements |
-| Save states | Format-2 complete snapshots with format-1 loading, identity/CRC checks, pending CPU/DMA work and hardware event order | Wider gameplay coverage and device storage behavior |
+| Save states | Format-3 complete snapshots with format-1/2 loading, identity/CRC checks, pending CPU/DMA work and hardware event order | Wider gameplay coverage and device storage behavior |
 | Serial | Normal disconnected shifts, multiplayer-port status with no cable, JOY/GPIO registers | UART backend, peer communication and physical port timing |
 | Phone frontend | Home/pause UI, ROM/BIOS browser, five slots, cheats, key remapping, volume/mono/mute, scaling, frame skip and FPS | Simulator/device UI, permissions, native keyboard, audio latency/gaps and performance |
 | BlackBerry build | Legacy export, actual CLDC compilation and vendor RAPC COD | Simulator application execution and physical Bold testing |
@@ -29,16 +29,17 @@ bottlenecks and preserves event ordering.
 
 ## Current validation
 
-- **3250 host tests**, **2989 exported-core tests**, and **2989 tests against the
+- **5234 host tests**, **4973 exported-core tests**, and **4973 tests against the
   actual new ECJ/CLDC classes** pass, with no failures or skips. Counts include
   parameterized invocations. Detailed build and artifact data is in the linked evidence.
 - Native Linux JDE 7.1 / ECJ 4.6.1 / RAPC verification passes and produces a
   **0.9.1 development** JAD/COD. Host: Linux x86_64, Temurin 21.0.8, Maven 3.9.11.
-- [Writable-memory opcode probes](../benchmarks/video-opcode-diagnosis-2026-11-11.json)
-  retain all 336 original WRAM rows and add 1904 mirror/video rows. Both references
-  agree completely; WRAM aliases pass, while palette/VRAM/OAM expose 64 early
-  opcode changes. Forced blank isolates this from display contention. Production
-  adoption needs the same captured slots and an explicitly versioned address contract.
+- [Writable-memory opcode latching](../benchmarks/video-opcode-latching-2026-11-11.json)
+  matches all 2240 reference observations, correcting 64 early video-memory changes.
+  Format 3 admits palette/VRAM/OAM slots and still loads formats 1/2. Forty actual
+  old-format phase snapshots and six game migrations retain their checked state;
+  fifteen game routes preserve entire RGB/PCM/Flash and counts across 56400 frames.
+  Forced-blank probes leave display contention and IRQ latency unqualified.
 - [WRAM opcode latching](../benchmarks/wram-opcode-latching-2026-11-10.json)
   now matches all 336 NBA/mGBA observations, correcting the
   [24 early changes](../benchmarks/self-modify-diagnosis-2026-11-10.json).
