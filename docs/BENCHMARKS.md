@@ -1,6 +1,6 @@
 # Current status and roadmap
 
-Updated **2026-11-10**, for **0.9.1-SNAPSHOT** (published: **0.9.0 preview**). This is the canonical current
+Updated **2026-11-11**, for **0.9.1-SNAPSHOT** (published: **0.9.0 preview**). This is the canonical current
 validation and work queue. [CHANGELOG](../CHANGELOG.md) records version highlights;
 linked JSON records and Git history preserve detailed measurements.
 
@@ -34,6 +34,11 @@ bottlenecks and preserves event ordering.
   parameterized invocations. Detailed build and artifact data is in the linked evidence.
 - Native Linux JDE 7.1 / ECJ 4.6.1 / RAPC verification passes and produces a
   **0.9.1 development** JAD/COD. Host: Linux x86_64, Temurin 21.0.8, Maven 3.9.11.
+- [Writable-memory opcode probes](../benchmarks/video-opcode-diagnosis-2026-11-11.json)
+  retain all 336 original WRAM rows and add 1904 mirror/video rows. Both references
+  agree completely; WRAM aliases pass, while palette/VRAM/OAM expose 64 early
+  opcode changes. Forced blank isolates this from display contention. Production
+  adoption needs the same captured slots and an explicitly versioned address contract.
 - [WRAM opcode latching](../benchmarks/wram-opcode-latching-2026-11-10.json)
   now matches all 336 NBA/mGBA observations, correcting the
   [24 early changes](../benchmarks/self-modify-diagnosis-2026-11-10.json).

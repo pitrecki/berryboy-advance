@@ -1,0 +1,829 @@
+{
+  "date": "2026-11-11",
+  "version": "0.9.1-SNAPSHOT",
+  "source_base_commit": "eb3062aa9212deb346c935f059a5ba78b5595fe0",
+  "source_dirty": true,
+  "scope": "Asset-free writable-code and mirror qualification under forced blank. Reference production cores are unmodified; no production behavior change in this checkpoint.",
+  "references": {
+    "nba_commit": "55b5cf0ae3d929582ac5bfd486558173502b8354",
+    "mgba_version": "0.10.5"
+  },
+  "hardware": "Linux x86_64, Temurin 21.0.8; emulated guest cycles only. Display contention and physical presentation/audio are outside this probe.",
+  "matrix": {
+    "modes": [
+      "arm",
+      "thumb"
+    ],
+    "locations": 16,
+    "scenarios": 320,
+    "retirements_per_scenario": 7,
+    "observations": 2240,
+    "existing_direct_wram_control_rows": 336,
+    "new_mirror_and_video_rows": 1904,
+    "stores": "WRAM: byte/halfword/word. Palette/VRAM/OAM: halfword/word; byte-lane replication/ignored writes are a separate behavior.",
+    "distances": [
+      1,
+      2,
+      3,
+      4
+    ]
+  },
+  "result": {
+    "reference_disagreements": 0,
+    "host_mismatches": 64,
+    "mismatch_fields": [
+      "r0"
+    ],
+    "host_mismatches_by_region": {
+      "VRAM": 32,
+      "palette": 16,
+      "OAM": 16
+    },
+    "wram_mirrors_all_match": true,
+    "default_csv_preserved_on_all_adapters": true,
+    "invalid_or_duplicate_flag_cases_rejected": 9
+  },
+  "mismatches": [
+    {
+      "key": {
+        "mode": "arm",
+        "code": "0x06000100",
+        "patch_base": "0x06020100",
+        "store_width": "2",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "arm",
+        "code": "0x06000100",
+        "patch_base": "0x06020100",
+        "store_width": "2",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "arm",
+        "code": "0x06000100",
+        "patch_base": "0x06020100",
+        "store_width": "4",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "arm",
+        "code": "0x06000100",
+        "patch_base": "0x06020100",
+        "store_width": "4",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "arm",
+        "code": "0x06020100",
+        "patch_base": "0x06000100",
+        "store_width": "2",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "arm",
+        "code": "0x06020100",
+        "patch_base": "0x06000100",
+        "store_width": "2",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "arm",
+        "code": "0x06020100",
+        "patch_base": "0x06000100",
+        "store_width": "4",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "arm",
+        "code": "0x06020100",
+        "patch_base": "0x06000100",
+        "store_width": "4",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "arm",
+        "code": "0x06010100",
+        "patch_base": "0x06018100",
+        "store_width": "2",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "arm",
+        "code": "0x06010100",
+        "patch_base": "0x06018100",
+        "store_width": "2",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "arm",
+        "code": "0x06010100",
+        "patch_base": "0x06018100",
+        "store_width": "4",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "arm",
+        "code": "0x06010100",
+        "patch_base": "0x06018100",
+        "store_width": "4",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "arm",
+        "code": "0x06018100",
+        "patch_base": "0x06010100",
+        "store_width": "2",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "arm",
+        "code": "0x06018100",
+        "patch_base": "0x06010100",
+        "store_width": "2",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "arm",
+        "code": "0x06018100",
+        "patch_base": "0x06010100",
+        "store_width": "4",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "arm",
+        "code": "0x06018100",
+        "patch_base": "0x06010100",
+        "store_width": "4",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "arm",
+        "code": "0x05000100",
+        "patch_base": "0x05000500",
+        "store_width": "2",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "arm",
+        "code": "0x05000100",
+        "patch_base": "0x05000500",
+        "store_width": "2",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "arm",
+        "code": "0x05000100",
+        "patch_base": "0x05000500",
+        "store_width": "4",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "arm",
+        "code": "0x05000100",
+        "patch_base": "0x05000500",
+        "store_width": "4",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "arm",
+        "code": "0x05000500",
+        "patch_base": "0x05000100",
+        "store_width": "2",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "arm",
+        "code": "0x05000500",
+        "patch_base": "0x05000100",
+        "store_width": "2",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "arm",
+        "code": "0x05000500",
+        "patch_base": "0x05000100",
+        "store_width": "4",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "arm",
+        "code": "0x05000500",
+        "patch_base": "0x05000100",
+        "store_width": "4",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "arm",
+        "code": "0x07000100",
+        "patch_base": "0x07000500",
+        "store_width": "2",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "arm",
+        "code": "0x07000100",
+        "patch_base": "0x07000500",
+        "store_width": "2",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "arm",
+        "code": "0x07000100",
+        "patch_base": "0x07000500",
+        "store_width": "4",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "arm",
+        "code": "0x07000100",
+        "patch_base": "0x07000500",
+        "store_width": "4",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "arm",
+        "code": "0x07000500",
+        "patch_base": "0x07000100",
+        "store_width": "2",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "arm",
+        "code": "0x07000500",
+        "patch_base": "0x07000100",
+        "store_width": "2",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "arm",
+        "code": "0x07000500",
+        "patch_base": "0x07000100",
+        "store_width": "4",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "arm",
+        "code": "0x07000500",
+        "patch_base": "0x07000100",
+        "store_width": "4",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "thumb",
+        "code": "0x06000100",
+        "patch_base": "0x06020100",
+        "store_width": "2",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "thumb",
+        "code": "0x06000100",
+        "patch_base": "0x06020100",
+        "store_width": "2",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "thumb",
+        "code": "0x06000100",
+        "patch_base": "0x06020100",
+        "store_width": "4",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "thumb",
+        "code": "0x06000100",
+        "patch_base": "0x06020100",
+        "store_width": "4",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "thumb",
+        "code": "0x06020100",
+        "patch_base": "0x06000100",
+        "store_width": "2",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "thumb",
+        "code": "0x06020100",
+        "patch_base": "0x06000100",
+        "store_width": "2",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "thumb",
+        "code": "0x06020100",
+        "patch_base": "0x06000100",
+        "store_width": "4",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "thumb",
+        "code": "0x06020100",
+        "patch_base": "0x06000100",
+        "store_width": "4",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "thumb",
+        "code": "0x06010100",
+        "patch_base": "0x06018100",
+        "store_width": "2",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "thumb",
+        "code": "0x06010100",
+        "patch_base": "0x06018100",
+        "store_width": "2",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "thumb",
+        "code": "0x06010100",
+        "patch_base": "0x06018100",
+        "store_width": "4",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "thumb",
+        "code": "0x06010100",
+        "patch_base": "0x06018100",
+        "store_width": "4",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "thumb",
+        "code": "0x06018100",
+        "patch_base": "0x06010100",
+        "store_width": "2",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "thumb",
+        "code": "0x06018100",
+        "patch_base": "0x06010100",
+        "store_width": "2",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "thumb",
+        "code": "0x06018100",
+        "patch_base": "0x06010100",
+        "store_width": "4",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "thumb",
+        "code": "0x06018100",
+        "patch_base": "0x06010100",
+        "store_width": "4",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "thumb",
+        "code": "0x05000100",
+        "patch_base": "0x05000500",
+        "store_width": "2",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "thumb",
+        "code": "0x05000100",
+        "patch_base": "0x05000500",
+        "store_width": "2",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "thumb",
+        "code": "0x05000100",
+        "patch_base": "0x05000500",
+        "store_width": "4",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "thumb",
+        "code": "0x05000100",
+        "patch_base": "0x05000500",
+        "store_width": "4",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "thumb",
+        "code": "0x05000500",
+        "patch_base": "0x05000100",
+        "store_width": "2",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "thumb",
+        "code": "0x05000500",
+        "patch_base": "0x05000100",
+        "store_width": "2",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "thumb",
+        "code": "0x05000500",
+        "patch_base": "0x05000100",
+        "store_width": "4",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "thumb",
+        "code": "0x05000500",
+        "patch_base": "0x05000100",
+        "store_width": "4",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "thumb",
+        "code": "0x07000100",
+        "patch_base": "0x07000500",
+        "store_width": "2",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "thumb",
+        "code": "0x07000100",
+        "patch_base": "0x07000500",
+        "store_width": "2",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "thumb",
+        "code": "0x07000100",
+        "patch_base": "0x07000500",
+        "store_width": "4",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "thumb",
+        "code": "0x07000100",
+        "patch_base": "0x07000500",
+        "store_width": "4",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "thumb",
+        "code": "0x07000500",
+        "patch_base": "0x07000100",
+        "store_width": "2",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "thumb",
+        "code": "0x07000500",
+        "patch_base": "0x07000100",
+        "store_width": "2",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "thumb",
+        "code": "0x07000500",
+        "patch_base": "0x07000100",
+        "store_width": "4",
+        "distance": "1",
+        "stage": "2"
+      },
+      "expected_r0": 1,
+      "actual_r0": 9
+    },
+    {
+      "key": {
+        "mode": "thumb",
+        "code": "0x07000500",
+        "patch_base": "0x07000100",
+        "store_width": "4",
+        "distance": "2",
+        "stage": "3"
+      },
+      "expected_r0": 2,
+      "actual_r0": 9
+    }
+  ],
+  "fixture": "src/test/resources/berryboy/cpu/self-modify-memory.csv",
+  "fixture_sha256": "07f3b13e110c6eb01a0a1a6a8f0a681c77298a64856866a4c7b96b8fa7fdc1cd",
+  "capture_sha256": {
+    "target/video-opcodes-2026-11-11/nba-extended.csv": "d6b727e02f3febbeaf41afb2f7e1938cba45bdd7a953e916516a6ce2e93d1693",
+    "target/video-opcodes-2026-11-11/mgba-extended.csv": "d6b727e02f3febbeaf41afb2f7e1938cba45bdd7a953e916516a6ce2e93d1693",
+    "target/video-opcodes-2026-11-11/host-before.csv": "1d0d93fa9a7f4b572854e7bc07061c03a9935ef71bf736f66faf6e1f786da5c7"
+  },
+  "source_files_sha256": {
+    "tools/CpuSelfModifyProbe.java": "9fd327f518ec0a4f1d3ce69013e87825dae283ecfeff26a28a49e79c8eb2e841",
+    "tools/nba-cpu-self-modify-probe.cc": "3ed38887c2658b08d6a60739f36f9188bd1f363a260243c8553efd824b428d47",
+    "tools/mgba-cpu-self-modify-probe.c": "8cc465b037c4aaa052bd59bc20a74af0a0db296791037ce85b3f9004f427e509"
+  },
+  "next_step": "Extend CPU-owned opcode slots to palette/VRAM/OAM. Version the expanded state-address contract explicitly, preserve format-1/2 loads and existing game/CPU/state gates. Do not change bus/PPU constants or claim display-contention qualification."
+}

@@ -647,7 +647,8 @@ paths fail with exit 2. No empty shared fixture or partial trace is accepted.
 `tools/mgba-cpu-self-modify-probe.c` execute the same asset-free programs. Build
 the reference adapters using the preceding NBA target/mGBA static-library flags,
 with target `nba-cpu-self-modify-probe`. The Java main is
-`berryboy.cpu.CpuSelfModifyProbe`. They take no arguments and fail on extra ones.
+`berryboy.cpu.CpuSelfModifyProbe`. With no arguments they preserve the original
+336-row CSV. Unknown/duplicate flags fail before writing any CSV.
 
 Each scenario enters IWRAM or EWRAM through BX, stores into one of the next four
 MOVS instructions, executes the stream, then branches back to the patched opcode.
@@ -660,6 +661,17 @@ Both unmodified references produce the same complete CSV, retained in
 results too early; all remaining fields agree. The corrected host and isolated
 actual CLDC classes match all 336 rows. This qualifies the tested WRAM streams,
 without qualifying IRQ latency, other writable regions or peripheral fetches.
+
+Pass `--extended-memory` to all three adapters to include WRAM aliases, VRAM's
+background/OBJ mirrors, palette and OAM mirrors in both write directions. The
+extended header adds `patch_base`, the aliased base used by the store; `code`
+continues to name execution and `patched` reads back through that code address.
+The 320 scenarios produce 2240 rows, including the original 336 controls.
+`self-modify-memory.csv` contains only the 1904 novel rows. Both references agree
+on every field. WRAM tests byte/halfword/word stores; video memories test
+halfword/word stores, preserving the adjacent Thumb instruction when needed.
+Byte-lane replication/ignored video writes are outside this matrix. The LCD is
+forced blank to isolate opcode latching; display contention remains unqualified.
 
 ## Original FIFO DMA timing probes
 
