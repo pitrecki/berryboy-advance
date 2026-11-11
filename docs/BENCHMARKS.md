@@ -1,409 +1,168 @@
 # Current status and roadmap
 
-Updated **2026-11-11**, for **0.9.1-SNAPSHOT** (published: **0.9.0 preview**). This is the canonical current
-validation and work queue. [CHANGELOG](../CHANGELOG.md) records version highlights;
-linked JSON records and Git history preserve detailed measurements.
+Updated **2026-11-11**, for **0.9.1-SNAPSHOT**. Latest published phone preview:
+[**0.9.0**](https://github.com/pitrecki/berryboy-advance/releases/tag/v0.9.0).
 
-## Goal and current scope
+**Next deliverable: M1 — one complete Golden Sun application session.**
+Use the supplied games and existing frontend. New CPU/DMA/VRAM investigations
+need a demonstrated milestone blocker or an explicit user priority.
 
-Target full GBA graphics and sound at the native clock:
-`16777216 / 280896` = **59.7275 refreshes/s**, **16.7427 ms/frame**, with no
-emulator frame skips or audio underruns. Qualify Linux and the Bold 9900/BBOS 7.1
-separately. Neither platform has passed sustained-playback qualification.
+## Roadmap review
 
-| Area | Implemented | Still to qualify or complete |
-| --- | --- | --- |
-| Timing | Shared clock/events, ARM/Thumb costs, bus waits, timers, DMA, IRQ, HALT and supplied-BIOS reset | DMA activation/lifecycle, broader pipeline/prefetch behavior, IRQ latency, LCD timing and STOP |
-| Graphics | Raster software PPU, modes 0–5, text/affine BG and OBJ, priorities, windows, blend/brightness and mosaic | Color rounding/palette bit 15, fetch delays, sprite evaluation and combined scenes |
-| Audio | Four PSG channels, Direct Sound A/B, timer/DMA FIFO feed and bounded PCM output | Reference divergences, sequencer/PWM edges and physical playback; phone MMAPI packet transport is implemented but unqualified |
-| Cartridges | SRAM, Flash 64/128 KiB, EEPROM sizes, persistence, RTC/GPIO and deterministic sensor state | Busy/ADC timing, RTC IRQ, calibration and wider real-player save coverage |
-| Desktop | Keypad, Swing output, clock pacing, scenario recording and bounded host workers | Native-window/audio integration and sustained presentation measurements |
-| Save states | Format-3 complete snapshots with format-1/2 loading, identity/CRC checks, pending CPU/DMA work and hardware event order | Wider gameplay coverage and device storage behavior |
-| Serial | Normal disconnected shifts, multiplayer-port status with no cable, JOY/GPIO registers | UART backend, peer communication and physical port timing |
-| Phone frontend | Home/pause UI, ROM/BIOS browser, five slots, cheats, key remapping, volume/mono/mute, scaling, frame skip and FPS | Simulator/device UI, permissions, native keyboard, audio latency/gaps and performance |
-| BlackBerry build | Legacy export, actual CLDC compilation and vendor RAPC COD | Simulator application execution and physical Bold testing |
+The project already has the phone frontend, local ROM/BIOS selection, five state
+slots, cheats, remapping, shoulder assist, audio/display settings and speed modes.
+The SDK builds a COD and the exported core passes its portability checks.
 
-Guest CPU, PPU and sound share one deterministic owner. Host encoding/I/O may
-run in parallel on bounded owned snapshots. Further threading follows measured
-bottlenecks and preserves event ordering.
+The main delivery gap is a connected player journey and sustained gameplay
+coverage. Most of the fifteen game routes are boot/intro smoke tests. Named
+Doom II first-level, F-Zero race, Mario & Luigi movement and LeafGreen save routes
+provide useful gameplay evidence, but do not establish a completed three-game
+playability pack, whole-application acceptance or measured Bold performance.
+
+The previous queue put hardware-model disagreements ahead of those deliverables.
+Those disagreements remain recorded below; they no longer automatically block
+every frontend, gameplay, profiling or preview task. Test counts and new probe
+matrices support a milestone; they do not complete it by themselves.
+
+<a id="next-roadmap-correctness-gameplay-then-sustained-playback"></a>
+
+## Delivery milestones
+
+| Milestone | User-visible result | Finish line | Current status |
+| --- | --- | --- | --- |
+| **M1 — Golden Sun complete session** | Open the application and actually play, then save and resume. | One continuous production-frontend route: Home → external BIOS/ROM selection → authentic GBA boot → game menu → controlled movement, interaction and a room/map transition → pause → save/load one slot → continue playing. Retain input/checkpoints and an uninterrupted app recording with its capture environment identified. | **Next.** Boot/intro captures and core state replays exist; the entire player journey is not yet accepted. |
+| **M2 — Three-game playability pack** | Demonstrate useful progression in three supplied games. | Golden Sun: complete a battle and return to the field. Sonic Advance 3: complete the first act. LeafGreen: obtain a starter, complete the first rival battle, save in-game and cold-load that progress. Each route has recorded input, named checkpoints and a repeatable endpoint. | **Open.** Existing shorter routes and LeafGreen saves are starting points. Keep all fifteen smoke routes as regression coverage. |
+| **M3 — Phone frontend acceptance** | The implemented settings and save features work together during play. | Complete the interaction matrix below through application commands; preferences survive restart, cancellation/failures preserve the running game and committed saves, and input never remains stuck. Exercise state formats 1/2 loading and current-format saving. | Features implemented and individually tested; combined acceptance remains open. Host acceptance and BBOS execution are reported separately. |
+| **M4 — Playback baseline and measured optimization** | Establish where time and audio continuity are lost in playable scenes. | Reproducible profiles for the three M2 scenes at 1×, full sound and frame skip off: guest work, allocations/GC, queue bounds and produced/consumed PCM. Measure presentation/audio where the environment supports them. Fix one demonstrated bottleneck if needed and compare the same workload/output before and after. | Headless capture timings exist; the three-scene playback baseline and sustained target qualification are open. |
+| **M5 — Reviewed phone preview candidate** | A concrete, reviewable next phone build and release decision. | M1–M3 accepted, M4 baseline recorded, host/export/SDK/actual-CLDC checks pass, and release notes identify remaining accuracy/runtime limits. Present the candidate commit and build results. After the user's release approval, freeze the version, tag and publish the phone ZIP with COD siblings, JAD/ALX, instructions, provenance and checksums. | The build pipeline works and 0.9.0 is published. No new tag/package is authorized by this roadmap. |
+
+M1 precedes the larger M2 pack. M3 acceptance can progress alongside M2; M4
+uses their playable scenes. M5 is a **preview** decision, separate from complete
+hardware-accuracy and physical-device qualification. The release version is
+chosen with the user at that decision, not automatically for each milestone.
+
+### Immediate M1 work
+
+1. Reuse the supplied Golden Sun (`AGSE`) ROM, external BIOS and existing input
+   recording/capture tools. Establish the first controllable scene from a cold
+   application launch; do not replace startup with a preloaded machine state.
+2. Record deliberate movement, interaction and a map/room transition, then drive
+   pause/save/load through the frontend. Use an owned local save copy.
+3. Verify the resumed scene and controls, plus an exact 120-frame RGB/PCM and
+   full-state continuation. Produce one continuous app capture of that route.
+4. Fix a core issue only when this route exposes a concrete crash, hang, broken
+   action, blocking visual/audio fault or lost progress. Tie the regression to
+   that observable failure, then return to M1.
+
+### M3 application acceptance matrix
+
+| Area | Required combined-flow check |
+| --- | --- |
+| Library and startup | Choose another readable ROM folder, restart the app, browse from that folder, select an external BIOS, reject an unreadable/wrong-size BIOS, cancel browsing safely, and exercise Show/Skip startup. |
+| Slots and battery saves | Use all five slots, overwrite and reload, reject wrong-ROM/BIOS and damaged states safely, reopen the app and retain committed progress. Keep interrupted-write recovery and legacy-state loading covered. |
+| Controls | Remap all ten GBA buttons; combine D-pad/A/B with independent L/R locks; release keys on focus loss, pause, load, restart and game changes. Persist mappings, never held keys. |
+| Cheats | Add, enable, disable and delete a supported Raw/unencrypted CodeBreaker 3/8 entry; observe its game effect and safely report invalid/unsupported input. |
+| Sound and speed | Change volume, mono and mute; exercise 1×/2×/4×/8×; acceleration mutes output and 1× restores the independent mute preference. Track actual MMAPI playback separately. |
+| Display and diagnostics | Preserve the complete 240×160 image in aspect-fit mode; test stretch/native/integer modes, frame skip and FPS overlays. Display submission policy must not skip guest execution or audio. |
+
+## Native BBOS execution: parallel target gate
+
+The SDK/ECJ/RAPC build is verified. The installed 9900 simulator has opened a
+window and accepted a controller `LoadCod` command; no confirmed BBOS boot or
+BerryBoy application interaction has been observed. The touch instruction/blank
+window outcome and host audio limitation are described in
+[BLACKBERRY.md](BLACKBERRY.md#vendor-preverification-and-current-simulator-outcome).
+No physical Bold is available.
+
+Make one bounded environment attempt tied to **install → open app → browse ROM
+→ play → pause/load**. If the same environment limitation prevents this, record
+the exact blocker and continue M1–M4 on the available host/frontend harness.
+Do not spend successive delivery batches changing Wine/QEMU settings without
+new evidence. Native key input, file permissions, MMAPI behavior and device
+performance remain explicit target checks; host doubles do not pass them.
 
 ## Current validation
 
-- **5234 host tests**, **4973 exported-core tests**, and **4973 tests against the
-  actual new ECJ/CLDC classes** pass, with no failures or skips. Counts include
-  parameterized invocations. Detailed build and artifact data is in the linked evidence.
-- Native Linux JDE 7.1 / ECJ 4.6.1 / RAPC verification passes and produces a
-  **0.9.1 development** JAD/COD. Host: Linux x86_64, Temurin 21.0.8, Maven 3.9.11.
-- [Writable-memory opcode latching](../benchmarks/video-opcode-latching-2026-11-11.json)
-  matches all 2240 reference observations, correcting 64 early video-memory changes.
-  Format 3 admits palette/VRAM/OAM slots and still loads formats 1/2. Forty actual
-  old-format phase snapshots and six game migrations retain their checked state;
-  fifteen game routes preserve entire RGB/PCM/Flash and counts across 56400 frames.
-  Forced-blank probes leave display contention and IRQ latency unqualified.
-- [WRAM opcode latching](../benchmarks/wram-opcode-latching-2026-11-10.json)
-  now matches all 336 NBA/mGBA observations, correcting the
-  [24 early changes](../benchmarks/self-modify-diagnosis-2026-11-10.json).
-  Separate CPU-owned slots retain fetched instructions across stores and DMA.
-  Format 2 saves those slots; format 1 still loads using RAM for its missing
-  opcodes. Fifteen game routes preserve complete RGB/PCM/Flash and guest counts
-  across 56400 frames; old/new states retain their checked continuations.
-- [Prefetch-aware refills](../benchmarks/prefetch-refill-2026-11-10.json) share the
-  normal fetch burst for both physical reads. All 196 shared reference observations
-  now match; the 92 disputed observations retain their prior host outcomes. Four
-  state replays cover DMA between reads. Fifteen routes retain every prior exact
-  frame across 56400 frames, gaining two more Sonic frames. The LeafGreen route
-  keeps all 3611 exact frames and both new-save cold loads restore exact city pixels.
-- [IRQ comparison](../benchmarks/irq-refill-comparison-2026-11-10.json) preserves
-  all model disagreements and rejects partial traces/stale oracle paths. A shared
-  subset match cannot turn the full disputed phase into a pass.
-- [Physical fetch lookahead](../benchmarks/physical-fetch-2026-11-10.json) remains
-  covered by the earlier 162 shared observations and four return-state replays.
-- [BIOS settings](../benchmarks/bios-settings-2026-11-09.json) validate a separate
-  local 16 KiB file on the worker before persisting its path. Controller tests
-  cover browsing, cancellation, restart persistence, invalid files and RMS failure;
-  session tests preserve the paused machine byte-for-byte when selecting a BIOS.
-  The native JAR contains neither ROM/BIOS files nor the supplied BIOS payload.
-- [Release 0.9.0](../benchmarks/release-0.9.0-2026-11-06.json) is published with
-  two raw COD modules, JAD/ALX, native JAR, installation instructions and checksums.
-  The public ZIP's SHA-256, every internal checksum and its clean tagged source
-  identity were verified after the GitHub workflow succeeded.
-- [Configurable game folder](../benchmarks/rom-folder-2026-11-06.json) persists a
-  chosen local directory and browser selections. The asynchronous picker starts
-  there, supports other storage roots and Unicode names, filters ROM/BIOS files,
-  and suppresses late callbacks after cancellation. Host doubles and native SDK
-  compilation cover the new interface separately.
-- [Optional boot animation](../benchmarks/boot-animation-2026-11-06.json) hides
-  BIOS presentation without bypassing its initialization. Golden Sun, LeafGreen
-  and Sonic Advance 3 retain identical complete state, RGB and PCM at every
-  startup frame against visible execution; native-session tests verify the first
-  submitted frame belongs to the game when Skip is enabled.
-- [Playback speed](../benchmarks/playback-speed-2026-11-06.json) adds persistent
-  1×/2×/4×/8× host pacing and bounded submission cadence. Native-session tests
-  cover muted acceleration, restoration at 1×, the independent mute preference,
-  and state load across a speed change. Deadline tests cover long-duration
-  overflow; rate tests count all guest frames separately from submissions.
-- The [phone feature boundaries](ARCHITECTURE.md#responsibilities) now separate
-  input, settings, audio, video and UI, with matching test packages. Key mappings
-  have their own state owner. Package moves preserve preference/state layouts and
-  all eleven application gallery PNGs byte-for-byte; each area is delivered separately.
-- [Sonic affine/DMA diagnosis](../benchmarks/sonic-affine-dma-diagnosis-2026-11-06.json)
-  narrows frame 3555 to 195 pixels on scanline 6 and a transient BG2Y difference.
-  Both CPU routes compute the same source halfword, but its store completes on
-  opposite sides of the current early HBlank request. An isolated experiment
-  separating pixel sampling from a 1008-cycle HBlank callback restores that frame
-  and keeps all previously exact Sonic frames, gaining three. It remains unshipped:
-  independently distinguish LCD status/DMA/IRQ phases and repeat the wider gates.
-- [Natural LCD phase probes](../benchmarks/lcd-natural-phases-2026-11-06.json)
-  distinguish status, DMA readiness/write visibility and IF propagation in
-  eight asset-free cases per model. NBA and mGBA disagree on fine timing but
-  agree on all eight terminal register/data results, now portable regressions.
-  Forced blank preserves HBlank DMA; VBlank lines suppress it. The different
-  event models need justified hardware expectations before production adoption.
-- [IME register width](../benchmarks/ime-width-2026-11-06.json) fixes the first
-  Doom II startup exception on a word load at `0x04000208`. Twelve independent
-  NBA/mGBA register cases agree; ARM/Thumb word-load regressions now pass.
-  A separate disconnected multiplayer initialization gate was isolated next.
-- [Disconnected multiplayer initialization](../benchmarks/disconnected-multi-2026-11-06.json)
-  now exposes pulled-up SI/SD status and accepts a waiting start without a peer.
-  Forty-eight mGBA observations plus cancellation, GPIO selection and state replay
-  regressions pass. Doom II completes the 1800-frame smoke route after both fixes;
-  existing Tony Hawk/F-Zero/Mario & Luigi RGB/PCM captures remain unchanged.
-- [Four added stress titles](../benchmarks/stress-games-2026-11-06.json) expand
-  the uploaded library to fifteen games. Each completes a fresh 1800-frame route;
-  a separate 2400-frame Doom II route reaches the first level with movement,
-  turning and fire input. Strict RGB/PCM comparisons still fail. Later extended
-  routes reach a F-Zero race and player control in Mario & Luigi, recorded below.
-- [Shared recording validation](../benchmarks/recorded-inputs-2026-11-06.json)
-  gives scenario and state-replay tools the same immutable, validated input timeline.
-  State replay now rejects duplicate/out-of-order cycles and invalid keys/sensors
-  before executing them. The Doom first-level snapshot and its exact 120-frame
-  continuation are unchanged after the extraction and also replay on CLDC classes.
-- [Cartridge DMA during discarded IRQ fetches](../benchmarks/irq-cartridge-prefetch-2026-11-06.json)
-  adds 144 independent ARM/Thumb observations over all Game Pak wait regions,
-  physical page edges and cold/warm prefetch. Host and actual CLDC outputs match
-  NBA exactly; the original 216-observation matrix remains byte-identical.
-  This qualifies raw readiness arbitration, separately from peripheral activation
-  and IRQ propagation; production timing is unchanged.
-- [Race, player control and state continuations](../benchmarks/gameplay-state-routes-2026-11-06.json)
-  add a 6000-frame F-Zero race and a 6600-frame Mario & Luigi route with controlled
-  Toad movement in the house. Mario's final RGB frame matches the reference;
-  F-Zero's still differs in 8626 pixels. Strict whole-stream RGB/PCM differ in
-  both routes. Doom's first level, F-Zero's race and
-  Mario's house each retain exact RGB/PCM and complete state over 120 resumed
-  frames; isolated CLDC classes reproduce all three future-state hashes.
-- [Sticky shoulder controls](../benchmarks/shoulder-assist-2026-11-06.json)
-  add optional independent L/R locks, repeat protection, visible active badges
-  and release on pause/focus/game/state changes. Settings version 3 migrates
-  versions 1/2 with assist off. The gallery includes a production-rendered example.
-- [DMA activation game gate](../benchmarks/dma-activation-game-gate-2026-11-06.json):
-  a scheduled-activation prototype matches 96 CPU observations and 66 independent
-  lifecycle cases, with host/export/SDK/CLDC checks passing. Eleven game routes
-  retain all backup hashes and software frame/audio continuity, but Sonic gains
-  three exact frames and loses frame **3555**. The prototype is rejected pending
-  diagnosis. Its source patch and observations are retained; production request
-  activation remains immediate; this experiment did not change state format 1.
-  The later WRAM opcode correction independently adds format 2. The 96 readiness-only
-  observations are now portable regressions for the existing CPU arbitration.
-- [Repeated DMA count reload](../benchmarks/dma-repeat-count-2026-11-06.json)
-  matches 288 independent reference observations across four channels, both
-  widths, write timing and count-mask/zero edges. The 108 portable regressions
-  also cover suspended and completed bursts across save/load. A state generated
-  with the released 0.8.1 DMA implementation loaded byte-exactly in format 1;
-  the later format-2 migration retains its fields and adds the opcode extension.
-  Readiness-normalized activation observations now match 96/96 rows with the
-  current CPU arbitration; production request activation remains immediate.
-  Eleven fresh-backup 3600-frame before/after routes retain identical full
-  RGB/PCM, backup hashes, guest cycle/sample counts and per-frame traces.
-- [Phone frontend evidence](../benchmarks/phone-ui-2026-11-06.json): full-state
-  save/load preserves the next 60 frames, PCM and complete final machine state
-  in Sonic, Golden Sun and LeafGreen. Original saves remain unchanged. Native
-  session commands and failed file/RMS commits are exercised with host doubles;
-  actual SDK compilation is checked separately.
-- [Branding/full-screen delivery](../benchmarks/fullscreen-branding-2026-11-06.json)
-  adds an app/launcher icon, four scaling modes, hidden game chrome and preference
-  migration. The five-game gallery uses the shared production renderer/scaler.
-  Captures are generated headlessly with Java2D fonts; device execution is not
-  inferred from the gallery. Exact source/asset hashes and results are in the record.
-- Earlier IRQ source waits and prefetch/page-edge observations now match the pinned,
-  unmodified NanoBoyAdvance reference. Earlier CPU/DMA matrices are retained.
-  [Latest timing and game evidence](../benchmarks/irq-fetch-waits-2026-11-05.json).
-- The previous timing delivery exercised eleven uploaded games with fresh backups for 3600 guest frames
-  each. These are boot/intro smoke routes; full RGB/PCM agreement and eleven
-  gameplay passes have not been established. The linked timing record identifies
-  output changes and independent exact-frame outcomes.
-  That correction gains 17 exact Sonic frames without losing previously
-  exact frames in any title; full-stream differences remain open.
-- The saved-player LeafGreen continuation retains identical full RGB/PCM and the
-  original save. Its first remaining RGB555 mismatch stays at frame 930.
-- The [README GIF](../README.md) contains real game output in the production
-  Swing component, painted headlessly. Its 10 fps silent montage provides no
-  presentation deadline, audible playback or device performance evidence.
+- **5234 host tests**, **4973 exported-core tests** and **4973 tests against the
+  actual new ECJ/CLDC classes** pass without failures or skips. Native JDE 7.1 /
+  ECJ 4.6.1 / RAPC builds the 0.9.1 development COD. Host: Linux x86_64,
+  Temurin 21.0.8, Maven 3.9.11.
+- The latest [writable-memory checkpoint](../benchmarks/video-opcode-latching-2026-11-11.json)
+  closes the in-progress opcode correction: 2240 shared reference observations,
+  forty old-format phase snapshots, six real-game migrations and 56400 frames
+  across fifteen routes. Complete RGB/PCM/Flash and guest/sample counts remain
+  unchanged from the preceding checkpoint. These are regression results, not
+  fifteen completed gameplay qualifications.
+- Machine states now write **format 3** and load **formats 1/2/3**. Saved WRAM
+  opcodes from format 2 survive migration. Earlier formats reconstruct missing
+  opcodes from memory; they cannot recover instruction data they never stored.
+  Earlier app versions reject new format-3 files. ROM/BIOS identity, CRC and
+  failed-load isolation remain enforced.
+- [Frontend/state checks](../benchmarks/phone-ui-2026-11-06.json),
+  [folder selection](../benchmarks/rom-folder-2026-11-06.json),
+  [BIOS selection](../benchmarks/bios-settings-2026-11-09.json),
+  [playback speed](../benchmarks/playback-speed-2026-11-06.json) and
+  [shoulder assist](../benchmarks/shoulder-assist-2026-11-06.json) retain detailed
+  feature evidence. [Phone storage failures](../benchmarks/phone-storage-interruption-2026-11-09.json)
+  and [atomic host saves](../benchmarks/atomic-save-publication-2026-11-09.json)
+  cover injected IO failures and recovery.
+- [Gameplay routes](../benchmarks/gameplay-state-routes-2026-11-06.json) record
+  F-Zero racing, Mario & Luigi movement and Doom II state continuations.
+  [LeafGreen outdoor saves](../benchmarks/leafgreen-overworld-save-2026-11-06.json),
+  [counter wrap](../benchmarks/leafgreen-counter-wrap-2026-11-09.json) and
+  [corrupt slots](../benchmarks/leafgreen-both-slots-2026-11-09.json) retain
+  actual save/recovery results. Full reference RGB/PCM/save agreement remains open.
 
-Local checks are distinct from remote CI. No physical Bold is available. The
-Windows JDK 6 path and simulator runtime remain unqualified. SDK compilation
-alone does not pass those gates.
+## Accuracy and research backlog
 
-## Version milestone releases
+Promote a backlog item into active delivery when a milestone reproduces its
+player-visible failure, user data is at risk, a regression appears, or the user
+explicitly prioritizes it. Otherwise retain the counterexample and dependency
+and continue the next milestone. Do not start another unrelated timing matrix
+just because the previous one was committed.
 
-Routine updates are committed and pushed without tags or release packages.
-After a genuinely large change is implemented and validated, ask the user whether
-to tag it and build a phone package. Release approval is specific to that release;
-host/export/SDK/CLDC validation can continue independently. The current
-release line is [**0.8.2 preview**](https://github.com/pitrecki/berryboy-advance/releases/tag/v0.8.2);
-each package contains normalized raw COD siblings,
-JAD/ALX descriptors, the native MIDlet JAR, installation instructions, checksums
-and a build manifest identifying the exact source and tool inputs.
-
-The release workflow is triggered by `vX.Y.Z` tags, with a manual retry entry.
-It restores the pinned JDE/ECJ tools outside Git, repeats host/export/SDK/CLDC
-checks and publishes a draft only after assets upload successfully. A release
-requires a clean build at the tagged commit and a frozen Maven version; changed
-inputs/artifacts, modern desktop bytecode and malformed COD bundles are rejected.
-[Release commands and installation](BLACKBERRY.md#release-packages).
-
-The package/container and write guards have nine focused host cases. The SDK
-bootstrap was exercised against the retained installer, and the minimal SDK
-built the current application. Subsequent release workflow outcomes are recorded
-by GitHub Actions and the release's own immutable manifest.
-The first [release workflow](https://github.com/pitrecki/berryboy-advance/actions/runs/42191836278)
-completed successfully. Its published ZIP was downloaded and its outer/internal
-checksums, source commit and native COD/JAD/ALX descriptors were verified.
-
-## Phone frontend roadmap
-
-The requested first frontend is implemented. Its checks establish host behavior
-and SDK/API compatibility, while target execution remains open.
-
-| Stage | Status and next evidence |
-| --- | --- |
-| Menus, local games and controls | Implemented. Verify browsing/permissions, simultaneous keys, focus release, pause/resume and text/layout on BBOS. |
-| Configurable game folder | Implemented. Home → ROM folder persists the chosen local location; Open game → Browse ROM starts there. Last selected ROM/BIOS URLs persist independently. |
-| BIOS settings | Implemented. Display & audio → BIOS file validates an external 16 KiB file before saving its path; the next Open game uses it. Current-game restart/state loading retain the active BIOS. |
-| Boot animation | Implemented. Show/Skip persists and applies on open/restart. Skip runs authentic BIOS startup without presentation/audio/pacing; state loading preserves the saved scene. |
-| Playback speed | Implemented. Pause/settings select 1×/2×/4×/8×; faster modes mute output and 1× restores it according to Mute. Guest clocks and save-state format remain unchanged. Submission intervals combine speed and frame skip; FPS remains measured. Selected factors are pacing targets, not achieved phone performance claims. |
-| Shoulder combinations | Implemented. Controls → L/R assist → Tap to lock keeps either shoulder held while using A/B and directions; a second tap releases it. Default off, mode persists, held locks never persist and clear at lifecycle boundaries. |
-| Five save slots | Implemented. [Host storage failure injection](../benchmarks/phone-storage-interruption-2026-11-09.json) covers partial/truncate/flush/close failures and failed RMS publication for slots and battery saves. Reopening and retries preserve committed data and the original `.sav`. Target restart, low-storage and power-loss checks remain open. |
-| Cheat support | Raw 8/16/32-bit RAM writes and unencrypted CodeBreaker 3/8 are implemented. Other CodeBreaker commands and encrypted GameShark/Action Replay require explicit format specifications and independent fixtures before support. |
-| Audio settings and MMAPI | Volume/mute/mono and bounded packet output are implemented. Qualify actual format support, audible gaps, latency and pause/load cancellation; a gapless backend needs target evidence. |
-| Frame skip and FPS | Implemented, with full-canvas aspect-fit/stretch/native/integer modes. Skipping affects display submissions only; the PPU, guest clock and audio continue. GBA FPS counts executed guest frames, draw FPS counts distinct game frames painted by the canvas, not instruction throughput or certified physical presentations. |
-| Application gallery | Five game views and refreshed app menus are available. Capture details identify the headless renderer and original input/asset hashes. |
-
-The no-skips sustained-playback gate below still requires frame skip **off**, full
-sound, measured physical presentation/audio and correct game output. Optional
-user settings do not relax that qualification protocol.
-
-## Next roadmap: correctness, gameplay, then sustained playback
-
-| Order | Next work | Completion evidence |
+| Item | Known result and dependency | Delivery trigger |
 | --- | --- | --- |
-| 1 / P0: DMA activation and lifecycle | Natural LCD probes now separate status, readiness, writes and IF publication. NBA/mGBA disagree on those phases; resolve the expected timing with hardware evidence or an independently justified specification before choosing a model. Then repeat game/CPU/state gates. | Keep 96 CPU, 66 lifecycle and eight shared natural-LCD terminal observations, previously exact frame sets and software frame/audio continuity. The Sonic-only phase experiment has no lost exact frames; wider validation remains open. Production activation remains immediate; WRAM opcode latching separately adds state format 2. |
-| 2 / P0: Wider CPU/LCD timing | Cartridge DMA discarded-fetch timing has 144 observations, and corrected post-return physical fetches have 162 observations agreed by all three emulators. Prefetch-aware refills match 196 shared observations; 92 remain disputed. WRAM opcode latching now matches 336 shared observations. Extend latching to WRAM aliases/other writable regions, then IRQ propagation/mask latency. Trace the LeafGreen frame-930 offset and HBlank at cycle 960 versus the reference's 1008. | Matching event/retirement observations with justified expected timing. Keep in-flight snapshots distinct from retired state. Do not adjust a constant solely to improve screenshot counts. |
-| 3 / P0: Graphics expected results | Resolve the 2244-case three-way disagreement on brightness rounding and palette bit 15 using independently justified outputs or hardware evidence. Then qualify combined raster/OBJ/window effects. | Explicit per-pixel expectations and regression scenes. The renderer remains unqualified until those expectations are established; no relaxed tolerances. |
-| 4 / P1: Audio correctness | Start with late Sonic Advance 3 and Wario Land 4 differences. Compare timer/DMA FIFO, PSG and sample-clock events before diagnosing gain/filter/resampling. | Repeatable sample/event checkpoints, justified comparison rules, listening review and no software-buffer loss. Timing-dependent fixes follow the timing gates. |
-| 5 / P1: Gameplay and saves | LeafGreen now covers repeated indoor saves, a Pallet Town save with four cold cross-loads and a 120-frame state replay, plus interrupted writes and counter wrap through 0/1 in both engines. Trace CPU/IRQ timing around Timer1 seeding and frame-1548 relocation/VBlank RNG ordering; extend longer gameplay and isolate the remaining RNG/field timing differences. Counter wrap, both-slot corruption and host-file publication now have bounded recovery coverage. Extend Mario/Luigi movement/battle, Sonic/Wario level, Golden Sun battle and V-Rally race work. Doom II first level, F-Zero race and Mario & Luigi Toad control retain named routes and state replays. | Preserve strict binary and full-stream outcomes; visible play or a successful full-state replay alone does not qualify game accuracy or cartridge-save compatibility. |
-| 6 / P2: Linux performance | Once selected routes pass correctness, profile CPU/PPU/presentation and optimize one demonstrated bottleneck at a time. Consider acceleration only with a supported backend and matching software output. | Three 10-minute runs after 30-second warmup, measured presentation/audio, bounded queues/memory and the gates below. |
-| 7 / Target-dependent: BlackBerry runtime | Run the new phone frontend in the simulator; qualify file access, slots, input and MMAPI output, then repeat correctness and sustained playback on a physical Bold. | Separate build, simulator and device reports; actual application results and physical measurements. |
+| DMA/LCD activation and lifecycle | Natural LCD probes distinguish status, DMA readiness/writes and IF. NBA/mGBA disagree on fine timing; production activation remains immediate. Choosing a model needs independent hardware/specification evidence. [Evidence](../benchmarks/lcd-natural-phases-2026-11-06.json). | A named M1/M2 gameplay failure or independently justified expected timing. |
+| IRQ/prefetch latency | The prefetch correction matches 196 shared observations; 92 remain disputed. The expanded 360-row host/CLDC stream remains unchanged. [Evidence](../benchmarks/prefetch-refill-2026-11-10.json). | A scenario blocker with a bounded counterexample, rather than another broad sweep. |
+| Graphics accuracy | Brightness rounding/palette bit 15 still have 2244 three-way disagreements. Combined effects and display contention remain unqualified. [Earlier diagnosis](REFERENCE-VALIDATION.md). | A concrete scene fault; production expectations need independent justification. |
+| Audio correctness | Sonic/Wario reference PCM differences and real MMAPI gaps/latency remain open. Separate timer/FIFO events from resampling/filtering and transport. | Audible failure in M2/M3, or a bottleneck demonstrated by M4. |
+| LeafGreen RNG/save differences | Last traced Timer1 seed is 5726 versus 5780, with 630 matching changes before it and a caller-order divergence at change 1282. The latest full outdoor-save checkpoint has 37 unclassified NPC/Quest Log bytes; both cold loads work. Strict comparisons still fail. [Evidence](../benchmarks/prefetch-refill-2026-11-10.json). No new full RNG/save trace was run in the video-opcode step. | Lost/incorrect progress in the M2 route, or an independently supported timing diagnosis. Never force seeds or normalize away payload bytes. |
+| Additional features | Rewind, link play, encrypted cheat formats, new sensors and GPU acceleration are deferred. WarioWare: Twisted! ROM/sensor recordings are unavailable. | Reconsider after M1–M3; existing supplied games are sufficient for the next milestones. |
 
-Input recording and save-route development can proceed alongside timing
-investigation. A route remains failing until its unexplained differences are
-resolved. [REFERENCE-VALIDATION.md](REFERENCE-VALIDATION.md) preserves earlier
-color, timing, audio and save diagnoses; its per-change counts are historical.
+## Evidence and acceptance rules
 
-[Repeated LeafGreen saves](../benchmarks/leafgreen-repeated-saves-2026-11-06.json)
-refresh generation 2 on the current core and add generation 3 after a cold start
-and opposite movement. All eight fresh BerryBoy/mGBA cross-loads preserve the
-save bytes and restore exact room pixels. Each generated pair still differs in
-667 bytes: 654 rekeyed encrypted bytes, four key bytes, eight checksums and one
-play-time VBlank. Independent format source and synthetic inspector regressions
-account for those differences; keys and play time remain explicit decoded
-differences. Strict whole-file and full RGB/PCM results still fail. Outdoor
-continuation and interruption outcomes are recorded below.
+Functional playability, reference accuracy, build portability and physical
+performance have separate results. A functional milestone may finish with
+explicitly open accuracy issues; its evidence must retain the strict failing
+RGB/PCM/save results. Crashes, hangs, broken required actions and lost/corrupt
+player progress block the affected milestone and preview. Do not relax pixel,
+audio or binary comparisons, mask differences or relabel them as accurate.
 
-[Interrupted LeafGreen saves](../benchmarks/leafgreen-interrupted-save-2026-11-06.json)
-sample actual generation-4 Flash writes at 190 frame boundaries. Early, middle
-and final-sector interruptions retain the complete generation-3 slot. All six
-BerryBoy/mGBA cold loads restore its exact room pixels; two completed-save
-controls restore the new position. Injected bytes stay unchanged after every
-load. Strict inspection still rejects incomplete files, and full RGB/PCM streams
-still differ. Counter wrap, both-slot corruption and host-file publication are recorded below; these observations do not qualify physical power-loss timing.
+Every core change retains the existing regression fixtures, previously exact
+reference checkpoints and guest/audio continuity. Record source/build, hardware,
+ROM/BIOS/input/save hashes, route/checkpoint coordinates and reference version.
+Use fresh output paths and disposable save copies. Keep ROMs, BIOS, SDKs, saves
+and generated captures out of Git. [SCENARIOS.md](SCENARIOS.md) owns commands;
+linked JSON and Git history retain earlier detailed measurements.
 
-[Counter-wrap saves](../benchmarks/leafgreen-counter-wrap-2026-11-09.json)
-start from a disposable copy with only generation-2/3 trailer counters changed to
-`0xFFFFFFFE`/`0xFFFFFFFF`. Both engines actually save counter 0, then counter 1.
-All eight cold cross-loads retain the source save bytes and restore exact expected
-room pixels. The inspector now selects zero over `0xFFFFFFFF` using the game's
-specific rule, while incomplete/corrupt generations still fail. Generated save
-pairs differ in 666/667 bytes, with no unexplained payload changes; strict whole-file
-and full RGB/PCM streams still fail. Both-slot corruption is recorded below.
+The long-term target remains `16777216 / 280896` = **59.7275 refreshes/s**,
+**16.7427 ms/frame**, with full sound, frame skip off and no audio-buffer loss.
+The original [qualification suite](../benchmarks/suite.json) remains planned:
+30-second warmup, three 10-minute runs, actual presentation/audio measurements,
+bounded memory/queues and A/V drift within one native frame without accumulation.
+Headless work timings and instruction throughput cannot pass that physical gate.
+Its missing fifth-game/sensor assets do not block M1–M4 or a clearly scoped preview.
 
-[Host save publication](../benchmarks/atomic-save-publication-2026-11-09.json)
-forces and closes a temporary sibling before atomic replacement, and refuses a
-non-atomic fallback. Nineteen real-file fault cases cover partial writes,
-force/close errors, unsupported rename, lost acknowledgement, cleanup failure and
-retry. A committed file remains loadable; pending backup data stays dirty after
-failure. Repeating the 2750-frame LeafGreen counter-1 save through the new writer
-preserves every RGB/frame checkpoint, all PCM and all 128 KiB of Flash exactly.
-This qualifies injected IO failures; physical power-loss durability remains open.
+Run `mvn verify` for code changes, `tools/test-with-console.sh` for portable-core
+or export changes, and SDK/actual-CLDC checks for affected phone/core work.
+Use feature packages and one deterministic guest owner; parallel host workers
+receive bounded owned snapshots. Report progress as **milestone → visible result
+→ remaining acceptance**, with test counts as supporting evidence.
 
-[Both-slot corruption](../benchmarks/leafgreen-both-slots-2026-11-09.json)
-adds two checksum-invalid slots, an invalid older slot plus erased newer slot,
-and an all-FF control. All six cold boots retain the injected Flash bytes and
-end on reference-exact new-game/Controls frames. Both corrupted cases display
-"The save file has been deleted…" before the recorded A input; they never restore
-a partial old generation. The warning still differs in 29916 pixels at frame
-1028, and full RGB/PCM streams still fail. Strict inspection continues to reject
-these invalid/empty files; no repair or image tolerance is introduced.
-
-[LeafGreen outdoor save](../benchmarks/leafgreen-overworld-save-2026-11-06.json)
-extends the route through downstairs to Pallet Town and writes generation 4 at
-x=6, y=8, map 3/0. Four cold cross-loads skip the game's Quest Log with B, preserve
-the input saves and end with identical same-seed BerryBoy/mGBA city frames.
-The host state snapshot at frame 4190 replays 120 frames with exact RGB/PCM and
-full state; actual CLDC classes match immediate and final full state. The save
-files differ in 709 bytes, including 42 additional object-event/Quest Log script
-bytes outside the rekey/time/checksum classification. These remain open.
-The route matches 3611/4190 reference RGB frames; full RGB/PCM streams still
-fail. Cold-loaded frames differ from post-save frames in 512 flower-area pixels;
-no image region is masked or declared equivalent.
-
-[Outdoor activity diagnosis](../benchmarks/leafgreen-activity-2026-11-09.json)
-maps the 42 additional bytes to NPC 2's current/previous x coordinate, direction
-fields and a different Quest Log command timeline. The NPC starts from the same
-stored coordinates; its recorded walk deltas reproduce both final positions
-(map x=13 versus x=11). BerryBoy stores 14 commands, mGBA 18. The first differing
-NPC command waits 93 versus 61 ticks and faces up versus walking down. Repeating
-the complete route reproduces both RGB/PCM streams and Flash files byte-for-byte.
-These are differing execution results; RNG/field timing still needs tracing.
-The optional activity decoder leaves strict equality and the 42-byte remainder
-unchanged, and rejects unsupported commands rather than guessing their size.
-
-Deferred features: rewind, link play and optional accelerated
-presentation. Add them after current correctness and playback needs justify them.
-Cartridge work should include repeated saves, erase/bank edges, RTC rollover and
-safe failure injection using disposable save copies.
-
-## Five-game qualification suite
-
-[benchmarks/suite.json](../benchmarks/suite.json) retains the original
-**planned-not-run** qualification entries. Fifteen uploaded games do not replace
-this suite. Mario & Luigi assets and an initial player-control route are available.
-WarioWare: Twisted! assets and a deterministic sensor recording are still missing.
-
-| Game | Proposed route and coverage |
-| --- | --- |
-| Golden Sun | Layer overlap and battle effects, including transparent OBJ priority |
-| V-Rally 3 | Fixed race with bitmap/sprite composition and backdrop blending |
-| Mario & Luigi: Superstar Saga | Boot, transitions and gameplay audio |
-| Wario Land 4 | Intro and fixed level route with timer/IRQ-sensitive audio |
-| WarioWare: Twisted! | Recorded minigames with gyro input, graphics and sound |
-
-These are coverage candidates motivated by documented emulator failure cases,
-not a measured ranking of the slowest games. Profile the selected scenes before
-calling them the hardest workload.
-
-## Run protocol and acceptance
-
-Use [SCENARIOS.md](SCENARIOS.md) for local mappings and runner commands. Each
-record identifies source/build, hardware/OS/runtime, renderer, audio format and
-buffer size, ROM/BIOS/input/initial-save hashes, RTC/sensor seed, frame/sample
-coordinates and reference version. Use fresh output paths and disposable save
-copies. Keep ROMs, BIOS, saves and raw generated captures outside Git; commit
-original traces and reviewable evidence.
-
-For each qualified scenario and target:
-
-1. Check correctness against identified reference checkpoints and full streams.
-   Crashes, hangs, unexplained pixels/audio, broken sensors or corrupt saves fail.
-2. Record cold boot separately; warm up for 30 seconds and measure 10 minutes,
-   three times. Keep full resolution and sound. Record power/temperature/throttling
-   on the physical device.
-3. Count guest VBlank IDs, rendered frames and actual presentations. Measure
-   monotonic intervals, p50/p95/p99/max work, misses, skips and duplicates.
-4. Count produced/consumed audio, underruns/overruns and A/V drift. Retain video
-   and WAV output for visual/listening review; instruction throughput is not game FPS.
-
-Pass only with **zero dropped/skipped guest frames, zero missed presentation
-deadlines and zero audio underruns/overruns**, bounded memory/queues and A/V drift
-within one native frame without accumulation. Preserve intentional repeated game
-images. Display refresh-rate conversion repeats must be distinguished from lost
-guest frames. Average FPS and headless work timings cannot pass this gate.
-
-Every implementation change requires `mvn verify`; portable-core/export changes
-also require `tools/test-with-console.sh`. Keep checks asset-free where possible.
-Deliver verified changes as English commits under the configured user identity,
-push and verify the remote revision. Do not mute sound, skip frames or normalize
-unexplained failures into a pass.
-
-## Evidence and references
-
-- [Branding, full-screen rendering and the refreshed gallery](../benchmarks/fullscreen-branding-2026-11-06.json)
-
-- [Phone UI, state replay and SDK checks](../benchmarks/phone-ui-2026-11-06.json)
-
-- [Latest IRQ wait/prefetch correction and game regression](../benchmarks/irq-fetch-waits-2026-11-05.json)
-- [Previous waiting-fetch correction](../benchmarks/cpu-fetch-resume-2026-11-05.json)
-- [Historical game comparisons and diagnoses](REFERENCE-VALIDATION.md)
-- [BlackBerry tooling and runtime limits](BLACKBERRY.md)
-- [GBATEK hardware descriptions](https://mgba-emu.github.io/gbatek/)
-- [NanoBoyAdvance hardware tests](https://github.com/nba-emu/hw-test)
-
-Earlier roadmap snapshots, implementation-stage counts and synthetic profiling
-are retained in Git history. They are not current qualification results.
-
-## LeafGreen RNG origin checkpoint
-
-The earlier [seed/caller diagnosis](../benchmarks/leafgreen-rng-origin-2026-11-09.json)
-and [physical-fetch correction](../benchmarks/physical-fetch-2026-11-10.json)
-retain the preceding traces. The current
-[prefetch-refill checkpoint](../benchmarks/prefetch-refill-2026-11-10.json) still
-has 630 matching RNG changes before Timer1 seeds 5726 versus 5780. The first
-caller-order difference remains change 1282 around save-block relocation/VBlank.
-Read-only tracing retains identical RGB, PCM, backup bytes and counts.
-
-The route's entire RGB stream remains unchanged. Its new Flash image has 37
-unclassified activity bytes against the reference, versus 35 before; both cold
-loads preserve its bytes and restore exact city pixels. Strict save and full
-RGB/PCM outcomes still fail. Continue CPU/IRQ tracing at Timer1 enable/read and
-the relocation boundary using the new source/save hashes. Resolve the disputed
-IRQ return/refill expectations before changing that policy; do not force seeds
-or normalize away NPC/Quest Log data.
+Completed verified updates are committed/pushed as the configured user and the
+remote revision is checked. Routine pushes create no tags or release ZIPs.
+After M5 has a concrete candidate, ask the user for that release decision;
+preserve published tags/assets. The published
+[0.9.0 release record](../benchmarks/release-0.9.0-2026-11-06.json) and
+[package instructions](BLACKBERRY.md#release-packages) define the delivery format.
