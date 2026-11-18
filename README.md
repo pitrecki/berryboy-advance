@@ -70,6 +70,11 @@ This runs the application controller, file picker and session headlessly; LCDUI
 widgets, fonts and audio transport use host adapters. The GIF is silent.
 [Recording details](docs/images/phone/golden-sun-walkthrough.json).
 
+LeafGreen's [rival victory](docs/images/gameplay/leafgreen-rival-victory.png) and
+[party after a cold save reload](docs/images/gameplay/leafgreen-cold-party.png)
+are complete GBA frames from the host gameplay route.
+[Inputs, checkpoints and save verification](benchmarks/leafgreen-starter-rival-2026-11-18.json).
+
 ## Phone screenshots
 
 Application-rendered captures at **640×480**. Both Metroid views show the same

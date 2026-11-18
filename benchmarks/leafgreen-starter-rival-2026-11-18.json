@@ -1,0 +1,337 @@
+{
+  "date": "2026-11-18",
+  "version": "0.9.1-SNAPSHOT",
+  "milestone": "M2",
+  "game": "Pokemon LeafGreen USA Rev-A (BPGE)",
+  "status": "LeafGreen route accepted on host; Golden Sun battle and Sonic Advance 3 first act remain open",
+  "scope": "Obtain a starter, win the first rival battle, save in-game and cold-load the same progress. Host gameplay/state/portability evidence; not independent accuracy or physical phone performance qualification.",
+  "source_base_commit": "e9fef2cae371b84cb54b02abbe4d2ff6859e75da",
+  "capture_source_dirty": true,
+  "verified_tooling_commit": "0c00db63c2b6cd5c5d12d59655c866b08baeb9a4",
+  "source_sha256": {
+    "src/main/java/berryboy/desktop/scenario/FrameInputs.java": "8a364ecd32dcd772a2f9dea7112a4e237211dd87768ed1852b0179ab1086ff57",
+    "src/main/java/berryboy/desktop/scenario/RecordedInputs.java": "977ef2f6ae4434acb14bba7264ea871f860eb4358931b4010c7c094601cd5e21",
+    "src/main/java/berryboy/desktop/ScenarioRunner.java": "4d0742c4c9f24af090753b2a66a6216fdd8786320e1d3bc04929c66993cffc21",
+    "tools/StateRoundTrip.java": "a6e6e54fdd5e163c8603743e6b5e7db0799a1376c101107032ab2ab11e9456d3",
+    "tools/VerifyStateResume.java": "8f96270b448dae793755e78e094a9400152b42de25cd23567cfd93c81007f90c",
+    "tools/inspect_leafgreen_save.py": "a27d66cb8b20aa6b34d16b6feb6d1c1670ac3d8264ee5e6b810d7cada4162252",
+    "tools/leafgreen_progress.py": "ed6d40f87825320c0548f126461186017dce81575b68ee48407f5a1f7a0d8e19"
+  },
+  "host": "Linux x86_64 cloud host; Temurin 21.0.8+9; Maven 3.9.11",
+  "assets": {
+    "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+    "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+    "initial_save_sha256": "8f192f66ac21928523cb295e1353b6f0bd3ce6dc2adc40e34cc5f4b8455b8961",
+    "rtc_seed": "2000-01-01T00:00:00",
+    "devices": 0
+  },
+  "start": "Cold BIOS reset with an owned copy of the established pre-starter player battery save. No emulator-state preload, guest memory patches, forced RNG seeds or save-data repair.",
+  "inputs": {
+    "play_cycle_prefix": {
+      "file": "benchmarks/inputs/leafgreen-overworld-save.tsv",
+      "sha256": "9aa6fdb357675a515ae9e6d61de932b76b0143f6d82808fffb2ae72c8e008fab"
+    },
+    "play_frame_controls": {
+      "file": "benchmarks/inputs/leafgreen-starter-rival.tsv",
+      "sha256": "4f229526303171e2adda3ea7252cdbff82668eb835ba3e0d99ed22447b82dccf",
+      "events": 725,
+      "format": "after_guest_frame keys; apply before the following frame executes, after the cycle prefix has finished"
+    },
+    "reload_cycle_prefix": {
+      "file": "benchmarks/inputs/leafgreen-overworld-continue.tsv",
+      "sha256": "063e8bea8ea50cbf73f2026f4c0941fb175bb5d07fefe24030439f89b6f344c4"
+    },
+    "reload_frame_controls": {
+      "file": "benchmarks/inputs/leafgreen-rival-reload.tsv",
+      "sha256": "a1366399feb2f73aa95f6db98486cc6bd0c8fb7ff0d817eaf067ba125d2ecaed",
+      "format": "after_guest_frame keys; B skips remaining Quest Log text, Start/A opens the party"
+    }
+  },
+  "checkpoints": {
+    "pre-starter-pallet-town": {
+      "frame": 4190,
+      "png_sha256": "446b698330966bcc78b3061baed3eb68da574603885a53f200d5afeaeaf8c548"
+    },
+    "oak-lab": {
+      "frame": 6950,
+      "png_sha256": "93f77d11ebe14e4c496f883c0fa3a04131e9db7d194a43487a1eb4ec77407b41"
+    },
+    "bulbasaur-choice": {
+      "frame": 11962,
+      "png_sha256": "be5667cc9544df3001babe57536c0c3395ec3a4f46d2821f083576d7860a1c1e"
+    },
+    "bulbasaur-received": {
+      "frame": 13354,
+      "png_sha256": "061ab4920ded6483064e32082a43a17460849eb833142347b52cf6a6d40d3733"
+    },
+    "rival-battle": {
+      "frame": 15934,
+      "png_sha256": "4cc92941ea397ee747af5448b762ff6622ce6b70a6cc1330f07a61ef25526029"
+    },
+    "rival-victory-reward": {
+      "frame": 19774,
+      "png_sha256": "3072cd4ce0692cd979edd4be6a9418d045bfacf981c0ee223e42152873f3875b"
+    },
+    "save-confirmation": {
+      "frame": 22198,
+      "png_sha256": "077f49cc91192b2c5f0fd48dd4efc4100a4fe5a511cc9ba97e8e52337ab73cde"
+    },
+    "saved-in-pallet-town": {
+      "frame": 24410,
+      "png_sha256": "02883417fac4a6b529f43e45cb7bad83abfdd3725b0d2dc24c77ee6ba1211457"
+    }
+  },
+  "images": {
+    "rival_victory": {
+      "file": "docs/images/gameplay/leafgreen-rival-victory.png",
+      "sha256": "3072cd4ce0692cd979edd4be6a9418d045bfacf981c0ee223e42152873f3875b",
+      "description": "Actual complete 240x160 GBA frame from the cold replay: Bulbasaur L6, reward for winning"
+    },
+    "cold_loaded_party": {
+      "file": "docs/images/gameplay/leafgreen-cold-party.png",
+      "sha256": "7877e2a6c36fba8569b009283d9f1ea7a84da589ff56edf9010a02c4652e79e0",
+      "description": "Actual complete 240x160 GBA frame from a separate BIOS/battery startup: Bulbasaur L6, 22/22 HP in the party menu"
+    }
+  },
+  "acceptance": {
+    "starter_obtained": true,
+    "rival_victory_observed": true,
+    "game_save_selected_and_overwrite_confirmed": true,
+    "cold_battery_reload_without_emulator_state": true,
+    "reloaded_party_visible": true,
+    "persisted_party_checksum_valid": true,
+    "source_seed_unchanged": true,
+    "reloaded_battery_file_unchanged": true,
+    "exploratory_and_cold_replayed_battery_bytes_identical": true,
+    "all_120_rgb_pcm_and_complete_future_states_exact": true,
+    "isolated_actual_cldc_continuation_exact": true
+  },
+  "persisted_progress": {
+    "save_sha256": "dfe32667728508a19110ecb99b71b1dd0cb764f5cdc3789e7d9ea34d4235c46d",
+    "bytes": 131072,
+    "valid_sectors": 28,
+    "generations": [
+      4,
+      5
+    ],
+    "latest_generation": 5,
+    "position": {
+      "x": 16,
+      "y": 14,
+      "map_group": 3,
+      "map_number": 0
+    },
+    "play_time": {
+      "hours": 0,
+      "minutes": 6,
+      "seconds": 45,
+      "frames": 9
+    },
+    "money": 3080,
+    "progress": {
+      "party_count": 1,
+      "party": [
+        {
+          "slot": 0,
+          "species_id": 1,
+          "experience": 204,
+          "level": 6,
+          "hp": 22,
+          "max_hp": 22,
+          "is_egg": false,
+          "box_checksum_valid": true
+        }
+      ],
+      "starter_choice": 0,
+      "oak_lab_scene": 4,
+      "oak_rival_battle_completed": true,
+      "scope": "Stored party and lab completion only. The battle flag is set after either outcome; victory requires separate gameplay evidence. No save bytes are modified."
+    }
+  },
+  "battle_result_caution": "The stored Oak-lab flag is set after either outcome. Victory is established by the captured reward screen and level/experience/money progression, not the flag alone.",
+  "play_capture": {
+    "status": "captured",
+    "correctness": "unverified",
+    "qualification": "headless-only; physical presentation and playback unverified",
+    "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+    "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+    "input_sha256": "9aa6fdb357675a515ae9e6d61de932b76b0143f6d82808fffb2ae72c8e008fab",
+    "rtc_seed": "2000-01-01T00:00:00",
+    "frame_input_sha256": "4f229526303171e2adda3ea7252cdbff82668eb835ba3e0d99ed22447b82dccf",
+    "initial_save_sha256": "8f192f66ac21928523cb295e1353b6f0bd3ce6dc2adc40e34cc5f4b8455b8961",
+    "backup_sha256": "dfe32667728508a19110ecb99b71b1dd0cb764f5cdc3789e7d9ea34d4235c46d",
+    "backup_type": 2,
+    "backup_bytes": 131072,
+    "save_written": true,
+    "devices": 0,
+    "rumble_active": false,
+    "commit": "e9fef2cae371b84cb54b02abbe4d2ff6859e75da",
+    "source_dirty": "true",
+    "frames": 24410,
+    "warmup_frames": 0,
+    "guest_cycles": 6856671367,
+    "audio_frames": 13391936,
+    "audio_overruns": 0,
+    "audio_underruns": 0,
+    "produced_audio_frames": 13391936,
+    "consumed_audio_frames": 13391936,
+    "dropped_guest_frames": 0,
+    "video_sha256": "ee22aaf7b0a1f3009d2eb4755ae6916e487d6ed56b878ce7752f251a2188dc38",
+    "audio_sha256": "5bb80f029b9fa46c454e31a5c6950f2762d09587b9b0cffa6aa771bdb380ca01",
+    "work_p50_ns": 14831581,
+    "work_p95_ns": 40384557,
+    "work_p99_ns": 92743830,
+    "work_max_ns": 2466078186,
+    "work_deadline_misses": 9385,
+    "physically_presented_frames": null,
+    "physical_audio_underruns": null,
+    "java": "21.0.8+9-LTS",
+    "os": "Linux",
+    "architecture": "amd64",
+    "hardware": "Linux x86_64 cloud host; cold recorded starter/rival/save route; no physical presentation or playback measurement",
+    "os_version": "6.18.57"
+  },
+  "cold_reload_capture": {
+    "status": "captured",
+    "correctness": "unverified",
+    "qualification": "headless-only; physical presentation and playback unverified",
+    "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+    "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+    "input_sha256": "063e8bea8ea50cbf73f2026f4c0941fb175bb5d07fefe24030439f89b6f344c4",
+    "rtc_seed": "2000-01-01T00:00:00",
+    "frame_input_sha256": "a1366399feb2f73aa95f6db98486cc6bd0c8fb7ff0d817eaf067ba125d2ecaed",
+    "initial_save_sha256": "dfe32667728508a19110ecb99b71b1dd0cb764f5cdc3789e7d9ea34d4235c46d",
+    "backup_sha256": "dfe32667728508a19110ecb99b71b1dd0cb764f5cdc3789e7d9ea34d4235c46d",
+    "backup_type": 2,
+    "backup_bytes": 131072,
+    "save_written": false,
+    "devices": 0,
+    "rumble_active": false,
+    "commit": "e9fef2cae371b84cb54b02abbe4d2ff6859e75da",
+    "source_dirty": "true",
+    "frames": 2500,
+    "warmup_frames": 0,
+    "guest_cycles": 702240001,
+    "audio_frames": 1371562,
+    "audio_overruns": 0,
+    "audio_underruns": 0,
+    "produced_audio_frames": 1371562,
+    "consumed_audio_frames": 1371562,
+    "dropped_guest_frames": 0,
+    "video_sha256": "2ffdbae665f9e8baa2e2fda2c2a1a1592214649113c28e4ca44a371754467c8c",
+    "audio_sha256": "a3cb234cc48643edd0e074615717a1d911e9535189382042affb363949cf825e",
+    "work_p50_ns": 18354051,
+    "work_p95_ns": 43805966,
+    "work_p99_ns": 72145676,
+    "work_max_ns": 454441208,
+    "work_deadline_misses": 1504,
+    "physically_presented_frames": null,
+    "physical_audio_underruns": null,
+    "java": "21.0.8+9-LTS",
+    "os": "Linux",
+    "architecture": "amd64",
+    "hardware": "Linux x86_64 cloud host; cold battery reload and party inspection; no emulator-state preload or physical playback measurement",
+    "os_version": "6.18.57"
+  },
+  "state_replay": {
+    "title": "POKEMON LEAF",
+    "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+    "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+    "input_sha256": "9aa6fdb357675a515ae9e6d61de932b76b0143f6d82808fffb2ae72c8e008fab",
+    "initial_save_sha256": "8f192f66ac21928523cb295e1353b6f0bd3ce6dc2adc40e34cc5f4b8455b8961",
+    "frame_input_sha256": "4f229526303171e2adda3ea7252cdbff82668eb835ba3e0d99ed22447b82dccf",
+    "snapshot_frame": 24410,
+    "snapshot_cycles": 6856671367,
+    "resumed_frames": 120,
+    "resumed_audio_frames": 65835,
+    "state_bytes": 904303,
+    "state_sha256": "84471061a7dc4412be60eee25fabe2b0deb0c1c264525b53bbba346a0719ba60",
+    "final_state_sha256": "cb6821c2721cd6d4e42afc67524afe6e490bc2e187f0d1fbe344d9d74524e0df",
+    "immediate_and_future_full_state_exact": true,
+    "all_resumed_rgb_pcm_exact": true,
+    "original_save_unchanged": true,
+    "scope": "Host core save/load replay, not independent game accuracy or physical phone validation"
+  },
+  "actual_cldc_replay": {
+    "classpath": "target/m2-leafgreen-2026-11-18/frame-classes:target/blackberry/classes; no host core fallback",
+    "frames": 120,
+    "stdout": "POKEMON LEAF: exact 120-frame continuation; cb6821c2721cd6d4e42afc67524afe6e490bc2e187f0d1fbe344d9d74524e0df",
+    "scope": "Actual ECJ/CLDC core classes executed under the host JVM, not BBOS runtime"
+  },
+  "validation": {
+    "maven_host_tests": 5284,
+    "console_host_tests": 5284,
+    "exported_core_tests": 4973,
+    "failures": 0,
+    "skips": 0,
+    "new_inspector_cases": 35,
+    "new_frame_input_cases": 14,
+    "log_sha256": {
+      "m2-final-verify.log": "28946fe57abca989c8b15de5348356f215644efc2579ed4c97bb2fdde49010cf",
+      "m2-frame-console.log": "289eb6ab0a6579d9f6130bccd4d1a53cc1a7d85b89a067a8cac4751058b62024",
+      "m2-leafgreen-frame-route.log": "a1bbfcbc610ec6a7fe551af10cdf40ad2174b401cb5a1048591fc09616fdd2e7",
+      "m2-leafgreen-frame-state.log": "39797e10713cabdff8a879adfcdf7893fc94b6e091f7809af20827d832d4ed6d",
+      "m2-leafgreen-cldc.log": "31844c9f27b41bb262fad45d609d7b5139b0ef7380d425aab26facefe8523aa6",
+      "m2-leafgreen-cold-reload.log": "83ebc1b25d65fd488a6b966e86ee6ff902d73af3646e57e40580a5293f11291a"
+    }
+  },
+  "reproduction": {
+    "play_properties": {
+      "input": "benchmarks/inputs/leafgreen-overworld-save.tsv",
+      "frame_input": "benchmarks/inputs/leafgreen-starter-rival.tsv",
+      "frames": 24410,
+      "backup": 2,
+      "initial_save_sha256": "8f192f66ac21928523cb295e1353b6f0bd3ce6dc2adc40e34cc5f4b8455b8961",
+      "checkpoints": "4190,6950,11962,13354,15934,19774,22198,24410",
+      "save": "an owned copy of the original pre-starter seed; this copy becomes the post-rival save"
+    },
+    "reload_properties": {
+      "input": "benchmarks/inputs/leafgreen-overworld-continue.tsv",
+      "frame_input": "benchmarks/inputs/leafgreen-rival-reload.tsv",
+      "frames": 2500,
+      "backup": 2,
+      "initial_save_sha256": "dfe32667728508a19110ecb99b71b1dd0cb764f5cdc3789e7d9ea34d4235c46d",
+      "checkpoints": "1030,1700,2000,2250,2500",
+      "save": "a separate owned copy of the generated post-rival save"
+    },
+    "commands": [
+      "java -Djava.awt.headless=true -cp target/classes berryboy.desktop.ScenarioRunner /path/to/play.properties",
+      "java -Djava.awt.headless=true -cp target/classes berryboy.desktop.ScenarioRunner /path/to/reload.properties",
+      "python3 tools/inspect_leafgreen_save.py /path/to/post-rival.sav --progress",
+      "javac --release 21 -cp target/classes -d target/state-tools tools/StateRoundTrip.java tools/VerifyStateResume.java",
+      "java -Djava.awt.headless=true -cp target/state-tools:target/classes berryboy.desktop.StateRoundTrip /path/to/state.properties 24410 120 target/fresh-state-replay"
+    ],
+    "notes": "Set verified local ROM/BIOS/input hashes and fresh output paths as documented in docs/SCENARIOS.md. State replay properties use a separate unchanged copy of the original seed; never use the post-rival output as the initial seed."
+  },
+  "local_artifacts": {
+    "root": "target/m2-leafgreen-2026-11-18",
+    "play_config": "target/m2-leafgreen-2026-11-18/frame-play.properties",
+    "reload_config": "target/m2-leafgreen-2026-11-18/reload.properties",
+    "state_config": "target/m2-leafgreen-2026-11-18/frame-state.properties",
+    "initial_save": "target/m2-leafgreen-2026-11-18/initial.sav",
+    "post_rival_save": "target/m2-leafgreen-2026-11-18/frame-play.sav"
+  },
+  "remaining_routes": {
+    "golden_sun": {
+      "status": "battle not reached",
+      "local_owned_checkpoint": "target/m2-golden-sun-2026-11-18/explore/north-two.bbs",
+      "sha256": "196113c8ee79f4845143e1ad623e94828106527afba27366405adbdf97d50025",
+      "frame": 7005,
+      "observation": "North village path after exiting Isaac's house; exploration only, not a new accepted milestone",
+      "accepted_cold_prefix": "benchmarks/inputs/golden-sun-m1.tsv"
+    },
+    "sonic_advance_3": {
+      "status": "first act not completed",
+      "local_owned_checkpoint": "target/m2-sonic-2026-11-18/character-select.bbs",
+      "sha256": "38d8c37e3092310038c8b8ed10964dccb8bdc207a91a4f3c4f2c10df726fd1fd",
+      "frame": 4216,
+      "observation": "Player character selection; exploration only"
+    }
+  },
+  "limits": [
+    "This completes the LeafGreen portion of M2, not the entire three-game pack or M3 application matrix.",
+    "Original strict reference RGB/PCM/save mismatches remain recorded in docs/BENCHMARKS.md; no comparison tolerances or payload normalization were introduced.",
+    "Headless work timings in the capture reports were collected during concurrent validation and are not an isolated M4 playback baseline or physical frame/audio measurements.",
+    "ROMs, BIOS, battery saves, emulator states, WAVs and raw capture directories remain local and outside Git."
+  ]
+}
