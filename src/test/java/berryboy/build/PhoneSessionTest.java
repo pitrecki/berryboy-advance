@@ -22,6 +22,50 @@ import org.junit.jupiter.params.provider.ValueSource;
 class PhoneSessionTest {
     @TempDir Path temporary;
     @Test
+    void savingAgainAfterLoadingRetainsTheCompleteEmulatedAudioState() throws Exception {
+        var root = Path.of(System.getProperty("berryboy.projectRoot", ".")).toAbsolutePath();
+        var classes = temporary.resolve("classes");
+        assertThat(PhoneHarness.compile(root, classes, true)).isZero();
+        try (var loader = new URLClassLoader(new java.net.URL[]{classes.toUri().toURL()}, getClass().getClassLoader())) {
+            var uiType = loader.loadClass("berryboy.phone.PhoneCanvas"); var ui = uiType.getConstructor().newInstance();
+            var type = loader.loadClass("berryboy.phone.PhoneSession");
+            var ctor = type.getDeclaredConstructor(uiType, PhoneOptions.class); ctor.setAccessible(true);
+            var options = new PhoneOptions(); options.setSpeed(4);
+            var session = ctor.newInstance(ui, options);
+            var request = method(type, "request", int.class, int.class, String.class, String.class);
+            var rom = temporary.resolve("game.gba"); Files.write(rom, DemoRom.create());
+            var bios = temporary.resolve("bios.bin"); var image = new byte[16384];
+            word(image, 0, 0xeafffffe); Files.write(bios, image);
+            try {
+                waitRequest(request, session, 2, 0, rom.toUri().toASCIIString(), bios.toUri().toASCIIString());
+                waitFor(() -> number(uiType, ui, "frames") >= 3 || text(uiType, ui, "failure") != null);
+                pauseAndAwait(type, session, request, uiType, ui);
+                waitRequest(request, session, 3, 0);
+                waitFor(() -> text(uiType, ui, "message").equals("Saved slot 1"));
+                pauseAndAwait(type, session, request, uiType, ui);
+                var storageField = type.getDeclaredField("storage"); storageField.setAccessible(true);
+                var storage = storageField.get(session); var read = method(storage.getClass(), "read", String.class);
+                var before = (byte[]) read.invoke(storage, "st0");
+                waitRequest(request, session, 4, 0);
+                waitFor(() -> text(uiType, ui, "message").equals("Loaded slot 1"));
+                pauseAndAwait(type, session, request, uiType, ui);
+                waitRequest(request, session, 3, 1);
+                waitFor(() -> text(uiType, ui, "message").equals("Saved slot 2"));
+                pauseAndAwait(type, session, request, uiType, ui);
+                var after = (byte[]) read.invoke(storage, "st1");
+                assertThat(uiType.getField("failure").get(ui)).isNull();
+                assertThat(after).hasSameSizeAs(before);
+                var digest = java.security.MessageDigest.getInstance("SHA-256");
+                assertThat(java.util.HexFormat.of().formatHex(digest.digest(after)))
+                        .as("Loading through the phone session preserves every serialized machine field")
+                        .isEqualTo(java.util.HexFormat.of().formatHex(digest.digest(before)));
+            } finally {
+                method(type, "close").invoke(session);
+                assertThat((boolean) method(type, "awaitClosed", long.class).invoke(session, 5000L)).isTrue();
+            }
+        }
+    }
+    @Test
     void mutesEveryAccelerationAndRestoresOutputAtNormalSpeedWithoutChangingUserMute() throws Exception {
         var root = Path.of(System.getProperty("berryboy.projectRoot", ".")).toAbsolutePath();
         var classes = temporary.resolve("classes");
@@ -214,8 +258,11 @@ class PhoneSessionTest {
         assertThat(condition.getAsBoolean()).as("native session completed the requested operation").isTrue();
     }
     private static void waitRequest(Method request,Object session,int operation,int slot) throws Exception {
+        waitRequest(request, session, operation, slot, null, null);
+    }
+    private static void waitRequest(Method request,Object session,int operation,int slot,String rom,String bios) throws Exception {
         var accepted=false;var end=System.nanoTime()+5_000_000_000L;
-        while(!accepted && System.nanoTime()<end){accepted=(boolean)request.invoke(session,operation,slot,null,null);if(!accepted)Thread.sleep(5);}
+        while(!accepted && System.nanoTime()<end){accepted=(boolean)request.invoke(session,operation,slot,rom,bios);if(!accepted)Thread.sleep(5);}
         assertThat(accepted).isTrue();
     }
     private static void word(byte[] bytes,int at,int value){for(var i=0;i<4;i++)bytes[at+i]=(byte)(value>>>(i*8));}

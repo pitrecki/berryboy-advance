@@ -239,7 +239,7 @@ final class PhoneSession implements Runnable {
                     Machine replacement = MachineState.load(rom, bios, bytes);
                     flushBackup(); machine = replacement;
                     startup = null; // Loading a state restores its exact screen; boot preference is for fresh starts.
-                    machine.memory.clockedAudio().setCapture(true);
+                    // Phone slots already contain capture state; resetting it discards the saved ring position.
                     showRestored("Loaded slot " + (slot + 1));
                 }
             }
