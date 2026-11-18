@@ -63,6 +63,25 @@ Events include warmup time. The BIOS, when supplied, must be exactly 16 KiB;
 execution starts at its reset vector. Without BIOS, the direct-entry diagnostic
 path is used and BIOS-dependent SWIs/IRQs fail explicitly. HLE is not provided.
 
+Direct scenario properties may also specify `frame_input` and
+`frame_input_sha256` for controls between completed frames:
+
+```text
+# after_guest_frame keys
+4190 16
+4254 64
+4414 0
+```
+
+These buttons apply before the next frame executes, through the deterministic
+guest owner. They do not enqueue hundreds of future host inputs in the guest
+clock. This is the same boundary convention as the M1 frontend recording, not
+the six-column cycle/sensor format above. Frame numbers must increase strictly;
+missed boundaries fail explicitly. If both formats are supplied, frame controls
+must start after the last cycle-input event. Sensor values retain their existing
+settings. `StateRoundTrip` accepts the same optional properties and requires its
+snapshot to follow all recorded controls. Reports retain both input hashes.
+
 ## Running and interpreting results
 
 ```bash

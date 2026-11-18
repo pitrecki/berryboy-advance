@@ -4,6 +4,7 @@ import berryboy.Machine;
 import berryboy.cartridge.CartridgeBackup;
 import berryboy.desktop.capture.JsonReport;
 import berryboy.desktop.scenario.RecordedInputs;
+import berryboy.desktop.scenario.FrameInputs;
 import berryboy.MachineState;
 import berryboy.video.LcdTiming;
 import java.nio.file.Files;
@@ -23,7 +24,8 @@ public final class StateRoundTrip {
         if (Files.exists(output)) throw new IllegalArgumentException("Use a fresh output folder");
         Files.createDirectories(output);
         var p = new Properties(); try (var reader = Files.newBufferedReader(config)) { p.load(reader); }
-        var rom = verified(config, p, "rom"); var bios = verified(config, p, "bios"); var input = verified(config, p, "input");
+        var rom = verified(config, p, "rom"); var bios = verified(config, p, "bios");
+        var input = p.containsKey("input") ? verified(config, p, "input") : new byte[0];
         var original = new Machine(rom, bios);
         if (p.containsKey("backup")) original.memory.setBackup(new CartridgeBackup(Integer.parseInt(p.getProperty("backup"))));
         original.memory.gpio().configure(Integer.parseInt(p.getProperty("devices", "0")));
@@ -38,13 +40,21 @@ public final class StateRoundTrip {
             original.memory.backup().restore(bytes);
         }
         var recording = RecordedInputs.parse(input); recording.install(original);
+        var frameBytes = p.containsKey("frame_input") ? verified(config, p, "frame_input") : new byte[0];
+        var frameInputs = FrameInputs.parse(frameBytes);
+        if (frameInputs.firstFrame() >= 0 && frameInputs.firstFrame() * (long) LcdTiming.FRAME_CYCLES <= recording.lastCycle()) {
+            throw new IllegalArgumentException("Frame inputs must follow the cycle-input prefix");
+        }
+        var framePlayback = frameInputs.playback(original);
         var first = Integer.parseInt(args[1]); var resumed = Integer.parseInt(args[2]);
         var pcm = new short[2048]; original.memory.clockedAudio().setCapture(true);
         for (var frame = 1; frame <= first; frame++) {
+            framePlayback.afterFrame(frame - 1);
             original.runCycles(frame * (long) LcdTiming.FRAME_CYCLES - original.clock.now());
             original.memory.clockedAudio().drain(pcm, original.memory.clockedAudio().availableFrames());
         }
         if (recording.lastCycle() > original.clock.now()) throw new IllegalArgumentException("Snapshot must follow the final recorded input");
+        if (frameInputs.lastFrame() >= first) throw new IllegalArgumentException("Snapshot must follow the final frame input");
         var savedCycles = original.clock.now(); var state = MachineState.save(original);
         Files.write(output.resolve("state.bbs"), state);
         var restored = MachineState.load(rom, bios, state);
@@ -71,7 +81,9 @@ public final class StateRoundTrip {
         if (original.memory.clockedAudio().overruns()!=0 || original.memory.clockedAudio().underruns()!=0) throw new IllegalStateException("Audio buffer loss");
         var report = new LinkedHashMap<String,Object>();
         report.put("title", original.cartridge.title()); report.put("rom_sha256", ScenarioRunner.hash(rom)); report.put("bios_sha256", ScenarioRunner.hash(bios));
-        report.put("input_sha256", ScenarioRunner.hash(input)); report.put("initial_save_sha256", initialSaveHash);
+        report.put("input_sha256", p.containsKey("input") ? ScenarioRunner.hash(input) : null);
+        report.put("initial_save_sha256", initialSaveHash);
+        if (p.containsKey("frame_input")) report.put("frame_input_sha256", ScenarioRunner.hash(frameBytes));
         report.put("snapshot_frame", first); report.put("snapshot_cycles", savedCycles); report.put("resumed_frames", resumed); report.put("resumed_audio_frames", samples);
         report.put("state_bytes", state.length); report.put("state_sha256", ScenarioRunner.hash(state)); report.put("final_state_sha256", ScenarioRunner.hash(finalState));
         report.put("immediate_and_future_full_state_exact", true); report.put("all_resumed_rgb_pcm_exact", true); report.put("original_save_unchanged", true);

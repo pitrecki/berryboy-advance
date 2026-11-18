@@ -199,6 +199,39 @@ class ScenarioRunnerTest {
         assertThatThrownBy(() -> ScenarioRunner.run(config, directory)).hasMessageContaining("Reference capture mismatch");
     }
 
+    @Test
+    void frameControlsFollowACyclePrefixAndRetainTheirOwnIdentity() throws Exception {
+        var config = config("frame-controls");
+        var cycle = "0 0 2048 2048 0 0\n".getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        var frames = "1 1\n2 0\n".getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        Files.write(directory.resolve("prefix.tsv"), cycle); Files.write(directory.resolve("buttons.tsv"), frames);
+        config.setProperty("input", "prefix.tsv"); config.setProperty("input_sha256", ScenarioRunner.hash(cycle));
+        config.setProperty("frame_input", "buttons.tsv"); config.setProperty("frame_input_sha256", ScenarioRunner.hash(frames));
+        var report = ScenarioRunner.run(config, directory);
+        assertThat(report).containsEntry("input_sha256", ScenarioRunner.hash(cycle))
+                .containsEntry("frame_input_sha256", ScenarioRunner.hash(frames))
+                .containsEntry("dropped_guest_frames", 0L).containsEntry("audio_overruns", 0L);
+        config.setProperty("output", "repeat-controls");
+        var repeated = ScenarioRunner.run(config, directory);
+        assertThat(repeated.get("video_sha256")).isEqualTo(report.get("video_sha256"));
+        assertThat(repeated.get("audio_sha256")).isEqualTo(report.get("audio_sha256"));
+        config.setProperty("output", "bad-frame-hash"); config.setProperty("frame_input_sha256", "0".repeat(64));
+        assertThatThrownBy(() -> ScenarioRunner.run(config, directory)).hasMessageContaining("SHA-256");
+        assertThat(directory.resolve("bad-frame-hash")).doesNotExist();
+    }
+
+    @Test
+    void conflictingCycleAndFrameInputsAreRejectedBeforePublishingAnything() throws Exception {
+        var config = config("overlap");
+        var cycle = "280896 1 2048 2048 0 0\n".getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        var frames = "1 0\n".getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        Files.write(directory.resolve("prefix.tsv"), cycle); Files.write(directory.resolve("buttons.tsv"), frames);
+        config.setProperty("input", "prefix.tsv"); config.setProperty("input_sha256", ScenarioRunner.hash(cycle));
+        config.setProperty("frame_input", "buttons.tsv"); config.setProperty("frame_input_sha256", ScenarioRunner.hash(frames));
+        assertThatThrownBy(() -> ScenarioRunner.run(config, directory)).hasMessageContaining("must follow the cycle-input prefix");
+        assertThat(directory.resolve("overlap")).doesNotExist();
+    }
+
     private Properties config(String output) throws Exception {
         var rom = DemoRom.create(); Files.write(directory.resolve("demo.gba"), rom);
         var properties = new Properties();

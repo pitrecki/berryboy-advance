@@ -5,6 +5,7 @@ import berryboy.desktop.capture.ScenarioCapture;
 import berryboy.desktop.capture.VideoState;
 import berryboy.desktop.capture.GuestEventTrace;
 import berryboy.desktop.scenario.RecordedInputs;
+import berryboy.desktop.scenario.FrameInputs;
 
 import berryboy.cartridge.CartridgeBackup;
 import berryboy.video.LcdTiming;
@@ -59,7 +60,18 @@ public final class ScenarioRunner {
         if (expectedSave != null && save == null) throw new IllegalArgumentException("initial_save_sha256 requires save");
         var loadedSave = save != null && SaveFile.load(save, machine.memory.backup(), expectedSave);
         var initialSaveHash = loadedSave ? hash(machine.memory.backup().snapshot()) : null;
-        var inputHash = installInputs(machine, config, base);
+        var inputBytes = config.containsKey("input")
+                ? verified(resolve(base, config.getProperty("input")), required(config, "input_sha256")) : null;
+        var recording = RecordedInputs.parse(inputBytes == null ? new byte[0] : inputBytes);
+        recording.install(machine);
+        var inputHash = inputBytes == null ? null : hash(inputBytes);
+        var frameBytes = config.containsKey("frame_input")
+                ? verified(resolve(base, config.getProperty("frame_input")), required(config, "frame_input_sha256")) : null;
+        var frameInputs = FrameInputs.parse(frameBytes == null ? new byte[0] : frameBytes);
+        if (frameInputs.firstFrame() >= 0 && frameInputs.firstFrame() * (long) LcdTiming.FRAME_CYCLES <= recording.lastCycle()) {
+            throw new IllegalArgumentException("Frame inputs must follow the cycle-input prefix");
+        }
+        var framePlayback = frameInputs.playback(machine);
         var eventTrace = GuestEventTrace.from(config, machine, (warmup + (long) frames) * LcdTiming.FRAME_CYCLES);
         var output = resolve(base, required(config, "output"));
         if (Files.exists(output)) {
@@ -81,6 +93,7 @@ public final class ScenarioRunner {
         try (capture) {
             if (eventTrace != null) machine.clock.setObserver(eventTrace);
             for (int frame = 0; frame < warmup + frames; frame++) {
+                framePlayback.afterFrame(frame);
                 var target = (frame + 1L) * LcdTiming.FRAME_CYCLES;
                 var started = System.nanoTime();
                 machine.runCycles(Math.max(0, target - machine.clock.now()));
@@ -118,6 +131,7 @@ public final class ScenarioRunner {
         report.put("qualification", "headless-only; physical presentation and playback unverified");
         report.put("rom_sha256", hash(rom)); report.put("bios_sha256", bios == null ? null : hash(bios));
         report.put("input_sha256", inputHash); report.put("rtc_seed", seed);
+        if (frameBytes != null) report.put("frame_input_sha256", hash(frameBytes));
         var backupSnapshot = machine.memory.backup().snapshot();
         report.put("initial_save_sha256", initialSaveHash);
         report.put("backup_sha256", hash(backupSnapshot));
@@ -141,13 +155,6 @@ public final class ScenarioRunner {
         report.put("os_version", System.getProperty("os.version"));
         Files.writeString(output.resolve("report.json"), JsonReport.encode(report) + "\n");
         return report;
-    }
-
-    private static String installInputs(Machine machine, Properties config, Path base) throws IOException {
-        if (!config.containsKey("input")) return null;
-        var input = verified(resolve(base, config.getProperty("input")), required(config, "input_sha256"));
-        RecordedInputs.parse(input).install(machine);
-        return hash(input);
     }
 
     private static boolean[] checkpoints(String setting, int warmup, int frames) {
