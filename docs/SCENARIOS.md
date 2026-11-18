@@ -954,6 +954,17 @@ view never normalizes bytes or changes strict comparison/exit status. See
 [the NPC/timeline diagnosis](../benchmarks/leafgreen-activity-2026-11-09.json)
 for the outdoor case and independently pinned field/command sources.
 
+Use `--progress` for party and Oak-lab gameplay milestones. This separate view
+decrypts each counted party member, checks its inner checksum and reports
+species, experience, level and HP, plus starter selection and lab scene. It
+reads the latest valid generation and leaves both files and strict comparisons
+unchanged. `oak_rival_battle_completed` is set by the game after either outcome;
+it does not establish a win. Retain battle/victory checkpoints separately.
+
+```bash
+python3 tools/inspect_leafgreen_save.py /path/to/after-rival.sav --progress
+```
+
 ## Read-only RAM observations
 
 For a seeded scenario with verified ROM/BIOS/input/save identities, add

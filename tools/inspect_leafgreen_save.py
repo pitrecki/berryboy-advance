@@ -141,6 +141,7 @@ def main():
     parser.add_argument("save", type=Path)
     parser.add_argument("--compare", type=Path, help="Diagnose differences; exit 1 unless raw files match")
     parser.add_argument("--activity", action="store_true", help="Decode active objects and supported non-battle Quest Log commands")
+    parser.add_argument("--progress", action="store_true", help="Validate stored party data and inspect Oak-lab progress")
     args = parser.parse_args()
     data = args.save.read_bytes()
     other = args.compare.read_bytes() if args.compare else None
@@ -151,6 +152,12 @@ def main():
         for image, summary in images:
             _, generations = parse(image)
             summary["activity"] = inspect_activity(generations[summary["latest_generation"]])
+    if args.progress:
+        from leafgreen_progress import inspect_progress
+        images = ((data, result["left"]), (other, result["right"])) if args.compare else ((data, result),)
+        for image, summary in images:
+            _, generations = parse(image)
+            summary["progress"] = inspect_progress(generations[summary["latest_generation"]])
     print(json.dumps(result, indent=2))
     return 1 if args.compare and not result["raw_equal"] else 0
 

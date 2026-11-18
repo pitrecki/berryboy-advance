@@ -241,17 +241,123 @@ class LeafGreenSaveInspectorTest {
         assertThat(result.exit).isEqualTo(2); assertThat(result.output).contains("Unsupported Quest Log scene type");
     }
 
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+            12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23})
+    void progressDecryptsEveryPartyLayoutAndChecksTheStoredBattleMilestone(int layout) throws Exception {
+        var bytes = fixture(0x11223344);
+        writeWorld(bytes, 0x34, new byte[]{1});
+        writeWorld(bytes, 0x38, partyMon(layout));
+        writeWorld(bytes, 0xEE0 + 0x258 / 8, new byte[]{1});
+        writeWorld(bytes, 0x1000 + 2 * 0x55, new byte[]{4, 0});
+        var result = run(bytes, null, false, true);
+        assertThat(result.exit).as(result.output).isZero();
+        assertThat(result.output).contains("\"party_count\": 1", "\"species_id\": 1", "\"experience\": 203",
+                "\"level\": 6", "\"hp\": 19", "\"max_hp\": 21", "\"box_checksum_valid\": true",
+                "\"oak_lab_scene\": 4", "\"oak_rival_battle_completed\": true", "either outcome");
+    }
+
+    @Test
+    void progressAcceptsAnEmptyPartyAndDoesNotDecodeUnrelatedQuestCommands() throws Exception {
+        var bytes = fixture(0x11223344);
+        writeWorld(bytes, 0x1300, new byte[]{1}); writeWorld(bytes, 0x1868, new byte[]{3});
+        var result = run(bytes, null, false, true);
+        assertThat(result.exit).as(result.output).isZero();
+        assertThat(result.output).contains("\"party_count\": 0", "\"party\": []", "\"oak_rival_battle_completed\": false");
+        assertThat(run(bytes, null).output).doesNotContain("\"progress\"");
+    }
+
+    @Test
+    void progressValidatesTheInnerPokemonChecksumEvenWhenFlashChecksumsPass() throws Exception {
+        var bytes = fixture(0x11223344); var mon = partyMon(17); mon[32] ^= 1;
+        writeWorld(bytes, 0x34, new byte[]{1}); writeWorld(bytes, 0x38, mon);
+        assertThat(run(bytes, null).exit).isZero();
+        var result = run(bytes, null, false, true);
+        assertThat(result.exit).isEqualTo(2);
+        assertThat(result.output).contains("Pokemon checksum mismatch in party slot 0");
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1, 3})
+    void progressRejectsAnUnoccupiedOrBadEggFlagInsideTheCountedParty(int flags) throws Exception {
+        var bytes = fixture(0x11223344); var mon = partyMon(4); mon[19] = (byte) flags;
+        writeWorld(bytes, 0x34, new byte[]{1}); writeWorld(bytes, 0x38, mon);
+        var result = run(bytes, null, false, true);
+        assertThat(result.exit).isEqualTo(2);
+        assertThat(result.output).contains("Invalid occupied Pokemon in party slot 0");
+    }
+
+    @ParameterizedTest
+    @CsvSource({"84,0", "84,101", "86,22", "88,0"})
+    void progressRejectsInvalidPartyStats(int offset, int value) throws Exception {
+        var bytes = fixture(0x11223344); var mon = partyMon(0); mon[offset] = (byte) value;
+        writeWorld(bytes, 0x34, new byte[]{1}); writeWorld(bytes, 0x38, mon);
+        var result = run(bytes, null, false, true);
+        assertThat(result.exit).isEqualTo(2);
+        assertThat(result.output).contains("Invalid party stats in slot 0");
+    }
+
+    @Test
+    void progressUsesOnlyTheSelectedSavedGenerationAndPreservesStrictComparison() throws Exception {
+        var generations = fixture(0x11223344, 0x55667788);
+        writeWorld(generations, 0x34, new byte[]{1}); writeWorld(generations, 0x38, partyMon(11));
+        var latest = run(generations, null, false, true);
+        assertThat(latest.exit).as(latest.output).isZero();
+        assertThat(latest.output).contains("\"latest_generation\": 2", "\"party_count\": 0");
+        var left = fixture(0x11223344); var mon = partyMon(11);
+        writeWorld(left, 0x34, new byte[]{1}); writeWorld(left, 0x38, mon);
+        var right = left.clone(); mon[84] = 7; writeWorld(right, 0x38, mon);
+        var compared = run(left, right, false, true);
+        assertThat(compared.exit).isEqualTo(1);
+        assertThat(compared.output).contains("\"raw_equal\": false", "\"level\": 6", "\"level\": 7");
+    }
+
+    @Test
+    void progressReadsAllSixSlotsAndRejectsAnOversizedParty() throws Exception {
+        var bytes = fixture(0x11223344); writeWorld(bytes, 0x34, new byte[]{6});
+        for (var slot = 0; slot < 6; slot++) writeWorld(bytes, 0x38 + slot * 100, partyMon(slot));
+        var valid = run(bytes, null, false, true);
+        assertThat(valid.exit).as(valid.output).isZero();
+        assertThat(valid.output).contains("\"party_count\": 6", "\"slot\": 5");
+        writeWorld(bytes, 0x34, new byte[]{7});
+        var invalid = run(bytes, null, false, true);
+        assertThat(invalid.exit).isEqualTo(2);
+        assertThat(invalid.output).contains("Invalid party count");
+    }
+
+    private static byte[] partyMon(int layout) {
+        // Physical block orders from the pinned game's GetSubstruct table.
+        var orders = new String[]{"GAEM", "GAME", "GEAM", "GEMA", "GMAE", "GMEA",
+                "AGEM", "AGME", "AEGM", "AEMG", "AMGE", "AMEG", "EGAM", "EGMA", "EAGM", "EAMG",
+                "EMGA", "EMAG", "MGAE", "MGEA", "MAGE", "MAEG", "MEGA", "MEAG"};
+        var bytes = new byte[100]; var personality = 0xF0000000 + layout; var trainer = 0xA55A1234;
+        var out = buffer(bytes); out.putInt(0, personality).putInt(4, trainer); bytes[19] = 2;
+        var secure = new byte[48]; var growth = orders[layout].indexOf('G') * 12;
+        buffer(secure).putShort(growth, (short) 1).putInt(growth + 4, 203);
+        var sum = 0;
+        for (var i = 0; i < secure.length; i += 2) sum += buffer(secure).getShort(i) & 0xffff;
+        out.putShort(28, (short) sum);
+        for (var i = 0; i < secure.length; i += 4) out.putInt(32 + i, buffer(secure).getInt(i) ^ personality ^ trainer);
+        bytes[84] = 6; out.putShort(86, (short) 19).putShort(88, (short) 21);
+        return bytes;
+    }
+
     private Result run(byte[] left, byte[] right) throws Exception {
         return run(left, right, false);
     }
 
     private Result run(byte[] left, byte[] right, boolean activity) throws Exception {
+        return run(left, right, activity, false);
+    }
+
+    private Result run(byte[] left, byte[] right, boolean activity, boolean progress) throws Exception {
         var first = directory.resolve("left.sav"); Files.write(first, left);
         var script = Path.of(System.getProperty("berryboy.projectRoot", "."), "tools", "inspect_leafgreen_save.py");
         var command = new java.util.ArrayList<>(java.util.List.of("python3", script.toString(), first.toString()));
         var second = directory.resolve("right.sav");
         if (right != null) { Files.write(second, right); command.add("--compare"); command.add(second.toString()); }
         if (activity) command.add("--activity");
+        if (progress) command.add("--progress");
         var process = new ProcessBuilder(command).redirectErrorStream(true).start();
         var output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
         var exit = process.waitFor();
