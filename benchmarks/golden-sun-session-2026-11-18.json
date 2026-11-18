@@ -1,0 +1,279 @@
+{
+  "date": "2026-11-18",
+  "version": "0.9.1-SNAPSHOT",
+  "milestone": "M1",
+  "status": "accepted on host; native BBOS execution remains a separate target gate",
+  "scope": "One continuous Golden Sun application journey and deterministic GUI state restore; no independent hardware-accuracy or physical playback-performance pass",
+  "hardware": "Linux x86_64 cloud host, Temurin 21.0.8+9, Maven 3.9.11; production phone controller/session/file picker/renderer with headless LCDUI/filesystem/RMS/audio adapters",
+  "source_base_commit": "5575d26427b66f396254dbf69c2150fa7cd31c66",
+  "capture_source_dirty": true,
+  "input_file": "benchmarks/inputs/golden-sun-m1.tsv",
+  "input_format": "after_guest_frame keys; apply GBA bitmask after each named presented frame. Boot through frame 300 at 1x, then presentations 301+4*n at 4x. Unlike cycle-scheduled scenario TSV, these are application input boundaries.",
+  "command": "tools/capture-golden-sun-session.sh /path/to/AGSE.properties target/golden-sun-m1.gif",
+  "local_capture": "target/golden-sun-session-20261118T112233",
+  "recording": "docs/images/phone/golden-sun-walkthrough.gif",
+  "recording_metadata": "docs/images/phone/golden-sun-walkthrough.json",
+  "route": [
+    "Fresh application/RMS and owned local ROM/BIOS copies; choose and validate external BIOS through the GUI",
+    "Browse ROM, start from reset, execute the full BIOS boot at 1x, then select 4x through the pause menu",
+    "Advance the Golden Sun title/opening; reach the Psynergy menu and controlled village scene",
+    "Walk to the door and enter Isaac's house at guest frame 5673",
+    "Face and examine the barrel: Isaac checked the barrel. Close the interaction text before saving at frame 5973",
+    "Return to 1x with sound enabled; UI Save slot 1, play 120 controlled frames, UI Save slot 2",
+    "UI Load slot 1, verify the exact restored RGB, repeat the same 120 controlled frames, UI Save slot 3",
+    "Compare all RGB and owned post-mixer PCM packets against an independent saved-state clone; both final states match the clone and each other byte for byte"
+  ],
+  "continuation_keys": {
+    "frame_1": 0,
+    "frames_2_to_25": 16,
+    "frames_26_to_49": 32,
+    "frames_50_to_73": 64,
+    "frames_74_to_97": 128,
+    "frames_98_to_120": 0
+  },
+  "audio_settings": {
+    "speed": 1,
+    "muted": false,
+    "volume_percent": 80,
+    "mono": false,
+    "frame_skip": 0
+  },
+  "acceptance": {
+    "cold_application_launch": true,
+    "external_bios_and_rom_gui": true,
+    "full_boot": true,
+    "game_menu": true,
+    "controlled_movement": true,
+    "room_transition": true,
+    "barrel_interaction": true,
+    "gui_pause_save_load": true,
+    "exact_restored_rgb": true,
+    "all_120_rgb_pcm_frames_exact": true,
+    "both_final_full_states_exact": true,
+    "owned_clone_full_states_exact": true,
+    "no_audio_buffer_loss": true,
+    "original_rom_bios_unchanged": true,
+    "preloaded_startup_state": false,
+    "guest_memory_patches": false
+  },
+  "phone_restore_fix": {
+    "commit": "5575d26427b66f396254dbf69c2150fa7cd31c66",
+    "behavior": "Do not call setCapture(true) after loading a phone slot: it resets the saved emulated audio ring position. Audio transport reset remains separate from machine restore.",
+    "regression": "PhoneSessionTest.savingAgainAfterLoadingRetainsTheCompleteEmulatedAudioState; save/load/save through the real session must preserve the complete serialized state",
+    "before_fix": "Whole-state SHA-256 assertion failed",
+    "after_fix": "Pass; both real-game UI continuations are also byte-identical"
+  },
+  "validation": {
+    "maven_host_tests": 5235,
+    "console_host_tests": 5235,
+    "exported_core_tests": 4973,
+    "actual_ecj_cldc_core_tests": 4973,
+    "failures": 0,
+    "skips": 0,
+    "native_sdk": "JDE 7.1 / ECJ 4.6.1 CLDC / vendor RAPC: No errors; COD built; no release ZIP or tag",
+    "cod_sha256": "17cbd8f649e2d5be119f3ddd35ce280093637a03bc827f1fba80c37a3c449256",
+    "log_sha256": {
+      "maven_host": "56f1f20a89bd1114874ecf6bff9c175eb993f977bb0bda6fdea6d15818f89912",
+      "console_host_and_export": "615f09ba39171c49d070784aad405371a5ed8e238b24ed3bf7a9b4b6cd654960",
+      "native_jde_ecj_rapc": "80106c82232d5009203420c9c5dca2ca72eb001182c1fc411dd927082ff7d4d0",
+      "actual_cldc_core": "cbdb36e8519f84694330502ff0a392365682104c6064129943b4f29b6e263992",
+      "session_capture": "5c95059b5cd2bcd8fca94d000d4279166c2a0a2cab650a3519a1a8c54bda9b26"
+    },
+    "native_sdk_build": {
+      "result": "RAPC: No errors; development COD built, no release archive or tag",
+      "compiler": "ECJ 4.6.1, JDE 7.1 API, CLDC target",
+      "cod_sha256": "17cbd8f649e2d5be119f3ddd35ce280093637a03bc827f1fba80c37a3c449256"
+    }
+  },
+  "limits": [
+    "Headless frontend acceptance uses host widget/fonts/filesystem/RMS/audio doubles; not a BBOS simulator or physical Bold run.",
+    "The silent GIF samples every six presentations with explicit checkpoint frames and scripted menu holds; its timing is not a host or phone performance measurement.",
+    "RGB/PCM/full-state equality proves repeatable save/load, not independent game accuracy. Existing strict reference mismatches in the roadmap remain open and were not masked or rerun in this frontend step.",
+    "M2 battle/act/starter progression and the broader M3 application matrix remain open."
+  ],
+  "capture": {
+    "frames": 456,
+    "source_commit": "5575d26427b66f396254dbf69c2150fa7cd31c66",
+    "source_dirty": true,
+    "rom_sha256": "c14f1151897e8d73f25ffdd67e21eebb6dc57973ff2458872ee89fa9060aaca1",
+    "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+    "input_sha256": "0c2c8ca47e6f198552fb488e74b8d38a1adab1e3dc8bd667ec8c1160951ab08c",
+    "cold_route_guest_frames": 5973,
+    "presentation_frames": 1959,
+    "timeline": {
+      "0": "Home",
+      "800": "External BIOS picker",
+      "1400": "Selected BIOS",
+      "1900": "Validated BIOS preference",
+      "2500": "Open game",
+      "3000": "External ROM picker",
+      "3600": "Selected ROM and BIOS",
+      "4200": "Cold BIOS boot at 1x",
+      "9200": "Pause after BIOS boot",
+      "9700": "Speed 2x",
+      "10000": "Speed 4x / muted",
+      "10500": "Same cold-started game, opening and player input at 4x",
+      "13100": "wake-up-dialogue",
+      "32100": "psynergy-menu",
+      "32300": "controlled-field",
+      "32600": "walked-to-door",
+      "33300": "entered-house",
+      "34000": "examined-barrel",
+      "34800": "ready-for-save",
+      "34900": "Speed 8x",
+      "35200": "Normal speed / sound restored",
+      "35700": "Save menu / slot 1",
+      "36100": "Saved slot 1",
+      "36700": "120-frame controlled continuation at 1x",
+      "37100": "first-replay-25",
+      "37600": "first-replay-49",
+      "38100": "first-replay-73",
+      "38600": "first-replay-97",
+      "39100": "first-replay-120",
+      "39200": "Save menu / slot 2",
+      "39600": "Saved slot 2",
+      "40200": "Loaded slot 1 / original scene",
+      "41200": "loaded-slot-1",
+      "41300": "120-frame controlled continuation at 1x",
+      "41700": "resumed-replay-25",
+      "42200": "resumed-replay-49",
+      "42700": "resumed-replay-73",
+      "43200": "resumed-replay-97",
+      "43700": "resumed-replay-120",
+      "43800": "Save menu / slot 3",
+      "44200": "Saved slot 3",
+      "44800": "Continued play / matching save and load result"
+    },
+    "checkpoints": {
+      "wake-up-dialogue": {
+        "guest_frame": 901,
+        "png_sha256": "c17a5b6950ebe4c04f99d033afc4d69a722051c91b7794c9eea8d93d254bd816",
+        "video_ms": 13100
+      },
+      "psynergy-menu": {
+        "guest_frame": 5449,
+        "png_sha256": "43f800b99af2ab8cc34105c6dd9e4e5cf0a92ce0dadeaa521c6fae48f36fbb4b",
+        "video_ms": 32100
+      },
+      "controlled-field": {
+        "guest_frame": 5481,
+        "png_sha256": "646f184a4e36c16c370b6772f21156c53fd773697cd3a251ceb81badf15c5cb1",
+        "video_ms": 32300
+      },
+      "walked-to-door": {
+        "guest_frame": 5529,
+        "png_sha256": "0fb5325044ab3faeb565bca375c4287b3e9b1d4f0a3c71c371077cbebe7bc7ff",
+        "video_ms": 32600
+      },
+      "entered-house": {
+        "guest_frame": 5673,
+        "png_sha256": "587f76bb06f44b7f6f15404cb7321412bcecf12ed7c658749fd987e32db18e5c",
+        "video_ms": 33300
+      },
+      "examined-barrel": {
+        "guest_frame": 5813,
+        "png_sha256": "2914d348f0239896b87ca3363602942647e04a5b7f62f539a5b9668d312e8ea0",
+        "video_ms": 34000
+      },
+      "ready-for-save": {
+        "guest_frame": 5973,
+        "png_sha256": "4bbd9c8094e264722f056cdf4af4e07042bb9d1204a19ccfb63c4ba83fdc087f",
+        "video_ms": 34800
+      },
+      "first-replay-25": {
+        "guest_frame": 5998,
+        "png_sha256": "107fb10ec055cb81f8e887e5e42830e0c3092a3a1a1962036c0e54e5182e6ef6",
+        "video_ms": 37100
+      },
+      "first-replay-49": {
+        "guest_frame": 6022,
+        "png_sha256": "ee201b60ff2b14a4ec42eaf2ab0f827d1aa81c74915f9711d6ea68d587c7b7b9",
+        "video_ms": 37600
+      },
+      "first-replay-73": {
+        "guest_frame": 6046,
+        "png_sha256": "827bf08fffed6aa15ca7550232316fd719520f597b4d7735125374a69d523489",
+        "video_ms": 38100
+      },
+      "first-replay-97": {
+        "guest_frame": 6070,
+        "png_sha256": "9252c0a17849893a7e6eaa568978de0d564071303966e45eff89a464c6da90d9",
+        "video_ms": 38600
+      },
+      "first-replay-120": {
+        "guest_frame": 6093,
+        "png_sha256": "873f5942750e71f76fab9235d9e6ad6604ec989432576a6c07e27654b326d04f",
+        "video_ms": 39100
+      },
+      "loaded-slot-1": {
+        "guest_frame": 5973,
+        "png_sha256": "4bbd9c8094e264722f056cdf4af4e07042bb9d1204a19ccfb63c4ba83fdc087f",
+        "video_ms": 41200
+      },
+      "resumed-replay-25": {
+        "guest_frame": 5998,
+        "png_sha256": "107fb10ec055cb81f8e887e5e42830e0c3092a3a1a1962036c0e54e5182e6ef6",
+        "video_ms": 41700
+      },
+      "resumed-replay-49": {
+        "guest_frame": 6022,
+        "png_sha256": "ee201b60ff2b14a4ec42eaf2ab0f827d1aa81c74915f9711d6ea68d587c7b7b9",
+        "video_ms": 42200
+      },
+      "resumed-replay-73": {
+        "guest_frame": 6046,
+        "png_sha256": "827bf08fffed6aa15ca7550232316fd719520f597b4d7735125374a69d523489",
+        "video_ms": 42700
+      },
+      "resumed-replay-97": {
+        "guest_frame": 6070,
+        "png_sha256": "9252c0a17849893a7e6eaa568978de0d564071303966e45eff89a464c6da90d9",
+        "video_ms": 43200
+      },
+      "resumed-replay-120": {
+        "guest_frame": 6093,
+        "png_sha256": "873f5942750e71f76fab9235d9e6ad6604ec989432576a6c07e27654b326d04f",
+        "video_ms": 43700
+      }
+    },
+    "capture": "Production PhoneCanvas/PhoneSession/FilePicker and renderer with headless LCDUI/filesystem/RMS/audio adapters. Host fonts; no device/simulator execution or physical FPS/audio claim.",
+    "continuity": "One cold-started game with fresh backup, full BIOS boot, recorded movement, house entry and barrel interaction. Every guest frame executes. Explicit UI Load slot 1 is the only state restore; no startup snapshot or scene substitution. 1x boot, visible 4x control, then 1x replay. Six presentations per 100ms video image; menu holds are scripted dwell times, not measured host playback performance.",
+    "replay": {
+      "frames": 120,
+      "audio_frames": 65835,
+      "audio_overruns": 0,
+      "audio_underruns": 0,
+      "start_clock": 1677791808,
+      "final_clock": 1711499328,
+      "rgb_sha256": "f76bd1b7675b5c554ae47d6ff794060dbb844108ef63b6d8bbcedacbb399d22f",
+      "raw_pcm_sha256": "77c974e08eba1332cbd18e093953543e8536d65a102c16e2d21ee0b82bdee8f1",
+      "mixed_pcm_sha256": "4752d1497eaaec48c48d1b098e6b99f4923a9d11abb529882ab420026b91f6e9",
+      "comparison": "Every presented RGB array and owned post-mixer PCM packet matches the saved-state clone, then both complete saved states match."
+    },
+    "saved_state_sha256": "d8d48b029ecd8613098a13e96320e4ef214d2c1a05541ac0fd42b749afabb152",
+    "future_state_sha256": "2a8b57867704dc4ed93ddccc084c3623bff28bcf0134fdee81bdab2f4f6accf0",
+    "resumed_state_sha256": "2a8b57867704dc4ed93ddccc084c3623bff28bcf0134fdee81bdab2f4f6accf0",
+    "both_ui_continuations_and_owned_clone_exact": true,
+    "original_assets_unchanged": true,
+    "source_sha256": {
+      "tools/CaptureGoldenSunSession.java": "c3f44c6414cab2af24bc6259e947adb33315d87d1e3ba1ab5900a1579367ddf1",
+      "tools/CaptureLaunchWalkthrough.java": "3ba67306b59bd8465a673995fd40dc15c5b8277f70d687ca713d010099b8b3af",
+      "tools/capture-golden-sun-session.sh": "c3107435a4d158dc0c562da39c337f8c1445cb128ad912afc61e00e4b1ef7211",
+      "src/test/java/berryboy/build/PhoneHarness.java": "283ad3a79080ae821fa47d69377aecc89676f8bd3ffcb0e3b7f8259d94b60f68",
+      "src/test/fixtures/phone-ui/berryboy/phone/UiHarness.java": "bd75fb589189fa158560ca5bbe851eb0d95c9f51daf47f95f326f131db1c097f",
+      "src/test/fixtures/phone/berryboy/phone/PhoneAudio.java": "2bbfc3eaebf929927446e1fea58ffeb8ee2d447ee5992e2efc4efd3f65f11098",
+      "platform/midp/berryboy/phone/PhoneCanvas.java": "3b4d9a5b1752ca2a861a2139682c6c717202b2cc7446a8c1acc521071aec8a27",
+      "platform/midp/berryboy/phone/PhoneSession.java": "a2337b27a57792f144a7d489d0ea06ca4f0f543018b7f3473c086f696b7d7870"
+    },
+    "gif": {
+      "bytes": 9178989,
+      "sha256": "b1ebfd17c567ec27b559d894a808343f450a66f6bcbb181acae3d5bf19264e3f",
+      "size": [
+        640,
+        480
+      ],
+      "encoded_frames": 330,
+      "duration_ms": 45600
+    }
+  }
+}

@@ -32,5 +32,26 @@ public final class UiHarness implements AutoCloseable {
         for(int i=0;i<list.size();i++)if(list.getString(i).equals(name)){list.setSelectedIndex(i,true);list.fire(List.SELECT_COMMAND);return;}
         throw new IllegalArgumentException("No file: "+name+" in "+list.getTitle());
     }
-    public void close()throws Exception{canvas.presentationHook=null;canvas.shutdown();if(!canvas.awaitClosed(5000))throw new IllegalStateException("Session did not close");}
+    /** Command completion barrier; no emulated machine/buffer is inspected or shared. */
+    public void awaitIdle()throws Exception{
+        var field=PhoneCanvas.class.getDeclaredField("session");field.setAccessible(true);var session=field.get(canvas);
+        var type=session.getClass();var busy=type.getDeclaredField("busy");var command=type.getDeclaredField("command");
+        var paused=type.getDeclaredField("paused");var pending=type.getDeclaredField("pendingOptions");
+        for(var f:new java.lang.reflect.Field[]{busy,command,paused,pending})f.setAccessible(true);
+        var end=System.nanoTime()+java.util.concurrent.TimeUnit.SECONDS.toNanos(10);
+        while(System.nanoTime()<end){
+            synchronized(session){if(paused.getBoolean(session)&&!busy.getBoolean(session)&&command.getInt(session)==0&&pending.get(session)==null)return;}
+            Thread.sleep(2);
+        }
+        throw new IllegalStateException("Session command did not finish: "+screen().message());
+    }
+    /** Reads a committed owned file, never the session's live machine. */
+    public byte[] readSlot(String romUrl,int checksum,int slot)throws Exception{
+        awaitIdle();return new PhoneStorage(romUrl,checksum).read("st"+slot);
+    }
+    public void close(){
+        canvas.presentationHook=null;canvas.shutdown();
+        try{if(!canvas.awaitClosed(5000))throw new IllegalStateException("Session did not close");}
+        catch(InterruptedException error){Thread.currentThread().interrupt();throw new IllegalStateException("Interrupted while closing session",error);}
+    }
 }

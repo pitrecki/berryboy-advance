@@ -1,9 +1,9 @@
 # Current status and roadmap
 
-Updated **2026-11-11**, for **0.9.1-SNAPSHOT**. Latest published phone preview:
+Updated **2026-11-18**, for **0.9.1-SNAPSHOT**. Latest published phone preview:
 [**0.9.0**](https://github.com/pitrecki/berryboy-advance/releases/tag/v0.9.0).
 
-**Next deliverable: M1 — one complete Golden Sun application session.**
+**M1 accepted on the host. Next deliverable: M2 — three-game playability pack.**
 Use the supplied games and existing frontend. New CPU/DMA/VRAM investigations
 need a demonstrated milestone blocker or an explicit user priority.
 
@@ -30,7 +30,7 @@ matrices support a milestone; they do not complete it by themselves.
 
 | Milestone | User-visible result | Finish line | Current status |
 | --- | --- | --- | --- |
-| **M1 — Golden Sun complete session** | Open the application and actually play, then save and resume. | One continuous production-frontend route: Home → external BIOS/ROM selection → authentic GBA boot → game menu → controlled movement, interaction and a room/map transition → pause → save/load one slot → continue playing. Retain input/checkpoints and an uninterrupted app recording with its capture environment identified. | **Next.** Boot/intro captures and core state replays exist; the entire player journey is not yet accepted. |
+| **M1 — Golden Sun complete session** | Open the application and actually play, then save and resume. | One continuous production-frontend route: Home → external BIOS/ROM selection → authentic GBA boot → game menu → controlled movement, interaction and a room/map transition → pause → save/load one slot → continue playing. Retain input/checkpoints and an uninterrupted app recording with its capture environment identified. | **Host accepted, 2026-11-18.** Cold launch, controlled house entry/barrel interaction and GUI save/load pass; both 120-frame RGB/PCM/full-state continuations are exact. [Evidence](../benchmarks/golden-sun-session-2026-11-18.json). Native BBOS acceptance remains separate. |
 | **M2 — Three-game playability pack** | Demonstrate useful progression in three supplied games. | Golden Sun: complete a battle and return to the field. Sonic Advance 3: complete the first act. LeafGreen: obtain a starter, complete the first rival battle, save in-game and cold-load that progress. Each route has recorded input, named checkpoints and a repeatable endpoint. | **Open.** Existing shorter routes and LeafGreen saves are starting points. Keep all fifteen smoke routes as regression coverage. |
 | **M3 — Phone frontend acceptance** | The implemented settings and save features work together during play. | Complete the interaction matrix below through application commands; preferences survive restart, cancellation/failures preserve the running game and committed saves, and input never remains stuck. Exercise state formats 1/2 loading and current-format saving. | Features implemented and individually tested; combined acceptance remains open. Host acceptance and BBOS execution are reported separately. |
 | **M4 — Playback baseline and measured optimization** | Establish where time and audio continuity are lost in playable scenes. | Reproducible profiles for the three M2 scenes at 1×, full sound and frame skip off: guest work, allocations/GC, queue bounds and produced/consumed PCM. Measure presentation/audio where the environment supports them. Fix one demonstrated bottleneck if needed and compare the same workload/output before and after. | Headless capture timings exist; the three-scene playback baseline and sustained target qualification are open. |
@@ -41,18 +41,21 @@ uses their playable scenes. M5 is a **preview** decision, separate from complete
 hardware-accuracy and physical-device qualification. The release version is
 chosen with the user at that decision, not automatically for each milestone.
 
-### Immediate M1 work
+### Immediate M2 work
 
-1. Reuse the supplied Golden Sun (`AGSE`) ROM, external BIOS and existing input
-   recording/capture tools. Establish the first controllable scene from a cold
-   application launch; do not replace startup with a preloaded machine state.
-2. Record deliberate movement, interaction and a map/room transition, then drive
-   pause/save/load through the frontend. Use an owned local save copy.
-3. Verify the resumed scene and controls, plus an exact 120-frame RGB/PCM and
-   full-state continuation. Produce one continuous app capture of that route.
-4. Fix a core issue only when this route exposes a concrete crash, hang, broken
-   action, blocking visual/audio fault or lost progress. Tie the regression to
-   that observable failure, then return to M1.
+1. Extend the accepted Golden Sun (`AGSE`) route beyond Isaac's house to a battle
+   and back to the field. Keep the M1 cold-start input and its frame-5973
+   checkpoint as the reproducible starting point; exploration may use disposable
+   local states, while acceptance retains the full input chain.
+2. Establish Sonic Advance 3's first-act route and LeafGreen's starter/rival route.
+   Keep named player checkpoints and a repeatable endpoint for each game, then
+   cold-load LeafGreen's own in-game save.
+3. Retain exact state continuations and existing strict reference results; gameplay
+   progression does not imply independent pixel/audio accuracy. M3 combined
+   frontend acceptance can progress alongside these routes.
+4. Fix a core issue only when a route exposes a concrete crash, hang, broken
+   action, blocking visual/audio fault or lost progress. Tie its regression to
+   that failure, then return to the milestone.
 
 ### M3 application acceptance matrix
 
@@ -83,10 +86,17 @@ performance remain explicit target checks; host doubles do not pass them.
 
 ## Current validation
 
-- **5234 host tests**, **4973 exported-core tests** and **4973 tests against the
+- **5235 host tests**, **4973 exported-core tests** and **4973 tests against the
   actual new ECJ/CLDC classes** pass without failures or skips. Native JDE 7.1 /
   ECJ 4.6.1 / RAPC builds the 0.9.1 development COD. Host: Linux x86_64,
   Temurin 21.0.8, Maven 3.9.11.
+- [M1 session evidence](../benchmarks/golden-sun-session-2026-11-18.json) records
+  a fresh GUI launch through frame 5973, the house transition/barrel interaction,
+  and two exact 120-frame continuations with 65835 stereo PCM frames each.
+  Loading a phone slot now preserves the emulated audio ring position instead
+  of resetting it. The complete 45.6-second recording and replay are reproducible
+  with `tools/capture-golden-sun-session.sh`; this is host frontend acceptance,
+  separate from BBOS execution and independent hardware accuracy.
 - The latest [writable-memory checkpoint](../benchmarks/video-opcode-latching-2026-11-11.json)
   closes the in-progress opcode correction: 2240 shared reference observations,
   forty old-format phase snapshots, six real-game migrations and 56400 frames

@@ -62,11 +62,13 @@ See [phone usage and storage](docs/BLACKBERRY.md#phone-interface).
 
 ![Launch, game selection and Golden Sun running](docs/images/phone/golden-sun-walkthrough.gif)
 
-A continuous 29-second cold launch: Home → BIOS selection and validation → ROM
-selection → the complete GBA boot animation → Golden Sun. After boot, the pause
-menu selects 4× and play continues into the opening village scene. This runs the
-application controller, file picker and session headlessly; LCDUI widgets and fonts
-use host adapters. [Recording details](docs/images/phone/golden-sun-walkthrough.json).
+A continuous 45.6-second session: Home → external BIOS/ROM selection → complete
+GBA boot → Golden Sun menu and opening → movement → house entry → barrel
+interaction → pause/save/load → continued movement. Speed changes use the pause
+menu; both 120-frame continuations match exactly in RGB, PCM and full state.
+This runs the application controller, file picker and session headlessly; LCDUI
+widgets, fonts and audio transport use host adapters. The GIF is silent.
+[Recording details](docs/images/phone/golden-sun-walkthrough.json).
 
 ## Phone screenshots
 
@@ -202,15 +204,21 @@ a restored player save and recorded keyboard actions. It shows the desktop view 
 
 After `mvn verify`, install Python Pillow and prepare local `<game-code>.properties`
 files as described in [SCENARIOS.md](docs/SCENARIOS.md). To record the phone's
-complete launch, supply a Golden Sun AGSE mapping:
+complete session, supply a Golden Sun AGSE mapping:
 
 ```bash
-tools/capture-launch-walkthrough.sh /path/to/scenarios/AGSE.properties target/golden-sun-walkthrough.gif
+tools/capture-golden-sun-session.sh /path/to/scenarios/AGSE.properties target/golden-sun-walkthrough.gif
 ```
 
 The tool drives the production phone controller with local LCDUI/filesystem/RMS
 adapters. It uses owned ROM/BIOS copies and a fresh backup, records the original
 boot animation at 1×, then changes speed through the application's pause menu.
+The [input route](benchmarks/inputs/golden-sun-m1.tsv) changes buttons after
+presented guest frames at 4×. No startup state is loaded. At 1×, the tool saves
+through the GUI, walks for 120 frames, loads the saved slot and repeats those
+controls. It compares every RGB/PCM buffer and the complete saved states against
+an owned clone. Raw frames, checkpoints and local states stay under `target/`;
+the GIF and adjacent JSON retain the continuous timeline and hashes.
 
 For the desktop montage, supply B3SE, AMTE, AGSE
 and BPGE mappings matching [showcase.tsv](benchmarks/showcase.tsv). BPGE requires

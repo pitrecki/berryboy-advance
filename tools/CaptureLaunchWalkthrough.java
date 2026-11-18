@@ -133,7 +133,7 @@ public final class CaptureLaunchWalkthrough {
         if (!condition.ready()) throw new IllegalStateException("UI callback timed out");
     }
     /** Paint only the actual LCDUI model. This adapter does not create menu items or game pixels. */
-    private static BufferedImage render(UiHarness ui) {
+    static BufferedImage render(UiHarness ui) {
         var current = ui.display.getCurrent(); if (current instanceof Canvas canvas) return canvas.render();
         var image = new BufferedImage(640,480,BufferedImage.TYPE_INT_RGB); var g = image.createGraphics();
         try {
