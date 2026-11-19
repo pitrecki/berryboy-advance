@@ -1,0 +1,188 @@
+{
+  "date": "2026-11-19",
+  "milestone": "M5",
+  "status": "Phone preview candidate validated; user release/tag decision pending",
+  "development_version": "0.9.1-SNAPSHOT",
+  "midlet_build_version": "0.9.1",
+  "proposed_release_version": "0.9.1",
+  "candidate_code_commit": "d1c6441c0ab257faa6e8d8ceada23b20a6a03a8d",
+  "source_clean_at_sdk_build": true,
+  "latest_published_release": "0.9.0",
+  "release_tag_created": false,
+  "release_zip_created": false,
+  "scope": "SDK/ECJ/RAPC build and host execution of actual CLDC classes. This is not BBOS simulator/device runtime acceptance or physical playback performance.",
+  "commands": {
+    "host": "mvn verify",
+    "console": "tools/test-with-console.sh",
+    "sdk": "tools/blackberry.sh --sdk target/release-sdk/sdk --compiler ecj --ecj target/release-sdk/ecj-4.6.1.jar --launch false",
+    "actual_cldc": "tools/test-cldc-core.sh",
+    "scene_replay": "java -Xms256m -Xmx512m -XX:+UseG1GC -cp target/blackberry/classes:target/m5-preview-2026-11-19/host-helpers berryboy.desktop.profile.PlaybackProfiler <scene.properties>; warmups=0 repetitions=1 jfr=false; all other scene fields from M4"
+  },
+  "checks": {
+    "maven_host": {
+      "tests": 5295,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "console_host": {
+      "tests": 5295,
+      "failures": 0,
+      "skipped": 0
+    },
+    "console_export": {
+      "tests": 4973,
+      "failures": 0,
+      "skipped": 0,
+      "host_core_fallback": false
+    },
+    "actual_cldc": {
+      "tests": 4973,
+      "failures": 0,
+      "skipped": 0,
+      "host_core_fallback": false
+    },
+    "rapc": "No errors; unused-member warnings retained",
+    "native_jar_class_versions": "All classfiles at CLDC-compatible version",
+    "artifact_checksums_and_build_inputs": "Verified unchanged",
+    "jad_version_and_jar_size": "Verified 0.9.1 and exact size",
+    "raw_cod_modules": "Validated headers and contiguous sibling names"
+  },
+  "build": {
+    "compiler": "ecj",
+    "tool_sha256": {
+      "net_rim_api.jar": "b36d23121983e1115bbfa638eaf969c208d673ffb217b5ffc8e3cc90c045bb49",
+      "rapc.jar": "617107f0ca2b3710544fc12bd63f6da147abfd33d77e87cef1f473bdbf279d0a",
+      "ecj.jar": "9cddda75f4a1b4469e73f44e7b61a3e897d0f657df4797f9106ffe88c4eeade0"
+    },
+    "build_inputs_sha256": "029e7b71d55b9e97bf448ef8015e341c8e2843c2ee8f9a63c96c7b48fa371c5e",
+    "build_record_sha256": "b4e8d24fbf209938916c4ecbe53c20980f17f262baa4b02bb903206aca19481b",
+    "signing": "No signing step performed by the SDK build script",
+    "compiled_class_count": 84,
+    "classfile_formats": [
+      {
+        "minor": 3,
+        "major": 45
+      }
+    ],
+    "compiled_class_manifest_sha256": "051463fe3736322333e307fb5f3326b0d1fa7713d86749b73ac4acbfddcc114f"
+  },
+  "artifacts": {
+    "BerryBoyAdvance.cod": {
+      "bytes": 112670,
+      "sha256": "72d8f6e53e944c8c1e0eefcee8baf0a87731f38d4bf5ee3eebdf167b534f9cb5"
+    },
+    "BerryBoyAdvance.jar": {
+      "bytes": 161926,
+      "sha256": "13f3710f341fab9e53e1a6dcd2707239322c13f448406dc39b8478a4471a124e"
+    },
+    "BerryBoyAdvance.jad": {
+      "bytes": 276,
+      "sha256": "4e6492f7425779d8f419670bafc5383352587d61f867a1c24e909713272f4fc6"
+    }
+  },
+  "raw_cod_modules": {
+    "BerryBoyAdvance.cod": {
+      "bytes": 90628,
+      "sha256": "f5a126bf9bc78bd8e3c58abad6bee036bfe488bd6c0188839b3378ff59bf21cf"
+    },
+    "BerryBoyAdvance-1.cod": {
+      "bytes": 21780,
+      "sha256": "13bafb2cb0462dd6a598c9303e84d34220f9d25b62d0f11bac143d8533bb960f"
+    }
+  },
+  "scene_replays": {
+    "scope": "Correctness only: 900 controlled frames per scene on actual SDK-compiled core/mobile classes, with desktop-only helpers. CPU/timing values from these runs are not added to the M4 baseline.",
+    "classpath_has_no_host_production_core": true,
+    "helper_class_sha256": {
+      "berryboy/desktop/profile/ProfileMetrics.class": "2b0d6697024c7a2d670aa247775f64e5169f7fd3470d365fcf4772851d809c66",
+      "berryboy/desktop/profile/ProfileOutput.class": "ab6111ca35ddea8dc0af44c87d5dab5c892d82c83b9dd4a355a760b001905778",
+      "berryboy/desktop/profile/ProfileRecordingSummary.class": "4b0a34c2b9a97f4277ee30fc5d71b03f8bc841eb3ddc124d639893e89aafb083",
+      "berryboy/desktop/profile/PlaybackProfiler.class": "b1170d5b39059885d240df433fd95e07d5d7791ee2489a3aaa4262b9b9233f3c",
+      "berryboy/desktop/profile/ProfileOutput$Frame.class": "1d5ee079bede9700c797aba887142f9adb060702144270c1ede7a025f1ab9c1c",
+      "berryboy/desktop/concurrent/BoundedWorker$Statistics.class": "fe5b9f8978244d4d7756769f4f969e83d9e52852ea89b10248922bd155623c9c",
+      "berryboy/desktop/concurrent/BoundedWorker$Processor.class": "34aac560b9ddffd800177298f509ccc33a287ecc39b7c64e1455989b25d2548c",
+      "berryboy/desktop/concurrent/BoundedWorker.class": "9ff1ae2feb3b5904f82bfa56035ad42ee21be49a6875c54ded09b1b05cd8eaa5",
+      "berryboy/desktop/scenario/FrameInputs$Input.class": "e1defd4e8c4d7eb494c82b9bd109e8c46f22cd49eca535624293ceba04fc5ed2",
+      "berryboy/desktop/scenario/FrameInputs$Playback.class": "e98d47854a955f83ee0a317a20d18266649ec4cf30b54872e994b54ed2611ba2",
+      "berryboy/desktop/scenario/FrameInputs.class": "0ddf93035a0324b3e700846c0f5d8bcbeb0b4727326d1f3f6d0118850acbbb56",
+      "berryboy/desktop/capture/JsonReport.class": "d3fe5c1f2eaabf1abc7f86eead49e4806ebd114a3c391019eff50eda5d90c593"
+    },
+    "scenes": [
+      {
+        "scene": "golden-sun",
+        "frames": 900,
+        "start_frame": 23324,
+        "rom_sha256": "c14f1151897e8d73f25ffdd67e21eebb6dc57973ff2458872ee89fa9060aaca1",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "state_sha256": "e578f59a32a7699daa4ce9c397bd25ada85deac7067f6aa572bef3fca6e32407",
+        "frame_input_sha256": "5f1b77be1180eef1b96e2a2783fd3f0bf20435929274db922c65729e98e93236",
+        "rgb_chain_sha256": "bd0f0560d4158750d7dd4b4925c7390bdd40f2832fd6e79c953d72717c150959",
+        "pcm_sha256": "ad4360a43adf39b5c71c7d86376207d3e2d3f36675f504b8023485dea1ff5421",
+        "final_state_sha256": "bdae54e8449153a0297e058d8f0058c0eabd01ef8e0cffdcc7697b76b555b55d",
+        "produced_audio_frames": 493763,
+        "consumed_audio_frames": 493763,
+        "audio_overruns": 0,
+        "audio_underruns": 0,
+        "raw_report_sha256": "1f9c3a6b6cbb9938373c747857aa9d1afe36d23b86ac8b8d35bcceb25a83cc1b",
+        "matches_host_rgb_pcm_and_full_state": true
+      },
+      {
+        "scene": "sonic",
+        "frames": 900,
+        "start_frame": 12955,
+        "rom_sha256": "f937fa93b97b14b9fb9fce98844c534f936222d21d1fdb5f1af42292bad32c85",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "state_sha256": "888030d137b5be2d1f0f198ea7fe3c58e041e38f99a8c2f17ea0782a04fcd520",
+        "frame_input_sha256": "d290cfc0c178e6672e99ada66b29084f200d9661c01d0ee1cfc566d4d348bcb9",
+        "rgb_chain_sha256": "4ef45aee4d1e3ad123cb24c118edf03c82d351ea3ce429734e022097753d8e8e",
+        "pcm_sha256": "8e3618a6542dff3a246e9c81c0220e28439ed73e12df611c85f8fb2660a4d2f0",
+        "final_state_sha256": "86d2b02676014cd45b65546f0bc6a4dc426182eb011996b4bae89d310425b86c",
+        "produced_audio_frames": 493763,
+        "consumed_audio_frames": 493763,
+        "audio_overruns": 0,
+        "audio_underruns": 0,
+        "raw_report_sha256": "dae1e2b24196d578c247326d5ebb7715cf00a87feab1833f115d86ace911d18d",
+        "matches_host_rgb_pcm_and_full_state": true
+      },
+      {
+        "scene": "leafgreen-reprepared",
+        "frames": 900,
+        "start_frame": 15934,
+        "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "state_sha256": "9d4644f60d44ddfdc29de7362ca7564865b578e74532e620959e2e48c55e1307",
+        "frame_input_sha256": "18d20e64835c084a0fb1152d39c53868909d1a2dea2234478f440c57f8814c00",
+        "rgb_chain_sha256": "8a2aab388903f379375c0e71ae2553587044b08f4eb594604556e88b4acfbe46",
+        "pcm_sha256": "a5e874f3c3b2c9534efa70f41c481a6ea9f121d4a4a75168c176b2eaa9144078",
+        "final_state_sha256": "690cba71f7f8eb8ee6d21dcb1ccde3f13a3df73e3745c05f0ee94c85305f54a1",
+        "produced_audio_frames": 493763,
+        "consumed_audio_frames": 493763,
+        "audio_overruns": 0,
+        "audio_underruns": 0,
+        "raw_report_sha256": "ee6df4e47d6f51979f658060c31a6355513b94b0e19324675578e52cdbf9ae7f",
+        "matches_host_rgb_pcm_and_full_state": true
+      }
+    ]
+  },
+  "release_highlights": [
+    "Golden Sun complete frontend session and battle/field continuation; Sonic Act 1 clear; LeafGreen starter/rival/battery-save cold reload.",
+    "Combined phone frontend library/BIOS/slots/controls/cheats/playback acceptance on host adapters.",
+    "Save-state format 3 retains in-progress writable-memory opcodes; loads formats 1/2/3, while older apps reject format 3.",
+    "IME reserved-lane handling and disconnected multiplayer initialization improve recorded game routes.",
+    "Reproducible paced playback profiling; speculative read-path changes rejected rather than retained without a useful measured gain."
+  ],
+  "remaining_limits": [
+    "No physical Bold and no confirmed application execution on the installed simulator; native file permissions, input and MMAPI behavior remain open.",
+    "No sustained physical display/audio qualification; headless capture losses differ from transport gaps, latency and A/V drift.",
+    "Strict reference RGB/PCM/save disagreements remain, including graphics brightness, Sonic/Wario PCM and LeafGreen RNG/save payloads; no comparison was normalized or relaxed.",
+    "Fine DMA/LCD/IRQ/prefetch timing remains disputed; existing counterexamples are preserved.",
+    "Build script performs no signing step."
+  ],
+  "evidence": [
+    "benchmarks/playback-baseline-2026-11-19.json",
+    "docs/BENCHMARKS.md",
+    "CHANGELOG.md"
+  ],
+  "next": "Ask the user whether to release v0.9.1. After explicit approval, freeze the numeric Maven version, rebuild/verify clean sources, tag the reviewed commit, and publish the BBOS7.1 ZIP with raw COD siblings, JAD/ALX, installation instructions, provenance and checksums. Preserve published releases."
+}

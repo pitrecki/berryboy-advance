@@ -9,6 +9,8 @@
 - Add paced three-scene profiling with allocation, GC, bounded output and PCM
   accounting. Record unchanged outputs and rejected read-path experiments;
   physical BBOS playback remains a separate qualification gate.
+- Write save-state format 3 with retained in-progress writable-memory opcodes;
+  load formats 1/2/3. Older app versions reject new format-3 states.
 - Share strict input-recording validation between scenario captures and state
   replay, retaining exact guest-cycle installation and immutable recording data.
 - Add 144 independent cartridge-DMA/discarded-IRQ-fetch regressions across
