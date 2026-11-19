@@ -12,6 +12,27 @@ import org.junit.jupiter.api.Test;
 
 class BoundedWorkerTest {
     @Test
+    void reportsQueuePressureWithoutExecutingWorkFromTheQuery() throws Exception {
+        var entered = new CountDownLatch(1); var release = new CountDownLatch(1);
+        var worker = new BoundedWorker<Integer>("metered-output", 1, value -> { if (value == 1) { entered.countDown(); release.await(); } });
+        try (var producer = Executors.newSingleThreadExecutor()) {
+            try {
+                worker.submit(1); assertThat(entered.await(5, TimeUnit.SECONDS)).isTrue(); worker.submit(2);
+                var third = producer.submit(() -> { worker.submit(3); return true; });
+                var end = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
+                while (worker.statistics().blockedSubmissions() == 0 && System.nanoTime() < end) Thread.sleep(1);
+                var waiting = worker.statistics();
+                assertThat(waiting.submitted()).isEqualTo(2); assertThat(waiting.processed()).isZero();
+                assertThat(waiting.maximumQueued()).isEqualTo(1); assertThat(waiting.blockedSubmissions()).isEqualTo(1);
+                assertThat(worker.statistics()).isEqualTo(waiting);
+                release.countDown(); assertThat(third.get(5, TimeUnit.SECONDS)).isTrue(); worker.close();
+                var finished = worker.statistics();
+                assertThat(finished.submitted()).isEqualTo(3); assertThat(finished.processed()).isEqualTo(3);
+                assertThat(finished.blockedNanos()).isPositive();
+            } finally { release.countDown(); }
+        } finally { worker.close(); }
+    }
+    @Test
     void processesOnAnotherThreadInOrderAndBackpressuresWithoutDropping() throws Exception {
         var entered = new CountDownLatch(1);
         var release = new CountDownLatch(1);

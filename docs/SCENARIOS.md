@@ -4,6 +4,41 @@ Build with JDK 21 and `mvn verify`. `tools/benchmark.py` requires Python 3 and
 launches `berryboy.desktop.ScenarioRunner` from `target/classes`. Keep local ROMs,
 BIOS, saves and configuration outside Git. The runner never downloads game data.
 
+## Paced playback profiles
+
+Use an accepted scenario's properties and retained `frames.jsonl`/`audio.wav` to
+prepare a window. The preparation tool accepts simple Linux `KEY=VALUE` files
+without Java escapes, verifies ROM/BIOS/input/seed identities, cold-replays the
+prefix with `StateRoundTrip`, and extracts exact expected window RGB/PCM hashes.
+The original battery seed is read only. Use fresh output directories.
+
+```sh
+python3 tools/prepare-playback-profile.py /path/to/accepted.properties 23324 900 \
+  target/fresh-playback-scene --classes target/classes --hardware 'actual host description'
+java -Xms256m -Xmx512m -XX:+UseG1GC -cp target/classes \
+  berryboy.desktop.profile.PlaybackProfiler target/fresh-playback-scene/scene.properties
+java -cp target/classes berryboy.desktop.profile.ProfileRecordingSummary \
+  target/fresh-playback-scene/profile/profile.jfr target/fresh-playback-scene/profile/jfr-summary.json
+```
+
+Finish compilation before preparing/running profiles; keep the class directory
+unchanged while a JVM uses it. Run measured scenes sequentially without other
+project builds or tests. Preparation defaults to two warmups, three measured
+repetitions and one separate JFR diagnostic repetition. All use normal 1× pacing,
+stereo sound at 100%, no frame skips and a two-frame bounded output queue. Each
+repetition loads the same owned state and recorded controls. RGB hash chains,
+PCM and the complete final state must agree; output loss fails the run.
+
+Reports separate guest work/allocation, PCM drain, snapshot submission, queue
+pressure, scaling/mixing/hash work, thread CPU/allocation and JVM GC collection
+count/time. JFR samples exclude state/scaler setup and final serialization. Its
+weighted allocation samples are estimates, separate from exact thread counters.
+`gc_collection_ms` is the GC MXBean's collection time, not a sum of independently
+measured stop-the-world pauses. Timings and producer deadline misses describe
+the Linux core plus headless scaling/PCM/checksum sink. They do not measure a
+physical display, audio transport or Bold FPS. The sink receives owned copies;
+live guest buffers never cross threads.
+
 ## Local configuration
 
 Create an ignored `benchmarks/games.local.json`, mapping the five identifiers in
