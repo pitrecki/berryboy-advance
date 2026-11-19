@@ -107,6 +107,25 @@ class PhoneControlsAcceptanceTest {
             h.select("Slot 2"); h.message("Loaded slot 2"); h.idle();
             h.select("Resume game"); h.frames(3); h.pause();
             assertNeutral(h.save(4), rom, bios);
+
+            h.select("Resume game");
+            h.press(key(8)); h.release(key(8)); h.press(key(9)); h.release(key(9));
+            h.press(key(0)); h.press(key(4)); h.frames(3); h.pause();
+            h.select("Restart game"); h.command("Confirm"); h.message("Game restarted"); h.idle();
+            h.select("Resume game"); h.release(key(0)); h.release(key(4)); h.frames(12); h.pause();
+            assertThat(h.screen().shoulderLocks()).isZero();
+            assertNeutral(h.save(3), rom, bios);
+
+            var previousSlot = h.slot(3);
+            var otherGame = temporary.resolve("other-input.gba"); Files.write(otherGame, rom);
+            h.select("Resume game");
+            h.press(key(8)); h.release(key(8)); h.press(key(0)); h.press(key(4)); h.frames(3); h.pause();
+            h.select("Home"); h.select("Open game"); h.text(0, otherGame.toUri().toASCIIString());
+            h.command("Start game"); h.frames(12); h.release(key(0)); h.release(key(4)); h.frames(3); h.pause();
+            h.select("Save state"); h.idle(); h.select("Slot 1"); h.message("Saved slot 1"); h.idle();
+            assertThat(h.screen().shoulderLocks()).isZero();
+            assertNeutral(h.slot(otherGame, new Cartridge(rom).checksum(), 0), rom, bios);
+            assertThat(h.slot(3)).as("changing games leaves the previous game's committed slots intact").isEqualTo(previousSlot);
         }
     }
 

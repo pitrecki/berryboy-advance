@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 
 /** Controller commands, platform-double setup and owned snapshots; never reads the live machine. */
 public final class PhoneUiDriver implements AutoCloseable {
@@ -16,6 +17,7 @@ public final class PhoneUiDriver implements AutoCloseable {
     private final int checksum;
     private final AtomicInteger presentations = new AtomicInteger();
     private final AtomicReference<int[]> firstFrame = new AtomicReference<>();
+    private final AtomicReference<Thread> owner = new AtomicReference<>();
     private Object ui;
 
     public PhoneUiDriver(Path classes, Path rom, int checksum) throws Exception {
@@ -27,7 +29,9 @@ public final class PhoneUiDriver implements AutoCloseable {
         ui = loader.loadClass("berryboy.phone.UiHarness").getConstructor().newInstance();
         var canvas = ui.getClass().getField("canvas").get(ui);
         resetFirstFrame();
+        owner.set(null);
         canvas.getClass().getField("presentationHook").set(canvas, (Runnable) () -> {
+            owner.compareAndSet(null, Thread.currentThread());
             var frame = screen().frame();
             if (frame != null && firstFrame.get() == null) firstFrame.compareAndSet(null, frame.clone());
             presentations.incrementAndGet();
@@ -63,6 +67,14 @@ public final class PhoneUiDriver implements AutoCloseable {
     public void failWriteAfter(int bytes) throws Exception {
         loader.loadClass("javax.microedition.io.Connector").getField("failAfterBytes").setInt(null, bytes);
     }
+    public void captureAudio(Consumer<short[]> sink) throws Exception {
+        loader.loadClass("berryboy.phone.PhoneAudio").getField("packetHook").set(null, sink);
+    }
+    public java.awt.image.BufferedImage render() throws Exception {
+        var canvas = ui.getClass().getField("canvas").get(ui);
+        return (java.awt.image.BufferedImage) canvas.getClass().getMethod("render").invoke(canvas);
+    }
+    public int presentations() { return presentations.get(); }
     public void idle() throws Exception { call("awaitIdle", new Class<?>[0]); }
     public PhoneScreen screen() {
         try { return (PhoneScreen) call("screen", new Class<?>[0]); }
@@ -83,9 +95,17 @@ public final class PhoneUiDriver implements AutoCloseable {
     public void frames(int count) throws Exception {
         var start = presentations.get(); await(() -> presentations.get() >= start + count);
     }
-    public void pause() throws Exception { command("Pause / Menu"); idle(); }
+    public void pause() throws Exception {
+        command("Pause / Menu"); idle();
+        // The UI pause request can arrive while the owner is finishing a frame or
+        // applying a preference. Its paused mailbox wait is a read-only host barrier.
+        await(() -> owner.get() != null && owner.get().getState() == Thread.State.WAITING);
+    }
     public byte[] slot(int slot) throws Exception {
-        return (byte[]) call("readSlot", new Class<?>[]{String.class, int.class, int.class}, rom.toUri().toASCIIString(), checksum, slot);
+        return slot(rom, checksum, slot);
+    }
+    public byte[] slot(Path game, int identity, int slot) throws Exception {
+        return (byte[]) call("readSlot", new Class<?>[]{String.class, int.class, int.class}, game.toUri().toASCIIString(), identity, slot);
     }
     public void replaceSlot(int slot, byte[] bytes) throws Exception {
         call("writeSlot", new Class<?>[]{String.class, int.class, int.class, byte[].class},

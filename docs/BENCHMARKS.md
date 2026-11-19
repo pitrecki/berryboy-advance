@@ -3,7 +3,7 @@
 Updated **2026-11-19**, for **0.9.1-SNAPSHOT**. Latest published phone preview:
 [**0.9.0**](https://github.com/pitrecki/berryboy-advance/releases/tag/v0.9.0).
 
-**M1 and M2 accepted on the host. Next deliverable: M3 — phone frontend acceptance.**
+**M1–M3 accepted on the host. Next deliverable: M4 — playback baseline.**
 Use the supplied games and existing frontend. New CPU/DMA/VRAM investigations
 need a demonstrated milestone blocker or an explicit user priority.
 
@@ -13,11 +13,11 @@ The project already has the phone frontend, local ROM/BIOS selection, five state
 slots, cheats, remapping, shoulder assist, audio/display settings and speed modes.
 The SDK builds a COD and the exported core passes its portability checks.
 
-The connected M1 session and all three M2 progression routes now pass on the
-host. The fifteen boot/intro smoke routes remain regression coverage alongside
-named Doom II, F-Zero and Mario & Luigi gameplay routes. The next delivery gaps
-are the remaining combined application flows, sustained playback profiles and
-measured Bold behavior.
+The connected M1 session, all three M2 progression routes and the M3 combined
+frontend matrix now pass on the host. The fifteen boot/intro smoke routes remain
+regression coverage alongside named Doom II, F-Zero and Mario & Luigi gameplay
+routes. The next delivery gaps are sustained playback profiles and measured
+Bold behavior.
 
 The previous queue put hardware-model disagreements ahead of those deliverables.
 Those disagreements remain recorded below; they no longer automatically block
@@ -32,7 +32,7 @@ matrices support a milestone; they do not complete it by themselves.
 | --- | --- | --- | --- |
 | **M1 — Golden Sun complete session** | Open the application and actually play, then save and resume. | One continuous production-frontend route: Home → external BIOS/ROM selection → authentic GBA boot → game menu → controlled movement, interaction and a room/map transition → pause → save/load one slot → continue playing. Retain input/checkpoints and an uninterrupted app recording with its capture environment identified. | **Host accepted, 2026-11-18.** Cold launch, controlled house entry/barrel interaction and GUI save/load pass; both 120-frame RGB/PCM/full-state continuations are exact. [Evidence](../benchmarks/golden-sun-session-2026-11-18.json). Native BBOS acceptance remains separate. |
 | **M2 — Three-game playability pack** | Demonstrate useful progression in three supplied games. | Golden Sun: complete a battle and return to the field. Sonic Advance 3: complete the first act. LeafGreen: obtain a starter, complete the first rival battle, save in-game and cold-load that progress. Each route has recorded input, named checkpoints and a repeatable endpoint. | **Host accepted, 2026-11-19.** [Golden Sun Vermin victory and controlled field return](../benchmarks/golden-sun-first-battle-2026-11-19.json), [Sonic Route 99 Act 1 clear](../benchmarks/sonic-route99-act1-2026-11-19.json), and [LeafGreen starter/rival/save/reload](../benchmarks/leafgreen-starter-rival-2026-11-18.json) pass with recorded inputs and exact state continuations. Full-game compatibility and native target qualification remain separate. |
-| **M3 — Phone frontend acceptance** | The implemented settings and save features work together during play. | Complete the interaction matrix below through application commands; preferences survive restart, cancellation/failures preserve the running game and committed saves, and input never remains stuck. Exercise state formats 1/2 loading and current-format saving. | **Library/startup, slots, controls and cheat journeys host accepted, 2026-11-19.** [Browsing/cancellation, Show/Skip startup, all five slots, rejected states and legacy migration](../benchmarks/phone-library-slots-acceptance-2026-11-19.json); [controls](../benchmarks/phone-controls-acceptance-2026-11-19.json); [cheats](../benchmarks/phone-cheats-acceptance-2026-11-19.json) pass. Combined playback/display and restart/game-change input release remain open; BBOS execution is separate. |
+| **M3 — Phone frontend acceptance** | The implemented settings and save features work together during play. | Complete the interaction matrix below through application commands; preferences survive restart, cancellation/failures preserve the running game and committed saves, and input never remains stuck. Exercise state formats 1/2 loading and current-format saving. | **Host accepted, 2026-11-19.** [Complete matrix and playback/lifecycle checks](../benchmarks/phone-playback-acceptance-2026-11-19.json), [library/startup and slots](../benchmarks/phone-library-slots-acceptance-2026-11-19.json), [controls](../benchmarks/phone-controls-acceptance-2026-11-19.json) and [cheats](../benchmarks/phone-cheats-acceptance-2026-11-19.json) pass. All six combined UI journeys and existing regression suites pass together. Native BBOS qualification remains separate. |
 | **M4 — Playback baseline and measured optimization** | Establish where time and audio continuity are lost in playable scenes. | Reproducible profiles for the three M2 scenes at 1×, full sound and frame skip off: guest work, allocations/GC, queue bounds and produced/consumed PCM. Measure presentation/audio where the environment supports them. Fix one demonstrated bottleneck if needed and compare the same workload/output before and after. | Headless capture timings exist; the three-scene playback baseline and sustained target qualification are open. |
 | **M5 — Reviewed phone preview candidate** | A concrete, reviewable next phone build and release decision. | M1–M3 accepted, M4 baseline recorded, host/export/SDK/actual-CLDC checks pass, and release notes identify remaining accuracy/runtime limits. Present the candidate commit and build results. After the user's release approval, freeze the version, tag and publish the phone ZIP with COD siblings, JAD/ALX, instructions, provenance and checksums. | The build pipeline works and 0.9.0 is published. No new tag/package is authorized by this roadmap. |
 
@@ -41,22 +41,21 @@ uses their playable scenes. M5 is a **preview** decision, separate from complete
 hardware-accuracy and physical-device qualification. The release version is
 chosen with the user at that decision, not automatically for each milestone.
 
-### Immediate work after M2
+### Immediate M4 work
 
-1. Finish the remaining M3 application matrix below: combined sound/speed/display
-   settings across controller reopen, and input release on confirmed restart
-   and game changes. Library/startup, incompatible/damaged slots and legacy
-   migration now have combined UI acceptance. Retain individual storage failure
-   tests as regression coverage.
-2. Preserve all three accepted M2 recordings and their exact continuations,
-   alongside the fifteen smoke routes. Golden Sun's frame-24420 controlled
-   field checkpoint replaces the earlier village/blocked-rock resume points.
-3. Use the three playable M2 scenes for M4 profiles at 1×, full sound and no
-   emulator frame skips. Headless capture work times are not a sustained
-   playback baseline or measured Bold FPS.
-4. Fix a core issue only when a route exposes a concrete crash, hang, broken
-   action, blocking visual/audio fault or lost progress. Keep existing strict
-   reference results; progression does not imply independent accuracy.
+1. Profile active Golden Sun battle, Sonic Act 1 and LeafGreen rival-battle
+   windows from the accepted M2 recordings. Use 1×, full sound and no emulator
+   frame skips; identify each ROM/BIOS/input and owned starting state. Keep
+   guest work separate from capture, presentation and audio transport.
+2. Record allocations/GC, bounded queue behavior and produced/consumed PCM.
+   Collect isolated repetitions; existing capture work times and the M3 policy
+   counter are not a sustained playback baseline or measured Bold FPS.
+3. Fix one demonstrated bottleneck if needed, comparing the same workload and
+   outputs before/after. Preserve M1–M3, all fifteen smoke routes, exact state
+   continuations and existing strict reference results.
+4. After the baseline, prepare the concrete M5 phone preview candidate with
+   host/export/SDK/actual-CLDC checks. The user decides its release/tag; native
+   accuracy and physical target qualification remain separate gates.
 
 ### M3 application acceptance matrix
 
@@ -87,7 +86,7 @@ performance remain explicit target checks; host doubles do not pass them.
 
 ## Current validation
 
-- **5289 host tests**, **4973 exported-core tests** and **4973 tests against the
+- **5290 host tests**, **4973 exported-core tests** and **4973 tests against the
   actual new ECJ/CLDC classes** pass without failures or skips. Native JDE 7.1 /
   ECJ 4.6.1 / RAPC builds the 0.9.1 development COD. Host: Linux x86_64,
   Temurin 21.0.8, Maven 3.9.11.
@@ -108,7 +107,8 @@ performance remain explicit target checks; host doubles do not pass them.
   combinations, slot operations and focus/controller lifecycle. A synthetic
   guest records KEYINPUT; inspection loads only committed owned state bytes.
   Mappings and saved slots survive controller recreation, while held keys do
-  not. Restart/game-change release and combined sound/speed/display remain open.
+  not. Confirmed restart and game-change release are now covered by the playback
+  and lifecycle update below as well.
 - [M3 cheat evidence](../benchmarks/phone-cheats-acceptance-2026-11-19.json)
   verifies Raw and both supported CodeBreaker types through the application
   form, with RAM effects inspected only from committed owned snapshots. Enabled
@@ -123,6 +123,13 @@ performance remain explicit target checks; host doubles do not pass them.
   are rejected, a partial overwrite can be retried safely, and formats 1/2 load
   through the UI and save as format 3. Remaining storage failure phases retain
   their existing individual coverage.
+- [M3 playback/lifecycle evidence](../benchmarks/phone-playback-acceptance-2026-11-19.json)
+  closes the host matrix. Guest-generated PCM verifies volume, mono, mute and
+  acceleration/restoration; all 38400 source pixels survive native/integer/fit/
+  stretch rendering. Presentation skip retains guest execution and every PCM
+  packet, FPS updates, preferences survive controller reopen, and restart/game
+  changes release input while preserving the previous game's committed slots.
+  These are host policy/integration checks, not physical playback measurements.
 - [LeafGreen M2 evidence](../benchmarks/leafgreen-starter-rival-2026-11-18.json)
   retains the complete 24410-frame cold route and a separate 2500-frame battery
   reload. The saved Bulbasaur is L6, 204 XP and 22/22 HP; party and lab progress

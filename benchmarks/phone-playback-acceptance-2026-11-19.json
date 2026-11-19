@@ -1,0 +1,130 @@
+{
+  "date": "2026-11-19",
+  "version": "0.9.1-SNAPSHOT",
+  "milestone": "M3",
+  "status": "Complete M3 application matrix accepted on host; native BBOS qualification remains separate",
+  "source_base_commit": "ade02d0dcbc7ccf4394d68dacfdaebb6a6229f86",
+  "source_sha256": {
+    "src/test/java/berryboy/build/phone/PhonePlaybackAcceptanceTest.java": "f9ce659fc00a1951e6ba8bd95a0936ee22f59e88a3027a102348b188741bffea",
+    "src/test/java/berryboy/build/phone/PhoneLibraryAcceptanceTest.java": "6abbd06cd86f993236344509adbf474cdcbdf617c909673a1fbb0bc687f8ad57",
+    "src/test/java/berryboy/build/phone/PhoneSlotsAcceptanceTest.java": "f7285aff670764a03130bd590bb959bb4e7dcd2818d117de7dd9a099b55d4736",
+    "src/test/java/berryboy/build/phone/PhoneCheatsAcceptanceTest.java": "c5b9c3d31ecf1bef50d23f126631af7ded1e9ca46d53326c61ae2aff7619a514",
+    "src/test/java/berryboy/build/phone/PhoneUiDriver.java": "0605d885940f4ecb23d1c6590e8f2acf1589257c99ff68626acad6311bc48ea7",
+    "src/test/java/berryboy/build/PhoneControlsAcceptanceTest.java": "d1b7875d009f258cd18ed0eb2b8649b476b384ecb3f291b6b4a954a4155ac93f",
+    "src/test/fixtures/phone-ui/berryboy/phone/UiHarness.java": "de5988374c1210a4ca424effc124ec02fb2d89d403c9aee909f197b7ab07fb6f",
+    "src/test/fixtures/phone/berryboy/phone/PhoneAudio.java": "2bbfc3eaebf929927446e1fea58ffeb8ee2d447ee5992e2efc4efd3f65f11098",
+    "platform/midp/berryboy/phone/PhoneCanvas.java": "3b4d9a5b1752ca2a861a2139682c6c717202b2cc7446a8c1acc521071aec8a27",
+    "platform/midp/berryboy/phone/PhoneSession.java": "a2337b27a57792f144a7d489d0ea06ca4f0f543018b7f3473c086f696b7d7870"
+  },
+  "tests": [
+    "berryboy.build.phone.PhonePlaybackAcceptanceTest.combinesAudioSpeedScalingAndFrameSkipWithoutDroppingGuestWorkAndRetainsPreferences",
+    "berryboy.build.PhoneControlsAcceptanceTest.remapsEveryButtonCombinesShoulderLocksAndClearsInputAcrossPauseFocusAndSlotReload"
+  ],
+  "command": "mvn -Dtest=PhonePlaybackAcceptanceTest,PhoneControlsAcceptanceTest,PhoneLibraryAcceptanceTest,PhoneSlotsAcceptanceTest,PhoneCheatsAcceptanceTest test",
+  "environment": "Production phone canvas/controller/session/renderer/mixer with headless LCDUI/filesystem/RMS/audio adapters. Original synthetic guest gradient, input sampler and left-only fixed-volume square tone; synthetic external reset-vector BIOS.",
+  "ownership": "One emulation owner; audio packets and presented frames are owned copies. The output test uses a bounded 128-packet queue that fails on overflow. Guest inspection loads only committed owned slot bytes.",
+  "playback_acceptance": [
+    "Observe a real guest-generated left-only PSG tone at the default output volume; change volume through UI and verify the PCM amplitude.",
+    "Switch stereo to mono through UI; every output pair matches and its amplitude reflects averaging.",
+    "Mute produces no output packets. Exercise 2x/4x/8x/1x with mute enabled and disabled; acceleration stays silent and returning to 1x preserves the independent mute choice.",
+    "Use the production PhoneRenderer/MidpGraphics through the running canvas in all four scaling modes; every one of the 38400 guest pixels remains represented, including the final row/column.",
+    "Enable FPS and presentation skip 1 in 6. The GBA counter becomes numeric; fewer submitted frames still execute every guest frame and transport every produced PCM frame without overruns/underruns.",
+    "Recreate the controller and start the game with persisted volume, mono, mute, skip, FPS, scaling, boot and speed preferences."
+  ],
+  "control_lifecycle_extension": [
+    "Combine shoulder locks, A and Right before pausing and confirming Restart; late physical releases do not leave the restarted guest holding keys.",
+    "Change to another ROM file while physical action/direction keys were held and R was locked before pause; the new guest sees every key released.",
+    "Save the new game separately and retain the previous game committed slot bytes."
+  ],
+  "fixture_pcm_expectations": {
+    "master_tone": "Fixed-volume square, left route only, full PSG ratio; frontend expectations, not independent GBA DAC qualification",
+    "default_80_percent_left_peak": 6144,
+    "default_right_peak": 0,
+    "volume_50_percent_left_peak": 3840,
+    "mono_50_percent_peak_each_channel": 1920,
+    "muted_or_accelerated_output_packets": 0
+  },
+  "scaling_geometry_at_640x480": {
+    "aspect_fit": [
+      0,
+      27,
+      640,
+      426
+    ],
+    "stretch": [
+      0,
+      0,
+      640,
+      480
+    ],
+    "native": [
+      200,
+      160,
+      240,
+      160
+    ],
+    "integer": [
+      80,
+      80,
+      480,
+      320
+    ],
+    "verification": "Sample one rendered destination representing each source coordinate and compare all 240x160 RGB values with the owned guest frame; no overlays enabled during this check."
+  },
+  "frame_skip_verification": {
+    "skip": 5,
+    "speed": 1,
+    "sound": "50 percent mono, unmuted",
+    "waited_for_submissions": 12,
+    "checks": "Executed guest frames are between 1+6*(submitted-1) and 6*submitted; one owned PCM packet per guest frame, total packet sample count equals the guest produced-PCM counter delta, overruns/underruns zero. This checks policy, not physical performance."
+  },
+  "persisted_settings": {
+    "volume": 50,
+    "muted": false,
+    "mono": true,
+    "frame_skip": 5,
+    "show_fps": true,
+    "scaling": "Full screen / aspect fit",
+    "show_boot": true,
+    "speed": 1
+  },
+  "harness_changes": [
+    "Observe the emulation owner thread at its paused mailbox wait before measuring a new test window. This read-only host barrier avoids racing a finishing frame/preference application and submits no hidden guest command.",
+    "Capture only owned output packets and render through the actual canvas adapter; expose completed storage reads for a specifically identified second ROM file."
+  ],
+  "m3_coverage": {
+    "library_and_startup": "benchmarks/phone-library-slots-acceptance-2026-11-19.json",
+    "slots_battery_and_legacy": "benchmarks/phone-library-slots-acceptance-2026-11-19.json; existing PhoneStorageInterruptionTest and PhoneSessionTest retain independent battery/storage coverage",
+    "controls": "benchmarks/phone-controls-acceptance-2026-11-19.json plus the restart/game-change extension in this record",
+    "cheats": "benchmarks/phone-cheats-acceptance-2026-11-19.json",
+    "sound_speed_display_diagnostics": "This combined playback journey",
+    "qualification": "All six current combined UI test methods pass together, plus existing host and exported regression suites. Host policy/storage acceptance does not establish BBOS runtime or physical presentation/audio."
+  },
+  "validation": {
+    "maven_host_tests": 5290,
+    "console_host_tests": 5290,
+    "exported_core_tests": 4973,
+    "failures": 0,
+    "skips": 0,
+    "new_combined_journeys": 1,
+    "extended_controls_journey": true,
+    "total_combined_ui_test_methods": 6,
+    "log_sha256": {
+      "m3-playback-focused.log": "7c47849f204ed7d21314095d8392a676361a2b0dae9931a5c542dbbc8ffa452c",
+      "m3-playback-verify.log": "5fcf4e27147e756d2ccd49002c7580a515912ac9ab60b666b8f92951276aa43e",
+      "m3-playback-console.log": "02cd18d7de760f7b048549f4cdc49dcce19d51cdee16f930b8d6465ff50fe72b"
+    }
+  },
+  "remaining_m3_host": [],
+  "native_target_checks": [
+    "Install and open the app, browse actual phone storage/BIOS and play/pause/load.",
+    "Actual device key rollover, file permissions, MMAPI transport/latency and sustained performance."
+  ],
+  "next_milestone": "M4: isolated active-scene profiles from the Golden Sun, Sonic and LeafGreen M2 recordings at 1x, full sound and no emulator frame skips; guest work, allocations/GC, queue bounds and produced/consumed PCM.",
+  "limits": [
+    "Core and phone runtime sources are unchanged; this update completes host integration acceptance of already implemented features.",
+    "RMS and audio transport are host adapters. No physical FPS, MMAPI playback or OS process-restart durability claim.",
+    "The FPS check observes a host wall-clock policy counter; it is not a Bold performance measurement or an isolated M4 baseline.",
+    "The previously built SDK/actual-CLDC core validation is retained; no native package, tag or release is produced here."
+  ]
+}
