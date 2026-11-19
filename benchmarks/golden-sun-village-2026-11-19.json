@@ -1,0 +1,169 @@
+{
+  "date": "2026-11-19",
+  "version": "0.9.1-SNAPSHOT",
+  "milestone": "M2",
+  "game": "Golden Sun USA (AGSE)",
+  "status": "Village continuation cold replay verified; battle and return to field remain open",
+  "source_commit": "b5129e07f0cf57b9ebf5924afc5d95b063d6a9e5",
+  "source_dirty": false,
+  "scope": "Extend the accepted M1 input through the western side of the house, Garet/party, northern warning, west bridge and falling-boulder scene. This is a reproducible route checkpoint, not M2 battle acceptance.",
+  "assets": {
+    "rom_sha256": "c14f1151897e8d73f25ffdd67e21eebb6dc57973ff2458872ee89fa9060aaca1",
+    "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+    "initial_save": null,
+    "rtc_seed": "2000-01-01T00:00:00",
+    "devices": 0
+  },
+  "input": {
+    "file": "benchmarks/inputs/golden-sun-village.tsv",
+    "sha256": "b99418bd01ca08cc1c39f086783740353ba806a57e7c4d9b1791310fbef118b6",
+    "events": 389,
+    "format": "after_guest_frame keys",
+    "prefix": "Same M1 inputs through frame 5973, followed by ordinary keys. No cycle-input prefix, emulator-state preload, guest memory writes or forced RNG."
+  },
+  "checkpoints": {
+    "previous-north-dead-end": {
+      "frame": 7005,
+      "png_sha256": "e23ba5d66bc71e46eefa7c15d67154fc50d5cc87498c751c919cf706d0680f2b"
+    },
+    "house-front": {
+      "frame": 7485,
+      "png_sha256": "8b780adcf9fadfd54d8c174f9453ed9a3302e7329e037590a914700303901a4a"
+    },
+    "west-side-house-passage": {
+      "frame": 7913,
+      "png_sha256": "084d9c1bd8be1bc616b4482d4898a4fea569b9d890e6920eef169556aab8769e"
+    },
+    "garet-in-party-menu": {
+      "frame": 9491,
+      "png_sha256": "21a3d647143cdfd4c6269243fbad4cbc10ea7d4f52450dfc40e7090182b66f23"
+    },
+    "north-stairs": {
+      "frame": 11667,
+      "png_sha256": "d3c24b8264ff302ace2ba7384f3246fcbd0f2b3f4587f74ee2fb907fdd3e644e"
+    },
+    "north-warning-closed": {
+      "frame": 12817,
+      "png_sha256": "131ef4ba5647a3a5d8d86cb5e817d3699d4dafb1dfe975fc6cec319d7cb6e466"
+    },
+    "west-bridge-crossed": {
+      "frame": 13037,
+      "png_sha256": "b23f3c7e32865cf5ac22da1bcfe77a80ed90219174a5532b1fe7c3ca3987a447"
+    },
+    "falling-boulder-scene": {
+      "frame": 13717,
+      "png_sha256": "2f31e7820690c3ddfa03de8671ba4f9ca48ed4038e9af07777932e14b44da0ca"
+    }
+  },
+  "accepted_observations": {
+    "cold_bios_start_to_frame_13717": true,
+    "all_eight_extension_checkpoint_rgb_match_exploration": true,
+    "garet_party_menu_observed": true,
+    "west_bridge_crossed": true,
+    "boulder_scene_reached": true,
+    "battle_completed": false,
+    "return_to_field_after_battle": false
+  },
+  "cold_capture": {
+    "status": "captured",
+    "correctness": "unverified",
+    "qualification": "headless-only; physical presentation and playback unverified",
+    "rom_sha256": "c14f1151897e8d73f25ffdd67e21eebb6dc57973ff2458872ee89fa9060aaca1",
+    "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+    "input_sha256": null,
+    "rtc_seed": "2000-01-01T00:00:00",
+    "frame_input_sha256": "b99418bd01ca08cc1c39f086783740353ba806a57e7c4d9b1791310fbef118b6",
+    "initial_save_sha256": null,
+    "backup_sha256": "71189f7fb6aed638640078fba3a35fda6c39c8962e74dcc75935aac948da9063",
+    "backup_type": 1,
+    "backup_bytes": 65536,
+    "save_written": false,
+    "devices": 0,
+    "rumble_active": false,
+    "commit": "b5129e07f0cf57b9ebf5924afc5d95b063d6a9e5",
+    "source_dirty": "false",
+    "frames": 13717,
+    "warmup_frames": 0,
+    "guest_cycles": 3853050432,
+    "audio_frames": 7525489,
+    "audio_overruns": 0,
+    "audio_underruns": 0,
+    "produced_audio_frames": 7525489,
+    "consumed_audio_frames": 7525489,
+    "dropped_guest_frames": 0,
+    "video_sha256": "a21c3e31ab482ee5f2c24d7955de685a5fde4191c0355488352e0595a78e9884",
+    "audio_sha256": "36144b775fef2077049c6002bf3d09e7ff6b6a9ad63bfb9bb21b2fe61f29a2f0",
+    "work_p50_ns": 7465032,
+    "work_p95_ns": 12623710,
+    "work_p99_ns": 15446210,
+    "work_max_ns": 63121911,
+    "work_deadline_misses": 69,
+    "physically_presented_frames": null,
+    "physical_audio_underruns": null,
+    "java": "21.0.8+9-LTS",
+    "os": "Linux",
+    "architecture": "amd64",
+    "hardware": "Linux x86_64 cloud host; Golden Sun M2 cold village continuation; physical presentation unmeasured",
+    "os_version": "6.18.57"
+  },
+  "validation": {
+    "log_sha256": "de9fcfd7c3199b5e63187fb09c068ef63029b0c53bb61369a235fcd7777ed006",
+    "scope": "Headless gameplay replay only; existing host/export suites remain the validation from the preceding controls commit. No new core or phone runtime changes."
+  },
+  "reproduction": {
+    "properties": {
+      "rom": "verified local Golden Sun ROM",
+      "rom_sha256": "c14f1151897e8d73f25ffdd67e21eebb6dc57973ff2458872ee89fa9060aaca1",
+      "bios": "verified local external BIOS",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "frame_input": "benchmarks/inputs/golden-sun-village.tsv",
+      "frame_input_sha256": "b99418bd01ca08cc1c39f086783740353ba806a57e7c4d9b1791310fbef118b6",
+      "frames": 13717,
+      "checkpoints": "5973,7005,7485,7913,9491,11667,12817,13037,13717",
+      "devices": 0,
+      "rtc": "2000-01-01T00:00:00",
+      "warmup_frames": 0,
+      "output": "fresh empty local directory"
+    },
+    "command": "java -Djava.awt.headless=true -cp target/classes berryboy.desktop.ScenarioRunner /path/to/village.properties",
+    "notes": "Resolve local asset/input paths relative to the properties file, or use absolute paths. Omit input, save and initial_save_sha256; start from a fresh backup."
+  },
+  "local_resume": {
+    "cold_verified_prefix_state": {
+      "file": "target/m2-golden-sun-2026-11-19/west-path-open.bbs",
+      "frame": 13717,
+      "sha256": "7b58e53b07a9c3f4418690a76ded4104bdc0e97164d6afab40b54fbd161aa9af",
+      "qualification": "Owned exploratory state at the visually matched cold endpoint; no full-state cross-run equivalence claim."
+    },
+    "latest_exploration_state": {
+      "file": "target/m2-golden-sun-2026-11-19/rock-warning-closed.bbs",
+      "frame": 19797,
+      "sha256": "8b1acf5507d963344ba6bb74960e726e14b43b59fef342a5d298c683f63e4fb9",
+      "qualification": "Exploration beyond the accepted cold prefix; not a battle endpoint or a cold-verified suffix.",
+      "position_hint": {
+        "x": 27.01,
+        "height": 160,
+        "z": 627.11
+      },
+      "observation": "After the boulder scene, Garet says We can't get around this rock! B inputs close the warning and the scripted movement returns the party north of it. No emulator fault has been demonstrated."
+    },
+    "exploration_tail": {
+      "file": "target/m2-golden-sun-2026-11-19/boulder-exploration-tail.tsv",
+      "sha256": "a4b0ce9b72cde4712c6453ee412b65f9fb9fd4a9bf447d3e4795d889fd3715dd",
+      "format": "after_guest_frame keys; append after the committed prefix for a future full cold replay",
+      "cold_verified": false
+    },
+    "console": "ExploreRoute.class remains in target/m2-golden-sun-2026-11-18; requires an interactive PTY and a fresh output folder. Copy an owned state as start.bbs and load start.",
+    "config": "target/m2-golden-sun-2026-11-19/village.properties"
+  },
+  "next_actions": [
+    "Find the intended alternate path around the blocked western riverbank rock; do not repeat the north-to-Mt-Aleph warning or the already solved house passage.",
+    "Reach a real battle, complete it and regain field control using ordinary inputs.",
+    "Cold replay the complete selected chain, keep named battle/field checkpoints, then verify state continuation before accepting the Golden Sun portion of M2."
+  ],
+  "limits": [
+    "M2 remains open for Golden Sun. This record does not accept a battle, independent accuracy, native BBOS interaction or physical performance.",
+    "The later exploration suffix has not been cold replayed. Only frames through 13717 and the named RGB checkpoints are accepted here.",
+    "ROM, BIOS, states, PCM/WAVs and raw captures stay local and outside Git."
+  ]
+}

@@ -44,14 +44,16 @@ chosen with the user at that decision, not automatically for each milestone.
 ### Immediate M2 work
 
 1. Extend the accepted Golden Sun (`AGSE`) route beyond Isaac's house to a battle
-   and back to the field. Keep the M1 cold-start input and its frame-5973
-   checkpoint as the reproducible starting point; exploration may use disposable
-   local states, while acceptance retains the full input chain.
+   and back to the field. The [village continuation](../benchmarks/golden-sun-village-2026-11-19.json)
+   now cold-replays M1 through the west-side house passage, Garet, bridge and
+   falling-boulder scene at frame 13717. It also retains the later owned
+   exploration state and input suffix near the blocked riverbank rock. Find the
+   intended alternate path; battle and field-return acceptance remain open.
 2. Preserve the accepted Sonic Advance 3 cold-start → Sonic/Tails → hub → Route 99
    Act 1 clear recording and LeafGreen's starter/rival/save route as progression
    coverage. The Sonic result replaces its earlier character-selection-only
-   exploration checkpoint. Golden Sun's frame-7005 north-village state remains
-   a local resume point, not an accepted battle endpoint.
+   exploration checkpoint. Golden Sun's new village record supersedes its
+   frame-7005 north-village dead end; it is not an accepted battle endpoint.
 3. Retain exact state continuations and existing strict reference results; gameplay
    progression does not imply independent pixel/audio accuracy. M3 combined
    frontend acceptance can progress alongside these routes.
