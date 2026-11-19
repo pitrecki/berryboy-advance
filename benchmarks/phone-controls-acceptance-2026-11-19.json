@@ -1,0 +1,53 @@
+{
+  "date": "2026-11-19",
+  "version": "0.9.1-SNAPSHOT",
+  "milestone": "M3",
+  "status": "Controls and slot-reopen journey accepted on host; full M3 matrix remains open",
+  "source_base_commit": "51ce062bbf50b8c3475f40d1ca52ffa977043e5c",
+  "source_sha256": {
+    "src/test/java/berryboy/build/PhoneControlsAcceptanceTest.java": "8669259da0c0baaf75666daf154e71e71577aad24ada4fb826b4d74b64d98003",
+    "platform/midp/berryboy/phone/PhoneCanvas.java": "3b4d9a5b1752ca2a861a2139682c6c717202b2cc7446a8c1acc521071aec8a27",
+    "platform/midp/berryboy/phone/PhoneSession.java": "a2337b27a57792f144a7d489d0ea06ca4f0f543018b7f3473c086f696b7d7870",
+    "src/test/fixtures/phone-ui/berryboy/phone/UiHarness.java": "bd75fb589189fa158560ca5bbe851eb0d95c9f51daf47f95f326f131db1c097f",
+    "src/main/java/berryboy/mobile/input/PhoneInput.java": "253b6cd0b718e5f5e94e43f93c8e548db46f7475f40be06905c3ec9d944a1516",
+    "src/main/java/berryboy/mobile/input/KeyBindings.java": "9ec868ddfe60feea161d4dd3d2f4ff78ede63f92be396aff322249d0fe366859"
+  },
+  "test": "berryboy.build.PhoneControlsAcceptanceTest.remapsEveryButtonCombinesShoulderLocksAndClearsInputAcrossPauseFocusAndSlotReload",
+  "command": "mvn -Dtest=PhoneControlsAcceptanceTest test",
+  "environment": "Production PhoneCanvas, PhoneSession, PhoneStorage and controller commands; host LCDUI/filesystem/RMS/audio adapters; synthetic cartridge and reset-vector BIOS",
+  "guest_observation": "After the demo draws its frame, a Thumb loop samples KEYINPUT into EWRAM 0x02000000. Only committed, owned slot bytes are loaded into a separate machine for inspection. The test never reads the live session machine.",
+  "accepted_checks": [
+    "Remap all ten buttons through the Controls screen and observe each separate GBA button in the running guest.",
+    "Tap L/R, release the physical keys, and combine both locks with Right+A+B; verify guest KEYINPUT and the lock overlay.",
+    "Pause and continue with all keys released; no mapping or shoulder lock leaks into the next running guest frame.",
+    "Use all five slots, confirm overwrites, load a saved combination and resume with released keys.",
+    "Suspend and reopen the canvas while a shoulder and direction are held; the running guest resumes with released keys.",
+    "Cancel overwrite and retain every byte of the committed slot.",
+    "Close and recreate the application controller; retain all ten remappings, shoulder-assist preference, five enabled committed slots and a usable slot reload."
+  ],
+  "validation": {
+    "maven_host_tests": 5285,
+    "console_host_tests": 5285,
+    "exported_core_tests": 4973,
+    "failures": 0,
+    "skips": 0,
+    "new_combined_journeys": 1,
+    "log_sha256": {
+      "m3-controls-focused.log": "dede71906a9317d4ff62559370ea04cca8b8d58e772308a10df2c67b62f6b97a",
+      "m3-controls-verify.log": "3d8adb5845bbed7ac1d6e8fbcdb512e4c1b6dc50fa43bf432a7a386423dc24df",
+      "m3-controls-console.log": "e0ba450d1251c5e16b4637053ff4db681ec8fec8355d7daaee6fd90e28b40e11"
+    }
+  },
+  "remaining_m3": [
+    "Combined ROM-folder/BIOS browsing, boot show/skip and failure/cancel flows.",
+    "Combined damaged/wrong-ROM/wrong-BIOS slot rejection, interrupted-write recovery and legacy format loading.",
+    "Combined cheat edit/enable/disable/delete with observed game effects.",
+    "Combined sound/speed/display policy journey, including preferences across reopen."
+  ],
+  "limits": [
+    "Host integration acceptance only; no physical key rollover, BBOS file permissions, MMAPI playback or Bold performance measurement.",
+    "RMS is a host double retained across controller recreation; this is not an operating-system process-restart durability test.",
+    "Existing individual feature tests remain separate; this record does not accept the entire M3 matrix.",
+    "The core and phone runtime code are unchanged by this test addition."
+  ]
+}

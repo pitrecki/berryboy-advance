@@ -32,7 +32,7 @@ matrices support a milestone; they do not complete it by themselves.
 | --- | --- | --- | --- |
 | **M1 — Golden Sun complete session** | Open the application and actually play, then save and resume. | One continuous production-frontend route: Home → external BIOS/ROM selection → authentic GBA boot → game menu → controlled movement, interaction and a room/map transition → pause → save/load one slot → continue playing. Retain input/checkpoints and an uninterrupted app recording with its capture environment identified. | **Host accepted, 2026-11-18.** Cold launch, controlled house entry/barrel interaction and GUI save/load pass; both 120-frame RGB/PCM/full-state continuations are exact. [Evidence](../benchmarks/golden-sun-session-2026-11-18.json). Native BBOS acceptance remains separate. |
 | **M2 — Three-game playability pack** | Demonstrate useful progression in three supplied games. | Golden Sun: complete a battle and return to the field. Sonic Advance 3: complete the first act. LeafGreen: obtain a starter, complete the first rival battle, save in-game and cold-load that progress. Each route has recorded input, named checkpoints and a repeatable endpoint. | **Two games host accepted.** [Sonic Route 99 Act 1 clear](../benchmarks/sonic-route99-act1-2026-11-19.json), 2026-11-19; [LeafGreen starter/rival/save/reload](../benchmarks/leafgreen-starter-rival-2026-11-18.json), 2026-11-18. Golden Sun battle and return to field remain open. Keep all fifteen smoke routes as regression coverage. |
-| **M3 — Phone frontend acceptance** | The implemented settings and save features work together during play. | Complete the interaction matrix below through application commands; preferences survive restart, cancellation/failures preserve the running game and committed saves, and input never remains stuck. Exercise state formats 1/2 loading and current-format saving. | Features implemented and individually tested; combined acceptance remains open. Host acceptance and BBOS execution are reported separately. |
+| **M3 — Phone frontend acceptance** | The implemented settings and save features work together during play. | Complete the interaction matrix below through application commands; preferences survive restart, cancellation/failures preserve the running game and committed saves, and input never remains stuck. Exercise state formats 1/2 loading and current-format saving. | **Controls/slot-reopen journey host accepted, 2026-11-19.** All ten remappings, combined L/R+A/B/direction, pause/focus/load release, five slots, overwrite cancellation and controller reopen pass. [Evidence and remaining checks](../benchmarks/phone-controls-acceptance-2026-11-19.json). Full matrix remains open; BBOS execution is separate. |
 | **M4 — Playback baseline and measured optimization** | Establish where time and audio continuity are lost in playable scenes. | Reproducible profiles for the three M2 scenes at 1×, full sound and frame skip off: guest work, allocations/GC, queue bounds and produced/consumed PCM. Measure presentation/audio where the environment supports them. Fix one demonstrated bottleneck if needed and compare the same workload/output before and after. | Headless capture timings exist; the three-scene playback baseline and sustained target qualification are open. |
 | **M5 — Reviewed phone preview candidate** | A concrete, reviewable next phone build and release decision. | M1–M3 accepted, M4 baseline recorded, host/export/SDK/actual-CLDC checks pass, and release notes identify remaining accuracy/runtime limits. Present the candidate commit and build results. After the user's release approval, freeze the version, tag and publish the phone ZIP with COD siblings, JAD/ALX, instructions, provenance and checksums. | The build pipeline works and 0.9.0 is published. No new tag/package is authorized by this roadmap. |
 
@@ -88,7 +88,7 @@ performance remain explicit target checks; host doubles do not pass them.
 
 ## Current validation
 
-- **5284 host tests**, **4973 exported-core tests** and **4973 tests against the
+- **5285 host tests**, **4973 exported-core tests** and **4973 tests against the
   actual new ECJ/CLDC classes** pass without failures or skips. Native JDE 7.1 /
   ECJ 4.6.1 / RAPC builds the 0.9.1 development COD. Host: Linux x86_64,
   Temurin 21.0.8, Maven 3.9.11.
@@ -98,6 +98,13 @@ performance remain explicit target checks; host doubles do not pass them.
   and the complete future state match, including isolated actual CLDC classes.
   No guest frames or captured audio are lost. This accepts the first-act route,
   separate from independent pixel/audio accuracy and physical phone playback.
+- [M3 controls evidence](../benchmarks/phone-controls-acceptance-2026-11-19.json)
+  drives the production application controller through remapping, shoulder-lock
+  combinations, slot operations and focus/controller lifecycle. A synthetic
+  guest records KEYINPUT; inspection loads only committed owned state bytes.
+  Mappings and saved slots survive controller recreation, while held keys do
+  not. Combined library/BIOS failure, cheat, sound/speed/display and incompatible
+  state journeys remain open; individual feature tests retain their coverage.
 - [LeafGreen M2 evidence](../benchmarks/leafgreen-starter-rival-2026-11-18.json)
   retains the complete 24410-frame cold route and a separate 2500-frame battery
   reload. The saved Bulbasaur is L6, 204 XP and 22/22 HP; party and lab progress
