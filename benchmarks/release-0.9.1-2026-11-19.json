@@ -1,0 +1,80 @@
+{
+  "date": "2026-11-19",
+  "tag": "v0.9.1",
+  "tag_object": "ae43070772772dac1510a79cb3ecdae7ac73376c",
+  "approval": "Explicit user approval: \"tak, dzialaj. A pozniej rewizja roadmapy\"; applies to v0.9.1 only.",
+  "release": "https://github.com/pitrecki/berryboy-advance/releases/tag/v0.9.1",
+  "download": "https://github.com/pitrecki/berryboy-advance/releases/download/v0.9.1/BerryBoy-Advance-0.9.1-BBOS7.1.zip",
+  "prerelease": true,
+  "workflow": "https://github.com/pitrecki/berryboy-advance/actions/runs/44512310807",
+  "workflow_status": "Success",
+  "workflow_job": "https://github.com/pitrecki/berryboy-advance/actions/runs/44512310807/job/135519383418",
+  "published_zip_sha256": "5085358cca78ac113e6117bdf20c951e4c5c2e3cd3b219c64dfce48d0ac5f177",
+  "published_bytes": 229812,
+  "manifest": {
+    "schema": 1,
+    "version": "0.9.1",
+    "target": "BlackBerry OS 7.1 / Bold 9900",
+    "commit": "3ae037c61a93716d89f1951eca27abb2f3b633a8",
+    "source_dirty": false,
+    "signing": "No signing step performed by the SDK build script",
+    "compiler": "ecj",
+    "tool_sha256": {
+      "net_rim_api.jar": "b36d23121983e1115bbfa638eaf969c208d673ffb217b5ffc8e3cc90c045bb49",
+      "rapc.jar": "617107f0ca2b3710544fc12bd63f6da147abfd33d77e87cef1f473bdbf279d0a",
+      "ecj.jar": "9cddda75f4a1b4469e73f44e7b61a3e897d0f657df4797f9106ffe88c4eeade0"
+    },
+    "build_inputs_sha256": "a20360940e219966466bf1a7543ee6ed5e95bfbc4fe90c909a8131581cd25640",
+    "files": {
+      "BerryBoyAdvance.cod": {
+        "bytes": 90632,
+        "sha256": "716ae4bf61a166ba66eab1c64fbe869f45cb8574a2b8158c5e72cefe62d9c06b"
+      },
+      "BerryBoyAdvance-1.cod": {
+        "bytes": 21780,
+        "sha256": "db244d78b66bac278287c31d797f6b23c73c656d5e237a99088f835ba93412c8"
+      },
+      "BerryBoyAdvance.jad": {
+        "bytes": 633,
+        "sha256": "e6c7804ac129a1b74b3012f63069b994a2485207016050e0eb09d6c0cd8cb280"
+      },
+      "BerryBoyAdvance.jar": {
+        "bytes": 161927,
+        "sha256": "59ba8c16a5bf9f113c23d5637ee0089643c05bc30d83f5d5d78ddba5806fd4fe"
+      },
+      "BerryBoyAdvance.alx": {
+        "bytes": 350,
+        "sha256": "e4135dcdbfcb9a1b9ad63f677205ddb382f7c71e0779ed205e5bbe5a842f2651"
+      },
+      "INSTALL.txt": {
+        "bytes": 1480,
+        "sha256": "5cb8fef96d81a0345b66d815e3a2979cd59a8b170b0bfbf0dc9294b6f93ef23b"
+      }
+    }
+  },
+  "matches_local_source_inputs": true,
+  "matches_local_sdk_compiler_hashes": true,
+  "public_sha256_and_all_internal_checksums_valid": true,
+  "raw_cod_siblings_jad_alx_and_cldc_jar_valid": true,
+  "no_rom_bios_or_save_payloads_in_native_jar": true,
+  "local_host_validation": {
+    "host_tests": 5295,
+    "console_host_tests": 5295,
+    "exported_core_tests": 4973,
+    "actual_cldc_tests": 4973,
+    "failures": 0,
+    "skipped": 0
+  },
+  "local_logs": [
+    "/workspace/scratch/v091-host.log",
+    "/workspace/scratch/v091-console.log",
+    "/workspace/scratch/v091-sdk.log",
+    "/workspace/scratch/v091-cldc.log"
+  ],
+  "local_zip_sha256": "408f98a06c61ecad44c65edb4fb39ec86eea635e222e2f1c970105294adf3796",
+  "core_frontend_tooling_unchanged_from_candidate": "d1c6441c0ab257faa6e8d8ceada23b20a6a03a8d",
+  "candidate_evidence": "benchmarks/phone-preview-candidate-2026-11-19.json",
+  "candidate_continuations": "All three 900-frame RGB/PCM/full-state CLDC continuations remain applicable: src/platform/tools/.github are unchanged at the release tag. Local host/export/SDK/CLDC suites were rerun after numeric version freeze.",
+  "build_notes": "CI and local archives identify the same frozen tagged source inputs and SDK/compiler hashes. ZIP bytes may differ because SDK/JAR timestamps differ; the public ZIP is checked against its own published checksum and manifest.",
+  "scope": "Published BBOS 7.1 preview with host/export/SDK/CLDC validation. No confirmed native BBOS app execution or physical Bold playback qualification; accuracy disagreements remain recorded in the roadmap."
+}

@@ -1,9 +1,9 @@
 # Current status and roadmap
 
-Updated **2026-11-19**, for **0.9.1-SNAPSHOT**. Latest published phone preview:
-[**0.9.0**](https://github.com/pitrecki/berryboy-advance/releases/tag/v0.9.0).
+Updated **2026-11-19**, for **0.9.1**. Latest published phone preview:
+[**0.9.1**](https://github.com/pitrecki/berryboy-advance/releases/tag/v0.9.1).
 
-**M1–M4 accepted on the host. M5 candidate validated; release decision pending.**
+**M1–M5 complete within their recorded host/preview scope. Next: M6 — long-session durability.**
 Use the supplied games and existing frontend. New CPU/DMA/VRAM investigations
 need a demonstrated milestone blocker or an explicit user priority.
 
@@ -16,8 +16,13 @@ The SDK builds a COD and the exported core passes its portability checks.
 The connected M1 session, all three M2 progression routes and the M3 combined
 frontend matrix now pass on the host. The fifteen boot/intro smoke routes remain
 regression coverage alongside named Doom II, F-Zero and Mario & Luigi gameplay
-routes. Three active scenes now have isolated paced playback profiles. The next
-delivery is the reviewed phone candidate; sustained Bold behavior remains open.
+routes. Three active scenes have isolated paced playback profiles and the approved
+0.9.1 phone preview is published. The main remaining gaps are longer real-game
+sessions, progression in the demanding supplied titles and actual BBOS behavior.
+M4 samples about 15 seconds per window; it does not establish ten-minute memory
+or save/lifecycle reliability. F-Zero, Tony Hawk 2, Doom II and Mario & Luigi
+already have boot or control routes, so their next useful result is a completed
+gameplay objective with preserved progress.
 
 The previous queue put hardware-model disagreements ahead of those deliverables.
 Those disagreements remain recorded below; they no longer automatically block
@@ -26,7 +31,39 @@ matrices support a milestone; they do not complete it by themselves.
 
 <a id="next-roadmap-correctness-gameplay-then-sustained-playback"></a>
 
-## Delivery milestones
+## Next milestones
+
+| Priority / milestone | User-visible result | Acceptance and evidence | Dependency / status |
+| --- | --- | --- | --- |
+| **1. M6 — Long-session durability** | Keep playing and repeatedly save/resume without losing progress or accumulating stuck input/output work. | Golden Sun, Sonic and LeafGreen each have an active 36000-frame route (~10 minutes at native refresh), 1×, full sound and no presentation skips. Exercise all five slots with at least 20 completed writes and 10 restores per title, plus pause/focus/resume and controller recreation. Retain recorded controls and exact checkpoints, preserve a committed battery save through cold reload where the route reaches one, and compare a 120-frame RGB/PCM/full-state continuation on host and actual CLDC classes. Record queue bounds, retained heap after equivalent checkpoints and captured sample counts; retained memory must reach a repeatable bound rather than grow with elapsed frames. | **Next executable work.** Existing ROMs, BIOS, M2 routes and frontend adapters are sufficient. Headless reliability does not establish physical transport continuity or phone speed. |
+| **2. M7 — Demanding-game progression pack** | Demonstrate actual progression beyond the existing intro/control checkpoints in supplied action and 3D-heavy games. | F-Zero: finish one race and show its result. Tony Hawk 2: complete a timed run with a recorded trick and score. Doom II: reach the first level's exit/result. Mario & Luigi: win the first battle, reach an in-game save and cold-load the progress. Each route retains input, named checkpoints, complete frames, capture-buffer accounting and exact state continuation on host/CLDC. Keep strict reference mismatches visible. | **Planned after the first M6 slice.** Reuse the supplied four ROMs and existing startup/race/house/level-entry routes. A visible blocker warrants one bounded diagnosis; it does not reopen a broad timing sweep. |
+| **Parallel. M8 — Native BBOS session and device playback** | Install the package, open a supplied game and use the implemented controls, audio and saves on the target. | Install → open → choose local BIOS/ROM → boot → play → pause/save/load → close/reopen. Verify native input/focus, file permissions and MMAPI. Separately on a Bold 9900, run the sustained suite: 30-second warmup, three 10-minute runs, full sound, no frame skips, native refresh, bounded memory/queues and measured transport losses/latency/A/V drift. | **Blocked on a working BBOS target; physical performance also needs a Bold.** The existing simulator attempt did not confirm app execution. Retry environment work only with new evidence; this gate does not block M6/M7 host work. |
+
+### Next executable slice
+
+1. Extend the accepted Golden Sun battle/field route into one active 36000-frame
+   session, with named interaction checkpoints and recorded frame controls.
+   Use disposable battery data and existing externally supplied assets.
+2. Drive slot rotation, restore, pause and focus changes through the production
+   application controller at recorded boundaries. Compare owned committed states;
+   keep every guest mutation on its existing deterministic owner.
+3. Repeat the route and account for captures, queues and retained memory. Accept
+   its exact 120-frame host/CLDC continuation, then apply the same bounded
+   reliability procedure to Sonic and LeafGreen. Store detailed results in JSON
+   linked here; do not add another parallel Markdown status guide.
+
+M6 starts with one game so a concrete failure is actionable before expanding
+coverage. A failing slice produces a named reproducer and a focused correction;
+finish that correction before extending the pack. Avoid unmeasured optimizations
+and broad package refactors. New scenarios belong in their feature's host tooling;
+production fixes stay with the feature that owns the behavior.
+
+The next release checkpoint follows accepted M6/M7 results or a substantial
+user-visible fix. Present the tested change and remaining M8 limits, then ask
+for a new release decision. Approval for 0.9.1 does not authorize another tag.
+Rewind, link play, encrypted cheats and new sensor work remain deferred.
+
+## Completed delivery milestones
 
 | Milestone | User-visible result | Finish line | Current status |
 | --- | --- | --- | --- |
@@ -34,36 +71,11 @@ matrices support a milestone; they do not complete it by themselves.
 | **M2 — Three-game playability pack** | Demonstrate useful progression in three supplied games. | Golden Sun: complete a battle and return to the field. Sonic Advance 3: complete the first act. LeafGreen: obtain a starter, complete the first rival battle, save in-game and cold-load that progress. Each route has recorded input, named checkpoints and a repeatable endpoint. | **Host accepted, 2026-11-19.** [Golden Sun Vermin victory and controlled field return](../benchmarks/golden-sun-first-battle-2026-11-19.json), [Sonic Route 99 Act 1 clear](../benchmarks/sonic-route99-act1-2026-11-19.json), and [LeafGreen starter/rival/save/reload](../benchmarks/leafgreen-starter-rival-2026-11-18.json) pass with recorded inputs and exact state continuations. Full-game compatibility and native target qualification remain separate. |
 | **M3 — Phone frontend acceptance** | The implemented settings and save features work together during play. | Complete the interaction matrix below through application commands; preferences survive restart, cancellation/failures preserve the running game and committed saves, and input never remains stuck. Exercise state formats 1/2 loading and current-format saving. | **Host accepted, 2026-11-19.** [Complete matrix and playback/lifecycle checks](../benchmarks/phone-playback-acceptance-2026-11-19.json), [library/startup and slots](../benchmarks/phone-library-slots-acceptance-2026-11-19.json), [controls](../benchmarks/phone-controls-acceptance-2026-11-19.json) and [cheats](../benchmarks/phone-cheats-acceptance-2026-11-19.json) pass. All six combined UI journeys and existing regression suites pass together. Native BBOS qualification remains separate. |
 | **M4 — Playback baseline and measured optimization** | Establish where time and audio continuity are lost in playable scenes. | Reproducible profiles for the three M2 scenes at 1×, full sound and frame skip off: guest work, allocations/GC, queue bounds and produced/consumed PCM. Measure presentation/audio where the environment supports them. Fix one demonstrated bottleneck if needed and compare the same workload/output before and after. | **Host baseline accepted, 2026-11-19.** [Three-scene results, raw repetitions and rejected experiments](../benchmarks/playback-baseline-2026-11-19.json); [reproduction commands](SCENARIOS.md#paced-playback-profiles). RGB/PCM/full states remain exact, queue maximum 1/2, no capture-buffer losses. Two read-path experiments establish no consistent useful gain and are reverted. Sustained target qualification remains open. |
-| **M5 — Reviewed phone preview candidate** | A concrete, reviewable next phone build and release decision. | M1–M3 accepted, M4 baseline recorded, host/export/SDK/actual-CLDC checks pass, and release notes identify remaining accuracy/runtime limits. Present the candidate commit and build results. After the user's release approval, freeze the version, tag and publish the phone ZIP with COD siblings, JAD/ALX, instructions, provenance and checksums. | **Candidate validated, 2026-11-19**, from clean commit `d1c6441`. [Build, artifact checksums, highlights and limits](../benchmarks/phone-preview-candidate-2026-11-19.json). SDK/RAPC and actual-CLDC checks pass; all three 900-frame scenes match host RGB/PCM/full states. Proposed preview 0.9.1 awaits the user's release/tag decision. |
+| **M5 — Reviewed phone preview** | A reviewed, installable phone preview with explicit limits. | M1–M4 accepted in their stated scope; host/export/SDK/actual-CLDC checks pass; the approved numeric version is tagged and the phone ZIP contains raw COD siblings, JAD/ALX, instructions, provenance and checksums. | **Published, 2026-11-19.** [0.9.1 preview](https://github.com/pitrecki/berryboy-advance/releases/tag/v0.9.1), tag `v0.9.1`, commit `3ae037c`. [Release verification](../benchmarks/release-0.9.1-2026-11-19.json) retains the public checksum and manifest. [Candidate evidence](../benchmarks/phone-preview-candidate-2026-11-19.json) remains the pre-release checkpoint. Native runtime/performance acceptance is M8. |
 
-M1 precedes the larger M2 pack. M3 acceptance can progress alongside M2; M4
-uses their playable scenes. M5 is a **preview** decision, separate from complete
-hardware-accuracy and physical-device qualification. The release version is
-chosen with the user at that decision, not automatically for each milestone.
-
-### M5 handoff and next target gate
-
-1. The clean-source candidate, current host/export/SDK/CLDC checks, artifact
-   checksums and source/tool provenance are recorded. Development remains
-   0.9.1-SNAPSHOT; the SDK MIDlet descriptor uses 0.9.1. No release ZIP or tag
-   has been created.
-2. Obtain the user's release decision for preview 0.9.1. After approval, freeze
-   the numeric version, rebuild and verify clean sources, tag and publish the
-   phone package using the existing release workflow.
-3. When a runnable BBOS target becomes available, qualify installation, input,
-   storage and MMAPI, then run the sustained playback suite below. Headless
-   buffer accounting does not qualify physical audio or presentation.
-
-The M4 baseline uses three 900-frame (~15.07 s) windows, two warmups and three
-isolated measured repetitions per scene. Median owner CPU work is about
-7.55 / 10.00 / 10.29 ms per frame for Golden Sun / Sonic / LeafGreen, against
-a 16.74 ms guest-frame budget. Producer deadline misses vary between runs;
-there is no queue backpressure or captured PCM loss. Exact owner allocations
-are about 140.27 MB per window, primarily owned output snapshots; guest execution
-allocates essentially nothing. The separate JFR pass attributes read/scheduler
-hotspots; its sampled allocation weights are not exact byte totals. These are
-host work measurements with headless scaling/mixing/checksums, separate from
-physical display/audio and the longer target qualification suite.
+M1–M4 are host milestones, with separate isolated CLDC portability checks.
+M5 is the approved preview publication, not a claim of full game accuracy or
+physical phone qualification. Their detailed evidence stays linked above.
 
 ### M3 application acceptance matrix
 
@@ -85,9 +97,10 @@ window outcome and host audio limitation are described in
 [BLACKBERRY.md](BLACKBERRY.md#vendor-preverification-and-current-simulator-outcome).
 No physical Bold is available.
 
-Make one bounded environment attempt tied to **install → open app → browse ROM
+When new runtime evidence becomes available, make one bounded attempt tied to
+**install → open app → browse ROM
 → play → pause/load**. If the same environment limitation prevents this, record
-the exact blocker and continue M1–M4 on the available host/frontend harness.
+the exact blocker and continue M6/M7 on the available host/frontend harness.
 Do not spend successive delivery batches changing Wine/QEMU settings without
 new evidence. Native key input, file permissions, MMAPI behavior and device
 performance remain explicit target checks; host doubles do not pass them.
@@ -96,14 +109,17 @@ performance remain explicit target checks; host doubles do not pass them.
 
 - **5295 host tests**, **4973 exported-core tests** and **4973 tests against the
   actual new ECJ/CLDC classes** pass without failures or skips. Native JDE 7.1 /
-  ECJ 4.6.1 / RAPC builds the 0.9.1 development COD. Host: Linux x86_64,
+  ECJ 4.6.1 / RAPC builds the released 0.9.1 COD. Host: Linux x86_64,
   Temurin 21.0.8, Maven 3.9.11.
-- [M5 candidate](../benchmarks/phone-preview-candidate-2026-11-19.json) records a
-  clean SDK/ECJ/RAPC build, valid JAR/JAD and two raw COD siblings. Each M4 scene
-  also runs for 900 controlled frames using actual CLDC core/mobile classes and
-  isolated desktop-only helpers: all RGB, 493763 stereo PCM frames and complete
-  future states match the host. These are portability/correctness checks on the
-  Linux JVM; they do not establish BBOS execution or physical playback speed.
+- [0.9.1 release verification](../benchmarks/release-0.9.1-2026-11-19.json)
+  records the successful publication workflow and downloaded public ZIP. Its
+  published SHA-256, all internal checksums, raw COD siblings, CLDC JAR and
+  JAD/ALX agree; source-input and SDK/compiler hashes match the local clean build.
+- [M5 portability evidence](../benchmarks/phone-preview-candidate-2026-11-19.json)
+  preserves all three 900-frame scenes on actual CLDC core/mobile classes with
+  isolated desktop-only helpers: RGB, 493763 stereo PCM frames and full future
+  states match the host. Core/frontend/tooling sources are unchanged at v0.9.1.
+  These are Linux JVM checks, separate from BBOS execution and phone speed.
 - [Golden Sun M2 evidence](../benchmarks/golden-sun-first-battle-2026-11-19.json)
   records 24420 cold-started frames through a Vermin victory, 2 experience points,
   2 coins and controlled movement after returning to the field. Thirteen named
@@ -195,12 +211,12 @@ just because the previous one was committed.
 
 | Item | Known result and dependency | Delivery trigger |
 | --- | --- | --- |
-| DMA/LCD activation and lifecycle | Natural LCD probes distinguish status, DMA readiness/writes and IF. NBA/mGBA disagree on fine timing; production activation remains immediate. Choosing a model needs independent hardware/specification evidence. [Evidence](../benchmarks/lcd-natural-phases-2026-11-06.json). | A named M1/M2 gameplay failure or independently justified expected timing. |
+| DMA/LCD activation and lifecycle | Natural LCD probes distinguish status, DMA readiness/writes and IF. NBA/mGBA disagree on fine timing; production activation remains immediate. Choosing a model needs independent hardware/specification evidence. [Evidence](../benchmarks/lcd-natural-phases-2026-11-06.json). | A named M6/M7/M8 failure or independently justified expected timing. |
 | IRQ/prefetch latency | The prefetch correction matches 196 shared observations; 92 remain disputed. The expanded 360-row host/CLDC stream remains unchanged. [Evidence](../benchmarks/prefetch-refill-2026-11-10.json). | A scenario blocker with a bounded counterexample, rather than another broad sweep. |
 | Graphics accuracy | Brightness rounding/palette bit 15 still have 2244 three-way disagreements. Combined effects and display contention remain unqualified. [Earlier diagnosis](REFERENCE-VALIDATION.md). | A concrete scene fault; production expectations need independent justification. |
-| Audio correctness | Sonic/Wario reference PCM differences and real MMAPI gaps/latency remain open. Separate timer/FIFO events from resampling/filtering and transport. | Audible failure in M2/M3, or a bottleneck demonstrated by M4. |
-| LeafGreen RNG/save differences | Last traced Timer1 seed is 5726 versus 5780, with 630 matching changes before it and a caller-order divergence at change 1282. The latest full outdoor-save checkpoint has 37 unclassified NPC/Quest Log bytes; both cold loads work. Strict comparisons still fail. [Evidence](../benchmarks/prefetch-refill-2026-11-10.json). No new full RNG/save trace was run in the video-opcode step. | Lost/incorrect progress in the M2 route, or an independently supported timing diagnosis. Never force seeds or normalize away payload bytes. |
-| Additional features | Rewind, link play, encrypted cheat formats, new sensors and GPU acceleration are deferred. WarioWare: Twisted! ROM/sensor recordings are unavailable. | Reconsider after M1–M3; existing supplied games are sufficient for the next milestones. |
+| Audio correctness | Sonic/Wario reference PCM differences and real MMAPI gaps/latency remain open. Separate timer/FIFO events from resampling/filtering and transport. | Audible failure in an M6/M7 route or an M8 transport measurement. |
+| LeafGreen RNG/save differences | Last traced Timer1 seed is 5726 versus 5780, with 630 matching changes before it and a caller-order divergence at change 1282. The latest full outdoor-save checkpoint has 37 unclassified NPC/Quest Log bytes; both cold loads work. Strict comparisons still fail. [Evidence](../benchmarks/prefetch-refill-2026-11-10.json). No new full RNG/save trace was run in the video-opcode step. | Lost/incorrect progress in M6/M7, or an independently supported timing diagnosis. Never force seeds or normalize away payload bytes. |
+| Additional features | Rewind, link play, encrypted cheat formats, new sensors and GPU acceleration are deferred. WarioWare: Twisted! ROM/sensor recordings are unavailable. | Reconsider after M6/M7 or an explicit user priority; current supplied games cover the active roadmap. |
 
 ## Evidence and acceptance rules
 
@@ -224,7 +240,7 @@ The original [qualification suite](../benchmarks/suite.json) remains planned:
 30-second warmup, three 10-minute runs, actual presentation/audio measurements,
 bounded memory/queues and A/V drift within one native frame without accumulation.
 Headless work timings and instruction throughput cannot pass that physical gate.
-Its missing fifth-game/sensor assets do not block M1–M4 or a clearly scoped preview.
+Its missing fifth-game/sensor assets do not block M6/M7 host work or a clearly scoped preview.
 
 Run `mvn verify` for code changes, `tools/test-with-console.sh` for portable-core
 or export changes, and SDK/actual-CLDC checks for affected phone/core work.
@@ -234,7 +250,7 @@ receive bounded owned snapshots. Report progress as **milestone → visible resu
 
 Completed verified updates are committed/pushed as the configured user and the
 remote revision is checked. Routine pushes create no tags or release ZIPs.
-After M5 has a concrete candidate, ask the user for that release decision;
+The user approved and received 0.9.1. Later releases need a separate decision;
 preserve published tags/assets. The published
-[0.9.0 release record](../benchmarks/release-0.9.0-2026-11-06.json) and
+[0.9.1 release record](../benchmarks/release-0.9.1-2026-11-19.json) and
 [package instructions](BLACKBERRY.md#release-packages) define the delivery format.
