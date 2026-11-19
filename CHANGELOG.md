@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.9.1-SNAPSHOT — unreleased
+## 0.9.1 — 2026-11-19 (preview)
 
 - Add reproducible Golden Sun battle/field, Sonic Act 1 clear and LeafGreen
   starter/rival/save/reload routes, with exact state/RGB/PCM continuations.
