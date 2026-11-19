@@ -75,6 +75,11 @@ LeafGreen's [rival victory](docs/images/gameplay/leafgreen-rival-victory.png) an
 are complete GBA frames from the host gameplay route.
 [Inputs, checkpoints and save verification](benchmarks/leafgreen-starter-rival-2026-11-18.json).
 
+Sonic Advance 3's [Route 99 Act 1 gameplay](docs/images/gameplay/sonic-route99-act1.png)
+and [ACT 01 CLEAR result](docs/images/gameplay/sonic-route99-clear.png) also come
+from a complete cold-started host route, with all 240×160 pixels retained.
+[Recorded controls and replay verification](benchmarks/sonic-route99-act1-2026-11-19.json).
+
 ## Phone screenshots
 
 Application-rendered captures at **640×480**. Both Metroid views show the same

@@ -1,0 +1,230 @@
+{
+  "date": "2026-11-19",
+  "version": "0.9.1-SNAPSHOT",
+  "milestone": "M2",
+  "game": "Sonic Advance 3 USA (B3SE)",
+  "status": "Sonic Route 99 Act 1 accepted on host; LeafGreen accepted separately; Golden Sun battle remains open",
+  "scope": "Cold BIOS start, select Sonic/Tails, traverse Route 99 hub, play Act 1 and reach the actual ACT 01 CLEAR result. Recorded gameplay/state/portability evidence; not independent pixel/audio accuracy or physical phone qualification.",
+  "source_base_commit": "51ce062bbf50b8c3475f40d1ca52ffa977043e5c",
+  "source_dirty": true,
+  "source_changes_during_capture": "Input/evidence and host acceptance-test additions only; portable core and phone runtime unchanged.",
+  "source_sha256": {
+    "src/main/java/berryboy/desktop/scenario/FrameInputs.java": "8a364ecd32dcd772a2f9dea7112a4e237211dd87768ed1852b0179ab1086ff57",
+    "src/main/java/berryboy/desktop/scenario/RecordedInputs.java": "977ef2f6ae4434acb14bba7264ea871f860eb4358931b4010c7c094601cd5e21",
+    "src/main/java/berryboy/desktop/ScenarioRunner.java": "4d0742c4c9f24af090753b2a66a6216fdd8786320e1d3bc04929c66993cffc21",
+    "tools/StateRoundTrip.java": "a6e6e54fdd5e163c8603743e6b5e7db0799a1376c101107032ab2ab11e9456d3",
+    "tools/VerifyStateResume.java": "8f96270b448dae793755e78e094a9400152b42de25cd23567cfd93c81007f90c"
+  },
+  "host": "Linux x86_64 cloud host; Temurin 21.0.8+9; Maven 3.9.11",
+  "assets": {
+    "rom_sha256": "f937fa93b97b14b9fb9fce98844c534f936222d21d1fdb5f1af42292bad32c85",
+    "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+    "initial_save": null,
+    "rtc_seed": "2000-01-01T00:00:00",
+    "devices": 0
+  },
+  "start": "Fresh Machine/BIOS reset with fresh cartridge backup. No emulator state preload, memory patches, forced RNG or battery seed.",
+  "inputs": {
+    "cycle_prefix": {
+      "file": "benchmarks/inputs/eleven-game-start-a.tsv",
+      "sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+      "format": "cycle keys tiltX tiltY gyro solar"
+    },
+    "frame_controls": {
+      "file": "benchmarks/inputs/sonic-route99-act1.tsv",
+      "sha256": "fa51f0db8a75884203d32273a4a87d60c7558ca854d69db2e65109598d382459",
+      "events": 125,
+      "format": "after_guest_frame keys; ordinary key changes before the next guest frame"
+    }
+  },
+  "route": {
+    "guest_frames": 24709,
+    "act1_start_frame": 12355,
+    "clear_frame": 24709,
+    "observed_result": "SONIC & TAILS ACT 01 CLEAR!",
+    "observation": "The named stage/title, running timer, ring collection, checkpoint, pulleys, goal contact and result banner were visually inspected. Idle and exploratory-looking controls remain in the deterministic recording; it is not a speedrun.",
+    "acceptance": {
+      "fresh_bios_start": true,
+      "selected_sonic_and_tails": true,
+      "actual_act1_not_demo": true,
+      "first_act_clear_banner": true,
+      "all_ten_named_checkpoint_rgb_match_exploration": true,
+      "state_replay_endpoint_rgb_matches_cold_capture": true,
+      "all_120_rgb_pcm_and_full_future_states_exact": true,
+      "isolated_actual_cldc_continuation_exact": true
+    }
+  },
+  "checkpoints": {
+    "player-selection": {
+      "frame": 4216,
+      "png_sha256": "8d501e630244e58b521f2afb4c52233f02a32ebc208e6ac10bf7f0be2defa0b1"
+    },
+    "route99-hub": {
+      "frame": 8608,
+      "png_sha256": "acae480edec98564a362e0f8d302bbcddbabc45063853ca90a5539478d5a6079"
+    },
+    "hub-pulley": {
+      "frame": 11234,
+      "png_sha256": "28aa6f02f05224909f5133a34f350b15ba6a3b7f00f3eb9aa201f301ad5f8e64"
+    },
+    "act1-start": {
+      "frame": 12355,
+      "png_sha256": "e5208877c74906e360b1c51cf0db6166e8518b570a7a7b5a56c895fbe7553a3b"
+    },
+    "act1-running": {
+      "frame": 12955,
+      "png_sha256": "3005be85a2f932301b5e50834912431d927b5598cbf88e75316229436c79dd17"
+    },
+    "checkpoint-platform": {
+      "frame": 17411,
+      "png_sha256": "730e2b8986f98afede2bc5c461a691a6be31a4dd6f85789a6b9638cdf8e1d8e0"
+    },
+    "upper-pulley": {
+      "frame": 23303,
+      "png_sha256": "c05e7bb6b3015d2cfcd4cf9ccb1769f7ed8c08b51440bc806ce5ddabda9dc3c6"
+    },
+    "goal-post": {
+      "frame": 24349,
+      "png_sha256": "82136b37b1e9c69b52a4d7441cba6d472895e43a1efd79eafc37fc72a33d0cb7"
+    },
+    "goal-touch": {
+      "frame": 24409,
+      "png_sha256": "efa2d14da3711e172a43164072064f23ab6b4e46000dacbfc7cfca5797605977"
+    },
+    "act1-clear": {
+      "frame": 24709,
+      "png_sha256": "6ab7e15b5ff4be49866975a344cd9af4148ee723fe7ccd163445ffa17ebffba4"
+    }
+  },
+  "images": {
+    "sonic-route99-act1": {
+      "file": "docs/images/gameplay/sonic-route99-act1.png",
+      "frame": 12955,
+      "sha256": "3005be85a2f932301b5e50834912431d927b5598cbf88e75316229436c79dd17",
+      "description": "Complete 240x160 GBA frame from the cold host replay; not a phone screenshot"
+    },
+    "sonic-route99-clear": {
+      "file": "docs/images/gameplay/sonic-route99-clear.png",
+      "frame": 24709,
+      "sha256": "6ab7e15b5ff4be49866975a344cd9af4148ee723fe7ccd163445ffa17ebffba4",
+      "description": "Complete 240x160 GBA frame from the cold host replay; not a phone screenshot"
+    }
+  },
+  "cold_capture": {
+    "status": "captured",
+    "correctness": "unverified",
+    "qualification": "headless-only; physical presentation and playback unverified",
+    "rom_sha256": "f937fa93b97b14b9fb9fce98844c534f936222d21d1fdb5f1af42292bad32c85",
+    "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+    "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+    "rtc_seed": "2000-01-01T00:00:00",
+    "frame_input_sha256": "fa51f0db8a75884203d32273a4a87d60c7558ca854d69db2e65109598d382459",
+    "initial_save_sha256": null,
+    "backup_sha256": "a11fc80b59816cf4aa8877a0441d475e8cf70a7ca07587449de4b064cc8c87ba",
+    "backup_type": 1,
+    "backup_bytes": 65536,
+    "save_written": false,
+    "devices": 0,
+    "rumble_active": false,
+    "commit": "51ce062bbf50b8c3475f40d1ca52ffa977043e5c",
+    "source_dirty": "true",
+    "frames": 24709,
+    "warmup_frames": 0,
+    "guest_cycles": 6940659264,
+    "audio_frames": 13555975,
+    "audio_overruns": 0,
+    "audio_underruns": 0,
+    "produced_audio_frames": 13555975,
+    "consumed_audio_frames": 13555975,
+    "dropped_guest_frames": 0,
+    "video_sha256": "42925ed2a9d4467aafee9a2c0960c69da14c427259b679768d5e911d5350c85d",
+    "audio_sha256": "aae469e8a7531e930503ec5febd8a33771e8cb20dd2c624ae0c61e0825bf3350",
+    "work_p50_ns": 10251174,
+    "work_p95_ns": 19147845,
+    "work_p99_ns": 35616463,
+    "work_max_ns": 102545005,
+    "work_deadline_misses": 2343,
+    "physically_presented_frames": null,
+    "physical_audio_underruns": null,
+    "java": "21.0.8+9-LTS",
+    "os": "Linux",
+    "architecture": "amd64",
+    "hardware": "Linux x86_64 cloud host; Sonic Route 99 Act 1 cold replay; physical presentation and playback unmeasured",
+    "os_version": "6.18.57"
+  },
+  "state_replay": {
+    "title": "SONICADVANC3",
+    "rom_sha256": "f937fa93b97b14b9fb9fce98844c534f936222d21d1fdb5f1af42292bad32c85",
+    "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+    "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+    "initial_save_sha256": null,
+    "frame_input_sha256": "fa51f0db8a75884203d32273a4a87d60c7558ca854d69db2e65109598d382459",
+    "snapshot_frame": 24709,
+    "snapshot_cycles": 6940659264,
+    "resumed_frames": 120,
+    "resumed_audio_frames": 65835,
+    "state_bytes": 838767,
+    "state_sha256": "37912cef22f5f3c68084677e2aad282e4f1966121d708894d4b6fba375c06a4d",
+    "final_state_sha256": "fdd0f824b6f9035d0337bc110d8abac1f6dd75717cf9c58c70e9416abda01ad8",
+    "immediate_and_future_full_state_exact": true,
+    "all_resumed_rgb_pcm_exact": true,
+    "original_save_unchanged": true,
+    "scope": "Host core save/load replay, not independent game accuracy or physical phone validation"
+  },
+  "actual_cldc_replay": {
+    "classpath": "target/m2-sonic-2026-11-19/state-classes:target/blackberry/classes; no host core fallback",
+    "frames": 120,
+    "stdout": "SONICADVANC3: exact 120-frame continuation; fdd0f824b6f9035d0337bc110d8abac1f6dd75717cf9c58c70e9416abda01ad8",
+    "scope": "Actual ECJ/CLDC core classes executed under the host JVM, not BBOS runtime"
+  },
+  "validation": {
+    "dropped_guest_frames": 0,
+    "audio_overruns": 0,
+    "audio_underruns": 0,
+    "log_sha256": {
+      "m2-sonic-act1.log": "ce20df216cd7ce8319cbb12b9f044839110d2ed47558a4d268d713b46a159337",
+      "m2-sonic-state.log": "497d8606550408e5e7696378c341d0483be4a662f3e7dc044bdccd4fd27000b2",
+      "m2-sonic-cldc.log": "bdd0e464b65f90270ebef81d776638d1e3fbdf84b6f28adf29cb4a25f26e35b5"
+    }
+  },
+  "reproduction": {
+    "properties": {
+      "rom": "local user-supplied ROM, verified with assets.rom_sha256",
+      "bios": "local user-supplied BIOS, verified with assets.bios_sha256",
+      "input": "benchmarks/inputs/eleven-game-start-a.tsv",
+      "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+      "frame_input": "benchmarks/inputs/sonic-route99-act1.tsv",
+      "frame_input_sha256": "fa51f0db8a75884203d32273a4a87d60c7558ca854d69db2e65109598d382459",
+      "frames": 24709,
+      "checkpoints": "4216,8608,11234,12355,12955,17411,23303,24349,24409,24709",
+      "devices": 0,
+      "rtc": "2000-01-01T00:00:00",
+      "warmup_frames": 0,
+      "output": "a fresh empty local directory",
+      "rom_sha256": "f937fa93b97b14b9fb9fce98844c534f936222d21d1fdb5f1af42292bad32c85",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570"
+    },
+    "commands": [
+      "java -Djava.awt.headless=true -cp target/classes berryboy.desktop.ScenarioRunner /path/to/act1.properties",
+      "javac --release 21 -cp target/classes -d target/sonic-state-tools tools/StateRoundTrip.java tools/VerifyStateResume.java",
+      "java -Djava.awt.headless=true -cp target/classes:target/sonic-state-tools berryboy.desktop.StateRoundTrip /path/to/act1.properties 24709 120 target/fresh-sonic-state",
+      "java -cp target/sonic-state-tools:target/blackberry/classes VerifyStateResume /path/to/act1.properties target/fresh-sonic-state/state.bbs 24709 120 fdd0f824b6f9035d0337bc110d8abac1f6dd75717cf9c58c70e9416abda01ad8"
+    ],
+    "notes": "Use absolute asset/input paths or resolve them relative to the properties file as in docs/SCENARIOS.md. The actual CLDC command requires the separately built native core, with no host core classes on the classpath. Omit save and initial_save_sha256 so the cartridge backup starts fresh."
+  },
+  "local_artifacts": {
+    "root": "target/m2-sonic-2026-11-19",
+    "config": "target/m2-sonic-2026-11-19/act1.properties",
+    "cold_capture": "target/m2-sonic-2026-11-19/cold-act1",
+    "state_replay": "target/m2-sonic-2026-11-19/state",
+    "exploration_endpoint": "target/m2-sonic-2026-11-19/goal-touch.bbs"
+  },
+  "next": "Complete the retained Golden Sun route through a battle and back to the field; see the local frame-7005 checkpoint in leafgreen-starter-rival-2026-11-18.json. M3 combined acceptance may progress independently.",
+  "limits": [
+    "This completes the Sonic portion of M2, not the entire three-game pack.",
+    "Prior strict reference RGB/PCM mismatches remain unchanged; same-core repeatability is not independent hardware accuracy.",
+    "Headless capture timings were collected alongside state replay and test validation; they are not the isolated M4 baseline or physical presentation/playback.",
+    "The state continuation begins during the Act 1 result; it proves persistence/replay at this endpoint, not in-game battery-save persistence of later acts.",
+    "ROM, BIOS, battery data, emulator states, WAVs and raw capture directories remain local and outside Git."
+  ]
+}
