@@ -25,6 +25,7 @@ public final class UiHarness implements AutoCloseable {
     public void command(String label){display.getCurrent().fire(label);}
     public void text(int index,String value){((TextField)((Form)display.getCurrent()).get(index)).setString(value);}
     public String text(int index){return ((TextField)((Form)display.getCurrent()).get(index)).getString();}
+    public void choice(int item,int index){((ChoiceGroup)((Form)display.getCurrent()).get(item)).setSelectedIndex(index,true);}
     public void choose(String name)throws Exception{
         var end=System.nanoTime()+java.util.concurrent.TimeUnit.SECONDS.toNanos(10);
         while(display.getCurrent().getTitle().equals("Reading storage...")&&System.nanoTime()<end)Thread.sleep(5);
@@ -37,10 +38,11 @@ public final class UiHarness implements AutoCloseable {
         var field=PhoneCanvas.class.getDeclaredField("session");field.setAccessible(true);var session=field.get(canvas);
         var type=session.getClass();var busy=type.getDeclaredField("busy");var command=type.getDeclaredField("command");
         var paused=type.getDeclaredField("paused");var pending=type.getDeclaredField("pendingOptions");
-        for(var f:new java.lang.reflect.Field[]{busy,command,paused,pending})f.setAccessible(true);
+        var cheats=type.getDeclaredField("pendingCheats");
+        for(var f:new java.lang.reflect.Field[]{busy,command,paused,pending,cheats})f.setAccessible(true);
         var end=System.nanoTime()+java.util.concurrent.TimeUnit.SECONDS.toNanos(10);
         while(System.nanoTime()<end){
-            synchronized(session){if(paused.getBoolean(session)&&!busy.getBoolean(session)&&command.getInt(session)==0&&pending.get(session)==null)return;}
+            synchronized(session){if(paused.getBoolean(session)&&!busy.getBoolean(session)&&command.getInt(session)==0&&pending.get(session)==null&&cheats.get(session)==null)return;}
             Thread.sleep(2);
         }
         throw new IllegalStateException("Session command did not finish: "+screen().message());

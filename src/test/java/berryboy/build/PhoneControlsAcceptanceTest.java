@@ -4,16 +4,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import berryboy.DemoRom;
+import berryboy.build.phone.PhoneUiDriver;
 import berryboy.MachineState;
 import berryboy.cartridge.Cartridge;
 import berryboy.input.Keypad;
 import berryboy.mobile.ui.PhoneMenus;
-import berryboy.mobile.ui.PhoneScreen;
-import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BooleanSupplier;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -35,7 +32,7 @@ class PhoneControlsAcceptanceTest {
         var root = Path.of(System.getProperty("berryboy.projectRoot", ".")).toAbsolutePath();
         var classes = temporary.resolve("classes");
         assertThat(PhoneHarness.compileUi(root, classes)).isZero();
-        try (var h = new Driver(classes, file, new Cartridge(rom).checksum())) {
+        try (var h = new PhoneUiDriver(classes, file, new Cartridge(rom).checksum())) {
             h.select("Controls");
             h.select("L/R assist");
             for (int button = 0; button < 10; button++) {
@@ -138,71 +135,4 @@ class PhoneControlsAcceptanceTest {
         half(bytes, at, value); half(bytes, at + 2, value >>> 16);
     }
 
-    /** Commands and owned slot bytes only; never inspects the session's live machine. */
-    private static final class Driver implements AutoCloseable {
-        private final URLClassLoader loader;
-        private final Path rom;
-        private final int checksum;
-        private final AtomicInteger presentations = new AtomicInteger();
-        private Object ui;
-
-        Driver(Path classes, Path rom, int checksum) throws Exception {
-            loader = new URLClassLoader(new java.net.URL[]{classes.toUri().toURL()}, getClass().getClassLoader());
-            this.rom = rom; this.checksum = checksum; reopen();
-        }
-        void reopen() throws Exception {
-            if (ui != null) call("close", new Class<?>[0]);
-            ui = loader.loadClass("berryboy.phone.UiHarness").getConstructor().newInstance();
-            var canvas = ui.getClass().getField("canvas").get(ui);
-            canvas.getClass().getField("presentationHook").set(canvas, (Runnable) presentations::incrementAndGet);
-        }
-        Object call(String name, Class<?>[] signature, Object... args) throws Exception {
-            return ui.getClass().getMethod(name, signature).invoke(ui, args);
-        }
-        void canvas(String method) throws Exception {
-            var canvas = ui.getClass().getField("canvas").get(ui);
-            canvas.getClass().getMethod(method).invoke(canvas);
-        }
-        void press(int key) throws Exception { physical("press", key); }
-        void release(int key) throws Exception { physical("release", key); }
-        private void physical(String method, int key) throws Exception {
-            var canvas = ui.getClass().getField("canvas").get(ui);
-            canvas.getClass().getMethod(method, int.class).invoke(canvas, key);
-        }
-        void select(String text) throws Exception { call("select", new Class<?>[]{String.class}, text); }
-        void command(String text) throws Exception { call("command", new Class<?>[]{String.class}, text); }
-        void text(int index, String text) throws Exception { call("text", new Class<?>[]{int.class, String.class}, index, text); }
-        void idle() throws Exception { call("awaitIdle", new Class<?>[0]); }
-        PhoneScreen screen() {
-            try { return (PhoneScreen) call("screen", new Class<?>[0]); }
-            catch (Exception error) { throw new IllegalStateException(error); }
-        }
-        String title() throws Exception {
-            var display = ui.getClass().getField("display").get(ui);
-            var current = display.getClass().getMethod("getCurrent").invoke(display);
-            return (String) current.getClass().getMethod("getTitle").invoke(current);
-        }
-        void message(String text) throws Exception { await(() -> screen().message().equals(text)); }
-        void frames(int count) throws Exception {
-            var start = presentations.get(); await(() -> presentations.get() >= start + count);
-        }
-        void pause() throws Exception { command("Pause / Menu"); idle(); }
-        byte[] slot(int slot) throws Exception {
-            return (byte[]) call("readSlot", new Class<?>[]{String.class, int.class, int.class}, rom.toUri().toASCIIString(), checksum, slot);
-        }
-        byte[] save(int slot) throws Exception {
-            select("Save state"); idle(); select("Slot " + (slot + 1));
-            if (title().startsWith("Overwrite slot")) command("Confirm");
-            message("Saved slot " + (slot + 1)); idle();
-            var bytes = slot(slot); command("Back"); return bytes;
-        }
-        private static void await(BooleanSupplier condition) throws Exception {
-            var deadline = System.nanoTime() + 10_000_000_000L;
-            while (!condition.getAsBoolean() && System.nanoTime() < deadline) Thread.sleep(2);
-            assertThat(condition.getAsBoolean()).as("application command/presentation completed").isTrue();
-        }
-        public void close() throws Exception {
-            try { if (ui != null) call("close", new Class<?>[0]); } finally { loader.close(); }
-        }
-    }
 }

@@ -1,0 +1,60 @@
+{
+  "date": "2026-11-19",
+  "version": "0.9.1-SNAPSHOT",
+  "milestone": "M3",
+  "status": "Cheat edit/toggle/delete and profile-reopen journey accepted on host; full M3 matrix remains open",
+  "source_base_commit": "d320dac7ee6356ae82a7cfc6539d584dde06a774",
+  "source_sha256": {
+    "src/test/java/berryboy/build/phone/PhoneCheatsAcceptanceTest.java": "c5b9c3d31ecf1bef50d23f126631af7ded1e9ca46d53326c61ae2aff7619a514",
+    "src/test/java/berryboy/build/phone/PhoneUiDriver.java": "fdc9ccf57ea28facc555952fe8a40e399b1b506167d0d73e9984772d3b342ae1",
+    "src/test/java/berryboy/build/PhoneControlsAcceptanceTest.java": "9d988c924bb6b123dabcdd7a7643403ed4a5fa5060198711abd31a7c2293bb60",
+    "src/test/fixtures/phone-ui/berryboy/phone/UiHarness.java": "fd38604dad2c24c660e558df41507b02a2597199a96d34c026d7a618a07be69b",
+    "src/test/fixtures/phone-ui/javax/microedition/lcdui/ChoiceGroup.java": "8dfe59a4048e035b283ae53a5e125c11d29ac9d110dfbef5a57be19dfcde6dde",
+    "platform/midp/berryboy/phone/PhoneCanvas.java": "3b4d9a5b1752ca2a861a2139682c6c717202b2cc7446a8c1acc521071aec8a27",
+    "platform/midp/berryboy/phone/PhoneSession.java": "a2337b27a57792f144a7d489d0ea06ca4f0f543018b7f3473c086f696b7d7870"
+  },
+  "test": "berryboy.build.phone.PhoneCheatsAcceptanceTest.editsRawAndBothCodeBreakerTypesAndPersistsProfilesWithoutRestoringThemFromSlots",
+  "command": "mvn -Dtest=PhoneCheatsAcceptanceTest test",
+  "environment": "Production PhoneCanvas/PhoneSession/PhoneStorage, LCDUI forms and commands; host LCDUI/filesystem/RMS/audio adapters; original synthetic DemoRom and synthetic reset-vector BIOS",
+  "observations": "Only committed owned slot bytes are loaded into a separate machine for RAM inspection. Tests do not inspect or patch the session live machine.",
+  "accepted_checks": [
+    "Cancel a cheat draft without changing the profile.",
+    "Reject malformed Raw, unsupported CodeBreaker type D and a ROM-address write; retain the clean committed slot and profile.",
+    "Add a Raw halfword, CodeBreaker type 3 byte and type 8 halfword through the real cheat form, including format selection.",
+    "Enable each entry and observe its exact RAM effect after executing guest frames; adjacent bytes stay unchanged.",
+    "Disable each entry, load clean RAM and observe that the write no longer applies. Disabling does not undo an earlier RAM write.",
+    "Recreate the application controller with a disabled profile; retain the Off flag and observe no RAM write after a clean slot reload.",
+    "Recreate with an enabled profile; retain the name/On flag and observe the RAM write after loading the same clean slot.",
+    "Delete each entry, reload clean RAM and observe no write; the final empty profile survives controller recreation.",
+    "Keep the clean slot byte-identical through invalid drafts, toggles, all profile reloads and deletion."
+  ],
+  "harness_changes": [
+    "Replace the hard-coded Raw-only ChoiceGroup double with exclusive selection state, so CodeBreaker uses the selected branch.",
+    "Include pendingCheats in the paused-command completion barrier, so persistence assertions wait for the owner to commit profile changes.",
+    "Share the existing controls driver as PhoneUiDriver in the build.phone integration-test package; commands and owned snapshots remain its only data boundary."
+  ],
+  "validation": {
+    "maven_host_tests": 5286,
+    "console_host_tests": 5286,
+    "exported_core_tests": 4973,
+    "failures": 0,
+    "skips": 0,
+    "new_combined_journeys": 1,
+    "log_sha256": {
+      "m3-cheats-verify.log": "9b99b9d09a4a83c9e8cb09462d9634b0c1d2ba1d9cb2ec914d83a0a8cbff1f1d",
+      "m3-cheats-console.log": "c13ab41cc8edc5f97aff013f1c467d0707f5581c58905a021aaac8bbb7a5a92c"
+    }
+  },
+  "remaining_m3": [
+    "Combined library/BIOS browsing, wrong-size/unreadable BIOS, cancellation, Show/Skip startup and preferences across reopen.",
+    "Combined wrong-ROM/wrong-BIOS/damaged slot rejection and all-slot reloads; retain individual interrupted-write and legacy-format tests.",
+    "Input release across confirmed restart and game changes, supplementing the accepted pause/focus/load controls journey.",
+    "Combined volume/mono/mute, 1x/2x/4x/8x, scaling/frame skip/FPS and preference persistence."
+  ],
+  "limits": [
+    "Host integration acceptance only; physical BBOS interaction, native key rollover, MMAPI playback and Bold performance remain separate.",
+    "RMS is a host double retained across controller recreation, not an OS process-restart durability test.",
+    "Cheat effects are observed in an original synthetic cartridge; this is not compatibility qualification for specific commercial-game cheat lists or encrypted formats.",
+    "The portable emulator core and phone runtime are unchanged by this update."
+  ]
+}
