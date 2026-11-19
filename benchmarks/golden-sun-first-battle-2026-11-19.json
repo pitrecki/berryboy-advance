@@ -1,0 +1,233 @@
+{
+  "date": "2026-11-19",
+  "version": "0.9.1-SNAPSHOT",
+  "milestone": "M2",
+  "game": "Golden Sun USA (AGSE)",
+  "status": "Golden Sun battle/field return accepted on host; all three M2 game routes are now host accepted",
+  "source_base_commit": "a2a8bcf9347500a74674b8f3e534604b872aaebc",
+  "source_dirty": true,
+  "source_changes_during_capture": "Recorded input, evidence and host phone acceptance-test/support changes only; emulator core and phone runtime unchanged.",
+  "source_sha256": {
+    "src/main/java/berryboy/desktop/scenario/FrameInputs.java": "8a364ecd32dcd772a2f9dea7112a4e237211dd87768ed1852b0179ab1086ff57",
+    "src/main/java/berryboy/desktop/ScenarioRunner.java": "4d0742c4c9f24af090753b2a66a6216fdd8786320e1d3bc04929c66993cffc21",
+    "tools/StateRoundTrip.java": "a6e6e54fdd5e163c8603743e6b5e7db0799a1376c101107032ab2ab11e9456d3",
+    "tools/VerifyStateResume.java": "8f96270b448dae793755e78e094a9400152b42de25cd23567cfd93c81007f90c"
+  },
+  "scope": "Cold BIOS reset through M1, village, west forest, first Vermin battle, victory and controlled movement after returning to the field. Same-core repeatability and portability, not independent hardware accuracy or Bold performance.",
+  "assets": {
+    "rom_sha256": "c14f1151897e8d73f25ffdd67e21eebb6dc57973ff2458872ee89fa9060aaca1",
+    "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+    "initial_save": null,
+    "rtc_seed": "2000-01-01T00:00:00",
+    "devices": 0
+  },
+  "start": "Fresh Machine/BIOS reset and fresh cartridge backup; no emulator-state preload, guest memory patches, forced RNG or battery seed.",
+  "input": {
+    "file": "benchmarks/inputs/golden-sun-first-battle.tsv",
+    "sha256": "ba265e03496f944d020c627826fff9ac434c15e22df6a05b6bae2d7b59e66305",
+    "events": 671,
+    "format": "after_guest_frame keys; ordinary guest input before the following frame",
+    "prefix": "M1 and the previously verified village route are retained. The later selected exploration chain contains no state-load command."
+  },
+  "checkpoints": {
+    "boulder-scene": {
+      "frame": 13717,
+      "png_sha256": "2f31e7820690c3ddfa03de8671ba4f9ca48ed4038e9af07777932e14b44da0ca"
+    },
+    "rock-warning-closed": {
+      "frame": 19797,
+      "png_sha256": "032f205ed7aff9ab041505de8e58a7468d6aa02dbafdfd769042d152037e6418"
+    },
+    "west-forest": {
+      "frame": 19897,
+      "png_sha256": "100bc3da157221a04471275421cd4cf81760be6f1f3811cf2d131366de88cbd1"
+    },
+    "forest-rocks-passed": {
+      "frame": 20089,
+      "png_sha256": "e7464b776611dcee2131a8dcf48d112cf4de31faed4a18fad3c7fda15a22538b"
+    },
+    "injured-resident": {
+      "frame": 21157,
+      "png_sha256": "6206e1b9aa7a50acd6d8c4ffce448229482aa8a0723530162fbd7cf30c650c97"
+    },
+    "first-vermin-battle": {
+      "frame": 23084,
+      "png_sha256": "50ecf15e58c2c3a34034f53ed2d9c42dd9f9bb08e26acad099962778916fda80"
+    },
+    "battle-ready": {
+      "frame": 23324,
+      "png_sha256": "ad430d3ebf44e94c76fd4eab747dc937832998091864e0d3796e39496923f10a"
+    },
+    "attack-command": {
+      "frame": 23456,
+      "png_sha256": "c4917838a3fb4d86b3309e10e14436eecf4b0886eb5278827de4cd25ba2fee12"
+    },
+    "vermin-felled": {
+      "frame": 24176,
+      "png_sha256": "959b26af7a8b3506038b34d069ee7e88997f93991392bf2cf9d0c6d2dc9473eb"
+    },
+    "victory-experience": {
+      "frame": 24224,
+      "png_sha256": "3fcbace1abfab45181b9fed5634b6ac46e255485c7b93f704bb3004250622611"
+    },
+    "returned-to-field": {
+      "frame": 24356,
+      "png_sha256": "28f7bc2fc9160ee9edf41659cab8f37093e4259ab30a9f25eba4f939d61f4a0b"
+    },
+    "controlled-field-movement": {
+      "frame": 24372,
+      "png_sha256": "e489ffa6c4cd0e8bfb956285d5bc1fa6e715afc9d8d05d463a97fb5b119e6037"
+    },
+    "field-after-release": {
+      "frame": 24420,
+      "png_sha256": "f564701999a1a548c044bd17b61f406b08c0b3f496a1817fa5fb04fcda40fd6e"
+    }
+  },
+  "images": {
+    "golden-sun-battle-victory": {
+      "file": "docs/images/gameplay/golden-sun-battle-victory.png",
+      "frame": 24224,
+      "sha256": "3fcbace1abfab45181b9fed5634b6ac46e255485c7b93f704bb3004250622611",
+      "description": "Complete 240x160 GBA frame from the cold host replay; not a phone screenshot"
+    },
+    "golden-sun-field-after-battle": {
+      "file": "docs/images/gameplay/golden-sun-field-after-battle.png",
+      "frame": 24420,
+      "sha256": "f564701999a1a548c044bd17b61f406b08c0b3f496a1817fa5fb04fcda40fd6e",
+      "description": "Complete 240x160 GBA frame from the cold host replay; not a phone screenshot"
+    }
+  },
+  "acceptance": {
+    "fresh_bios_start": true,
+    "first_forest_battle_reached": true,
+    "attack_commands_executed": true,
+    "vermin_felled_observed": true,
+    "victory_experience_observed": 2,
+    "victory_coins_observed": 2,
+    "returned_to_field": true,
+    "controlled_movement_after_battle": true,
+    "all_thirteen_named_extension_rgb_checkpoints_match_exploration": true,
+    "independent_cold_and_state_replay_endpoint_rgb_match": true,
+    "all_120_resumed_rgb_pcm_and_full_states_exact": true,
+    "isolated_actual_cldc_continuation_exact": true
+  },
+  "cold_capture": {
+    "status": "captured",
+    "correctness": "unverified",
+    "qualification": "headless-only; physical presentation and playback unverified",
+    "rom_sha256": "c14f1151897e8d73f25ffdd67e21eebb6dc57973ff2458872ee89fa9060aaca1",
+    "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+    "input_sha256": null,
+    "rtc_seed": "2000-01-01T00:00:00",
+    "frame_input_sha256": "ba265e03496f944d020c627826fff9ac434c15e22df6a05b6bae2d7b59e66305",
+    "initial_save_sha256": null,
+    "backup_sha256": "71189f7fb6aed638640078fba3a35fda6c39c8962e74dcc75935aac948da9063",
+    "backup_type": 1,
+    "backup_bytes": 65536,
+    "save_written": false,
+    "devices": 0,
+    "rumble_active": false,
+    "commit": "a2a8bcf9347500a74674b8f3e534604b872aaebc",
+    "source_dirty": "true",
+    "frames": 24420,
+    "warmup_frames": 0,
+    "guest_cycles": 6859480320,
+    "audio_frames": 13397422,
+    "audio_overruns": 0,
+    "audio_underruns": 0,
+    "produced_audio_frames": 13397422,
+    "consumed_audio_frames": 13397422,
+    "dropped_guest_frames": 0,
+    "video_sha256": "969b1fab19652e04101caf433288a1f1bc46f371982ab120823a274fd8a80723",
+    "audio_sha256": "b92d21b2d6f0c0cc44e1a4a75f76b7da540c9e9bb448d3f9af39c38326959fa9",
+    "work_p50_ns": 7512806,
+    "work_p95_ns": 13846633,
+    "work_p99_ns": 24329933,
+    "work_max_ns": 75484989,
+    "work_deadline_misses": 663,
+    "physically_presented_frames": null,
+    "physical_audio_underruns": null,
+    "java": "21.0.8+9-LTS",
+    "os": "Linux",
+    "architecture": "amd64",
+    "hardware": "Linux x86_64 cloud host; Golden Sun first battle and controlled field return; physical presentation and playback unmeasured",
+    "os_version": "6.18.57"
+  },
+  "state_replay": {
+    "title": "Golden_Sun_A",
+    "rom_sha256": "c14f1151897e8d73f25ffdd67e21eebb6dc57973ff2458872ee89fa9060aaca1",
+    "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+    "input_sha256": null,
+    "initial_save_sha256": null,
+    "frame_input_sha256": "ba265e03496f944d020c627826fff9ac434c15e22df6a05b6bae2d7b59e66305",
+    "snapshot_frame": 24420,
+    "snapshot_cycles": 6859480320,
+    "resumed_frames": 120,
+    "resumed_audio_frames": 65835,
+    "state_bytes": 838767,
+    "state_sha256": "89016ac054c4cd8999617f69b1ff92c25f301cea1fbf587e1c6c7eb729f6eb20",
+    "final_state_sha256": "c04065d7f4b4183364f42ff65681a0d3ab285eb4779a59d56379a56e26e5f7e6",
+    "immediate_and_future_full_state_exact": true,
+    "all_resumed_rgb_pcm_exact": true,
+    "original_save_unchanged": true,
+    "scope": "Host core save/load replay, not independent game accuracy or physical phone validation"
+  },
+  "actual_cldc_replay": {
+    "classpath": "target/m2-golden-sun-battle-2026-11-19/state-classes:target/blackberry/classes; no host core fallback",
+    "frames": 120,
+    "stdout": "Golden_Sun_A: exact 120-frame continuation; c04065d7f4b4183364f42ff65681a0d3ab285eb4779a59d56379a56e26e5f7e6",
+    "scope": "Actual ECJ/CLDC core classes under the host JVM, not native BBOS execution"
+  },
+  "validation": {
+    "log_sha256": {
+      "m2-golden-sun-battle.log": "b903581c3b4bf7d057889e09a990b768e945e04ca2bf4e60cee8b2247f9c3d8d",
+      "m2-golden-sun-battle-state.log": "ef79edab5a3861aadc91a8f4a58a1e4e3561658c82b4d2a3560fddafe7d1abaa",
+      "m2-golden-sun-battle-cldc.log": "0529e72dd86c9d93a8dc53db00e438fce94a33035c14ba34131eaeadd5714e67"
+    },
+    "scope": "Real-game capture and replay on unchanged core/runtime sources. Host acceptance tests are validated separately in the M3 cheats update."
+  },
+  "reproduction": {
+    "properties": {
+      "rom": "verified local Golden Sun ROM",
+      "rom_sha256": "c14f1151897e8d73f25ffdd67e21eebb6dc57973ff2458872ee89fa9060aaca1",
+      "bios": "verified local external BIOS",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "frame_input": "benchmarks/inputs/golden-sun-first-battle.tsv",
+      "frame_input_sha256": "ba265e03496f944d020c627826fff9ac434c15e22df6a05b6bae2d7b59e66305",
+      "frames": 24420,
+      "checkpoints": "13717,19797,19897,20089,21157,23084,23324,23456,24176,24224,24356,24372,24420,24272",
+      "devices": 0,
+      "rtc": "2000-01-01T00:00:00",
+      "warmup_frames": 0,
+      "output": "fresh empty local directory"
+    },
+    "commands": [
+      "java -Djava.awt.headless=true -cp target/classes berryboy.desktop.ScenarioRunner /path/to/battle.properties",
+      "javac --release 21 -cp target/classes -d target/gs-state-tools tools/StateRoundTrip.java tools/VerifyStateResume.java",
+      "java -Djava.awt.headless=true -cp target/classes:target/gs-state-tools berryboy.desktop.StateRoundTrip /path/to/battle.properties 24420 120 target/fresh-gs-state",
+      "java -cp target/gs-state-tools:target/blackberry/classes VerifyStateResume /path/to/battle.properties target/fresh-gs-state/state.bbs 24420 120 c04065d7f4b4183364f42ff65681a0d3ab285eb4779a59d56379a56e26e5f7e6"
+    ],
+    "notes": "Resolve asset/input paths relative to the properties file or use absolute paths. Omit input, save and initial_save_sha256; start with fresh backup."
+  },
+  "m2_pack": {
+    "golden_sun": "benchmarks/golden-sun-first-battle-2026-11-19.json",
+    "sonic_advance_3": "benchmarks/sonic-route99-act1-2026-11-19.json",
+    "pokemon_leafgreen": "benchmarks/leafgreen-starter-rival-2026-11-18.json",
+    "acceptance": "All three named host progression routes accepted; full-game compatibility, independent accuracy and native target qualification remain separate."
+  },
+  "local_artifacts": {
+    "root": "target/m2-golden-sun-battle-2026-11-19",
+    "config": "target/m2-golden-sun-battle-2026-11-19/battle.properties",
+    "cold_capture": "target/m2-golden-sun-battle-2026-11-19/cold-battle",
+    "state_replay": "target/m2-golden-sun-battle-2026-11-19/state",
+    "owned_field_checkpoint": "target/m2-golden-sun-battle-2026-11-19/follow/field-control.bbs"
+  },
+  "next": "Complete remaining M3 combined frontend journeys, then use these three scenes for the M4 playback baseline.",
+  "limits": [
+    "One early Vermin battle and field return complete the named Golden Sun route; this does not claim the whole game is playable.",
+    "Prior strict independent RGB/PCM differences remain open; no tolerances or normalization were introduced.",
+    "Capture timings were collected alongside state replay and tests; they are not an isolated M4 baseline or physical presentation/audio measurements.",
+    "No actual CLDC suite or native package was rebuilt for this data/test-only update; the isolated 120-frame check uses the retained SDK-built core.",
+    "ROM, BIOS, backup data, states, WAVs and raw captures remain local and outside Git."
+  ]
+}

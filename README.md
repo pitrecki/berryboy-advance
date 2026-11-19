@@ -80,6 +80,11 @@ and [ACT 01 CLEAR result](docs/images/gameplay/sonic-route99-clear.png) also com
 from a complete cold-started host route, with all 240×160 pixels retained.
 [Recorded controls and replay verification](benchmarks/sonic-route99-act1-2026-11-19.json).
 
+Golden Sun's [first battle victory](docs/images/gameplay/golden-sun-battle-victory.png)
+and [continued field play](docs/images/gameplay/golden-sun-field-after-battle.png)
+complete the three-game host playability pack.
+[Cold-start inputs and state replay](benchmarks/golden-sun-first-battle-2026-11-19.json).
+
 ## Phone screenshots
 
 Application-rendered captures at **640×480**. Both Metroid views show the same

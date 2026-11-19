@@ -3,7 +3,7 @@
 Updated **2026-11-19**, for **0.9.1-SNAPSHOT**. Latest published phone preview:
 [**0.9.0**](https://github.com/pitrecki/berryboy-advance/releases/tag/v0.9.0).
 
-**M1 accepted on the host. Next deliverable: M2 — three-game playability pack.**
+**M1 and M2 accepted on the host. Next deliverable: M3 — phone frontend acceptance.**
 Use the supplied games and existing frontend. New CPU/DMA/VRAM investigations
 need a demonstrated milestone blocker or an explicit user priority.
 
@@ -13,11 +13,11 @@ The project already has the phone frontend, local ROM/BIOS selection, five state
 slots, cheats, remapping, shoulder assist, audio/display settings and speed modes.
 The SDK builds a COD and the exported core passes its portability checks.
 
-The main delivery gap is a connected player journey and sustained gameplay
-coverage. Most of the fifteen game routes are boot/intro smoke tests. Named
-Doom II first-level, F-Zero race, Mario & Luigi movement and LeafGreen starter/rival/save routes
-provide useful gameplay evidence, but do not establish a completed three-game
-playability pack, whole-application acceptance or measured Bold performance.
+The connected M1 session and all three M2 progression routes now pass on the
+host. The fifteen boot/intro smoke routes remain regression coverage alongside
+named Doom II, F-Zero and Mario & Luigi gameplay routes. The next delivery gaps
+are the remaining combined application flows, sustained playback profiles and
+measured Bold behavior.
 
 The previous queue put hardware-model disagreements ahead of those deliverables.
 Those disagreements remain recorded below; they no longer automatically block
@@ -31,7 +31,7 @@ matrices support a milestone; they do not complete it by themselves.
 | Milestone | User-visible result | Finish line | Current status |
 | --- | --- | --- | --- |
 | **M1 — Golden Sun complete session** | Open the application and actually play, then save and resume. | One continuous production-frontend route: Home → external BIOS/ROM selection → authentic GBA boot → game menu → controlled movement, interaction and a room/map transition → pause → save/load one slot → continue playing. Retain input/checkpoints and an uninterrupted app recording with its capture environment identified. | **Host accepted, 2026-11-18.** Cold launch, controlled house entry/barrel interaction and GUI save/load pass; both 120-frame RGB/PCM/full-state continuations are exact. [Evidence](../benchmarks/golden-sun-session-2026-11-18.json). Native BBOS acceptance remains separate. |
-| **M2 — Three-game playability pack** | Demonstrate useful progression in three supplied games. | Golden Sun: complete a battle and return to the field. Sonic Advance 3: complete the first act. LeafGreen: obtain a starter, complete the first rival battle, save in-game and cold-load that progress. Each route has recorded input, named checkpoints and a repeatable endpoint. | **Two games host accepted.** [Sonic Route 99 Act 1 clear](../benchmarks/sonic-route99-act1-2026-11-19.json), 2026-11-19; [LeafGreen starter/rival/save/reload](../benchmarks/leafgreen-starter-rival-2026-11-18.json), 2026-11-18. Golden Sun battle and return to field remain open. Keep all fifteen smoke routes as regression coverage. |
+| **M2 — Three-game playability pack** | Demonstrate useful progression in three supplied games. | Golden Sun: complete a battle and return to the field. Sonic Advance 3: complete the first act. LeafGreen: obtain a starter, complete the first rival battle, save in-game and cold-load that progress. Each route has recorded input, named checkpoints and a repeatable endpoint. | **Host accepted, 2026-11-19.** [Golden Sun Vermin victory and controlled field return](../benchmarks/golden-sun-first-battle-2026-11-19.json), [Sonic Route 99 Act 1 clear](../benchmarks/sonic-route99-act1-2026-11-19.json), and [LeafGreen starter/rival/save/reload](../benchmarks/leafgreen-starter-rival-2026-11-18.json) pass with recorded inputs and exact state continuations. Full-game compatibility and native target qualification remain separate. |
 | **M3 — Phone frontend acceptance** | The implemented settings and save features work together during play. | Complete the interaction matrix below through application commands; preferences survive restart, cancellation/failures preserve the running game and committed saves, and input never remains stuck. Exercise state formats 1/2 loading and current-format saving. | **Controls/slot-reopen journey host accepted, 2026-11-19.** All ten remappings, combined L/R+A/B/direction, pause/focus/load release, five slots, overwrite cancellation and controller reopen pass. [Evidence and remaining checks](../benchmarks/phone-controls-acceptance-2026-11-19.json). Full matrix remains open; BBOS execution is separate. |
 | **M4 — Playback baseline and measured optimization** | Establish where time and audio continuity are lost in playable scenes. | Reproducible profiles for the three M2 scenes at 1×, full sound and frame skip off: guest work, allocations/GC, queue bounds and produced/consumed PCM. Measure presentation/audio where the environment supports them. Fix one demonstrated bottleneck if needed and compare the same workload/output before and after. | Headless capture timings exist; the three-scene playback baseline and sustained target qualification are open. |
 | **M5 — Reviewed phone preview candidate** | A concrete, reviewable next phone build and release decision. | M1–M3 accepted, M4 baseline recorded, host/export/SDK/actual-CLDC checks pass, and release notes identify remaining accuracy/runtime limits. Present the candidate commit and build results. After the user's release approval, freeze the version, tag and publish the phone ZIP with COD siblings, JAD/ALX, instructions, provenance and checksums. | The build pipeline works and 0.9.0 is published. No new tag/package is authorized by this roadmap. |
@@ -41,25 +41,21 @@ uses their playable scenes. M5 is a **preview** decision, separate from complete
 hardware-accuracy and physical-device qualification. The release version is
 chosen with the user at that decision, not automatically for each milestone.
 
-### Immediate M2 work
+### Immediate work after M2
 
-1. Extend the accepted Golden Sun (`AGSE`) route beyond Isaac's house to a battle
-   and back to the field. The [village continuation](../benchmarks/golden-sun-village-2026-11-19.json)
-   now cold-replays M1 through the west-side house passage, Garet, bridge and
-   falling-boulder scene at frame 13717. It also retains the later owned
-   exploration state and input suffix near the blocked riverbank rock. Find the
-   intended alternate path; battle and field-return acceptance remain open.
-2. Preserve the accepted Sonic Advance 3 cold-start → Sonic/Tails → hub → Route 99
-   Act 1 clear recording and LeafGreen's starter/rival/save route as progression
-   coverage. The Sonic result replaces its earlier character-selection-only
-   exploration checkpoint. Golden Sun's new village record supersedes its
-   frame-7005 north-village dead end; it is not an accepted battle endpoint.
-3. Retain exact state continuations and existing strict reference results; gameplay
-   progression does not imply independent pixel/audio accuracy. M3 combined
-   frontend acceptance can progress alongside these routes.
+1. Finish the remaining M3 application matrix below. Next combined flows are
+   library/BIOS browsing and cancellation, incompatible/damaged slot rejection,
+   and sound/speed/display settings across controller reopen. Keep individual
+   legacy-state and interrupted-write tests as regression coverage.
+2. Preserve all three accepted M2 recordings and their exact continuations,
+   alongside the fifteen smoke routes. Golden Sun's frame-24420 controlled
+   field checkpoint replaces the earlier village/blocked-rock resume points.
+3. Use the three playable M2 scenes for M4 profiles at 1×, full sound and no
+   emulator frame skips. Headless capture work times are not a sustained
+   playback baseline or measured Bold FPS.
 4. Fix a core issue only when a route exposes a concrete crash, hang, broken
-   action, blocking visual/audio fault or lost progress. Tie its regression to
-   that failure, then return to the milestone.
+   action, blocking visual/audio fault or lost progress. Keep existing strict
+   reference results; progression does not imply independent accuracy.
 
 ### M3 application acceptance matrix
 
@@ -94,6 +90,12 @@ performance remain explicit target checks; host doubles do not pass them.
   actual new ECJ/CLDC classes** pass without failures or skips. Native JDE 7.1 /
   ECJ 4.6.1 / RAPC builds the 0.9.1 development COD. Host: Linux x86_64,
   Temurin 21.0.8, Maven 3.9.11.
+- [Golden Sun M2 evidence](../benchmarks/golden-sun-first-battle-2026-11-19.json)
+  records 24420 cold-started frames through a Vermin victory, 2 experience points,
+  2 coins and controlled movement after returning to the field. Thirteen named
+  extension checkpoints match the explored route. All 120 resumed RGB/PCM
+  frames and the complete future state match, including isolated actual CLDC
+  classes. No guest frames or captured PCM are lost.
 - [Sonic M2 evidence](../benchmarks/sonic-route99-act1-2026-11-19.json) records
   24709 cold-started frames through the actual **ACT 01 CLEAR** result. All ten
   named checkpoints reproduce the explored route; all 120 resumed RGB/PCM frames
