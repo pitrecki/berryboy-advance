@@ -3,7 +3,7 @@
 Updated **2026-11-19**, for **0.9.1-SNAPSHOT**. Latest published phone preview:
 [**0.9.0**](https://github.com/pitrecki/berryboy-advance/releases/tag/v0.9.0).
 
-**M1–M3 accepted on the host. Next deliverable: M4 — playback baseline.**
+**M1–M4 accepted on the host. Next deliverable: M5 — reviewed phone preview.**
 Use the supplied games and existing frontend. New CPU/DMA/VRAM investigations
 need a demonstrated milestone blocker or an explicit user priority.
 
@@ -16,8 +16,8 @@ The SDK builds a COD and the exported core passes its portability checks.
 The connected M1 session, all three M2 progression routes and the M3 combined
 frontend matrix now pass on the host. The fifteen boot/intro smoke routes remain
 regression coverage alongside named Doom II, F-Zero and Mario & Luigi gameplay
-routes. The next delivery gaps are sustained playback profiles and measured
-Bold behavior.
+routes. Three active scenes now have isolated paced playback profiles. The next
+delivery is the reviewed phone candidate; sustained Bold behavior remains open.
 
 The previous queue put hardware-model disagreements ahead of those deliverables.
 Those disagreements remain recorded below; they no longer automatically block
@@ -33,7 +33,7 @@ matrices support a milestone; they do not complete it by themselves.
 | **M1 — Golden Sun complete session** | Open the application and actually play, then save and resume. | One continuous production-frontend route: Home → external BIOS/ROM selection → authentic GBA boot → game menu → controlled movement, interaction and a room/map transition → pause → save/load one slot → continue playing. Retain input/checkpoints and an uninterrupted app recording with its capture environment identified. | **Host accepted, 2026-11-18.** Cold launch, controlled house entry/barrel interaction and GUI save/load pass; both 120-frame RGB/PCM/full-state continuations are exact. [Evidence](../benchmarks/golden-sun-session-2026-11-18.json). Native BBOS acceptance remains separate. |
 | **M2 — Three-game playability pack** | Demonstrate useful progression in three supplied games. | Golden Sun: complete a battle and return to the field. Sonic Advance 3: complete the first act. LeafGreen: obtain a starter, complete the first rival battle, save in-game and cold-load that progress. Each route has recorded input, named checkpoints and a repeatable endpoint. | **Host accepted, 2026-11-19.** [Golden Sun Vermin victory and controlled field return](../benchmarks/golden-sun-first-battle-2026-11-19.json), [Sonic Route 99 Act 1 clear](../benchmarks/sonic-route99-act1-2026-11-19.json), and [LeafGreen starter/rival/save/reload](../benchmarks/leafgreen-starter-rival-2026-11-18.json) pass with recorded inputs and exact state continuations. Full-game compatibility and native target qualification remain separate. |
 | **M3 — Phone frontend acceptance** | The implemented settings and save features work together during play. | Complete the interaction matrix below through application commands; preferences survive restart, cancellation/failures preserve the running game and committed saves, and input never remains stuck. Exercise state formats 1/2 loading and current-format saving. | **Host accepted, 2026-11-19.** [Complete matrix and playback/lifecycle checks](../benchmarks/phone-playback-acceptance-2026-11-19.json), [library/startup and slots](../benchmarks/phone-library-slots-acceptance-2026-11-19.json), [controls](../benchmarks/phone-controls-acceptance-2026-11-19.json) and [cheats](../benchmarks/phone-cheats-acceptance-2026-11-19.json) pass. All six combined UI journeys and existing regression suites pass together. Native BBOS qualification remains separate. |
-| **M4 — Playback baseline and measured optimization** | Establish where time and audio continuity are lost in playable scenes. | Reproducible profiles for the three M2 scenes at 1×, full sound and frame skip off: guest work, allocations/GC, queue bounds and produced/consumed PCM. Measure presentation/audio where the environment supports them. Fix one demonstrated bottleneck if needed and compare the same workload/output before and after. | Paced profiling and cold-scene preparation tools are implemented and tested; [commands and measurement scope](SCENARIOS.md#paced-playback-profiles). Isolated three-scene results and sustained target qualification remain open. |
+| **M4 — Playback baseline and measured optimization** | Establish where time and audio continuity are lost in playable scenes. | Reproducible profiles for the three M2 scenes at 1×, full sound and frame skip off: guest work, allocations/GC, queue bounds and produced/consumed PCM. Measure presentation/audio where the environment supports them. Fix one demonstrated bottleneck if needed and compare the same workload/output before and after. | **Host baseline accepted, 2026-11-19.** [Three-scene results, raw repetitions and rejected experiments](../benchmarks/playback-baseline-2026-11-19.json); [reproduction commands](SCENARIOS.md#paced-playback-profiles). RGB/PCM/full states remain exact, queue maximum 1/2, no capture-buffer losses. Two read-path experiments establish no consistent useful gain and are reverted. Sustained target qualification remains open. |
 | **M5 — Reviewed phone preview candidate** | A concrete, reviewable next phone build and release decision. | M1–M3 accepted, M4 baseline recorded, host/export/SDK/actual-CLDC checks pass, and release notes identify remaining accuracy/runtime limits. Present the candidate commit and build results. After the user's release approval, freeze the version, tag and publish the phone ZIP with COD siblings, JAD/ALX, instructions, provenance and checksums. | The build pipeline works and 0.9.0 is published. No new tag/package is authorized by this roadmap. |
 
 M1 precedes the larger M2 pack. M3 acceptance can progress alongside M2; M4
@@ -41,21 +41,27 @@ uses their playable scenes. M5 is a **preview** decision, separate from complete
 hardware-accuracy and physical-device qualification. The release version is
 chosen with the user at that decision, not automatically for each milestone.
 
-### Immediate M4 work
+### Immediate M5 work
 
-1. Profile active Golden Sun battle, Sonic Act 1 and LeafGreen rival-battle
-   windows from the accepted M2 recordings. Use 1×, full sound and no emulator
-   frame skips; identify each ROM/BIOS/input and owned starting state. Keep
-   guest work separate from capture, presentation and audio transport.
-2. Record allocations/GC, bounded queue behavior and produced/consumed PCM.
-   Collect isolated repetitions; existing capture work times and the M3 policy
-   counter are not a sustained playback baseline or measured Bold FPS.
-3. Fix one demonstrated bottleneck if needed, comparing the same workload and
-   outputs before/after. Preserve M1–M3, all fifteen smoke routes, exact state
-   continuations and existing strict reference results.
-4. After the baseline, prepare the concrete M5 phone preview candidate with
-   host/export/SDK/actual-CLDC checks. The user decides its release/tag; native
-   accuracy and physical target qualification remain separate gates.
+1. Prepare a clean-source phone candidate with current host/export checks,
+   SDK compilation, RAPC verification and tests against actual CLDC classes.
+   Retain artifact checksums and source/tool provenance without creating a release ZIP.
+2. Present the candidate, version highlights and remaining runtime/accuracy limits.
+   The user decides whether to freeze the version, tag and publish the package.
+3. When a runnable BBOS target becomes available, qualify installation, input,
+   storage and MMAPI, then run the sustained playback suite below. Headless
+   buffer accounting does not qualify physical audio or presentation.
+
+The M4 baseline uses three 900-frame (~15.07 s) windows, two warmups and three
+isolated measured repetitions per scene. Median owner CPU work is about
+7.55 / 10.00 / 10.29 ms per frame for Golden Sun / Sonic / LeafGreen, against
+a 16.74 ms guest-frame budget. Producer deadline misses vary between runs;
+there is no queue backpressure or captured PCM loss. Exact owner allocations
+are about 140.27 MB per window, primarily owned output snapshots; guest execution
+allocates essentially nothing. The separate JFR pass attributes read/scheduler
+hotspots; its sampled allocation weights are not exact byte totals. These are
+host work measurements with headless scaling/mixing/checksums, separate from
+physical display/audio and the longer target qualification suite.
 
 ### M3 application acceptance matrix
 

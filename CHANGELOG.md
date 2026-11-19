@@ -2,6 +2,13 @@
 
 ## 0.9.1-SNAPSHOT — unreleased
 
+- Add reproducible Golden Sun battle/field, Sonic Act 1 clear and LeafGreen
+  starter/rival/save/reload routes, with exact state/RGB/PCM continuations.
+- Accept the combined phone library, BIOS, five-slot, controls, cheat and
+  playback/settings journeys through the production frontend on host adapters.
+- Add paced three-scene profiling with allocation, GC, bounded output and PCM
+  accounting. Record unchanged outputs and rejected read-path experiments;
+  physical BBOS playback remains a separate qualification gate.
 - Share strict input-recording validation between scenario captures and state
   replay, retaining exact guest-cycle installation and immutable recording data.
 - Add 144 independent cartridge-DMA/discarded-IRQ-fetch regressions across

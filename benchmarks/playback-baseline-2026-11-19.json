@@ -1,0 +1,3065 @@
+{
+  "date": "2026-11-19",
+  "version": "0.9.1-SNAPSHOT",
+  "milestone": "M4",
+  "status": "Three-scene paced host baseline accepted; both speculative read-path experiments rejected",
+  "source_commit": "1d5bb930798c854dc558a26e521d0a76c2c5900c",
+  "scope": "Linux headless host: deterministic guest owner plus bounded owned RGB/PCM output, production FrameScaler and OutputMixer, checksum sink. No physical display, audio transport or BlackBerry performance measurement.",
+  "procedure": {
+    "cold_preparation": "Replay the accepted M2 prefix, save complete state, verify a 120-frame restored continuation and checkpoint RGB, then trim the remaining recorded frame controls to the selected window.",
+    "correctness_oracle": "Per-frame RGB hashes and stereo PCM extracted from the original accepted cold M2 recordings, independent of the measured profile repetitions.",
+    "iterations": "Per scene and variant: two unreported paced warmups, three measured 900-frame runs. Baseline additionally has a separate diagnostic JFR pass, excluded from performance summaries.",
+    "isolation": "Variants ran sequentially from immutable class directories; no Maven build or test run overlapped the measurements. Only Memory.class differs in experimental directories.",
+    "pacing": "1x, 16777216 guest cycles/s, 280896 cycles/frame; no guest or presentation skips; 32768 Hz stereo PCM at 100 percent volume, unmuted.",
+    "command": "java -Xms256m -Xmx512m -XX:+UseG1GC -cp <frozen-classes> berryboy.desktop.profile.PlaybackProfiler <scene.properties>",
+    "output": "Owned 240x160 RGB and valid PCM copies per frame; queue capacity 2; 640x426 aspect-fit scaling, mixing and SHA-256 verification on a separate host worker.",
+    "metrics": "Guest wall work and exact allocated bytes; owner CPU/allocation, drain, copy/submit, pacing wait, producer deadline misses, GC collection counters/time; worker scaling/mixing/hash CPU and queue counters.",
+    "gc_caveat": "gc_collection_ms is the collector MXBean cumulative collection time delta, not a measured sum of stop-the-world pauses.",
+    "jfr_caveat": "Execution samples attribute hotspots; weighted allocation samples are estimates and substantially exceed the exact ThreadMXBean totals here. Use exact per-thread allocated bytes for totals.",
+    "continuity_caveat": "Zero capture-buffer losses and matching produced/consumed PCM do not qualify physical playback continuity, MMAPI gaps/latency or A/V drift.",
+    "budget_ns": 16742706.298828125,
+    "window_guest_seconds": 15.068435668945312
+  },
+  "source_sha256": {
+    "src/main/java/berryboy/bus/Memory.java": "f2ea5428ecb9c7cd0551245f2126c44bd782e2f07fea6644bff956c26845f054",
+    "src/main/java/berryboy/desktop/profile/PlaybackProfiler.java": "813632f65d104f0b46d0e7fffbb561e518e8cfde4b48a48df2834a296922014f",
+    "src/main/java/berryboy/desktop/profile/ProfileOutput.java": "a2a5f4384894fe7d6b47d66057a32b633385d54cb31286f4bf25732350c55582",
+    "src/main/java/berryboy/desktop/profile/ProfileMetrics.java": "3f7a07dc008d1e9526f295f76a3460b74b965e0b54183b5abfb5cedefdab3dd9",
+    "src/main/java/berryboy/desktop/profile/ProfileRecordingSummary.java": "669918bcca78146099dc4688ebd27f66ce795a68a24ba16cfa9862508e4168f2",
+    "src/main/java/berryboy/desktop/concurrent/BoundedWorker.java": "5d7f9dc79cf349e08690d96a24e5744b3ef1c326cd67d07334c0c331498d3bf0",
+    "tools/prepare-playback-profile.py": "15cbb5f12966cd827ac5766ac378f99166b8f17ea03c64af44aeaafbe684e067"
+  },
+  "scenes": [
+    {
+      "name": "Golden Sun first Vermin battle",
+      "local_directory": "target/m4-playback-2026-11-19/golden-sun",
+      "accepted_m2_evidence": "benchmarks/golden-sun-first-battle-2026-11-19.json",
+      "accepted_evidence_sha256": "1f00d29f1f7ae3e611083278fa17f719cb35a66e10c1556081819366c2592961",
+      "full_frame_input": "benchmarks/inputs/golden-sun-first-battle.tsv",
+      "full_frame_input_sha256": "ba265e03496f944d020c627826fff9ac434c15e22df6a05b6bae2d7b59e66305",
+      "prepared_state_sha256": "e578f59a32a7699daa4ce9c397bd25ada85deac7067f6aa572bef3fca6e32407",
+      "prepared_state_120_frame_roundtrip": "exact",
+      "prepare_report": {
+        "title": "Golden_Sun_A",
+        "rom_sha256": "c14f1151897e8d73f25ffdd67e21eebb6dc57973ff2458872ee89fa9060aaca1",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": null,
+        "initial_save_sha256": null,
+        "frame_input_sha256": "8096b52983c8ad537a8ec5c00a230af6375c0ec16b3d28e1cbfaf160ac286d26",
+        "snapshot_frame": 23324,
+        "snapshot_cycles": 6551618304,
+        "resumed_frames": 120,
+        "resumed_audio_frames": 65835,
+        "state_bytes": 838767,
+        "state_sha256": "e578f59a32a7699daa4ce9c397bd25ada85deac7067f6aa572bef3fca6e32407",
+        "final_state_sha256": "809951a239d024f212f18970e79f5c4bf2b218febbf61c8d8ad138bdbeb91900",
+        "immediate_and_future_full_state_exact": true,
+        "all_resumed_rgb_pcm_exact": true,
+        "original_save_unchanged": true,
+        "scope": "Host core save/load replay, not independent game accuracy or physical phone validation"
+      },
+      "window_configuration": {
+        "rom_sha256": "c14f1151897e8d73f25ffdd67e21eebb6dc57973ff2458872ee89fa9060aaca1",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "state_sha256": "e578f59a32a7699daa4ce9c397bd25ada85deac7067f6aa572bef3fca6e32407",
+        "frame_input_sha256": "5f1b77be1180eef1b96e2a2783fd3f0bf20435929274db922c65729e98e93236",
+        "start_frame": "23324",
+        "frames": "900",
+        "warmups": "2",
+        "repetitions": "3",
+        "jfr": "true",
+        "expected_rgb_chain_sha256": "bd0f0560d4158750d7dd4b4925c7390bdd40f2832fd6e79c953d72717c150959",
+        "expected_pcm_sha256": "ad4360a43adf39b5c71c7d86376207d3e2d3f36675f504b8023485dea1ff5421",
+        "hardware": "Linux x86_64 cloud host; AMD EPYC 9V74; cgroup CPU quota 4 cores; memory limit 32 GiB; no physical display/audio"
+      },
+      "prefix_sha256": "8096b52983c8ad537a8ec5c00a230af6375c0ec16b3d28e1cbfaf160ac286d26",
+      "baseline_jfr_summary": {
+        "scope": "JFR sampled stacks/weighted allocation estimates; exact per-thread allocation totals are in the profile report",
+        "cpu_samples": {
+          "main:berryboy.bus.Memory.rawRead16:248": 122,
+          "main:berryboy.timing.CycleScheduler.advance:75": 87,
+          "main:berryboy.timing.CycleScheduler.schedule:55": 50,
+          "main:berryboy.video.SoftwarePpu.renderRange:86": 42,
+          "main:berryboy.cpu.Cpu.step:112": 34,
+          "main:berryboy.video.SoftwarePpu.renderPixel:37": 31,
+          "main:berryboy.cpu.Cpu.step:76": 27,
+          "main:berryboy.cpu.CpuDataTransfers.transferNext:79": 27,
+          "berryboy-profile-output:berryboy.mobile.video.FrameScaler.scale:20": 16,
+          "main:berryboy.bus.Memory.halfword:251": 12,
+          "main:berryboy.video.SoftwarePpu.windowMask:250": 12,
+          "main:berryboy.cpu.CpuState.updateSignAndZero:105": 11,
+          "main:berryboy.timing.CycleScheduler.cancel:63": 10,
+          "main:berryboy.timing.CycleScheduler.advanceTo:95": 9,
+          "main:berryboy.Machine.runCycles:59": 8,
+          "main:berryboy.bus.Memory.writeByteLane:455": 5,
+          "main:berryboy.cpu.Cpu.step:120": 5,
+          "main:berryboy.cpu.Cpu.resumeInstructionTiming:148": 5,
+          "berryboy-profile-output:berryboy.desktop.profile.ProfileOutput.process:51": 5,
+          "main:berryboy.bus.Memory.readIo:358": 4,
+          "main:berryboy.cpu.CpuDataTransfers.append:119": 4,
+          "main:berryboy.cpu.BarrelShifter.shift:40": 4,
+          "main:berryboy.cpu.ArithmeticLogicUnit.addWithCarry:47": 4,
+          "main:berryboy.bus.DmaController.runPending:85": 4,
+          "main:berryboy.cpu.CpuState.conditionPassed:120": 4,
+          "main:berryboy.timing.CycleScheduler.advanceTo:87": 3,
+          "main:berryboy.bus.DmaController$Channel.transfer:192": 3,
+          "main:berryboy.bus.Memory.readIo:352": 2,
+          "main:berryboy.cpu.ArmInterpreter.execute:39": 2,
+          "main:berryboy.bus.Memory.rawRead8:224": 2
+        },
+        "allocation_sample_weight_bytes": {
+          "main:[I:berryboy.desktop.profile.ProfileOutput$Frame.<init>:20": 958431352,
+          "berryboy-profile-output:[B:berryboy.desktop.profile.ProfileOutput.process:55": 5376
+        }
+      },
+      "baseline_jfr_sha256": "98d96e2cbaac2ed50e327f46301d931ed273d33273cef0d03ef524fe84822698",
+      "variants": {
+        "baseline": {
+          "summary": {
+            "median_guest_p50_ms": 6.792055,
+            "guest_p95_ms_each": [
+              11.38067,
+              12.509915,
+              11.53743
+            ],
+            "guest_p99_ms_each": [
+              13.912445,
+              24.822486,
+              13.373937
+            ],
+            "owner_cpu_ms_per_frame_each": [
+              7.370047095555556,
+              7.933454178888889,
+              7.551070826666667
+            ],
+            "owner_allocated_bytes_each": [
+              140270512,
+              140270352,
+              140270352
+            ],
+            "producer_deadline_misses_each": [
+              2,
+              29,
+              3
+            ]
+          },
+          "raw_report_sha256": "dbe7e511ed8166f320b47d7bd7a91330c2340b2b2bab4711e8168d2827af90e4",
+          "report": {
+            "scope": "Paced Linux host core plus bounded headless scaling/PCM/checksum sink; no physical display/audio or BBOS claim",
+            "source_commit": "1d5bb930798c854dc558a26e521d0a76c2c5900c",
+            "source_dirty": "false",
+            "hardware": "Linux x86_64 cloud host; AMD EPYC 9V74; cgroup CPU quota 4 cores; memory limit 32 GiB; no physical display/audio",
+            "java": "21.0.8+9-LTS",
+            "os": "Linux amd64 6.18.57",
+            "available_processors": 5,
+            "jvm_arguments": "[-Xms256m, -Xmx512m, -XX:+UseG1GC]",
+            "rom_sha256": "c14f1151897e8d73f25ffdd67e21eebb6dc57973ff2458872ee89fa9060aaca1",
+            "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+            "state_sha256": "e578f59a32a7699daa4ce9c397bd25ada85deac7067f6aa572bef3fca6e32407",
+            "frame_input_sha256": "5f1b77be1180eef1b96e2a2783fd3f0bf20435929274db922c65729e98e93236",
+            "start_frame": 23324,
+            "frames": 900,
+            "speed": 1,
+            "frame_skip": 0,
+            "sound": "100 percent stereo, unmuted; synthesis/drain/mix/checksum, physical transport absent",
+            "warmups": 2,
+            "repetitions": 3,
+            "runs": {
+              "run_1": {
+                "wall_ns": 15068868257,
+                "guest_ns": {
+                  "total": 6531429166,
+                  "p50": 6679686,
+                  "p95": 11380670,
+                  "p99": 13912445,
+                  "max": 20798397
+                },
+                "guest_allocated_bytes": {
+                  "total": 160,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 0,
+                  "max": 160
+                },
+                "drain_ns": {
+                  "total": 2898693,
+                  "p50": 2785,
+                  "p95": 3986,
+                  "p99": 4697,
+                  "max": 134422
+                },
+                "snapshot_submit_ns": {
+                  "total": 63481375,
+                  "p50": 53761,
+                  "p95": 145969,
+                  "p99": 241943,
+                  "max": 1635828
+                },
+                "owner_work_ns": {
+                  "total": 6605626717,
+                  "p50": 6772456,
+                  "p95": 11549374,
+                  "p99": 14025103,
+                  "max": 21117676
+                },
+                "owner_cpu_ns": 6633042386,
+                "owner_allocated_bytes": 140270512,
+                "pacing_wait_ns": 8459715959,
+                "producer_deadline_late_ns": {
+                  "total": 5334493,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 0,
+                  "max": 4491751
+                },
+                "producer_deadline_misses": 2,
+                "gc_count": 1,
+                "gc_collection_ms": 1,
+                "produced_audio_frames": 493763,
+                "consumed_audio_frames": 493763,
+                "audio_frames": 493763,
+                "audio_overruns": 0,
+                "audio_underruns": 0,
+                "output": {
+                  "frames": 900,
+                  "processing_allocated_bytes": 43568,
+                  "mix_ns": 3296700,
+                  "processing_cpu_ns": 328191851,
+                  "queue_capacity": 2,
+                  "pcm_sha256": "ad4360a43adf39b5c71c7d86376207d3e2d3f36675f504b8023485dea1ff5421",
+                  "processed": 900,
+                  "audio_frames": 493763,
+                  "verification_hash_ns": 141796945,
+                  "queue_maximum": 1,
+                  "blocked_submissions": 0,
+                  "rendered_sample": 0,
+                  "rgb_chain_sha256": "bd0f0560d4158750d7dd4b4925c7390bdd40f2832fd6e79c953d72717c150959",
+                  "blocked_ns": 0,
+                  "submitted": 900,
+                  "scaling_ns": 181606506
+                },
+                "final_state_sha256": "bdae54e8449153a0297e058d8f0058c0eabd01ef8e0cffdcc7697b76b555b55d"
+              },
+              "run_2": {
+                "wall_ns": 15068864780,
+                "guest_ns": {
+                  "total": 6992673143,
+                  "p50": 6792055,
+                  "p95": 12509915,
+                  "p99": 24822486,
+                  "max": 33691492
+                },
+                "guest_allocated_bytes": {
+                  "total": 0,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 0,
+                  "max": 0
+                },
+                "drain_ns": {
+                  "total": 7436868,
+                  "p50": 3606,
+                  "p95": 4927,
+                  "p99": 22514,
+                  "max": 2041667
+                },
+                "snapshot_submit_ns": {
+                  "total": 89709350,
+                  "p50": 80592,
+                  "p95": 173181,
+                  "p99": 325259,
+                  "max": 3112967
+                },
+                "owner_work_ns": {
+                  "total": 7101465494,
+                  "p50": 6898055,
+                  "p95": 12709716,
+                  "p99": 24930729,
+                  "max": 33820165
+                },
+                "owner_cpu_ns": 7140108761,
+                "owner_allocated_bytes": 140270352,
+                "pacing_wait_ns": 7961438025,
+                "producer_deadline_late_ns": {
+                  "total": 594024551,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 19160211,
+                  "max": 70841627
+                },
+                "producer_deadline_misses": 29,
+                "gc_count": 1,
+                "gc_collection_ms": 3,
+                "produced_audio_frames": 493763,
+                "consumed_audio_frames": 493763,
+                "audio_frames": 493763,
+                "audio_overruns": 0,
+                "audio_underruns": 0,
+                "output": {
+                  "frames": 900,
+                  "processing_allocated_bytes": 43472,
+                  "mix_ns": 1753267,
+                  "processing_cpu_ns": 345409088,
+                  "queue_capacity": 2,
+                  "pcm_sha256": "ad4360a43adf39b5c71c7d86376207d3e2d3f36675f504b8023485dea1ff5421",
+                  "processed": 900,
+                  "audio_frames": 493763,
+                  "verification_hash_ns": 148184708,
+                  "queue_maximum": 1,
+                  "blocked_submissions": 0,
+                  "rendered_sample": 0,
+                  "rgb_chain_sha256": "bd0f0560d4158750d7dd4b4925c7390bdd40f2832fd6e79c953d72717c150959",
+                  "blocked_ns": 0,
+                  "submitted": 900,
+                  "scaling_ns": 193959939
+                },
+                "final_state_sha256": "bdae54e8449153a0297e058d8f0058c0eabd01ef8e0cffdcc7697b76b555b55d"
+              },
+              "run_3": {
+                "wall_ns": 15068835465,
+                "guest_ns": {
+                  "total": 6665440818,
+                  "p50": 6797580,
+                  "p95": 11537430,
+                  "p99": 13373937,
+                  "max": 27726677
+                },
+                "guest_allocated_bytes": {
+                  "total": 0,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 0,
+                  "max": 0
+                },
+                "drain_ns": {
+                  "total": 3386279,
+                  "p50": 3535,
+                  "p95": 4827,
+                  "p99": 5718,
+                  "max": 78618
+                },
+                "snapshot_submit_ns": {
+                  "total": 76108513,
+                  "p50": 67782,
+                  "p95": 148673,
+                  "p99": 290156,
+                  "max": 2511253
+                },
+                "owner_work_ns": {
+                  "total": 6755645907,
+                  "p50": 6877961,
+                  "p95": 11614920,
+                  "p99": 13479887,
+                  "max": 27936563
+                },
+                "owner_cpu_ns": 6795963744,
+                "owner_allocated_bytes": 140270352,
+                "pacing_wait_ns": 8308712329,
+                "producer_deadline_late_ns": {
+                  "total": 13533915,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 0,
+                  "max": 11312095
+                },
+                "producer_deadline_misses": 3,
+                "gc_count": 1,
+                "gc_collection_ms": 2,
+                "produced_audio_frames": 493763,
+                "consumed_audio_frames": 493763,
+                "audio_frames": 493763,
+                "audio_overruns": 0,
+                "audio_underruns": 0,
+                "output": {
+                  "frames": 900,
+                  "processing_allocated_bytes": 43472,
+                  "mix_ns": 2695692,
+                  "processing_cpu_ns": 330422522,
+                  "queue_capacity": 2,
+                  "pcm_sha256": "ad4360a43adf39b5c71c7d86376207d3e2d3f36675f504b8023485dea1ff5421",
+                  "processed": 900,
+                  "audio_frames": 493763,
+                  "verification_hash_ns": 145054874,
+                  "queue_maximum": 1,
+                  "blocked_submissions": 0,
+                  "rendered_sample": 0,
+                  "rgb_chain_sha256": "bd0f0560d4158750d7dd4b4925c7390bdd40f2832fd6e79c953d72717c150959",
+                  "blocked_ns": 0,
+                  "submitted": 900,
+                  "scaling_ns": 181114190
+                },
+                "final_state_sha256": "bdae54e8449153a0297e058d8f0058c0eabd01ef8e0cffdcc7697b76b555b55d"
+              },
+              "jfr_diagnostic_run": {
+                "wall_ns": 15069087826,
+                "guest_ns": {
+                  "total": 7489683152,
+                  "p50": 7216012,
+                  "p95": 13018620,
+                  "p99": 18564791,
+                  "max": 211977276
+                },
+                "guest_allocated_bytes": {
+                  "total": 0,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 0,
+                  "max": 0
+                },
+                "drain_ns": {
+                  "total": 4655096,
+                  "p50": 4006,
+                  "p95": 5318,
+                  "p99": 37546,
+                  "max": 286380
+                },
+                "snapshot_submit_ns": {
+                  "total": 83754164,
+                  "p50": 67922,
+                  "p95": 191438,
+                  "p99": 284838,
+                  "max": 3923834
+                },
+                "owner_work_ns": {
+                  "total": 7592809159,
+                  "p50": 7318936,
+                  "p95": 13119212,
+                  "p99": 18707776,
+                  "max": 212128804
+                },
+                "owner_cpu_ns": 7544674210,
+                "owner_allocated_bytes": 140270024,
+                "pacing_wait_ns": 7470930139,
+                "producer_deadline_late_ns": {
+                  "total": 8981282781,
+                  "p50": 0,
+                  "p95": 10046525,
+                  "p99": 303926362,
+                  "max": 339982554
+                },
+                "producer_deadline_misses": 58,
+                "gc_count": 1,
+                "gc_collection_ms": 4,
+                "produced_audio_frames": 493763,
+                "consumed_audio_frames": 493763,
+                "audio_frames": 493763,
+                "audio_overruns": 0,
+                "audio_underruns": 0,
+                "output": {
+                  "frames": 900,
+                  "processing_allocated_bytes": 45248,
+                  "mix_ns": 6020592,
+                  "processing_cpu_ns": 412824971,
+                  "queue_capacity": 2,
+                  "pcm_sha256": "ad4360a43adf39b5c71c7d86376207d3e2d3f36675f504b8023485dea1ff5421",
+                  "processed": 900,
+                  "audio_frames": 493763,
+                  "verification_hash_ns": 202826935,
+                  "queue_maximum": 1,
+                  "blocked_submissions": 0,
+                  "rendered_sample": 0,
+                  "rgb_chain_sha256": "bd0f0560d4158750d7dd4b4925c7390bdd40f2832fd6e79c953d72717c150959",
+                  "blocked_ns": 0,
+                  "submitted": 900,
+                  "scaling_ns": 208539085
+                },
+                "final_state_sha256": "bdae54e8449153a0297e058d8f0058c0eabd01ef8e0cffdcc7697b76b555b55d"
+              }
+            }
+          }
+        },
+        "candidate": {
+          "summary": {
+            "median_guest_p50_ms": 6.50446,
+            "guest_p95_ms_each": [
+              12.511762,
+              11.204369,
+              11.418461
+            ],
+            "guest_p99_ms_each": [
+              17.236239,
+              13.879281,
+              14.039749
+            ],
+            "owner_cpu_ms_per_frame_each": [
+              7.6534176,
+              7.113087185555556,
+              7.258639863333333
+            ],
+            "owner_allocated_bytes_each": [
+              140270512,
+              140270352,
+              140270352
+            ],
+            "producer_deadline_misses_each": [
+              14,
+              5,
+              3
+            ]
+          },
+          "raw_report_sha256": "37d27a05398e39be3f515592d2bbb24a1098530f090fed074705ff1ff97336a8",
+          "report": {
+            "scope": "Paced Linux host core plus bounded headless scaling/PCM/checksum sink; no physical display/audio or BBOS claim",
+            "source_commit": "1d5bb930798c854dc558a26e521d0a76c2c5900c",
+            "source_dirty": "true",
+            "hardware": "Linux x86_64 cloud host; AMD EPYC 9V74; cgroup CPU quota 4 cores; memory limit 32 GiB; no physical display/audio",
+            "java": "21.0.8+9-LTS",
+            "os": "Linux amd64 6.18.57",
+            "available_processors": 5,
+            "jvm_arguments": "[-Xms256m, -Xmx512m, -XX:+UseG1GC]",
+            "rom_sha256": "c14f1151897e8d73f25ffdd67e21eebb6dc57973ff2458872ee89fa9060aaca1",
+            "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+            "state_sha256": "e578f59a32a7699daa4ce9c397bd25ada85deac7067f6aa572bef3fca6e32407",
+            "frame_input_sha256": "5f1b77be1180eef1b96e2a2783fd3f0bf20435929274db922c65729e98e93236",
+            "start_frame": 23324,
+            "frames": 900,
+            "speed": 1,
+            "frame_skip": 0,
+            "sound": "100 percent stereo, unmuted; synthesis/drain/mix/checksum, physical transport absent",
+            "warmups": 2,
+            "repetitions": 3,
+            "runs": {
+              "run_1": {
+                "wall_ns": 15068824258,
+                "guest_ns": {
+                  "total": 6776840458,
+                  "p50": 6702866,
+                  "p95": 12511762,
+                  "p99": 17236239,
+                  "max": 29377864
+                },
+                "guest_allocated_bytes": {
+                  "total": 160,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 0,
+                  "max": 160
+                },
+                "drain_ns": {
+                  "total": 3336181,
+                  "p50": 3265,
+                  "p95": 4617,
+                  "p99": 18107,
+                  "max": 83535
+                },
+                "snapshot_submit_ns": {
+                  "total": 82123625,
+                  "p50": 63275,
+                  "p95": 208533,
+                  "p99": 511108,
+                  "max": 2578914
+                },
+                "owner_work_ns": {
+                  "total": 6876186893,
+                  "p50": 6801025,
+                  "p95": 12641758,
+                  "p99": 17358432,
+                  "max": 29472776
+                },
+                "owner_cpu_ns": 6888075840,
+                "owner_allocated_bytes": 140270512,
+                "pacing_wait_ns": 8188920497,
+                "producer_deadline_late_ns": {
+                  "total": 58635609,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 2133034,
+                  "max": 12830410
+                },
+                "producer_deadline_misses": 14,
+                "gc_count": 1,
+                "gc_collection_ms": 3,
+                "produced_audio_frames": 493763,
+                "consumed_audio_frames": 493763,
+                "audio_frames": 493763,
+                "audio_overruns": 0,
+                "audio_underruns": 0,
+                "output": {
+                  "submitted": 900,
+                  "scaling_ns": 188903816,
+                  "frames": 900,
+                  "processing_allocated_bytes": 43568,
+                  "mix_ns": 1779693,
+                  "processing_cpu_ns": 337661676,
+                  "queue_capacity": 2,
+                  "pcm_sha256": "ad4360a43adf39b5c71c7d86376207d3e2d3f36675f504b8023485dea1ff5421",
+                  "processed": 900,
+                  "audio_frames": 493763,
+                  "verification_hash_ns": 148047015,
+                  "queue_maximum": 1,
+                  "blocked_submissions": 0,
+                  "rendered_sample": 0,
+                  "rgb_chain_sha256": "bd0f0560d4158750d7dd4b4925c7390bdd40f2832fd6e79c953d72717c150959",
+                  "blocked_ns": 0
+                },
+                "final_state_sha256": "bdae54e8449153a0297e058d8f0058c0eabd01ef8e0cffdcc7697b76b555b55d"
+              },
+              "run_2": {
+                "wall_ns": 15069706038,
+                "guest_ns": {
+                  "total": 6265834995,
+                  "p50": 6322017,
+                  "p95": 11204369,
+                  "p99": 13879281,
+                  "max": 21769536
+                },
+                "guest_allocated_bytes": {
+                  "total": 0,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 0,
+                  "max": 0
+                },
+                "drain_ns": {
+                  "total": 3198287,
+                  "p50": 2694,
+                  "p95": 4146,
+                  "p99": 13751,
+                  "max": 288984
+                },
+                "snapshot_submit_ns": {
+                  "total": 100405293,
+                  "p50": 73009,
+                  "p95": 264548,
+                  "p99": 441003,
+                  "max": 3338825
+                },
+                "owner_work_ns": {
+                  "total": 6378794833,
+                  "p50": 6439231,
+                  "p95": 11448104,
+                  "p99": 14772938,
+                  "max": 25483154
+                },
+                "owner_cpu_ns": 6401778467,
+                "owner_allocated_bytes": 140270352,
+                "pacing_wait_ns": 8686243655,
+                "producer_deadline_late_ns": {
+                  "total": 17707653,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 0,
+                  "max": 8867368
+                },
+                "producer_deadline_misses": 5,
+                "gc_count": 1,
+                "gc_collection_ms": 3,
+                "produced_audio_frames": 493763,
+                "consumed_audio_frames": 493763,
+                "audio_frames": 493763,
+                "audio_overruns": 0,
+                "audio_underruns": 0,
+                "output": {
+                  "submitted": 900,
+                  "scaling_ns": 187669389,
+                  "frames": 900,
+                  "processing_allocated_bytes": 43472,
+                  "mix_ns": 1904864,
+                  "processing_cpu_ns": 332688693,
+                  "queue_capacity": 2,
+                  "pcm_sha256": "ad4360a43adf39b5c71c7d86376207d3e2d3f36675f504b8023485dea1ff5421",
+                  "processed": 900,
+                  "audio_frames": 493763,
+                  "verification_hash_ns": 141685987,
+                  "queue_maximum": 1,
+                  "blocked_submissions": 0,
+                  "rendered_sample": 0,
+                  "rgb_chain_sha256": "bd0f0560d4158750d7dd4b4925c7390bdd40f2832fd6e79c953d72717c150959",
+                  "blocked_ns": 0
+                },
+                "final_state_sha256": "bdae54e8449153a0297e058d8f0058c0eabd01ef8e0cffdcc7697b76b555b55d"
+              },
+              "run_3": {
+                "wall_ns": 15068760472,
+                "guest_ns": {
+                  "total": 6447869201,
+                  "p50": 6504460,
+                  "p95": 11418461,
+                  "p99": 14039749,
+                  "max": 18965376
+                },
+                "guest_allocated_bytes": {
+                  "total": 0,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 0,
+                  "max": 0
+                },
+                "drain_ns": {
+                  "total": 4469208,
+                  "p50": 2684,
+                  "p95": 3996,
+                  "p99": 5027,
+                  "max": 1504369
+                },
+                "snapshot_submit_ns": {
+                  "total": 57065874,
+                  "p50": 47561,
+                  "p95": 113510,
+                  "p99": 260972,
+                  "max": 2250150
+                },
+                "owner_work_ns": {
+                  "total": 6515835197,
+                  "p50": 6574465,
+                  "p95": 11495686,
+                  "p99": 14395602,
+                  "max": 19038877
+                },
+                "owner_cpu_ns": 6532775877,
+                "owner_allocated_bytes": 140270352,
+                "pacing_wait_ns": 8550326823,
+                "producer_deadline_late_ns": {
+                  "total": 6160805,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 0,
+                  "max": 2431550
+                },
+                "producer_deadline_misses": 3,
+                "gc_count": 1,
+                "gc_collection_ms": 1,
+                "produced_audio_frames": 493763,
+                "consumed_audio_frames": 493763,
+                "audio_frames": 493763,
+                "audio_overruns": 0,
+                "audio_underruns": 0,
+                "output": {
+                  "submitted": 900,
+                  "scaling_ns": 179941540,
+                  "frames": 900,
+                  "processing_allocated_bytes": 43472,
+                  "mix_ns": 1612485,
+                  "processing_cpu_ns": 325665651,
+                  "queue_capacity": 2,
+                  "pcm_sha256": "ad4360a43adf39b5c71c7d86376207d3e2d3f36675f504b8023485dea1ff5421",
+                  "processed": 900,
+                  "audio_frames": 493763,
+                  "verification_hash_ns": 142772672,
+                  "queue_maximum": 1,
+                  "blocked_submissions": 0,
+                  "rendered_sample": 0,
+                  "rgb_chain_sha256": "bd0f0560d4158750d7dd4b4925c7390bdd40f2832fd6e79c953d72717c150959",
+                  "blocked_ns": 0
+                },
+                "final_state_sha256": "bdae54e8449153a0297e058d8f0058c0eabd01ef8e0cffdcc7697b76b555b55d"
+              }
+            }
+          }
+        },
+        "video-peek": {
+          "summary": {
+            "median_guest_p50_ms": 7.073948,
+            "guest_p95_ms_each": [
+              12.883978,
+              14.714046,
+              12.622284
+            ],
+            "guest_p99_ms_each": [
+              15.24744,
+              17.939882,
+              16.20498
+            ],
+            "owner_cpu_ms_per_frame_each": [
+              8.016191762222222,
+              8.856626725555556,
+              7.967696425555555
+            ],
+            "owner_allocated_bytes_each": [
+              140270512,
+              140270352,
+              140270352
+            ],
+            "producer_deadline_misses_each": [
+              10,
+              28,
+              13
+            ]
+          },
+          "raw_report_sha256": "cf96ef45579381aabd472a1b89b8698d37f0f3fee7cad851a1161618928398af",
+          "report": {
+            "scope": "Paced Linux host core plus bounded headless scaling/PCM/checksum sink; no physical display/audio or BBOS claim",
+            "source_commit": "1d5bb930798c854dc558a26e521d0a76c2c5900c",
+            "source_dirty": "true",
+            "hardware": "Linux x86_64 cloud host; AMD EPYC 9V74; cgroup CPU quota 4 cores; memory limit 32 GiB; no physical display/audio",
+            "java": "21.0.8+9-LTS",
+            "os": "Linux amd64 6.18.57",
+            "available_processors": 5,
+            "jvm_arguments": "[-Xms256m, -Xmx512m, -XX:+UseG1GC]",
+            "rom_sha256": "c14f1151897e8d73f25ffdd67e21eebb6dc57973ff2458872ee89fa9060aaca1",
+            "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+            "state_sha256": "e578f59a32a7699daa4ce9c397bd25ada85deac7067f6aa572bef3fca6e32407",
+            "frame_input_sha256": "5f1b77be1180eef1b96e2a2783fd3f0bf20435929274db922c65729e98e93236",
+            "start_frame": 23324,
+            "frames": 900,
+            "speed": 1,
+            "frame_skip": 0,
+            "sound": "100 percent stereo, unmuted; synthesis/drain/mix/checksum, physical transport absent",
+            "warmups": 2,
+            "repetitions": 3,
+            "runs": {
+              "run_1": {
+                "wall_ns": 15068759538,
+                "guest_ns": {
+                  "total": 7087288270,
+                  "p50": 7073948,
+                  "p95": 12883978,
+                  "p99": 15247440,
+                  "max": 23046798
+                },
+                "guest_allocated_bytes": {
+                  "total": 160,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 0,
+                  "max": 160
+                },
+                "drain_ns": {
+                  "total": 3626780,
+                  "p50": 3516,
+                  "p95": 4878,
+                  "p99": 6110,
+                  "max": 164907
+                },
+                "snapshot_submit_ns": {
+                  "total": 99735553,
+                  "p50": 65659,
+                  "p95": 369866,
+                  "p99": 675164,
+                  "max": 4531639
+                },
+                "owner_work_ns": {
+                  "total": 7200879990,
+                  "p50": 7194750,
+                  "p95": 13024469,
+                  "p99": 15562152,
+                  "max": 23119748
+                },
+                "owner_cpu_ns": 7214572586,
+                "owner_allocated_bytes": 140270512,
+                "pacing_wait_ns": 7861886259,
+                "producer_deadline_late_ns": {
+                  "total": 48067086,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 428811,
+                  "max": 11009553
+                },
+                "producer_deadline_misses": 10,
+                "gc_count": 1,
+                "gc_collection_ms": 4,
+                "produced_audio_frames": 493763,
+                "consumed_audio_frames": 493763,
+                "audio_frames": 493763,
+                "audio_overruns": 0,
+                "audio_underruns": 0,
+                "output": {
+                  "rendered_sample": 0,
+                  "blocked_submissions": 0,
+                  "queue_maximum": 1,
+                  "verification_hash_ns": 146795287,
+                  "audio_frames": 493763,
+                  "processed": 900,
+                  "pcm_sha256": "ad4360a43adf39b5c71c7d86376207d3e2d3f36675f504b8023485dea1ff5421",
+                  "queue_capacity": 2,
+                  "processing_cpu_ns": 342272833,
+                  "mix_ns": 3468236,
+                  "processing_allocated_bytes": 43568,
+                  "frames": 900,
+                  "scaling_ns": 190138945,
+                  "submitted": 900,
+                  "blocked_ns": 0,
+                  "rgb_chain_sha256": "bd0f0560d4158750d7dd4b4925c7390bdd40f2832fd6e79c953d72717c150959"
+                },
+                "final_state_sha256": "bdae54e8449153a0297e058d8f0058c0eabd01ef8e0cffdcc7697b76b555b55d"
+              },
+              "run_2": {
+                "wall_ns": 15068916427,
+                "guest_ns": {
+                  "total": 7824375972,
+                  "p50": 7718404,
+                  "p95": 14714046,
+                  "p99": 17939882,
+                  "max": 21826047
+                },
+                "guest_allocated_bytes": {
+                  "total": 0,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 0,
+                  "max": 0
+                },
+                "drain_ns": {
+                  "total": 4362420,
+                  "p50": 4126,
+                  "p95": 5187,
+                  "p99": 27741,
+                  "max": 185588
+                },
+                "snapshot_submit_ns": {
+                  "total": 96168615,
+                  "p50": 75383,
+                  "p95": 230586,
+                  "p99": 505790,
+                  "max": 2965224
+                },
+                "owner_work_ns": {
+                  "total": 7938711110,
+                  "p50": 7875752,
+                  "p95": 14818473,
+                  "p99": 18038369,
+                  "max": 21935632
+                },
+                "owner_cpu_ns": 7970964053,
+                "owner_allocated_bytes": 140270352,
+                "pacing_wait_ns": 7125422481,
+                "producer_deadline_late_ns": {
+                  "total": 53376545,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 2600098,
+                  "max": 5324492
+                },
+                "producer_deadline_misses": 28,
+                "gc_count": 1,
+                "gc_collection_ms": 2,
+                "produced_audio_frames": 493763,
+                "consumed_audio_frames": 493763,
+                "audio_frames": 493763,
+                "audio_overruns": 0,
+                "audio_underruns": 0,
+                "output": {
+                  "rendered_sample": 0,
+                  "blocked_submissions": 0,
+                  "queue_maximum": 1,
+                  "verification_hash_ns": 157191857,
+                  "audio_frames": 493763,
+                  "processed": 900,
+                  "pcm_sha256": "ad4360a43adf39b5c71c7d86376207d3e2d3f36675f504b8023485dea1ff5421",
+                  "queue_capacity": 2,
+                  "processing_cpu_ns": 369097891,
+                  "mix_ns": 1863433,
+                  "processing_allocated_bytes": 43472,
+                  "frames": 900,
+                  "scaling_ns": 208276265,
+                  "submitted": 900,
+                  "blocked_ns": 0,
+                  "rgb_chain_sha256": "bd0f0560d4158750d7dd4b4925c7390bdd40f2832fd6e79c953d72717c150959"
+                },
+                "final_state_sha256": "bdae54e8449153a0297e058d8f0058c0eabd01ef8e0cffdcc7697b76b555b55d"
+              },
+              "run_3": {
+                "wall_ns": 15068785341,
+                "guest_ns": {
+                  "total": 7052284187,
+                  "p50": 7011633,
+                  "p95": 12622284,
+                  "p99": 16204980,
+                  "max": 32498052
+                },
+                "guest_allocated_bytes": {
+                  "total": 0,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 0,
+                  "max": 0
+                },
+                "drain_ns": {
+                  "total": 4660939,
+                  "p50": 3606,
+                  "p95": 4777,
+                  "p99": 29514,
+                  "max": 469135
+                },
+                "snapshot_submit_ns": {
+                  "total": 74106370,
+                  "p50": 61933,
+                  "p95": 190907,
+                  "p99": 457046,
+                  "max": 1218090
+                },
+                "owner_work_ns": {
+                  "total": 7142532417,
+                  "p50": 7124473,
+                  "p95": 12740802,
+                  "p99": 16539088,
+                  "max": 32993827
+                },
+                "owner_cpu_ns": 7170926783,
+                "owner_allocated_bytes": 140270352,
+                "pacing_wait_ns": 7922397306,
+                "producer_deadline_late_ns": {
+                  "total": 48910872,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 726621,
+                  "max": 16382671
+                },
+                "producer_deadline_misses": 13,
+                "gc_count": 1,
+                "gc_collection_ms": 1,
+                "produced_audio_frames": 493763,
+                "consumed_audio_frames": 493763,
+                "audio_frames": 493763,
+                "audio_overruns": 0,
+                "audio_underruns": 0,
+                "output": {
+                  "rendered_sample": 0,
+                  "blocked_submissions": 0,
+                  "queue_maximum": 1,
+                  "verification_hash_ns": 150119235,
+                  "audio_frames": 493763,
+                  "processed": 900,
+                  "pcm_sha256": "ad4360a43adf39b5c71c7d86376207d3e2d3f36675f504b8023485dea1ff5421",
+                  "queue_capacity": 2,
+                  "processing_cpu_ns": 345789746,
+                  "mix_ns": 3435003,
+                  "processing_allocated_bytes": 43472,
+                  "frames": 900,
+                  "scaling_ns": 190793038,
+                  "submitted": 900,
+                  "blocked_ns": 0,
+                  "rgb_chain_sha256": "bd0f0560d4158750d7dd4b4925c7390bdd40f2832fd6e79c953d72717c150959"
+                },
+                "final_state_sha256": "bdae54e8449153a0297e058d8f0058c0eabd01ef8e0cffdcc7697b76b555b55d"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Sonic Advance 3 Route 99 Act 1 running",
+      "local_directory": "target/m4-playback-2026-11-19/sonic",
+      "accepted_m2_evidence": "benchmarks/sonic-route99-act1-2026-11-19.json",
+      "accepted_evidence_sha256": "6c453063d175fdd8974f498f62d945c72538a4443959a59a721db97ab5e68905",
+      "full_frame_input": "benchmarks/inputs/sonic-route99-act1.tsv",
+      "full_frame_input_sha256": "fa51f0db8a75884203d32273a4a87d60c7558ca854d69db2e65109598d382459",
+      "prepared_state_sha256": "888030d137b5be2d1f0f198ea7fe3c58e041e38f99a8c2f17ea0782a04fcd520",
+      "prepared_state_120_frame_roundtrip": "exact",
+      "prepare_report": {
+        "title": "SONICADVANC3",
+        "rom_sha256": "f937fa93b97b14b9fb9fce98844c534f936222d21d1fdb5f1af42292bad32c85",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "5eb77228f7bd82853cb38ee2dd7362574ee2f7779f00c9102cb4b63231dd3ac9",
+        "initial_save_sha256": null,
+        "frame_input_sha256": "f355d238d756d5830d5cbf345d6591102cda1f09a1f915c72abaa60c9f1c0197",
+        "snapshot_frame": 12955,
+        "snapshot_cycles": 3639007682,
+        "resumed_frames": 120,
+        "resumed_audio_frames": 65835,
+        "state_bytes": 838767,
+        "state_sha256": "888030d137b5be2d1f0f198ea7fe3c58e041e38f99a8c2f17ea0782a04fcd520",
+        "final_state_sha256": "85f0498303f34ff9375858d6fb6948691fd9fcd06e44c4c4fa8fa068cc035bce",
+        "immediate_and_future_full_state_exact": true,
+        "all_resumed_rgb_pcm_exact": true,
+        "original_save_unchanged": true,
+        "scope": "Host core save/load replay, not independent game accuracy or physical phone validation"
+      },
+      "window_configuration": {
+        "rom_sha256": "f937fa93b97b14b9fb9fce98844c534f936222d21d1fdb5f1af42292bad32c85",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "state_sha256": "888030d137b5be2d1f0f198ea7fe3c58e041e38f99a8c2f17ea0782a04fcd520",
+        "frame_input_sha256": "d290cfc0c178e6672e99ada66b29084f200d9661c01d0ee1cfc566d4d348bcb9",
+        "start_frame": "12955",
+        "frames": "900",
+        "warmups": "2",
+        "repetitions": "3",
+        "jfr": "true",
+        "expected_rgb_chain_sha256": "4ef45aee4d1e3ad123cb24c118edf03c82d351ea3ce429734e022097753d8e8e",
+        "expected_pcm_sha256": "8e3618a6542dff3a246e9c81c0220e28439ed73e12df611c85f8fb2660a4d2f0",
+        "hardware": "Linux x86_64 cloud host; AMD EPYC 9V74; cgroup CPU quota 4 cores; memory limit 32 GiB; no physical display/audio"
+      },
+      "prefix_sha256": "f355d238d756d5830d5cbf345d6591102cda1f09a1f915c72abaa60c9f1c0197",
+      "baseline_jfr_summary": {
+        "scope": "JFR sampled stacks/weighted allocation estimates; exact per-thread allocation totals are in the profile report",
+        "cpu_samples": {
+          "main:berryboy.bus.Memory.rawRead16:248": 187,
+          "main:berryboy.video.SoftwarePpu.renderRange:86": 82,
+          "main:berryboy.cpu.Cpu.step:109": 80,
+          "main:berryboy.timing.CycleScheduler.advanceTo:90": 59,
+          "main:berryboy.timing.CycleScheduler.schedule:55": 52,
+          "main:berryboy.cpu.InstructionPipeline.fetch:27": 37,
+          "berryboy-profile-output:berryboy.mobile.video.FrameScaler.scale:20": 27,
+          "main:berryboy.cpu.CpuDataTransfers.transferNext:81": 18,
+          "main:berryboy.cpu.Cpu.step:74": 17,
+          "main:berryboy.bus.DmaController.runPending:85": 15,
+          "main:berryboy.cpu.ArithmeticLogicUnit.execute:33": 12,
+          "main:berryboy.timing.CycleScheduler.remove:140": 12,
+          "main:berryboy.Machine.runCycles:59": 10,
+          "main:berryboy.cpu.Cpu.step:112": 10,
+          "main:berryboy.video.SoftwarePpu.renderRange:71": 10,
+          "berryboy-profile-output:berryboy.desktop.profile.ProfileOutput.process:51": 9,
+          "main:berryboy.cpu.CpuState.register:27": 9,
+          "main:berryboy.cpu.CpuDataTransfers.finish:94": 8,
+          "main:berryboy.video.SoftwarePpu.background:128": 7,
+          "main:berryboy.cpu.Cpu.resumeInstructionTiming:146": 6,
+          "main:berryboy.cpu.CpuDataTransfers.append:119": 5,
+          "main:berryboy.timing.CycleScheduler.cancel:63": 5,
+          "main:berryboy.cpu.ThumbInterpreter.execute:40": 5,
+          "main:berryboy.timing.CycleScheduler.advanceTo:93": 4,
+          "main:berryboy.cpu.Cpu.step:114": 4,
+          "berryboy-profile-output:berryboy.desktop.profile.ProfileOutput.process:55": 3,
+          "main:berryboy.cpu.Cpu.resumeRefill:168": 3,
+          "main:berryboy.cpu.ArithmeticLogicUnit.execute:30": 3,
+          "main:berryboy.cartridge.Cartridge.halfwordAt:49": 3,
+          "main:berryboy.video.SoftwarePpu.io:280": 3
+        },
+        "allocation_sample_weight_bytes": {
+          "main:[I:berryboy.desktop.profile.ProfileOutput$Frame.<init>:20": 1017430272,
+          "berryboy-profile-output:[B:berryboy.desktop.profile.ProfileOutput.process:55": 5712
+        }
+      },
+      "baseline_jfr_sha256": "1cda697028d3fd4b25226f12c822c609580cca7d90f7e6c38b4f90a37a2d92b6",
+      "variants": {
+        "baseline": {
+          "summary": {
+            "median_guest_p50_ms": 9.258555,
+            "guest_p95_ms_each": [
+              12.911648,
+              13.84972,
+              11.204506
+            ],
+            "guest_p99_ms_each": [
+              20.797828,
+              16.738201,
+              13.420832
+            ],
+            "owner_cpu_ms_per_frame_each": [
+              10.004000527777778,
+              10.095635448888888,
+              9.575502884444445
+            ],
+            "owner_allocated_bytes_each": [
+              140270528,
+              140270368,
+              140270368
+            ],
+            "producer_deadline_misses_each": [
+              49,
+              16,
+              3
+            ]
+          },
+          "raw_report_sha256": "ba5bad06c01f47cb1651f6829ce09441b64d9c768e04928db84495d77d8c8472",
+          "report": {
+            "scope": "Paced Linux host core plus bounded headless scaling/PCM/checksum sink; no physical display/audio or BBOS claim",
+            "source_commit": "1d5bb930798c854dc558a26e521d0a76c2c5900c",
+            "source_dirty": "false",
+            "hardware": "Linux x86_64 cloud host; AMD EPYC 9V74; cgroup CPU quota 4 cores; memory limit 32 GiB; no physical display/audio",
+            "java": "21.0.8+9-LTS",
+            "os": "Linux amd64 6.18.57",
+            "available_processors": 5,
+            "jvm_arguments": "[-Xms256m, -Xmx512m, -XX:+UseG1GC]",
+            "rom_sha256": "f937fa93b97b14b9fb9fce98844c534f936222d21d1fdb5f1af42292bad32c85",
+            "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+            "state_sha256": "888030d137b5be2d1f0f198ea7fe3c58e041e38f99a8c2f17ea0782a04fcd520",
+            "frame_input_sha256": "d290cfc0c178e6672e99ada66b29084f200d9661c01d0ee1cfc566d4d348bcb9",
+            "start_frame": 12955,
+            "frames": 900,
+            "speed": 1,
+            "frame_skip": 0,
+            "sound": "100 percent stereo, unmuted; synthesis/drain/mix/checksum, physical transport absent",
+            "warmups": 2,
+            "repetitions": 3,
+            "runs": {
+              "run_1": {
+                "wall_ns": 15068783523,
+                "guest_ns": {
+                  "total": 8899032262,
+                  "p50": 9184669,
+                  "p95": 12911648,
+                  "p99": 20797828,
+                  "max": 55714256
+                },
+                "guest_allocated_bytes": {
+                  "total": 160,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 0,
+                  "max": 160
+                },
+                "drain_ns": {
+                  "total": 2997800,
+                  "p50": 3085,
+                  "p95": 4337,
+                  "p99": 5358,
+                  "max": 48072
+                },
+                "snapshot_submit_ns": {
+                  "total": 59994689,
+                  "p50": 54662,
+                  "p95": 117116,
+                  "p99": 207973,
+                  "max": 1581716
+                },
+                "owner_work_ns": {
+                  "total": 8969772495,
+                  "p50": 9248275,
+                  "p95": 12984107,
+                  "p99": 20876346,
+                  "max": 55796559
+                },
+                "owner_cpu_ns": 9003600475,
+                "owner_allocated_bytes": 140270528,
+                "pacing_wait_ns": 6082859121,
+                "producer_deadline_late_ns": {
+                  "total": 1371921451,
+                  "p50": 0,
+                  "p95": 603302,
+                  "p99": 56494647,
+                  "max": 85857279
+                },
+                "producer_deadline_misses": 49,
+                "gc_count": 1,
+                "gc_collection_ms": 2,
+                "produced_audio_frames": 493763,
+                "consumed_audio_frames": 493763,
+                "audio_frames": 493763,
+                "audio_overruns": 0,
+                "audio_underruns": 0,
+                "output": {
+                  "rgb_chain_sha256": "4ef45aee4d1e3ad123cb24c118edf03c82d351ea3ce429734e022097753d8e8e",
+                  "blocked_ns": 0,
+                  "submitted": 900,
+                  "scaling_ns": 178935177,
+                  "frames": 900,
+                  "processing_allocated_bytes": 43568,
+                  "mix_ns": 2076075,
+                  "processing_cpu_ns": 327459156,
+                  "queue_capacity": 2,
+                  "pcm_sha256": "8e3618a6542dff3a246e9c81c0220e28439ed73e12df611c85f8fb2660a4d2f0",
+                  "processed": 900,
+                  "audio_frames": 493763,
+                  "verification_hash_ns": 145144589,
+                  "queue_maximum": 1,
+                  "blocked_submissions": 0,
+                  "rendered_sample": 5437291
+                },
+                "final_state_sha256": "86d2b02676014cd45b65546f0bc6a4dc426182eb011996b4bae89d310425b86c"
+              },
+              "run_2": {
+                "wall_ns": 15068782177,
+                "guest_ns": {
+                  "total": 8955370084,
+                  "p50": 9393407,
+                  "p95": 13849720,
+                  "p99": 16738201,
+                  "max": 23091951
+                },
+                "guest_allocated_bytes": {
+                  "total": 0,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 0,
+                  "max": 0
+                },
+                "drain_ns": {
+                  "total": 4090582,
+                  "p50": 3636,
+                  "p95": 4787,
+                  "p99": 24377,
+                  "max": 352629
+                },
+                "snapshot_submit_ns": {
+                  "total": 89300067,
+                  "p50": 74511,
+                  "p95": 182444,
+                  "p99": 430727,
+                  "max": 2624663
+                },
+                "owner_work_ns": {
+                  "total": 9060307879,
+                  "p50": 9478660,
+                  "p95": 14078401,
+                  "p99": 16880765,
+                  "max": 25739218
+                },
+                "owner_cpu_ns": 9086071904,
+                "owner_allocated_bytes": 140270368,
+                "pacing_wait_ns": 6004224142,
+                "producer_deadline_late_ns": {
+                  "total": 60136718,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 2349005,
+                  "max": 10398213
+                },
+                "producer_deadline_misses": 16,
+                "gc_count": 1,
+                "gc_collection_ms": 1,
+                "produced_audio_frames": 493763,
+                "consumed_audio_frames": 493763,
+                "audio_frames": 493763,
+                "audio_overruns": 0,
+                "audio_underruns": 0,
+                "output": {
+                  "rgb_chain_sha256": "4ef45aee4d1e3ad123cb24c118edf03c82d351ea3ce429734e022097753d8e8e",
+                  "blocked_ns": 0,
+                  "submitted": 900,
+                  "scaling_ns": 192041653,
+                  "frames": 900,
+                  "processing_allocated_bytes": 43472,
+                  "mix_ns": 2045146,
+                  "processing_cpu_ns": 353704948,
+                  "queue_capacity": 2,
+                  "pcm_sha256": "8e3618a6542dff3a246e9c81c0220e28439ed73e12df611c85f8fb2660a4d2f0",
+                  "processed": 900,
+                  "audio_frames": 493763,
+                  "verification_hash_ns": 155913609,
+                  "queue_maximum": 1,
+                  "blocked_submissions": 0,
+                  "rendered_sample": 5437291
+                },
+                "final_state_sha256": "86d2b02676014cd45b65546f0bc6a4dc426182eb011996b4bae89d310425b86c"
+              },
+              "run_3": {
+                "wall_ns": 15068785599,
+                "guest_ns": {
+                  "total": 8510661821,
+                  "p50": 9258555,
+                  "p95": 11204506,
+                  "p99": 13420832,
+                  "max": 25238492
+                },
+                "guest_allocated_bytes": {
+                  "total": 0,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 0,
+                  "max": 0
+                },
+                "drain_ns": {
+                  "total": 3353379,
+                  "p50": 3575,
+                  "p95": 4597,
+                  "p99": 5188,
+                  "max": 87571
+                },
+                "snapshot_submit_ns": {
+                  "total": 83718790,
+                  "p50": 67812,
+                  "p95": 186700,
+                  "p99": 477918,
+                  "max": 3776111
+                },
+                "owner_work_ns": {
+                  "total": 8608246067,
+                  "p50": 9365034,
+                  "p95": 11357166,
+                  "p99": 13557054,
+                  "max": 25330660
+                },
+                "owner_cpu_ns": 8617952596,
+                "owner_allocated_bytes": 140270368,
+                "pacing_wait_ns": 6456802857,
+                "producer_deadline_late_ns": {
+                  "total": 14400017,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 0,
+                  "max": 8688863
+                },
+                "producer_deadline_misses": 3,
+                "gc_count": 1,
+                "gc_collection_ms": 4,
+                "produced_audio_frames": 493763,
+                "consumed_audio_frames": 493763,
+                "audio_frames": 493763,
+                "audio_overruns": 0,
+                "audio_underruns": 0,
+                "output": {
+                  "rgb_chain_sha256": "4ef45aee4d1e3ad123cb24c118edf03c82d351ea3ce429734e022097753d8e8e",
+                  "blocked_ns": 0,
+                  "submitted": 900,
+                  "scaling_ns": 180097766,
+                  "frames": 900,
+                  "processing_allocated_bytes": 43472,
+                  "mix_ns": 1592060,
+                  "processing_cpu_ns": 329818231,
+                  "queue_capacity": 2,
+                  "pcm_sha256": "8e3618a6542dff3a246e9c81c0220e28439ed73e12df611c85f8fb2660a4d2f0",
+                  "processed": 900,
+                  "audio_frames": 493763,
+                  "verification_hash_ns": 147043434,
+                  "queue_maximum": 1,
+                  "blocked_submissions": 0,
+                  "rendered_sample": 5437291
+                },
+                "final_state_sha256": "86d2b02676014cd45b65546f0bc6a4dc426182eb011996b4bae89d310425b86c"
+              },
+              "jfr_diagnostic_run": {
+                "wall_ns": 15068931366,
+                "guest_ns": {
+                  "total": 9181262570,
+                  "p50": 9565043,
+                  "p95": 12064213,
+                  "p99": 16654197,
+                  "max": 253585540
+                },
+                "guest_allocated_bytes": {
+                  "total": 0,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 0,
+                  "max": 0
+                },
+                "drain_ns": {
+                  "total": 3498291,
+                  "p50": 3205,
+                  "p95": 4828,
+                  "p99": 22354,
+                  "max": 62634
+                },
+                "snapshot_submit_ns": {
+                  "total": 60524457,
+                  "p50": 55604,
+                  "p95": 125868,
+                  "p99": 202792,
+                  "max": 3205527
+                },
+                "owner_work_ns": {
+                  "total": 9256256319,
+                  "p50": 9653259,
+                  "p95": 12217500,
+                  "p99": 16786786,
+                  "max": 253773492
+                },
+                "owner_cpu_ns": 9229900614,
+                "owner_allocated_bytes": 140269896,
+                "pacing_wait_ns": 5808081883,
+                "producer_deadline_late_ns": {
+                  "total": 8557234365,
+                  "p50": 0,
+                  "p95": 19111572,
+                  "p99": 281183454,
+                  "max": 318057354
+                },
+                "producer_deadline_misses": 54,
+                "gc_count": 1,
+                "gc_collection_ms": 3,
+                "produced_audio_frames": 493763,
+                "consumed_audio_frames": 493763,
+                "audio_frames": 493763,
+                "audio_overruns": 0,
+                "audio_underruns": 0,
+                "output": {
+                  "rgb_chain_sha256": "4ef45aee4d1e3ad123cb24c118edf03c82d351ea3ce429734e022097753d8e8e",
+                  "blocked_ns": 0,
+                  "submitted": 900,
+                  "scaling_ns": 194587562,
+                  "frames": 900,
+                  "processing_allocated_bytes": 45248,
+                  "mix_ns": 2616859,
+                  "processing_cpu_ns": 375871000,
+                  "queue_capacity": 2,
+                  "pcm_sha256": "8e3618a6542dff3a246e9c81c0220e28439ed73e12df611c85f8fb2660a4d2f0",
+                  "processed": 900,
+                  "audio_frames": 493763,
+                  "verification_hash_ns": 191643697,
+                  "queue_maximum": 1,
+                  "blocked_submissions": 0,
+                  "rendered_sample": 5437291
+                },
+                "final_state_sha256": "86d2b02676014cd45b65546f0bc6a4dc426182eb011996b4bae89d310425b86c"
+              }
+            }
+          }
+        },
+        "candidate": {
+          "summary": {
+            "median_guest_p50_ms": 9.348081,
+            "guest_p95_ms_each": [
+              13.198214,
+              11.932773,
+              12.058722
+            ],
+            "guest_p99_ms_each": [
+              19.40737,
+              16.591671,
+              14.950806
+            ],
+            "owner_cpu_ms_per_frame_each": [
+              10.16468955,
+              9.749823392222222,
+              9.806574383333333
+            ],
+            "owner_allocated_bytes_each": [
+              140270528,
+              140270368,
+              140270368
+            ],
+            "producer_deadline_misses_each": [
+              33,
+              13,
+              10
+            ]
+          },
+          "raw_report_sha256": "cebc3ffcad49a3eaae33dd26510f4b326293936d446d5d41343c4ab99eded1b1",
+          "report": {
+            "scope": "Paced Linux host core plus bounded headless scaling/PCM/checksum sink; no physical display/audio or BBOS claim",
+            "source_commit": "1d5bb930798c854dc558a26e521d0a76c2c5900c",
+            "source_dirty": "true",
+            "hardware": "Linux x86_64 cloud host; AMD EPYC 9V74; cgroup CPU quota 4 cores; memory limit 32 GiB; no physical display/audio",
+            "java": "21.0.8+9-LTS",
+            "os": "Linux amd64 6.18.57",
+            "available_processors": 5,
+            "jvm_arguments": "[-Xms256m, -Xmx512m, -XX:+UseG1GC]",
+            "rom_sha256": "f937fa93b97b14b9fb9fce98844c534f936222d21d1fdb5f1af42292bad32c85",
+            "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+            "state_sha256": "888030d137b5be2d1f0f198ea7fe3c58e041e38f99a8c2f17ea0782a04fcd520",
+            "frame_input_sha256": "d290cfc0c178e6672e99ada66b29084f200d9661c01d0ee1cfc566d4d348bcb9",
+            "start_frame": 12955,
+            "frames": 900,
+            "speed": 1,
+            "frame_skip": 0,
+            "sound": "100 percent stereo, unmuted; synthesis/drain/mix/checksum, physical transport absent",
+            "warmups": 2,
+            "repetitions": 3,
+            "runs": {
+              "run_1": {
+                "wall_ns": 15068832741,
+                "guest_ns": {
+                  "total": 9036249348,
+                  "p50": 9483545,
+                  "p95": 13198214,
+                  "p99": 19407370,
+                  "max": 49030435
+                },
+                "guest_allocated_bytes": {
+                  "total": 0,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 0,
+                  "max": 0
+                },
+                "drain_ns": {
+                  "total": 2819540,
+                  "p50": 2804,
+                  "p95": 4527,
+                  "p99": 5629,
+                  "max": 70275
+                },
+                "snapshot_submit_ns": {
+                  "total": 73593460,
+                  "p50": 62985,
+                  "p95": 158839,
+                  "p99": 249074,
+                  "max": 2212894
+                },
+                "owner_work_ns": {
+                  "total": 9119985717,
+                  "p50": 9576654,
+                  "p95": 13282851,
+                  "p99": 19474551,
+                  "max": 49119298
+                },
+                "owner_cpu_ns": 9148220595,
+                "owner_allocated_bytes": 140270528,
+                "pacing_wait_ns": 5945421039,
+                "producer_deadline_late_ns": {
+                  "total": 285855133,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 8954328,
+                  "max": 35207385
+                },
+                "producer_deadline_misses": 33,
+                "gc_count": 1,
+                "gc_collection_ms": 2,
+                "produced_audio_frames": 493763,
+                "consumed_audio_frames": 493763,
+                "audio_frames": 493763,
+                "audio_overruns": 0,
+                "audio_underruns": 0,
+                "output": {
+                  "processing_cpu_ns": 331099764,
+                  "queue_capacity": 2,
+                  "pcm_sha256": "8e3618a6542dff3a246e9c81c0220e28439ed73e12df611c85f8fb2660a4d2f0",
+                  "processed": 900,
+                  "audio_frames": 493763,
+                  "verification_hash_ns": 145962165,
+                  "queue_maximum": 1,
+                  "blocked_submissions": 0,
+                  "rendered_sample": 5437291,
+                  "rgb_chain_sha256": "4ef45aee4d1e3ad123cb24c118edf03c82d351ea3ce429734e022097753d8e8e",
+                  "blocked_ns": 0,
+                  "submitted": 900,
+                  "scaling_ns": 181903612,
+                  "frames": 900,
+                  "processing_allocated_bytes": 43568,
+                  "mix_ns": 1866845
+                },
+                "final_state_sha256": "86d2b02676014cd45b65546f0bc6a4dc426182eb011996b4bae89d310425b86c"
+              },
+              "run_2": {
+                "wall_ns": 15068841873,
+                "guest_ns": {
+                  "total": 8673827242,
+                  "p50": 9307830,
+                  "p95": 11932773,
+                  "p99": 16591671,
+                  "max": 23854721
+                },
+                "guest_allocated_bytes": {
+                  "total": 0,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 0,
+                  "max": 0
+                },
+                "drain_ns": {
+                  "total": 3276920,
+                  "p50": 2804,
+                  "p95": 4256,
+                  "p99": 5458,
+                  "max": 216305
+                },
+                "snapshot_submit_ns": {
+                  "total": 64671274,
+                  "p50": 56194,
+                  "p95": 127252,
+                  "p99": 233651,
+                  "max": 3073972
+                },
+                "owner_work_ns": {
+                  "total": 8748914740,
+                  "p50": 9385648,
+                  "p95": 12017350,
+                  "p99": 16740846,
+                  "max": 23943244
+                },
+                "owner_cpu_ns": 8774841053,
+                "owner_allocated_bytes": 140270368,
+                "pacing_wait_ns": 6316853738,
+                "producer_deadline_late_ns": {
+                  "total": 19903044,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 212181,
+                  "max": 7304301
+                },
+                "producer_deadline_misses": 13,
+                "gc_count": 1,
+                "gc_collection_ms": 2,
+                "produced_audio_frames": 493763,
+                "consumed_audio_frames": 493763,
+                "audio_frames": 493763,
+                "audio_overruns": 0,
+                "audio_underruns": 0,
+                "output": {
+                  "processing_cpu_ns": 326430139,
+                  "queue_capacity": 2,
+                  "pcm_sha256": "8e3618a6542dff3a246e9c81c0220e28439ed73e12df611c85f8fb2660a4d2f0",
+                  "processed": 900,
+                  "audio_frames": 493763,
+                  "verification_hash_ns": 140911306,
+                  "queue_maximum": 1,
+                  "blocked_submissions": 0,
+                  "rendered_sample": 5437291,
+                  "rgb_chain_sha256": "4ef45aee4d1e3ad123cb24c118edf03c82d351ea3ce429734e022097753d8e8e",
+                  "blocked_ns": 0,
+                  "submitted": 900,
+                  "scaling_ns": 182490810,
+                  "frames": 900,
+                  "processing_allocated_bytes": 43472,
+                  "mix_ns": 1712491
+                },
+                "final_state_sha256": "86d2b02676014cd45b65546f0bc6a4dc426182eb011996b4bae89d310425b86c"
+              },
+              "run_3": {
+                "wall_ns": 15068852977,
+                "guest_ns": {
+                  "total": 8726143843,
+                  "p50": 9348081,
+                  "p95": 12058722,
+                  "p99": 14950806,
+                  "max": 61548972
+                },
+                "guest_allocated_bytes": {
+                  "total": 0,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 0,
+                  "max": 0
+                },
+                "drain_ns": {
+                  "total": 3145097,
+                  "p50": 2915,
+                  "p95": 4317,
+                  "p99": 5388,
+                  "max": 167852
+                },
+                "snapshot_submit_ns": {
+                  "total": 62611967,
+                  "p50": 55733,
+                  "p95": 133150,
+                  "p99": 202615,
+                  "max": 2292153
+                },
+                "owner_work_ns": {
+                  "total": 8799728884,
+                  "p50": 9428381,
+                  "p95": 12149839,
+                  "p99": 15072529,
+                  "max": 61639808
+                },
+                "owner_cpu_ns": 8825916945,
+                "owner_allocated_bytes": 140270368,
+                "pacing_wait_ns": 6265732014,
+                "producer_deadline_late_ns": {
+                  "total": 189394222,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 1300542,
+                  "max": 45036526
+                },
+                "producer_deadline_misses": 10,
+                "gc_count": 1,
+                "gc_collection_ms": 2,
+                "produced_audio_frames": 493763,
+                "consumed_audio_frames": 493763,
+                "audio_frames": 493763,
+                "audio_overruns": 0,
+                "audio_underruns": 0,
+                "output": {
+                  "processing_cpu_ns": 337836094,
+                  "queue_capacity": 2,
+                  "pcm_sha256": "8e3618a6542dff3a246e9c81c0220e28439ed73e12df611c85f8fb2660a4d2f0",
+                  "processed": 900,
+                  "audio_frames": 493763,
+                  "verification_hash_ns": 150306051,
+                  "queue_maximum": 1,
+                  "blocked_submissions": 0,
+                  "rendered_sample": 5437291,
+                  "rgb_chain_sha256": "4ef45aee4d1e3ad123cb24c118edf03c82d351ea3ce429734e022097753d8e8e",
+                  "blocked_ns": 0,
+                  "submitted": 900,
+                  "scaling_ns": 186143806,
+                  "frames": 900,
+                  "processing_allocated_bytes": 43472,
+                  "mix_ns": 1875092
+                },
+                "final_state_sha256": "86d2b02676014cd45b65546f0bc6a4dc426182eb011996b4bae89d310425b86c"
+              }
+            }
+          }
+        },
+        "video-peek": {
+          "summary": {
+            "median_guest_p50_ms": 10.013002,
+            "guest_p95_ms_each": [
+              15.225473,
+              16.755066,
+              15.686153
+            ],
+            "guest_p99_ms_each": [
+              17.795393,
+              22.116689,
+              19.462858
+            ],
+            "owner_cpu_ms_per_frame_each": [
+              10.824116022222222,
+              11.267020335555555,
+              10.70058016111111
+            ],
+            "owner_allocated_bytes_each": [
+              140270528,
+              140270368,
+              140270368
+            ],
+            "producer_deadline_misses_each": [
+              41,
+              81,
+              57
+            ]
+          },
+          "raw_report_sha256": "7567b2616f45367ca1915e094ad9ad6b042090d7efa4d910ce84a02bc1036c9c",
+          "report": {
+            "scope": "Paced Linux host core plus bounded headless scaling/PCM/checksum sink; no physical display/audio or BBOS claim",
+            "source_commit": "1d5bb930798c854dc558a26e521d0a76c2c5900c",
+            "source_dirty": "true",
+            "hardware": "Linux x86_64 cloud host; AMD EPYC 9V74; cgroup CPU quota 4 cores; memory limit 32 GiB; no physical display/audio",
+            "java": "21.0.8+9-LTS",
+            "os": "Linux amd64 6.18.57",
+            "available_processors": 5,
+            "jvm_arguments": "[-Xms256m, -Xmx512m, -XX:+UseG1GC]",
+            "rom_sha256": "f937fa93b97b14b9fb9fce98844c534f936222d21d1fdb5f1af42292bad32c85",
+            "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+            "state_sha256": "888030d137b5be2d1f0f198ea7fe3c58e041e38f99a8c2f17ea0782a04fcd520",
+            "frame_input_sha256": "d290cfc0c178e6672e99ada66b29084f200d9661c01d0ee1cfc566d4d348bcb9",
+            "start_frame": 12955,
+            "frames": 900,
+            "speed": 1,
+            "frame_skip": 0,
+            "sound": "100 percent stereo, unmuted; synthesis/drain/mix/checksum, physical transport absent",
+            "warmups": 2,
+            "repetitions": 3,
+            "runs": {
+              "run_1": {
+                "wall_ns": 15069929575,
+                "guest_ns": {
+                  "total": 9579537841,
+                  "p50": 10013002,
+                  "p95": 15225473,
+                  "p99": 17795393,
+                  "max": 37028717
+                },
+                "guest_allocated_bytes": {
+                  "total": 160,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 0,
+                  "max": 160
+                },
+                "drain_ns": {
+                  "total": 4318948,
+                  "p50": 3686,
+                  "p95": 4938,
+                  "p99": 54132,
+                  "max": 167812
+                },
+                "snapshot_submit_ns": {
+                  "total": 120978903,
+                  "p50": 78198,
+                  "p95": 316786,
+                  "p99": 585290,
+                  "max": 11289599
+                },
+                "owner_work_ns": {
+                  "total": 9721320095,
+                  "p50": 10133686,
+                  "p95": 15514756,
+                  "p99": 19811212,
+                  "max": 39994332
+                },
+                "owner_cpu_ns": 9741704420,
+                "owner_allocated_bytes": 140270528,
+                "pacing_wait_ns": 5342493183,
+                "producer_deadline_late_ns": {
+                  "total": 151173251,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 5692809,
+                  "max": 23719298
+                },
+                "producer_deadline_misses": 41,
+                "gc_count": 1,
+                "gc_collection_ms": 3,
+                "produced_audio_frames": 493763,
+                "consumed_audio_frames": 493763,
+                "audio_frames": 493763,
+                "audio_overruns": 0,
+                "audio_underruns": 0,
+                "output": {
+                  "submitted": 900,
+                  "scaling_ns": 206853868,
+                  "frames": 900,
+                  "processing_allocated_bytes": 43568,
+                  "mix_ns": 3103958,
+                  "processing_cpu_ns": 364412091,
+                  "queue_capacity": 2,
+                  "pcm_sha256": "8e3618a6542dff3a246e9c81c0220e28439ed73e12df611c85f8fb2660a4d2f0",
+                  "processed": 900,
+                  "audio_frames": 493763,
+                  "verification_hash_ns": 153431277,
+                  "queue_maximum": 1,
+                  "blocked_submissions": 0,
+                  "rendered_sample": 5437291,
+                  "rgb_chain_sha256": "4ef45aee4d1e3ad123cb24c118edf03c82d351ea3ce429734e022097753d8e8e",
+                  "blocked_ns": 0
+                },
+                "final_state_sha256": "86d2b02676014cd45b65546f0bc6a4dc426182eb011996b4bae89d310425b86c"
+              },
+              "run_2": {
+                "wall_ns": 15068788136,
+                "guest_ns": {
+                  "total": 10013270111,
+                  "p50": 10271576,
+                  "p95": 16755066,
+                  "p99": 22116689,
+                  "max": 39390775
+                },
+                "guest_allocated_bytes": {
+                  "total": 0,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 0,
+                  "max": 0
+                },
+                "drain_ns": {
+                  "total": 3726738,
+                  "p50": 3676,
+                  "p95": 4827,
+                  "p99": 21953,
+                  "max": 106500
+                },
+                "snapshot_submit_ns": {
+                  "total": 83598347,
+                  "p50": 67642,
+                  "p95": 178888,
+                  "p99": 377197,
+                  "max": 3350588
+                },
+                "owner_work_ns": {
+                  "total": 10117294238,
+                  "p50": 10366949,
+                  "p95": 16968069,
+                  "p99": 22242758,
+                  "max": 39471596
+                },
+                "owner_cpu_ns": 10140318302,
+                "owner_allocated_bytes": 140270368,
+                "pacing_wait_ns": 4947164619,
+                "producer_deadline_late_ns": {
+                  "total": 646956130,
+                  "p50": 0,
+                  "p95": 3199736,
+                  "p99": 19597335,
+                  "max": 43140996
+                },
+                "producer_deadline_misses": 81,
+                "gc_count": 1,
+                "gc_collection_ms": 2,
+                "produced_audio_frames": 493763,
+                "consumed_audio_frames": 493763,
+                "audio_frames": 493763,
+                "audio_overruns": 0,
+                "audio_underruns": 0,
+                "output": {
+                  "submitted": 900,
+                  "scaling_ns": 198373007,
+                  "frames": 900,
+                  "processing_allocated_bytes": 43472,
+                  "mix_ns": 2037327,
+                  "processing_cpu_ns": 351938151,
+                  "queue_capacity": 2,
+                  "pcm_sha256": "8e3618a6542dff3a246e9c81c0220e28439ed73e12df611c85f8fb2660a4d2f0",
+                  "processed": 900,
+                  "audio_frames": 493763,
+                  "verification_hash_ns": 149507908,
+                  "queue_maximum": 1,
+                  "blocked_submissions": 0,
+                  "rendered_sample": 5437291,
+                  "rgb_chain_sha256": "4ef45aee4d1e3ad123cb24c118edf03c82d351ea3ce429734e022097753d8e8e",
+                  "blocked_ns": 0
+                },
+                "final_state_sha256": "86d2b02676014cd45b65546f0bc6a4dc426182eb011996b4bae89d310425b86c"
+              },
+              "run_3": {
+                "wall_ns": 15070325934,
+                "guest_ns": {
+                  "total": 9512655013,
+                  "p50": 9846207,
+                  "p95": 15686153,
+                  "p99": 19462858,
+                  "max": 38198871
+                },
+                "guest_allocated_bytes": {
+                  "total": 0,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 0,
+                  "max": 0
+                },
+                "drain_ns": {
+                  "total": 4629844,
+                  "p50": 3305,
+                  "p95": 4737,
+                  "p99": 58407,
+                  "max": 650289
+                },
+                "snapshot_submit_ns": {
+                  "total": 98392984,
+                  "p50": 60821,
+                  "p95": 343886,
+                  "p99": 971609,
+                  "max": 2965406
+                },
+                "owner_work_ns": {
+                  "total": 9625874073,
+                  "p50": 9948541,
+                  "p95": 15789130,
+                  "p99": 19984540,
+                  "max": 38620324
+                },
+                "owner_cpu_ns": 9630522145,
+                "owner_allocated_bytes": 140270368,
+                "pacing_wait_ns": 5439136232,
+                "producer_deadline_late_ns": {
+                  "total": 373786712,
+                  "p50": 0,
+                  "p95": 1217652,
+                  "p99": 10048212,
+                  "max": 27763356
+                },
+                "producer_deadline_misses": 57,
+                "gc_count": 1,
+                "gc_collection_ms": 3,
+                "produced_audio_frames": 493763,
+                "consumed_audio_frames": 493763,
+                "audio_frames": 493763,
+                "audio_overruns": 0,
+                "audio_underruns": 0,
+                "output": {
+                  "submitted": 900,
+                  "scaling_ns": 198171668,
+                  "frames": 900,
+                  "processing_allocated_bytes": 43472,
+                  "mix_ns": 1766282,
+                  "processing_cpu_ns": 353986001,
+                  "queue_capacity": 2,
+                  "pcm_sha256": "8e3618a6542dff3a246e9c81c0220e28439ed73e12df611c85f8fb2660a4d2f0",
+                  "processed": 900,
+                  "audio_frames": 493763,
+                  "verification_hash_ns": 152561490,
+                  "queue_maximum": 1,
+                  "blocked_submissions": 0,
+                  "rendered_sample": 5437291,
+                  "rgb_chain_sha256": "4ef45aee4d1e3ad123cb24c118edf03c82d351ea3ce429734e022097753d8e8e",
+                  "blocked_ns": 0
+                },
+                "final_state_sha256": "86d2b02676014cd45b65546f0bc6a4dc426182eb011996b4bae89d310425b86c"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "LeafGreen first rival battle",
+      "local_directory": "target/m4-playback-2026-11-19/leafgreen-reprepared",
+      "accepted_m2_evidence": "benchmarks/leafgreen-starter-rival-2026-11-18.json",
+      "accepted_evidence_sha256": "2a1b8207281dc045acc7478aea5c62ad2f44ebcaad906415285c9f91bd90620d",
+      "full_frame_input": "benchmarks/inputs/leafgreen-starter-rival.tsv",
+      "full_frame_input_sha256": "4f229526303171e2adda3ea7252cdbff82668eb835ba3e0d99ed22447b82dccf",
+      "prepared_state_sha256": "9d4644f60d44ddfdc29de7362ca7564865b578e74532e620959e2e48c55e1307",
+      "prepared_state_120_frame_roundtrip": "exact",
+      "prepare_report": {
+        "title": "POKEMON LEAF",
+        "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "input_sha256": "9aa6fdb357675a515ae9e6d61de932b76b0143f6d82808fffb2ae72c8e008fab",
+        "initial_save_sha256": "8f192f66ac21928523cb295e1353b6f0bd3ce6dc2adc40e34cc5f4b8455b8961",
+        "frame_input_sha256": "fa99a76f82e03eafc17694f8df8c42e7b4324225b8598eab9cdb2eed488fbb54",
+        "snapshot_frame": 15934,
+        "snapshot_cycles": 4475796865,
+        "resumed_frames": 120,
+        "resumed_audio_frames": 65835,
+        "state_bytes": 904303,
+        "state_sha256": "9d4644f60d44ddfdc29de7362ca7564865b578e74532e620959e2e48c55e1307",
+        "final_state_sha256": "0a8eeadd62bc1da466e1e34710caea36426a852e177cb31455f4c42b6a6d43d8",
+        "immediate_and_future_full_state_exact": true,
+        "all_resumed_rgb_pcm_exact": true,
+        "original_save_unchanged": true,
+        "scope": "Host core save/load replay, not independent game accuracy or physical phone validation"
+      },
+      "window_configuration": {
+        "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+        "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+        "state_sha256": "9d4644f60d44ddfdc29de7362ca7564865b578e74532e620959e2e48c55e1307",
+        "frame_input_sha256": "18d20e64835c084a0fb1152d39c53868909d1a2dea2234478f440c57f8814c00",
+        "start_frame": "15934",
+        "frames": "900",
+        "warmups": "2",
+        "repetitions": "3",
+        "jfr": "true",
+        "expected_rgb_chain_sha256": "8a2aab388903f379375c0e71ae2553587044b08f4eb594604556e88b4acfbe46",
+        "expected_pcm_sha256": "a5e874f3c3b2c9534efa70f41c481a6ea9f121d4a4a75168c176b2eaa9144078",
+        "hardware": "Linux x86_64 cloud host; AMD EPYC 9V74; cgroup CPU quota 4 cores; memory limit 32 GiB; no physical display/audio"
+      },
+      "prefix_sha256": "fa99a76f82e03eafc17694f8df8c42e7b4324225b8598eab9cdb2eed488fbb54",
+      "baseline_jfr_summary": {
+        "scope": "JFR sampled stacks/weighted allocation estimates; exact per-thread allocation totals are in the profile report",
+        "cpu_samples": {
+          "main:berryboy.bus.Memory.rawRead16:248": 218,
+          "main:berryboy.cpu.Cpu.step:112": 82,
+          "main:berryboy.timing.CycleScheduler.advanceTo:90": 75,
+          "main:berryboy.cpu.InstructionPipeline.fetch:27": 75,
+          "main:berryboy.video.SoftwarePpu.renderRange:86": 48,
+          "main:berryboy.timing.CycleScheduler.schedule:55": 41,
+          "main:berryboy.bus.DmaController.runPending:90": 38,
+          "main:berryboy.cpu.Cpu.resumeRefill:168": 28,
+          "main:berryboy.cpu.CpuDataTransfers.transferNext:79": 24,
+          "main:berryboy.cpu.Cpu.step:121": 11,
+          "main:berryboy.cpu.Cpu.resumeInstructionTiming:135": 10,
+          "main:berryboy.timing.CycleScheduler.remove:140": 9,
+          "main:berryboy.Machine.runCycles:59": 8,
+          "main:berryboy.cpu.CpuState.register:27": 7,
+          "main:berryboy.bus.BusTiming.fillPrefetch:190": 7,
+          "main:berryboy.video.SoftwarePpu.background:128": 7,
+          "main:berryboy.cpu.CpuState.programCounter:39": 7,
+          "main:berryboy.cpu.ThumbInterpreter.execute:46": 6,
+          "main:berryboy.timing.CycleScheduler.cancel:63": 6,
+          "main:berryboy.cpu.ThumbInterpreter.execute:32": 5,
+          "main:berryboy.timing.CycleScheduler.advanceTo:93": 5,
+          "main:berryboy.video.SoftwarePpu.renderRange:71": 5,
+          "berryboy-profile-output:berryboy.desktop.profile.ProfileOutput.process:55": 4,
+          "main:berryboy.cpu.BarrelShifter.shift:25": 4,
+          "main:berryboy.cpu.Cpu.step:114": 4,
+          "main:berryboy.cpu.ThumbInterpreter.processRegisters:150": 4,
+          "main:berryboy.bus.BusTiming.fetch:93": 3,
+          "main:berryboy.cpu.ThumbInterpreter.processImmediate:93": 3,
+          "main:berryboy.cpu.ArithmeticLogicUnit.execute:30": 3,
+          "main:berryboy.video.SoftwarePpu.renderPixel:37": 3
+        },
+        "allocation_sample_weight_bytes": {
+          "main:[I:berryboy.desktop.profile.ProfileOutput$Frame.<init>:20": 1018535728,
+          "main:[S:berryboy.desktop.profile.ProfileOutput$Frame.<init>:20": 492168,
+          "berryboy-profile-output:[B:berryboy.desktop.profile.ProfileOutput.process:55": 4800
+        }
+      },
+      "baseline_jfr_sha256": "8f1face139f40771ad784b6528d2a3ecbfd3dac4239a6a4a4598ea907c8ccf5b",
+      "variants": {
+        "baseline": {
+          "summary": {
+            "median_guest_p50_ms": 9.856573,
+            "guest_p95_ms_each": [
+              12.248074,
+              16.594487,
+              12.437541
+            ],
+            "guest_p99_ms_each": [
+              15.739207,
+              21.780513,
+              15.493309
+            ],
+            "owner_cpu_ms_per_frame_each": [
+              10.294618861111111,
+              12.435534276666667,
+              10.089491066666668
+            ],
+            "owner_allocated_bytes_each": [
+              140270512,
+              140270352,
+              140270352
+            ],
+            "producer_deadline_misses_each": [
+              14,
+              85,
+              8
+            ]
+          },
+          "raw_report_sha256": "f36194e505399b54613a66232272469168389f5d3460a179bb521fda0dbf90af",
+          "report": {
+            "scope": "Paced Linux host core plus bounded headless scaling/PCM/checksum sink; no physical display/audio or BBOS claim",
+            "source_commit": "1d5bb930798c854dc558a26e521d0a76c2c5900c",
+            "source_dirty": "false",
+            "hardware": "Linux x86_64 cloud host; AMD EPYC 9V74; cgroup CPU quota 4 cores; memory limit 32 GiB; no physical display/audio",
+            "java": "21.0.8+9-LTS",
+            "os": "Linux amd64 6.18.57",
+            "available_processors": 5,
+            "jvm_arguments": "[-Xms256m, -Xmx512m, -XX:+UseG1GC]",
+            "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+            "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+            "state_sha256": "9d4644f60d44ddfdc29de7362ca7564865b578e74532e620959e2e48c55e1307",
+            "frame_input_sha256": "18d20e64835c084a0fb1152d39c53868909d1a2dea2234478f440c57f8814c00",
+            "start_frame": 15934,
+            "frames": 900,
+            "speed": 1,
+            "frame_skip": 0,
+            "sound": "100 percent stereo, unmuted; synthesis/drain/mix/checksum, physical transport absent",
+            "warmups": 2,
+            "repetitions": 3,
+            "runs": {
+              "run_1": {
+                "wall_ns": 15068824811,
+                "guest_ns": {
+                  "total": 9170877848,
+                  "p50": 9856573,
+                  "p95": 12248074,
+                  "p99": 15739207,
+                  "max": 40860485
+                },
+                "guest_allocated_bytes": {
+                  "total": 0,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 0,
+                  "max": 0
+                },
+                "drain_ns": {
+                  "total": 3344682,
+                  "p50": 3185,
+                  "p95": 4817,
+                  "p99": 17376,
+                  "max": 72239
+                },
+                "snapshot_submit_ns": {
+                  "total": 71602499,
+                  "p50": 60310,
+                  "p95": 156045,
+                  "p99": 302004,
+                  "max": 2367575
+                },
+                "owner_work_ns": {
+                  "total": 9253787105,
+                  "p50": 9936283,
+                  "p95": 12319411,
+                  "p99": 15828030,
+                  "max": 40977571
+                },
+                "owner_cpu_ns": 9265156975,
+                "owner_allocated_bytes": 140270512,
+                "pacing_wait_ns": 5811464200,
+                "producer_deadline_late_ns": {
+                  "total": 159335339,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 2669493,
+                  "max": 35735911
+                },
+                "producer_deadline_misses": 14,
+                "gc_count": 1,
+                "gc_collection_ms": 2,
+                "produced_audio_frames": 493763,
+                "consumed_audio_frames": 493763,
+                "audio_frames": 493763,
+                "audio_overruns": 0,
+                "audio_underruns": 0,
+                "output": {
+                  "processing_cpu_ns": 341826290,
+                  "mix_ns": 1700492,
+                  "processing_allocated_bytes": 43568,
+                  "frames": 900,
+                  "scaling_ns": 190068101,
+                  "submitted": 900,
+                  "blocked_ns": 0,
+                  "rgb_chain_sha256": "8a2aab388903f379375c0e71ae2553587044b08f4eb594604556e88b4acfbe46",
+                  "rendered_sample": 0,
+                  "blocked_submissions": 0,
+                  "queue_maximum": 1,
+                  "verification_hash_ns": 148102387,
+                  "audio_frames": 493763,
+                  "processed": 900,
+                  "pcm_sha256": "a5e874f3c3b2c9534efa70f41c481a6ea9f121d4a4a75168c176b2eaa9144078",
+                  "queue_capacity": 2
+                },
+                "final_state_sha256": "690cba71f7f8eb8ee6d21dcb1ccde3f13a3df73e3745c05f0ee94c85305f54a1"
+              },
+              "run_2": {
+                "wall_ns": 15069109820,
+                "guest_ns": {
+                  "total": 11042333911,
+                  "p50": 11784969,
+                  "p95": 16594487,
+                  "p99": 21780513,
+                  "max": 29946508
+                },
+                "guest_allocated_bytes": {
+                  "total": 0,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 0,
+                  "max": 0
+                },
+                "drain_ns": {
+                  "total": 5149091,
+                  "p50": 4046,
+                  "p95": 5458,
+                  "p99": 64987,
+                  "max": 347652
+                },
+                "snapshot_submit_ns": {
+                  "total": 96529274,
+                  "p50": 77256,
+                  "p95": 210116,
+                  "p99": 417317,
+                  "max": 4749753
+                },
+                "owner_work_ns": {
+                  "total": 11160620061,
+                  "p50": 11937910,
+                  "p95": 16852482,
+                  "p99": 21987574,
+                  "max": 30178216
+                },
+                "owner_cpu_ns": 11191980849,
+                "owner_allocated_bytes": 140270352,
+                "pacing_wait_ns": 3902321109,
+                "producer_deadline_late_ns": {
+                  "total": 1374912993,
+                  "p50": 0,
+                  "p95": 6587886,
+                  "p99": 41628133,
+                  "max": 44643581
+                },
+                "producer_deadline_misses": 85,
+                "gc_count": 1,
+                "gc_collection_ms": 5,
+                "produced_audio_frames": 493763,
+                "consumed_audio_frames": 493763,
+                "audio_frames": 493763,
+                "audio_overruns": 0,
+                "audio_underruns": 0,
+                "output": {
+                  "processing_cpu_ns": 410567320,
+                  "mix_ns": 2776922,
+                  "processing_allocated_bytes": 43472,
+                  "frames": 900,
+                  "scaling_ns": 230448398,
+                  "submitted": 900,
+                  "blocked_ns": 0,
+                  "rgb_chain_sha256": "8a2aab388903f379375c0e71ae2553587044b08f4eb594604556e88b4acfbe46",
+                  "rendered_sample": 0,
+                  "blocked_submissions": 0,
+                  "queue_maximum": 1,
+                  "verification_hash_ns": 174750962,
+                  "audio_frames": 493763,
+                  "processed": 900,
+                  "pcm_sha256": "a5e874f3c3b2c9534efa70f41c481a6ea9f121d4a4a75168c176b2eaa9144078",
+                  "queue_capacity": 2
+                },
+                "final_state_sha256": "690cba71f7f8eb8ee6d21dcb1ccde3f13a3df73e3745c05f0ee94c85305f54a1"
+              },
+              "run_3": {
+                "wall_ns": 15068809784,
+                "guest_ns": {
+                  "total": 8971351254,
+                  "p50": 9626599,
+                  "p95": 12437541,
+                  "p99": 15493309,
+                  "max": 20772428
+                },
+                "guest_allocated_bytes": {
+                  "total": 0,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 0,
+                  "max": 0
+                },
+                "drain_ns": {
+                  "total": 3236332,
+                  "p50": 3225,
+                  "p95": 4587,
+                  "p99": 5608,
+                  "max": 81082
+                },
+                "snapshot_submit_ns": {
+                  "total": 69708971,
+                  "p50": 64317,
+                  "p95": 153480,
+                  "p99": 242134,
+                  "max": 1834735
+                },
+                "owner_work_ns": {
+                  "total": 9052059513,
+                  "p50": 9722432,
+                  "p95": 12561817,
+                  "p99": 15570746,
+                  "max": 20841782
+                },
+                "owner_cpu_ns": 9080541960,
+                "owner_allocated_bytes": 140270352,
+                "pacing_wait_ns": 6013695613,
+                "producer_deadline_late_ns": {
+                  "total": 13010074,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 0,
+                  "max": 4217640
+                },
+                "producer_deadline_misses": 8,
+                "gc_count": 1,
+                "gc_collection_ms": 1,
+                "produced_audio_frames": 493763,
+                "consumed_audio_frames": 493763,
+                "audio_frames": 493763,
+                "audio_overruns": 0,
+                "audio_underruns": 0,
+                "output": {
+                  "processing_cpu_ns": 329240015,
+                  "mix_ns": 1820118,
+                  "processing_allocated_bytes": 43472,
+                  "frames": 900,
+                  "scaling_ns": 183720576,
+                  "submitted": 900,
+                  "blocked_ns": 0,
+                  "rgb_chain_sha256": "8a2aab388903f379375c0e71ae2553587044b08f4eb594604556e88b4acfbe46",
+                  "rendered_sample": 0,
+                  "blocked_submissions": 0,
+                  "queue_maximum": 1,
+                  "verification_hash_ns": 142327390,
+                  "audio_frames": 493763,
+                  "processed": 900,
+                  "pcm_sha256": "a5e874f3c3b2c9534efa70f41c481a6ea9f121d4a4a75168c176b2eaa9144078",
+                  "queue_capacity": 2
+                },
+                "final_state_sha256": "690cba71f7f8eb8ee6d21dcb1ccde3f13a3df73e3745c05f0ee94c85305f54a1"
+              },
+              "jfr_diagnostic_run": {
+                "wall_ns": 15068887861,
+                "guest_ns": {
+                  "total": 9598376765,
+                  "p50": 10121521,
+                  "p95": 12783289,
+                  "p99": 17093152,
+                  "max": 165408382
+                },
+                "guest_allocated_bytes": {
+                  "total": 136,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 0,
+                  "max": 136
+                },
+                "drain_ns": {
+                  "total": 3476991,
+                  "p50": 3195,
+                  "p95": 4597,
+                  "p99": 31587,
+                  "max": 63265
+                },
+                "snapshot_submit_ns": {
+                  "total": 61074770,
+                  "p50": 52489,
+                  "p95": 121302,
+                  "p99": 262133,
+                  "max": 2960516
+                },
+                "owner_work_ns": {
+                  "total": 9672475736,
+                  "p50": 10191266,
+                  "p95": 12851822,
+                  "p99": 17222736,
+                  "max": 165549385
+                },
+                "owner_cpu_ns": 9635822499,
+                "owner_allocated_bytes": 140270016,
+                "pacing_wait_ns": 5393158912,
+                "producer_deadline_late_ns": {
+                  "total": 4850903151,
+                  "p50": 0,
+                  "p95": 1119756,
+                  "p99": 170455498,
+                  "max": 189921213
+                },
+                "producer_deadline_misses": 51,
+                "gc_count": 1,
+                "gc_collection_ms": 3,
+                "produced_audio_frames": 493763,
+                "consumed_audio_frames": 493763,
+                "audio_frames": 493763,
+                "audio_overruns": 0,
+                "audio_underruns": 0,
+                "output": {
+                  "processing_cpu_ns": 363540830,
+                  "mix_ns": 2442862,
+                  "processing_allocated_bytes": 45248,
+                  "frames": 900,
+                  "scaling_ns": 156164638,
+                  "submitted": 900,
+                  "blocked_ns": 0,
+                  "rgb_chain_sha256": "8a2aab388903f379375c0e71ae2553587044b08f4eb594604556e88b4acfbe46",
+                  "rendered_sample": 0,
+                  "blocked_submissions": 0,
+                  "queue_maximum": 1,
+                  "verification_hash_ns": 204330035,
+                  "audio_frames": 493763,
+                  "processed": 900,
+                  "pcm_sha256": "a5e874f3c3b2c9534efa70f41c481a6ea9f121d4a4a75168c176b2eaa9144078",
+                  "queue_capacity": 2
+                },
+                "final_state_sha256": "690cba71f7f8eb8ee6d21dcb1ccde3f13a3df73e3745c05f0ee94c85305f54a1"
+              }
+            }
+          }
+        },
+        "candidate": {
+          "summary": {
+            "median_guest_p50_ms": 9.831046,
+            "guest_p95_ms_each": [
+              12.05003,
+              13.076391,
+              12.714007
+            ],
+            "guest_p99_ms_each": [
+              15.389235,
+              17.768979,
+              17.273726
+            ],
+            "owner_cpu_ms_per_frame_each": [
+              10.218019765555555,
+              10.476084918888889,
+              10.21157135888889
+            ],
+            "owner_allocated_bytes_each": [
+              140270512,
+              140270352,
+              140270352
+            ],
+            "producer_deadline_misses_each": [
+              13,
+              27,
+              18
+            ]
+          },
+          "raw_report_sha256": "46a61beb1bddd0dc620d6e91137b2d66382b9ef6ad3b874f8b3471cd9de255f2",
+          "report": {
+            "scope": "Paced Linux host core plus bounded headless scaling/PCM/checksum sink; no physical display/audio or BBOS claim",
+            "source_commit": "1d5bb930798c854dc558a26e521d0a76c2c5900c",
+            "source_dirty": "true",
+            "hardware": "Linux x86_64 cloud host; AMD EPYC 9V74; cgroup CPU quota 4 cores; memory limit 32 GiB; no physical display/audio",
+            "java": "21.0.8+9-LTS",
+            "os": "Linux amd64 6.18.57",
+            "available_processors": 5,
+            "jvm_arguments": "[-Xms256m, -Xmx512m, -XX:+UseG1GC]",
+            "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+            "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+            "state_sha256": "9d4644f60d44ddfdc29de7362ca7564865b578e74532e620959e2e48c55e1307",
+            "frame_input_sha256": "18d20e64835c084a0fb1152d39c53868909d1a2dea2234478f440c57f8814c00",
+            "start_frame": 15934,
+            "frames": 900,
+            "speed": 1,
+            "frame_skip": 0,
+            "sound": "100 percent stereo, unmuted; synthesis/drain/mix/checksum, physical transport absent",
+            "warmups": 2,
+            "repetitions": 3,
+            "runs": {
+              "run_1": {
+                "wall_ns": 15068764543,
+                "guest_ns": {
+                  "total": 9098885459,
+                  "p50": 9847392,
+                  "p95": 12050030,
+                  "p99": 15389235,
+                  "max": 28856692
+                },
+                "guest_allocated_bytes": {
+                  "total": 160,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 0,
+                  "max": 160
+                },
+                "drain_ns": {
+                  "total": 3930394,
+                  "p50": 2834,
+                  "p95": 4396,
+                  "p99": 5128,
+                  "max": 607493
+                },
+                "snapshot_submit_ns": {
+                  "total": 58747964,
+                  "p50": 51157,
+                  "p95": 122283,
+                  "p99": 235824,
+                  "max": 2060384
+                },
+                "owner_work_ns": {
+                  "total": 9169426685,
+                  "p50": 9921113,
+                  "p95": 12137461,
+                  "p99": 15476576,
+                  "max": 28945446
+                },
+                "owner_cpu_ns": 9196217789,
+                "owner_allocated_bytes": 140270512,
+                "pacing_wait_ns": 5895795122,
+                "producer_deadline_late_ns": {
+                  "total": 71178451,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 1329422,
+                  "max": 15043552
+                },
+                "producer_deadline_misses": 13,
+                "gc_count": 1,
+                "gc_collection_ms": 2,
+                "produced_audio_frames": 493763,
+                "consumed_audio_frames": 493763,
+                "audio_frames": 493763,
+                "audio_overruns": 0,
+                "audio_underruns": 0,
+                "output": {
+                  "processed": 900,
+                  "audio_frames": 493763,
+                  "verification_hash_ns": 136374623,
+                  "queue_maximum": 1,
+                  "blocked_submissions": 0,
+                  "rendered_sample": 0,
+                  "rgb_chain_sha256": "8a2aab388903f379375c0e71ae2553587044b08f4eb594604556e88b4acfbe46",
+                  "blocked_ns": 0,
+                  "submitted": 900,
+                  "scaling_ns": 180075648,
+                  "frames": 900,
+                  "processing_allocated_bytes": 43568,
+                  "mix_ns": 1957307,
+                  "processing_cpu_ns": 319951137,
+                  "queue_capacity": 2,
+                  "pcm_sha256": "a5e874f3c3b2c9534efa70f41c481a6ea9f121d4a4a75168c176b2eaa9144078"
+                },
+                "final_state_sha256": "690cba71f7f8eb8ee6d21dcb1ccde3f13a3df73e3745c05f0ee94c85305f54a1"
+              },
+              "run_2": {
+                "wall_ns": 15068821953,
+                "guest_ns": {
+                  "total": 9291919361,
+                  "p50": 9831046,
+                  "p95": 13076391,
+                  "p99": 17768979,
+                  "max": 83130910
+                },
+                "guest_allocated_bytes": {
+                  "total": 0,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 0,
+                  "max": 0
+                },
+                "drain_ns": {
+                  "total": 3367774,
+                  "p50": 3295,
+                  "p95": 4577,
+                  "p99": 6170,
+                  "max": 112499
+                },
+                "snapshot_submit_ns": {
+                  "total": 90796532,
+                  "p50": 79940,
+                  "p95": 174231,
+                  "p99": 332720,
+                  "max": 4991417
+                },
+                "owner_work_ns": {
+                  "total": 9397535469,
+                  "p50": 9941992,
+                  "p95": 13229683,
+                  "p99": 18157678,
+                  "max": 83261796
+                },
+                "owner_cpu_ns": 9428476427,
+                "owner_allocated_bytes": 140270352,
+                "pacing_wait_ns": 5667379852,
+                "producer_deadline_late_ns": {
+                  "total": 477951782,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 12646113,
+                  "max": 66655585
+                },
+                "producer_deadline_misses": 27,
+                "gc_count": 1,
+                "gc_collection_ms": 2,
+                "produced_audio_frames": 493763,
+                "consumed_audio_frames": 493763,
+                "audio_frames": 493763,
+                "audio_overruns": 0,
+                "audio_underruns": 0,
+                "output": {
+                  "processed": 900,
+                  "audio_frames": 493763,
+                  "verification_hash_ns": 136188621,
+                  "queue_maximum": 1,
+                  "blocked_submissions": 0,
+                  "rendered_sample": 0,
+                  "rgb_chain_sha256": "8a2aab388903f379375c0e71ae2553587044b08f4eb594604556e88b4acfbe46",
+                  "blocked_ns": 0,
+                  "submitted": 900,
+                  "scaling_ns": 180453210,
+                  "frames": 900,
+                  "processing_allocated_bytes": 43472,
+                  "mix_ns": 1864990,
+                  "processing_cpu_ns": 320237850,
+                  "queue_capacity": 2,
+                  "pcm_sha256": "a5e874f3c3b2c9534efa70f41c481a6ea9f121d4a4a75168c176b2eaa9144078"
+                },
+                "final_state_sha256": "690cba71f7f8eb8ee6d21dcb1ccde3f13a3df73e3745c05f0ee94c85305f54a1"
+              },
+              "run_3": {
+                "wall_ns": 15068753016,
+                "guest_ns": {
+                  "total": 9095584000,
+                  "p50": 9776945,
+                  "p95": 12714007,
+                  "p99": 17273726,
+                  "max": 20211958
+                },
+                "guest_allocated_bytes": {
+                  "total": 0,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 0,
+                  "max": 0
+                },
+                "drain_ns": {
+                  "total": 3227491,
+                  "p50": 3124,
+                  "p95": 4477,
+                  "p99": 14372,
+                  "max": 82834
+                },
+                "snapshot_submit_ns": {
+                  "total": 67475514,
+                  "p50": 55022,
+                  "p95": 132399,
+                  "p99": 443726,
+                  "max": 2292449
+                },
+                "owner_work_ns": {
+                  "total": 9173760557,
+                  "p50": 9846969,
+                  "p95": 12931223,
+                  "p99": 17385374,
+                  "max": 20293992
+                },
+                "owner_cpu_ns": 9190414223,
+                "owner_allocated_bytes": 140270352,
+                "pacing_wait_ns": 5891746964,
+                "producer_deadline_late_ns": {
+                  "total": 49657814,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 2593523,
+                  "max": 6816441
+                },
+                "producer_deadline_misses": 18,
+                "gc_count": 1,
+                "gc_collection_ms": 1,
+                "produced_audio_frames": 493763,
+                "consumed_audio_frames": 493763,
+                "audio_frames": 493763,
+                "audio_overruns": 0,
+                "audio_underruns": 0,
+                "output": {
+                  "processed": 900,
+                  "audio_frames": 493763,
+                  "verification_hash_ns": 137795087,
+                  "queue_maximum": 1,
+                  "blocked_submissions": 0,
+                  "rendered_sample": 0,
+                  "rgb_chain_sha256": "8a2aab388903f379375c0e71ae2553587044b08f4eb594604556e88b4acfbe46",
+                  "blocked_ns": 0,
+                  "submitted": 900,
+                  "scaling_ns": 185853862,
+                  "frames": 900,
+                  "processing_allocated_bytes": 43472,
+                  "mix_ns": 1926716,
+                  "processing_cpu_ns": 327240362,
+                  "queue_capacity": 2,
+                  "pcm_sha256": "a5e874f3c3b2c9534efa70f41c481a6ea9f121d4a4a75168c176b2eaa9144078"
+                },
+                "final_state_sha256": "690cba71f7f8eb8ee6d21dcb1ccde3f13a3df73e3745c05f0ee94c85305f54a1"
+              }
+            }
+          }
+        },
+        "video-peek": {
+          "summary": {
+            "median_guest_p50_ms": 10.406096,
+            "guest_p95_ms_each": [
+              15.453,
+              13.141132,
+              14.679963
+            ],
+            "guest_p99_ms_each": [
+              20.57332,
+              17.464529,
+              22.098724
+            ],
+            "owner_cpu_ms_per_frame_each": [
+              11.322192707777777,
+              10.458132081111112,
+              11.17731240888889
+            ],
+            "owner_allocated_bytes_each": [
+              140270512,
+              140270352,
+              140270352
+            ],
+            "producer_deadline_misses_each": [
+              55,
+              22,
+              50
+            ]
+          },
+          "raw_report_sha256": "269c733d70f78bd823f2fdc4c130bf977c0e408efc73fec274983a532f57c96b",
+          "report": {
+            "scope": "Paced Linux host core plus bounded headless scaling/PCM/checksum sink; no physical display/audio or BBOS claim",
+            "source_commit": "1d5bb930798c854dc558a26e521d0a76c2c5900c",
+            "source_dirty": "true",
+            "hardware": "Linux x86_64 cloud host; AMD EPYC 9V74; cgroup CPU quota 4 cores; memory limit 32 GiB; no physical display/audio",
+            "java": "21.0.8+9-LTS",
+            "os": "Linux amd64 6.18.57",
+            "available_processors": 5,
+            "jvm_arguments": "[-Xms256m, -Xmx512m, -XX:+UseG1GC]",
+            "rom_sha256": "2f978f635b9593f6ca26ec42481c53a6b39f6cddd894ad5c062c1419fac58825",
+            "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+            "state_sha256": "9d4644f60d44ddfdc29de7362ca7564865b578e74532e620959e2e48c55e1307",
+            "frame_input_sha256": "18d20e64835c084a0fb1152d39c53868909d1a2dea2234478f440c57f8814c00",
+            "start_frame": 15934,
+            "frames": 900,
+            "speed": 1,
+            "frame_skip": 0,
+            "sound": "100 percent stereo, unmuted; synthesis/drain/mix/checksum, physical transport absent",
+            "warmups": 2,
+            "repetitions": 3,
+            "runs": {
+              "run_1": {
+                "wall_ns": 15068932952,
+                "guest_ns": {
+                  "total": 10060048379,
+                  "p50": 10608525,
+                  "p95": 15453000,
+                  "p99": 20573320,
+                  "max": 25787747
+                },
+                "guest_allocated_bytes": {
+                  "total": 160,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 0,
+                  "max": 160
+                },
+                "drain_ns": {
+                  "total": 3648118,
+                  "p50": 3895,
+                  "p95": 4908,
+                  "p99": 8693,
+                  "max": 49134
+                },
+                "snapshot_submit_ns": {
+                  "total": 77074445,
+                  "p50": 68563,
+                  "p95": 143235,
+                  "p99": 252940,
+                  "max": 2393116
+                },
+                "owner_work_ns": {
+                  "total": 10153267444,
+                  "p50": 10727887,
+                  "p95": 15547482,
+                  "p99": 20662675,
+                  "max": 25907327
+                },
+                "owner_cpu_ns": 10189973437,
+                "owner_allocated_bytes": 140270512,
+                "pacing_wait_ns": 4910832422,
+                "producer_deadline_late_ns": {
+                  "total": 380760667,
+                  "p50": 0,
+                  "p95": 1549255,
+                  "p99": 13068629,
+                  "max": 21613804
+                },
+                "producer_deadline_misses": 55,
+                "gc_count": 1,
+                "gc_collection_ms": 1,
+                "produced_audio_frames": 493763,
+                "consumed_audio_frames": 493763,
+                "audio_frames": 493763,
+                "audio_overruns": 0,
+                "audio_underruns": 0,
+                "output": {
+                  "audio_frames": 493763,
+                  "processed": 900,
+                  "pcm_sha256": "a5e874f3c3b2c9534efa70f41c481a6ea9f121d4a4a75168c176b2eaa9144078",
+                  "queue_capacity": 2,
+                  "processing_cpu_ns": 339162074,
+                  "mix_ns": 2149188,
+                  "processing_allocated_bytes": 43568,
+                  "frames": 900,
+                  "scaling_ns": 191992101,
+                  "submitted": 900,
+                  "blocked_ns": 0,
+                  "rgb_chain_sha256": "8a2aab388903f379375c0e71ae2553587044b08f4eb594604556e88b4acfbe46",
+                  "rendered_sample": 0,
+                  "blocked_submissions": 0,
+                  "queue_maximum": 1,
+                  "verification_hash_ns": 143001002
+                },
+                "final_state_sha256": "690cba71f7f8eb8ee6d21dcb1ccde3f13a3df73e3745c05f0ee94c85305f54a1"
+              },
+              "run_2": {
+                "wall_ns": 15068742387,
+                "guest_ns": {
+                  "total": 9296857119,
+                  "p50": 9933238,
+                  "p95": 13141132,
+                  "p99": 17464529,
+                  "max": 36335732
+                },
+                "guest_allocated_bytes": {
+                  "total": 0,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 0,
+                  "max": 0
+                },
+                "drain_ns": {
+                  "total": 3917746,
+                  "p50": 3435,
+                  "p95": 4808,
+                  "p99": 28883,
+                  "max": 211929
+                },
+                "snapshot_submit_ns": {
+                  "total": 70803708,
+                  "p50": 57737,
+                  "p95": 158228,
+                  "p99": 280411,
+                  "max": 3563021
+                },
+                "owner_work_ns": {
+                  "total": 9382052855,
+                  "p50": 10012206,
+                  "p95": 13345476,
+                  "p99": 17605439,
+                  "max": 36452698
+                },
+                "owner_cpu_ns": 9412318873,
+                "owner_allocated_bytes": 140270352,
+                "pacing_wait_ns": 5683015480,
+                "producer_deadline_late_ns": {
+                  "total": 111596230,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 3700781,
+                  "max": 19827957
+                },
+                "producer_deadline_misses": 22,
+                "gc_count": 1,
+                "gc_collection_ms": 3,
+                "produced_audio_frames": 493763,
+                "consumed_audio_frames": 493763,
+                "audio_frames": 493763,
+                "audio_overruns": 0,
+                "audio_underruns": 0,
+                "output": {
+                  "audio_frames": 493763,
+                  "processed": 900,
+                  "pcm_sha256": "a5e874f3c3b2c9534efa70f41c481a6ea9f121d4a4a75168c176b2eaa9144078",
+                  "queue_capacity": 2,
+                  "processing_cpu_ns": 334980172,
+                  "mix_ns": 1956625,
+                  "processing_allocated_bytes": 43472,
+                  "frames": 900,
+                  "scaling_ns": 188881837,
+                  "submitted": 900,
+                  "blocked_ns": 0,
+                  "rgb_chain_sha256": "8a2aab388903f379375c0e71ae2553587044b08f4eb594604556e88b4acfbe46",
+                  "rendered_sample": 0,
+                  "blocked_submissions": 0,
+                  "queue_maximum": 1,
+                  "verification_hash_ns": 142633013
+                },
+                "final_state_sha256": "690cba71f7f8eb8ee6d21dcb1ccde3f13a3df73e3745c05f0ee94c85305f54a1"
+              },
+              "run_3": {
+                "wall_ns": 15068778357,
+                "guest_ns": {
+                  "total": 9953364060,
+                  "p50": 10406096,
+                  "p95": 14679963,
+                  "p99": 22098724,
+                  "max": 31261523
+                },
+                "guest_allocated_bytes": {
+                  "total": 0,
+                  "p50": 0,
+                  "p95": 0,
+                  "p99": 0,
+                  "max": 0
+                },
+                "drain_ns": {
+                  "total": 3961944,
+                  "p50": 3365,
+                  "p95": 4667,
+                  "p99": 5809,
+                  "max": 520451
+                },
+                "snapshot_submit_ns": {
+                  "total": 62844959,
+                  "p50": 56976,
+                  "p95": 129765,
+                  "p99": 231227,
+                  "max": 2539774
+                },
+                "owner_work_ns": {
+                  "total": 10028806019,
+                  "p50": 10477152,
+                  "p95": 14779173,
+                  "p99": 22175388,
+                  "max": 31338958
+                },
+                "owner_cpu_ns": 10059581168,
+                "owner_allocated_bytes": 140270352,
+                "pacing_wait_ns": 5036174072,
+                "producer_deadline_late_ns": {
+                  "total": 366773952,
+                  "p50": 0,
+                  "p95": 810396,
+                  "p99": 12575048,
+                  "max": 26675142
+                },
+                "producer_deadline_misses": 50,
+                "gc_count": 1,
+                "gc_collection_ms": 3,
+                "produced_audio_frames": 493763,
+                "consumed_audio_frames": 493763,
+                "audio_frames": 493763,
+                "audio_overruns": 0,
+                "audio_underruns": 0,
+                "output": {
+                  "audio_frames": 493763,
+                  "processed": 900,
+                  "pcm_sha256": "a5e874f3c3b2c9534efa70f41c481a6ea9f121d4a4a75168c176b2eaa9144078",
+                  "queue_capacity": 2,
+                  "processing_cpu_ns": 337875871,
+                  "mix_ns": 2135512,
+                  "processing_allocated_bytes": 43472,
+                  "frames": 900,
+                  "scaling_ns": 187859158,
+                  "submitted": 900,
+                  "blocked_ns": 0,
+                  "rgb_chain_sha256": "8a2aab388903f379375c0e71ae2553587044b08f4eb594604556e88b4acfbe46",
+                  "rendered_sample": 0,
+                  "blocked_submissions": 0,
+                  "queue_maximum": 1,
+                  "verification_hash_ns": 146164499
+                },
+                "final_state_sha256": "690cba71f7f8eb8ee6d21dcb1ccde3f13a3df73e3745c05f0ee94c85305f54a1"
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "experiments": {
+    "candidate": {
+      "decision": "Rejected; small differences overlap baseline spread and are inconsistent across scenes.",
+      "description": "Replace the aligned halfword region if chain with a region switch.",
+      "patch": "diff --git a/src/main/java/berryboy/bus/Memory.java b/src/main/java/berryboy/bus/Memory.java\nindex 6d005f9..8b7232f 100644\n--- a/src/main/java/berryboy/bus/Memory.java\n+++ b/src/main/java/berryboy/bus/Memory.java\n@@ -234,15 +234,19 @@ public final class Memory implements VideoBus {\n \n     private int rawRead16(int address) {\n         if ((address & 1) == 0) {\n-            var region = address >>> 24;\n-            if (region == 2) return (memoryControl & 0x20) != 0 ? halfword(externalRam, address & 0x3ffff) : halfword(internalRam, address & 0x7fff);\n-            if (region == 3) return halfword(internalRam, address & 0x7fff);\n-            if (region == 5) return halfword(palette, address & 0x3ff);\n-            if (region == 6) return halfword(videoRam, videoRamOffset(address));\n-            if (region == 7) return halfword(objectAttributes, address & 0x3ff);\n-            if (region >= 8 && region <= 13 && !gpio.handles(address)) {\n-                var offset = address & 0x1ffffff;\n-                if (offset < cartridge.size() - 1) return cartridge.halfwordAt(offset);\n+            switch (address >>> 24) {\n+                case 2: return (memoryControl & 0x20) != 0 ? halfword(externalRam, address & 0x3ffff) : halfword(internalRam, address & 0x7fff);\n+                case 3: return halfword(internalRam, address & 0x7fff);\n+                case 5: return halfword(palette, address & 0x3ff);\n+                case 6: return halfword(videoRam, videoRamOffset(address));\n+                case 7: return halfword(objectAttributes, address & 0x3ff);\n+                case 8: case 9: case 10: case 11: case 12: case 13:\n+                    if (!gpio.handles(address)) {\n+                        var offset = address & 0x1ffffff;\n+                        if (offset < cartridge.size() - 1) return cartridge.halfwordAt(offset);\n+                    }\n+                    break;\n+                default: break;\n             }\n         }\n         return rawRead8(address) | (rawRead8(address + 1) << 8);\n"
+    },
+    "video-peek": {
+      "decision": "Rejected; no consistent improvement; Golden Sun regresses.",
+      "description": "Specialize aligned palette and VRAM peek16 reads before the unchanged fallback; CPU bus reads remain unchanged.",
+      "patch": "diff --git a/src/main/java/berryboy/bus/Memory.java b/src/main/java/berryboy/bus/Memory.java\nindex 6d005f9..47179eb 100644\n--- a/src/main/java/berryboy/bus/Memory.java\n+++ b/src/main/java/berryboy/bus/Memory.java\n@@ -252,7 +252,16 @@ public final class Memory implements VideoBus {\n \n     public int peek8(int address) { return rawRead8(address); }\n \n-    public int peek16(int address) { return rawRead16(address); }\n+    public int peek16(int address) {\n+        // Palette/tile reads dominate video sampling. Keep this device-only path\n+        // small enough to inline; CPU reads still use their original bus path.\n+        if ((address & 1) == 0) {\n+            var region = address >>> 24;\n+            if (region == 5) return halfword(palette, address & 0x3ff);\n+            if (region == 6) return halfword(videoRam, videoRamOffset(address));\n+        }\n+        return rawRead16(address);\n+    }\n \n     public int read32(int address) {\n         if (cpuAccess) bus.data(address, 4, false);\n"
+    }
+  },
+  "conclusion": "No production core optimization retained. The measured scenes generally have host frame-budget headroom, with sporadic producer deadline misses. The queue never exceeds one waiting frame and no PCM/captured frames are lost. Read-path experiments do not establish a consistent useful improvement across scenes.",
+  "remaining_gate": "Bold 9900 sustained playback and physical presentation/audio: 30-second warmup, three 10-minute runs, frame pacing, memory bounds, transport losses/latency and drift. No physical device is available; existing simulator limitations remain unchanged.",
+  "verification": {
+    "maven_verify": {
+      "tests": 5295,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "log": "/workspace/scratch/m4-accepted-verify.log"
+    },
+    "production_core_changed": false,
+    "experimental_rgb_pcm_and_complete_states_match_baseline": true,
+    "console_host": {
+      "tests": 5295,
+      "failures": 0,
+      "skipped": 0
+    },
+    "console_exported_core": {
+      "tests": 4973,
+      "failures": 0,
+      "skipped": 0,
+      "host_core_fallback": false
+    }
+  }
+}
