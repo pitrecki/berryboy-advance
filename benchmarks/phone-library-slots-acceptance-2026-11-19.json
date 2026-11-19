@@ -1,0 +1,70 @@
+{
+  "date": "2026-11-19",
+  "version": "0.9.1-SNAPSHOT",
+  "milestone": "M3",
+  "status": "Library/startup and complete slot validation journeys accepted on host; playback/display and restart/game-change input release remain open",
+  "source_base_commit": "aa6307e622e44448587cb1fde41da07aebc565bc",
+  "source_sha256": {
+    "src/test/java/berryboy/build/phone/PhoneLibraryAcceptanceTest.java": "6abbd06cd86f993236344509adbf474cdcbdf617c909673a1fbb0bc687f8ad57",
+    "src/test/java/berryboy/build/phone/PhoneSlotsAcceptanceTest.java": "f7285aff670764a03130bd590bb959bb4e7dcd2818d117de7dd9a099b55d4736",
+    "src/test/java/berryboy/build/phone/PhoneUiDriver.java": "932dd456a91a88456ffa531764e46ce555af9c55069b1cbb2c6e346b71413cde",
+    "src/test/fixtures/phone-ui/berryboy/phone/UiHarness.java": "de5988374c1210a4ca424effc124ec02fb2d89d403c9aee909f197b7ab07fb6f",
+    "src/test/fixtures/phone/javax/microedition/io/Connector.java": "2a506f8866f908f1bdef9589fbeb06ac8a3a9fa17e385a94f9ab5b3fa34d9fae",
+    "platform/midp/berryboy/phone/PhoneCanvas.java": "3b4d9a5b1752ca2a861a2139682c6c717202b2cc7446a8c1acc521071aec8a27",
+    "platform/midp/berryboy/phone/PhoneSession.java": "a2337b27a57792f144a7d489d0ea06ca4f0f543018b7f3473c086f696b7d7870"
+  },
+  "tests": [
+    "berryboy.build.phone.PhoneLibraryAcceptanceTest.browsesAnotherFolderAndBiosThenPreservesThePausedGameAcrossCancellationAndReadFailures",
+    "berryboy.build.phone.PhoneLibraryAcceptanceTest.persistsShowSkipStartupAndUsesTheSelectedPolicyOnConfirmedRestart",
+    "berryboy.build.phone.PhoneSlotsAcceptanceTest.reloadsAllSlotsRejectsIncompatiblePayloadsAndRecoversFromFailedWritesAndLegacyFormats"
+  ],
+  "command": "mvn -Dtest=PhoneLibraryAcceptanceTest,PhoneSlotsAcceptanceTest test",
+  "environment": "Production canvas/session/file picker/BIOS form/storage commands; host LCDUI/filesystem/RMS/audio doubles. Original synthetic cartridges and reset-vector/delayed-color BIOS fixtures.",
+  "ownership": "Checks compare committed owned state bytes or owned presented RGB. No live session machine is inspected or patched. External slot fixtures are prepared through PhoneStorage, then loaded through production UI validation.",
+  "library_and_startup": [
+    "Choose another ROM folder through the real asynchronous picker, cancel a draft, commit the folder and retain it after controller recreation.",
+    "Browse uppercase .GBA/.BIN filenames with spaces; filter ROM ZIP files; launch the selected ROM with an external BIOS.",
+    "Cancel ROM/BIOS browsing during a paused game and retain the complete saved machine state.",
+    "Reject short/oversized/missing/directory BIOS inputs and an injected read-denied file without changing the paused machine.",
+    "Select a different valid BIOS preference while retaining the active game BIOS; the new preference is used on the next launch.",
+    "Reject an invalid ROM and an invalid launch BIOS, retain every paused-machine field and the committed slot, then continue the original game.",
+    "Persist Show/Skip startup across controller recreation. Show presents synthetic BIOS pixels; Skip executes BIOS and first presents cartridge pixels. Confirmed restart applies Show again."
+  ],
+  "slots": [
+    "Save and overwrite all five slots; each overwritten state has advanced guest time.",
+    "Recreate the controller, load every slot through the UI and resave its exact complete state.",
+    "Reject wrong-ROM/wrong-BIOS, damaged, undersized and unsupported-version payloads while retaining every field of the active paused machine and an unrelated committed slot.",
+    "Reject physically damaged sidecar generations through their outer storage checksum.",
+    "Inject a partial overwrite through the real storage write boundary; keep the previous committed slot and active machine unchanged, retry successfully, and reload after controller recreation.",
+    "Load published state formats 1 and 2 through UI slots, save format 3 with exact canonical migration, preserve the input bytes and continue guest execution."
+  ],
+  "harness_changes": [
+    "Own a copy of the first presented frame for startup-policy checks.",
+    "Expose picker entries and form text through the UI driver; configure roots and targeted read failure only in platform doubles.",
+    "Prepare externally supplied state payloads through production PhoneStorage; inject interrupted writes using existing bounded-write fixture support."
+  ],
+  "validation": {
+    "maven_host_tests": 5289,
+    "console_host_tests": 5289,
+    "exported_core_tests": 4973,
+    "failures": 0,
+    "skips": 0,
+    "new_combined_journeys": 3,
+    "log_sha256": {
+      "m3-files-slots-focused.log": "b17858954ef4307e860aca0595df08324d8aac4c032b68bb77d162dd18f2d8a6",
+      "m3-library-slots-verify.log": "ab16551236dd5b32f3749a43aafdf4cc92b529383786884469ccd763d6ede7b0",
+      "m3-library-slots-console.log": "80f6ee44bf20a36bfbfe0236c23c0a64422c54ef4c155a93c52cff3600e8b594"
+    }
+  },
+  "remaining_m3": [
+    "Combined sound/speed/display policy and persisted settings.",
+    "Input release through confirmed restart and changing games, extending the earlier controls journey."
+  ],
+  "limits": [
+    "Host integration acceptance, separate from native BBOS permissions, file pickers, keys, MMAPI and device performance.",
+    "RMS is a host double retained across controller recreation; this is not OS process-restart durability.",
+    "The synthetic BIOS fixtures test frontend policy; authentic BIOS/game progression remains the separately accepted M1/M2 evidence.",
+    "Only one partial-write failure is combined with the UI here; the existing PhoneStorageInterruptionTest retains all other storage failure phases.",
+    "Core and phone runtime sources are unchanged."
+  ]
+}

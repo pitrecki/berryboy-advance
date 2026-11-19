@@ -10,6 +10,7 @@ public final class Connector {
     public static int failAfterBytes=-1;
     public static boolean failTruncate,failFlush,failOutputClose,failConnectionClose;
     public static volatile boolean failList;
+    public static volatile String unreadableUrl;
     public static volatile java.util.concurrent.CountDownLatch listingEntered, releaseListing;
     public static Object open(String url,int mode) throws IOException {
         final Path path=Paths.get(URI.create(url));
@@ -17,7 +18,10 @@ public final class Connector {
             public boolean exists(){return Files.exists(path);}
             public boolean isDirectory(){return Files.isDirectory(path);}
             public long fileSize() throws IOException{return Files.size(path);}
-            public InputStream openInputStream() throws IOException{return Files.newInputStream(path);}
+            public InputStream openInputStream() throws IOException{
+                if(url.equals(unreadableUrl))throw new IOException("Injected read denial");
+                return Files.newInputStream(path);
+            }
             public OutputStream openOutputStream() throws IOException {
                 final int limit=failWrite?0:failAfterBytes;failWrite=false;failAfterBytes=-1;
                 final boolean flushFailure=failFlush,closeFailure=failOutputClose;

@@ -26,6 +26,11 @@ public final class UiHarness implements AutoCloseable {
     public void text(int index,String value){((TextField)((Form)display.getCurrent()).get(index)).setString(value);}
     public String text(int index){return ((TextField)((Form)display.getCurrent()).get(index)).getString();}
     public void choice(int item,int index){((ChoiceGroup)((Form)display.getCurrent()).get(item)).setSelectedIndex(index,true);}
+    public String[] choices(){
+        var list=(List)display.getCurrent();var result=new String[list.size()];
+        for(int i=0;i<result.length;i++)result[i]=list.getString(i);
+        return result;
+    }
     public void choose(String name)throws Exception{
         var end=System.nanoTime()+java.util.concurrent.TimeUnit.SECONDS.toNanos(10);
         while(display.getCurrent().getTitle().equals("Reading storage...")&&System.nanoTime()<end)Thread.sleep(5);
@@ -50,6 +55,10 @@ public final class UiHarness implements AutoCloseable {
     /** Reads a committed owned file, never the session's live machine. */
     public byte[] readSlot(String romUrl,int checksum,int slot)throws Exception{
         awaitIdle();return new PhoneStorage(romUrl,checksum).read("st"+slot);
+    }
+    /** Test-owned external payload preparation; production UI loading still validates every byte. */
+    public void writeSlot(String romUrl,int checksum,int slot,byte[] bytes)throws Exception{
+        awaitIdle();new PhoneStorage(romUrl,checksum).write("st"+slot,bytes);
     }
     public void close(){
         canvas.presentationHook=null;canvas.shutdown();
