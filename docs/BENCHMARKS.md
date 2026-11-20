@@ -3,7 +3,7 @@
 Updated **2026-11-20**, for **0.9.2-SNAPSHOT**. Latest published phone preview:
 [**0.9.1**](https://github.com/pitrecki/berryboy-advance/releases/tag/v0.9.1).
 
-**M1–M6 complete within their recorded host/preview scope. M7: F-Zero race accepted on host; Tony Hawk 2 next.**
+**M1–M6 complete within their recorded host/preview scope. M7: F-Zero and Tony Hawk 2 accepted on host; Doom II next.**
 Use the supplied games and existing frontend. New CPU/DMA/VRAM investigations
 need a demonstrated milestone blocker or an explicit user priority.
 
@@ -20,10 +20,11 @@ routes. Three active scenes have isolated paced playback profiles and the approv
 0.9.1 phone preview is published. M6 now adds two 36000-frame sessions per game,
 repeated slot/lifecycle operations, bounded sampled retained heap and LeafGreen
 new-save cold Continue. The main remaining gaps are progression in the demanding
-supplied titles and actual BBOS behavior. F-Zero now has a completed five-lap
-Grand Prix race. Tony Hawk 2, Doom II and Mario & Luigi already have boot or
-control routes, so their next useful result is a completed gameplay objective
-with preserved progress.
+supplied titles and actual BBOS behavior. F-Zero has a completed five-lap Grand
+Prix race; Tony Hawk 2 has a naturally completed timed run with a landed trick
+and retained score. Doom II and Mario & Luigi already have boot or control
+routes, so their next useful result is a completed gameplay objective with
+preserved progress.
 
 The previous queue put hardware-model disagreements ahead of those deliverables.
 Those disagreements remain recorded below; they no longer automatically block
@@ -36,20 +37,33 @@ matrices support a milestone; they do not complete it by themselves.
 
 | Priority / milestone | User-visible result | Acceptance and evidence | Dependency / status |
 | --- | --- | --- | --- |
-| **1. M7 — Demanding-game progression pack** | Demonstrate actual progression beyond the existing intro/control checkpoints in supplied action and 3D-heavy games. | F-Zero: finish one race and show its result. Tony Hawk 2: complete a timed run with a recorded trick and score. Doom II: reach the first level's exit/result. Mario & Luigi: win the first battle, reach an in-game save and cold-load the progress. Each route retains input, named checkpoints, complete frames, capture-buffer accounting and exact state continuation on host/CLDC. Keep strict reference mismatches visible. | **F-Zero accepted, 2026-11-20:** [five-lap Tradition Park win and exact continuation](../benchmarks/fzero-tradition-park-2026-11-20.json). **Next: Tony Hawk 2 timed run/trick/score.** The other three objectives remain open. A visible blocker warrants one bounded diagnosis; it does not reopen a broad timing sweep. |
+| **1. M7 — Demanding-game progression pack** | Demonstrate actual progression beyond the existing intro/control checkpoints in supplied action and 3D-heavy games. | F-Zero: finish one race and show its result. Tony Hawk 2: complete a timed run with a recorded trick and score. Doom II: reach the first level's exit/result. Mario & Luigi: win the first battle, reach an in-game save and cold-load the progress. Each route retains input, named checkpoints, complete frames, capture-buffer accounting and exact state continuation on host/CLDC. Keep strict reference mismatches visible. | **F-Zero and Tony Hawk 2 accepted, 2026-11-20:** [Tradition Park win](../benchmarks/fzero-tradition-park-2026-11-20.json), [timed Hangar run / landed Boardslide / Statistics](../benchmarks/tony-hawk-timed-run-2026-11-20.json). **Next: Doom II first exit/result**, then Mario & Luigi. A visible blocker warrants one bounded diagnosis; it does not reopen a broad timing sweep. |
 | **Parallel. M8 — Native BBOS session and device playback** | Install the package, open a supplied game and use the implemented controls, audio and saves on the target. | Install → open → choose local BIOS/ROM → boot → play → pause/save/load → close/reopen. Verify native input/focus, file permissions and MMAPI. Separately on a Bold 9900, run the sustained suite: 30-second warmup, three 10-minute runs, full sound, no frame skips, native refresh, bounded memory/queues and measured transport losses/latency/A/V drift. | **Blocked on a working BBOS target; physical performance also needs a Bold.** The existing simulator attempt did not confirm app execution. Retry environment work only with new evidence; this gate does not block M6/M7 host work. |
 
 ### Next executable slice
 
-1. Record an actual Tony Hawk 2 timed run, including a landed trick, score and
-   the result when its clock ends. Reuse the supplied `ATHE` ROM and
-   [existing boot/half-pipe evidence](../benchmarks/stress-games-2026-11-06.json)
-   as preparation; its generic input is not a qualified player progression route.
+1. Extend Doom II's supplied `A9DE` first-level route to an actual exit and
+   intermission/result. Reuse [its recorded startup controls](../benchmarks/inputs/doom-entry-2026-11-06.tsv)
+   and [the existing state-continuation evidence](../benchmarks/gameplay-state-routes-2026-11-06.json).
+   The fresh local seed is `target/m7-doom-2026-11-20/seed-state/state.bbs`
+   at frame 2400; exploratory actions/captures stay under its `play` directory.
+   Use ordinary movement, fire/use and the in-game map; level entry alone does
+   not complete this objective.
 2. Preserve named gameplay/result checkpoints, complete RGB/PCM and capture
    accounting; verify a 120-frame RGB/PCM/full-state continuation on host and
    isolated actual CLDC classes. A concrete blocker gets a bounded reproducer.
-3. Continue with Doom II's first exit, then Mario & Luigi battle/save/cold
-   Continue. Keep detailed results in linked JSON rather than a second status guide.
+3. Continue with Mario & Luigi battle/save/cold Continue. Keep detailed results
+   in linked JSON rather than a second status guide.
+
+[Tony Hawk 2 M7 evidence](../benchmarks/tony-hawk-timed-run-2026-11-20.json)
+records 9143 cold-started frames through The Hangar's two-minute career run.
+The FS Boardslide is landed for **536 points**; after natural clock expiry,
+Statistics confirms total **536**, **one trick landed** and a **536-point best
+combo**. Failed provisional tricks are excluded. Both the landed checkpoint and
+complete final state match independent cold replay byte-for-byte. All fifteen
+named checkpoints and the 120-frame RGB/PCM/full-state host/CLDC continuation
+pass without capture losses. The old strict reference-prefix mismatch remains
+recorded; this accepts one timed run, separate from career-goal completion.
 
 [F-Zero M7 evidence](../benchmarks/fzero-tradition-park-2026-11-20.json) records
 14264 cold-started frames through **Grand Prix / Novice / Bronze / Mute City —

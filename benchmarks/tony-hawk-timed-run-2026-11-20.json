@@ -1,0 +1,304 @@
+{
+  "date": "2026-11-20",
+  "version": "0.9.2-SNAPSHOT",
+  "milestone": "M7 / Tony Hawk 2 objective",
+  "status": "Accepted on host: natural two-minute timed run with a landed named trick and final Statistics score.",
+  "source_commit": "a6034465f274721f92a4564ae4392fd913fb4e0d",
+  "source_dirty": false,
+  "runtime_tool_baseline": "f2701dc35a55faa6696d663d7e384d9c362b1759",
+  "source_provenance": "Verified immutable modern core/tool bundle from f2701dc. Production core/frontend and replay-tool sources are unchanged at a603446. Frozen ordinary input is replayed by repository ScenarioRunner/StateRoundTrip tools; discovery helpers are not required to reproduce the route.",
+  "scope": "Headless core gameplay and deterministic host/actual-CLDC continuation on Linux. Separate from phone frontend recording, native BBOS execution, physical playback and full-game accuracy.",
+  "hardware": "Linux x86_64; AMD EPYC 9V74; four-core CPU quota; 32 GiB; Temurin 21.0.8+9; concurrent correctness replays, not isolated performance measurements.",
+  "inputs": {
+    "input": {
+      "file": "benchmarks/inputs/stress-start-a-2026-11-06.tsv",
+      "sha256": "4e2d3d059ccc070232beb41e0e782ed20f664b1398173c67f70a3724b6b3b057"
+    },
+    "frame_input": {
+      "file": "benchmarks/inputs/tony-hawk-timed-run.tsv",
+      "sha256": "9040a694d412fc79617e9ceb8cb1040a5ce47233d2789e8039997f7d3380db10",
+      "events": 13
+    }
+  },
+  "procedure": {
+    "cold_frames": 9143,
+    "guest_seconds": 153.07856369018555,
+    "initial_state": null,
+    "initial_battery": null,
+    "speed": 1,
+    "frame_skip": 0,
+    "sound": "Unmuted stereo PCM16, 32768 Hz",
+    "controls": "Ordinary movement, grind, crouch/jump and left turn to land. All controls released after frame 2153. The run ends through natural clock expiry; End Run is not selected. No cheats, guest memory edits or patched saves.",
+    "ownership": "One deterministic guest owner per JVM; bounded capture observer of capacity 2 receives owned RGB/PCM snapshots.",
+    "complete_state": "Both the landed-trick checkpoint and final cold-run state are byte-identical to the selected exploratory path. Capture remains enabled across discovery state loads; no capture-ring normalization or state masking."
+  },
+  "outcome": {
+    "mode": "Career",
+    "level": "The Hangar",
+    "skater": "Tony Hawk",
+    "run_clock_seconds": 120,
+    "landed_trick": "FS Boardslide",
+    "total_score": 536,
+    "tricks_landed": 1,
+    "best_combo_score": 536,
+    "best_combo_tricks": 1,
+    "endpoint": "Statistics screen after natural clock expiry",
+    "acceptance": "The active-grind counter is provisional. Acceptance requires the total HUD score after landing and the final Statistics total/tricks-landed/best-combo fields. Earlier 900-point/other failed branches are excluded.",
+    "progression_scope": "One completed timed run with a landed trick. The displayed 15000 high score is a pre-existing target, not the achieved score; no career-goal unlock or whole-game completion is claimed."
+  },
+  "checkpoints": {
+    "900": {
+      "name": "Career Mode on the main menu",
+      "rgb_sha256": "72684a6b33f6c45e608625e6b549d0d26d79c116b69fae6aebb03a1e9781210f",
+      "png_sha256": "9e7f784dfd198afd2fa0d3ff2988329eba45d58b07e707f8fc159a7c137d9957",
+      "guest_cycles": 252806400,
+      "matches_explored_capture": null
+    },
+    "1200": {
+      "name": "Tony Hawk selected",
+      "rgb_sha256": "57a379b3dfa95cc2d59eee22817ba695624b4691c14f8e6d820bdfb253b806a9",
+      "png_sha256": "777aa5be13cf432e6404fafd7f7d9bee4bd38c77d9f2abda4c8e8c6bde4392e9",
+      "guest_cycles": 337075206,
+      "matches_explored_capture": null
+    },
+    "1500": {
+      "name": "The Hangar career checklist before starting",
+      "rgb_sha256": "7f1b7a5442d62bf89196a17330237bcb4b7ce5a2c57c7914d96f145c67feaee2",
+      "png_sha256": "5bf70500d378d8711e79b8409e5b7daaf83af0a6ef8111f43dc672b31a8bd1f8",
+      "guest_cycles": 421344000,
+      "matches_explored_capture": null
+    },
+    "1800": {
+      "name": "Timed run active, 1:57 remaining, score zero",
+      "rgb_sha256": "b2c6d8564718962867a1788ba5bd6ce2fc88e2dea90695fd2adfc71b32313072",
+      "png_sha256": "e6102c0769d1876f6165fa634825a57fd45477edd1cb1a735e0e2feb1ea4c864",
+      "guest_cycles": 505612800,
+      "matches_explored_capture": true
+    },
+    "1863": {
+      "name": "Controlled movement into the ramp area",
+      "rgb_sha256": "a262679ec20604b8886c9790e382ea94260da70e330bd3e301daab80d373e12e",
+      "png_sha256": "a294b639ab52d2e707a7d11fc4436ba888769c3c3b084f0bb05fb32a2f03f843",
+      "guest_cycles": 523309249,
+      "matches_explored_capture": true
+    },
+    "2023": {
+      "name": "Approach to the lip",
+      "rgb_sha256": "33abbfe4ceacbef1effd2002486d0fd2e628957e8d7c230619bd8b2d44ba8da6",
+      "png_sha256": "3fe3341ac9fb4085e873bc5d6a32a5b3ce88f3ff106bdf600b687bbf6c2be73c",
+      "guest_cycles": 568252608,
+      "matches_explored_capture": true
+    },
+    "2083": {
+      "name": "FS Boardslide active, 256 provisional points",
+      "rgb_sha256": "ac01b490e415e6084499c5f0de78a50d490bf1e24c9136e5e4053b920d55d226",
+      "png_sha256": "a7165116c56eb4f3dc15143ceb490a98e91feec0c9795a43b28718ecefdf68d3",
+      "guest_cycles": 585106368,
+      "matches_explored_capture": true
+    },
+    "2109": {
+      "name": "FS Boardslide active, 396 provisional points",
+      "rgb_sha256": "1749326846b48f97881c72f005c2bc566cfcacd63cafe5753e3f9b8b8ba2ac63",
+      "png_sha256": "888a26f2254f9f7af71912363900a7f26f7d015b1d0baa05b8173fd8fb3be734",
+      "guest_cycles": 592409664,
+      "matches_explored_capture": true
+    },
+    "2133": {
+      "name": "Prepare to ollie out of the grind",
+      "rgb_sha256": "c2a62b4dbf3c9b9a34461009f4dcbe18a507c629792cce50dd26fffe4d0345d9",
+      "png_sha256": "5e285bb08004188baec3da373e690be69a292048d43e789108743506c9bd0d32",
+      "guest_cycles": 599151168,
+      "matches_explored_capture": true
+    },
+    "2153": {
+      "name": "Released jump and left turn to align the landing",
+      "rgb_sha256": "44e462d91f57477ce34ff88179aaa828823833ad29bb892f9c784b32b10c7c35",
+      "png_sha256": "08a0decad6fd803c87d9645072a7b6d6329ee8a017e08f623538caa8b6986ced",
+      "guest_cycles": 604769088,
+      "matches_explored_capture": true
+    },
+    "2243": {
+      "name": "Successful landing: total score 536 and special meter increased",
+      "rgb_sha256": "8aa15b056600cb1ea07c2bcc6d03884ca8ed647de0692c047ad53b14e9197a3e",
+      "png_sha256": "1fe6fd2cdda91a0b14f894369c6ecf13da3fcd6a7c52b7037349b64854b2b1d8",
+      "guest_cycles": 630049728,
+      "matches_explored_capture": true
+    },
+    "4000": {
+      "name": "Run continues with released controls and retained score",
+      "rgb_sha256": "50ebba63e55e96aac093a276a11de78137a0419a0b944ec2465ca2a2327bacef",
+      "png_sha256": "730ee02a0ca6be48dd744da31575682e6fbfe8e3e7cebe41257da59219ffce74",
+      "guest_cycles": 1123584003,
+      "matches_explored_capture": null
+    },
+    "7000": {
+      "name": "Run continues toward natural clock expiry",
+      "rgb_sha256": "af054515907f7ff4b1abf5c3d665ceec24db29d36633fbf2064c59ee791b5720",
+      "png_sha256": "58654effb64a81313ca293c35bb833de7e8e3f80329e7f582bf53e39416a643b",
+      "guest_cycles": 1966272003,
+      "matches_explored_capture": null
+    },
+    "8843": {
+      "name": "Clock has expired; waiting for the statistics transition",
+      "rgb_sha256": "930054d00579019171cd252013cb8d3f427bd4db2fbde149839984cd6707534d",
+      "png_sha256": "acb89dbfdf3843949f45bd25b5c8d0269e9639dbc34f1c88b20bd01205adc145",
+      "guest_cycles": 2483963328,
+      "matches_explored_capture": true
+    },
+    "9143": {
+      "name": "Statistics: total 536, tricks landed 1, best combo 536 / 1 trick",
+      "rgb_sha256": "9b03d16fa639ad5914eb85555170349dec4711c1c919d8e7440add05d8973ca6",
+      "png_sha256": "284b077cddc7487050018ade503c5542ef4b6cc29964b1c4687142dedfb4f868",
+      "guest_cycles": 2568232128,
+      "matches_explored_capture": true
+    }
+  },
+  "capture": {
+    "raw_report_sha256": "63ce34900d582de96be6e45cca8e3136636f86fad973e75f3a1ad7c1f44c836e",
+    "frames_jsonl_sha256": "f3534ba4347c846eb0b41c1416c366e4f6244337aa5ca569f61c788b6c79c5af",
+    "report": {
+      "status": "captured",
+      "correctness": "unverified",
+      "qualification": "headless-only; physical presentation and playback unverified",
+      "rom_sha256": "2b499d56f17ffe895ce9fb56154a2c5274048400462790b383212a69fa184b16",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "4e2d3d059ccc070232beb41e0e782ed20f664b1398173c67f70a3724b6b3b057",
+      "rtc_seed": "2000-01-01T00:00:00",
+      "frame_input_sha256": "9040a694d412fc79617e9ceb8cb1040a5ce47233d2789e8039997f7d3380db10",
+      "initial_save_sha256": null,
+      "backup_sha256": "9f56cda75fefeab90f6fa5d5ddc9601544b121732c5ecccab32e631060453a5d",
+      "backup_type": 3,
+      "backup_bytes": 512,
+      "save_written": false,
+      "devices": 0,
+      "rumble_active": false,
+      "commit": "a6034465f274721f92a4564ae4392fd913fb4e0d",
+      "source_dirty": "false",
+      "frames": 9143,
+      "warmup_frames": 0,
+      "guest_cycles": 2568232128,
+      "audio_frames": 5016078,
+      "audio_overruns": 0,
+      "audio_underruns": 0,
+      "produced_audio_frames": 5016078,
+      "consumed_audio_frames": 5016078,
+      "dropped_guest_frames": 0,
+      "video_sha256": "cc6d7d5438469118cae2ea67cd2cfa6f5ce29c612619aac37107290951742545",
+      "audio_sha256": "e4d88f3b4456a790cccdea3fbee69bfb5476b0dd38c0dc4920ad3cb1bbf16b9e",
+      "work_p50_ns": 12562151,
+      "work_p95_ns": 18953535,
+      "work_p99_ns": 23797562,
+      "work_max_ns": 67095497,
+      "work_deadline_misses": 664,
+      "physically_presented_frames": null,
+      "physical_audio_underruns": null,
+      "java": "21.0.8+9-LTS",
+      "os": "Linux",
+      "architecture": "amd64",
+      "hardware": "Linux x86_64; AMD EPYC 9V74; 4-core quota; 32 GiB; deterministic headless gameplay, no physical playback or performance claim",
+      "os_version": "6.18.57"
+    }
+  },
+  "landed_checkpoint": {
+    "raw_report_sha256": "b116f6b91759f631b867990f24935ea68754a0bd047e4622482c67f6988f0481",
+    "report": {
+      "title": "TONY HAWK 2!",
+      "rom_sha256": "2b499d56f17ffe895ce9fb56154a2c5274048400462790b383212a69fa184b16",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "4e2d3d059ccc070232beb41e0e782ed20f664b1398173c67f70a3724b6b3b057",
+      "initial_save_sha256": null,
+      "frame_input_sha256": "9040a694d412fc79617e9ceb8cb1040a5ce47233d2789e8039997f7d3380db10",
+      "snapshot_frame": 2243,
+      "snapshot_cycles": 630049728,
+      "resumed_frames": 120,
+      "resumed_audio_frames": 65835,
+      "state_bytes": 773743,
+      "state_sha256": "59b34b889ddde8472d83c6ea2c52ff4a80090f76a79592b1a3a03543bda949f9",
+      "final_state_sha256": "389845c10db965bd132e53aa43d73e2eed84cf1903fb97d6f3577975a23b08d7",
+      "immediate_and_future_full_state_exact": true,
+      "all_resumed_rgb_pcm_exact": true,
+      "original_save_unchanged": true,
+      "scope": "Host core save/load replay, not independent game accuracy or physical phone validation"
+    },
+    "full_state_matches_exploration": true
+  },
+  "host_state_replay": {
+    "raw_report_sha256": "c5a065c46e2fc8d562f7798331f175d42575ec6a7a2d1fdc8f4a361a05715f0d",
+    "report": {
+      "title": "TONY HAWK 2!",
+      "rom_sha256": "2b499d56f17ffe895ce9fb56154a2c5274048400462790b383212a69fa184b16",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "4e2d3d059ccc070232beb41e0e782ed20f664b1398173c67f70a3724b6b3b057",
+      "initial_save_sha256": null,
+      "frame_input_sha256": "9040a694d412fc79617e9ceb8cb1040a5ce47233d2789e8039997f7d3380db10",
+      "snapshot_frame": 9143,
+      "snapshot_cycles": 2568232128,
+      "resumed_frames": 120,
+      "resumed_audio_frames": 65835,
+      "state_bytes": 773743,
+      "state_sha256": "fac18d47777f232f33b40bf557ec535fbd53aff58df8721e6123ebaaf05ef86d",
+      "final_state_sha256": "8127de3139eea56d628a8fdb722abbaf66d6aa60e0dd7aa8eeae7f0f86e4a8af",
+      "immediate_and_future_full_state_exact": true,
+      "all_resumed_rgb_pcm_exact": true,
+      "original_save_unchanged": true,
+      "scope": "Host core save/load replay, not independent game accuracy or physical phone validation"
+    },
+    "full_state_matches_exploration": true
+  },
+  "actual_cldc_continuation": {
+    "frames": 120,
+    "rgb_pcm_and_complete_future_state_exact": true,
+    "rgb_chain_sha256": "887c3ca912ff4eddc7a7053fe4dcf6a334b1e3ced4cea0dd7da6d29115b8c3b7",
+    "pcm_sha256": "0d71aace8e6c9abdde88cd25b4e80b9aec7d83ceaf3a645dce597ad8007f1c5a",
+    "final_state_sha256": "8127de3139eea56d628a8fdb722abbaf66d6aa60e0dd7aa8eeae7f0f86e4a8af",
+    "audio_frames": 65835,
+    "raw_report_sha256": "ebf5bb3e1b1ee90275ae6685da4f87f2c0dfa2ea2b78942c4d3f94f7ad7cdb60",
+    "helper_manifest": {
+      "berryboy/desktop/profile/ProfileMetrics.class": "2b0d6697024c7a2d670aa247775f64e5169f7fd3470d365fcf4772851d809c66",
+      "berryboy/desktop/profile/ProfileOutput.class": "ab6111ca35ddea8dc0af44c87d5dab5c892d82c83b9dd4a355a760b001905778",
+      "berryboy/desktop/profile/ProfileRecordingSummary.class": "4b0a34c2b9a97f4277ee30fc5d71b03f8bc841eb3ddc124d639893e89aafb083",
+      "berryboy/desktop/profile/PlaybackProfiler.class": "b1170d5b39059885d240df433fd95e07d5d7791ee2489a3aaa4262b9b9233f3c",
+      "berryboy/desktop/profile/ProfileOutput$Frame.class": "1d5ee079bede9700c797aba887142f9adb060702144270c1ede7a025f1ab9c1c",
+      "berryboy/desktop/concurrent/BoundedWorker$Statistics.class": "fe5b9f8978244d4d7756769f4f969e83d9e52852ea89b10248922bd155623c9c",
+      "berryboy/desktop/concurrent/BoundedWorker$Processor.class": "34aac560b9ddffd800177298f509ccc33a287ecc39b7c64e1455989b25d2548c",
+      "berryboy/desktop/concurrent/BoundedWorker.class": "9ff1ae2feb3b5904f82bfa56035ad42ee21be49a6875c54ded09b1b05cd8eaa5",
+      "berryboy/desktop/scenario/FrameInputs$Input.class": "cc8be4458f5219e255967174371668e6ff0f930c55e148c537ac4f2e3bc42707",
+      "berryboy/desktop/scenario/FrameInputs$Playback.class": "f7bb157ead074d3e4ed0582ee610acbe58319117ff43b054291e06e905686eda",
+      "berryboy/desktop/scenario/FrameInputs.class": "f4d83d4f34cec3d856e60cde5eaedec664f8cf2bb84a13409903b081fd55c7a6",
+      "berryboy/desktop/capture/JsonReport.class": "d3fe5c1f2eaabf1abc7f86eead49e4806ebd114a3c391019eff50eda5d90c593"
+    },
+    "sdk_classes_sha256": "ff8d23881776d8db647e4df05134ad8a23ead290c97557f3cef81b75a4bed7e6",
+    "class_major": 45,
+    "scope": "Actual SDK ECJ/CLDC core/mobile classes first on classpath with isolated desktop-only helpers; no host core fallback. All 120 RGB/PCM frames and complete future state match the independent cold host replay."
+  },
+  "independent_reference": {
+    "evidence": "benchmarks/stress-games-2026-11-06.json",
+    "frames": 1800,
+    "scope": "Only the shared cold prefix is compared with the retained old mGBA capture. The new player route starts after frame 1800; no independent full-run reference exists.",
+    "exact_rgb_frames": 829,
+    "first_rgb_mismatch": 10,
+    "all_rgb_exact": false,
+    "pcm_exact": false,
+    "berryboy_audio_frames": 987525,
+    "reference_audio_frames": 987524,
+    "berryboy_pcm_sha256": "3eb2de5595fdeca4db383e07e2e7676bc70b21662826f54a20249c338c44b79f",
+    "reference_pcm_sha256": "50b0b33e54ae6d96b40143a5e6f6aef2471c8132ee6f62d6a0d56b4061927642",
+    "status": "mismatch; retained without tolerance or suppression"
+  },
+  "validation": {
+    "host_tests": 5308,
+    "exported_core_tests": 4973,
+    "actual_cldc_tests": 4973,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite_evidence": "benchmarks/leafgreen-reliability-2026-11-20.json",
+    "source_change": "Recorded input, measured evidence and canonical roadmap only; runtime and replay sources unchanged since the complete verified suite."
+  },
+  "local_artifacts": "target/m7-tony-hawk-2026-11-20",
+  "next": [
+    "Doom II: first-level exit and result.",
+    "Mario & Luigi: first battle victory, in-game save and cold progress reload.",
+    "Native BBOS and physical Bold qualification remain M8."
+  ]
+}
