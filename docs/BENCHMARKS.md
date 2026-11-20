@@ -3,7 +3,7 @@
 Updated **2026-11-20**, for **0.9.2-SNAPSHOT**. Latest published phone preview:
 [**0.9.1**](https://github.com/pitrecki/berryboy-advance/releases/tag/v0.9.1).
 
-**M1–M6 complete within their recorded host/preview scope. M7: F-Zero, Tony Hawk 2 and Doom II accepted on host; Mario & Luigi next.**
+**M1–M7 complete within their recorded host/preview scope. Next: M9 demanding-game playback profiles; M8 needs a usable BBOS target.**
 Use the supplied games and existing frontend. New CPU/DMA/VRAM investigations
 need a demonstrated milestone blocker or an explicit user priority.
 
@@ -19,12 +19,15 @@ regression coverage alongside named Doom II, F-Zero and Mario & Luigi gameplay
 routes. Three active scenes have isolated paced playback profiles and the approved
 0.9.1 phone preview is published. M6 now adds two 36000-frame sessions per game,
 repeated slot/lifecycle operations, bounded sampled retained heap and LeafGreen
-new-save cold Continue. The main remaining gaps are progression in the demanding
-supplied titles and actual BBOS behavior. F-Zero has a completed five-lap Grand
+new-save cold Continue. M7 now completes the declared demanding-game progression
+pack. F-Zero has a completed five-lap Grand
 Prix race; Tony Hawk 2 has a naturally completed timed run with a landed trick
 and retained score. Doom II now reaches Entryway's exit and intermission.
-Mario & Luigi still needs a first battle victory followed by an in-game save
-and a cold reload of that progress.
+Mario & Luigi wins the first Bowser battle, saves at Toadtown Square and cold-loads
+that progress through File 1. Its real save attempt exposed an EEPROM readback
+failure, now corrected with host/export/actual-CLDC regressions. The next host
+deliverable is measured playback in these four active scenes; native BBOS
+behavior remains a separate target dependency.
 
 The previous queue put hardware-model disagreements ahead of those deliverables.
 Those disagreements remain recorded below; they no longer automatically block
@@ -37,26 +40,38 @@ matrices support a milestone; they do not complete it by themselves.
 
 | Priority / milestone | User-visible result | Acceptance and evidence | Dependency / status |
 | --- | --- | --- | --- |
-| **1. M7 — Demanding-game progression pack** | Demonstrate actual progression beyond the existing intro/control checkpoints in supplied action and 3D-heavy games. | F-Zero: finish one race and show its result. Tony Hawk 2: complete a timed run with a recorded trick and score. Doom II: reach the first level's exit/result. Mario & Luigi: win the first battle, reach an in-game save and cold-load the progress. Each route retains input, named checkpoints, complete frames, capture-buffer accounting and exact state continuation on host/CLDC. Keep strict reference mismatches visible. | **Three objectives accepted, 2026-11-20:** [F-Zero win](../benchmarks/fzero-tradition-park-2026-11-20.json), [Tony Hawk 2 run/trick/score](../benchmarks/tony-hawk-timed-run-2026-11-20.json), [Doom II Entryway exit/intermission](../benchmarks/doom-first-exit-2026-11-20.json). **Next: Mario & Luigi battle/save/cold reload.** A visible blocker warrants one bounded diagnosis; it does not reopen a broad timing sweep. |
-| **Parallel. M8 — Native BBOS session and device playback** | Install the package, open a supplied game and use the implemented controls, audio and saves on the target. | Install → open → choose local BIOS/ROM → boot → play → pause/save/load → close/reopen. Verify native input/focus, file permissions and MMAPI. Separately on a Bold 9900, run the sustained suite: 30-second warmup, three 10-minute runs, full sound, no frame skips, native refresh, bounded memory/queues and measured transport losses/latency/A/V drift. | **Blocked on a working BBOS target; physical performance also needs a Bold.** The existing simulator attempt did not confirm app execution. Retry environment work only with new evidence; this gate does not block M6/M7 host work. |
+| **1. M9 — Demanding-game playback baseline** | Show the frame-budget headroom and output continuity during the four accepted M7 games. | Select one active 900-frame window per game from its recorded route. At 1×, full sound and no skips, run two paced warmups and three measured repetitions per scene in isolation. Match the retained per-frame RGB/PCM and complete future state; measure guest work, allocations/GC, bounded queues and produced/consumed PCM. Keep physical presentation/MMAPI measurements in M8. | **Ready.** Reuse M4's profiler and the four M7 recordings. Start with F-Zero racing. Retain a focused optimization only if a measured bottleneck and the same workload establish a repeatable benefit; an accepted baseline need not include a code change. |
+| **Parallel. M8 — Native BBOS session and device playback** | Install the package, open a supplied game and use the implemented controls, audio and saves on the target. | Install → open → choose local BIOS/ROM → boot → play → pause/save/load → close/reopen. Verify native input/focus, file permissions and MMAPI. Separately on a Bold 9900, run the sustained suite: 30-second warmup, three 10-minute runs, full sound, no frame skips, native refresh, bounded memory/queues and measured transport losses/latency/A/V drift. | **Blocked on a working BBOS target; physical performance also needs a Bold.** The existing simulator attempt did not confirm app execution. Retry environment work only with new evidence; this gate does not block M9 host work. |
 
 ### Next executable slice
 
-1. Extend Mario & Luigi's supplied `A88E` route from controlled Toad movement
-   into the first battle and an actual victory. Reuse
-   [the house input](../benchmarks/inputs/mario-house-2026-11-06.tsv) and
-   [its earlier checkpoints](../benchmarks/gameplay-state-routes-2026-11-06.json).
-   A fresh cold seed at frame **6600** is retained at
-   `target/m7-mario-luigi-2026-11-20/seed-state/state.bbs`; configuration and
-   exploratory inputs/captures stay beside it. Find Mario in the house rather
-   than repeatedly attempting the blocked exterior exit.
-2. Preserve named gameplay/result checkpoints, complete RGB/PCM and capture
-   accounting; verify a 120-frame RGB/PCM/full-state continuation on host and
-   isolated actual CLDC classes. A concrete blocker gets a bounded reproducer.
-3. Reach a real in-game save, preserve its committed battery bytes, then cold
-   boot through Continue without an emulator state load. Verify the saved
-   gameplay progress and exact continuation. Keep detailed results in linked
-   JSON rather than a second status guide.
+1. Select a 900-frame active racing window from the
+   [accepted F-Zero route](../benchmarks/fzero-tradition-park-2026-11-20.json).
+   Prepare an exact owned start state, trim the recorded controls and derive
+   expected RGB/PCM from the accepted cold capture. Record the ROM/BIOS hashes
+   and actual source/class provenance for the current EEPROM-corrected build.
+2. Run the existing paced profiler sequentially with no build, test or other
+   gameplay replay in parallel. Report the three raw repetitions, native GBA
+   refresh budget, queue/accounting limits and a separate diagnostic JFR pass.
+   Use [M4's procedure](../benchmarks/playback-baseline-2026-11-19.json) and
+   [the reproduction commands](SCENARIOS.md#paced-playback-profiles).
+3. Repeat for Tony Hawk 2 during the timed run, Doom II during first-level play
+   and Mario & Luigi during the Bowser battle. Keep strict independent-reference
+   mismatches visible. Address only a demonstrated bottleneck; do not restart
+   speculative CPU/DMA/VRAM sweeps.
+
+[Mario & Luigi M7 evidence](../benchmarks/mario-luigi-save-continue-2026-11-20.json)
+records **30429 cold-started frames**, the first Bowser victory with Mario at
+**9/10 HP**, and a genuine **Save and Continue** at **Toadtown Square**. All
+fourteen named captures and the complete final state match independent replay.
+The actual committed **8192-byte EEPROM** is cold-booted through File 1's
+**Start Game**, returning to the post-battle square with working movement; all
+eight cold checkpoints and the complete state reproduce exactly. Both endpoints
+pass 120-frame RGB/PCM/full-state host/actual-CLDC continuation without capture
+losses. The previous code reproduces **Save failed** on the same route: rejecting
+a high trailing EEPROM bit discarded the readback response. The focused protocol
+fix passes regressions for both EEPROM sizes. The strict 1800-frame reference
+prefix disagreement remains recorded; this is first-save progression acceptance.
 
 [Doom II M7 evidence](../benchmarks/doom-first-exit-2026-11-20.json) records
 7809 cold-started frames through the marked EXIT door and its switch to
@@ -118,14 +133,14 @@ are included; these measurements do not establish a device heap budget. This
 field route reaches no new in-game save, so battery-progress cold reload is not
 claimed for this slice. LeafGreen supplies M6's new-save cold-Continue coverage.
 
-M7 proceeds one game at a time so a concrete failure is actionable before
+M9 proceeds one game at a time so a concrete failure is actionable before
 expanding coverage. A failing slice produces a named reproducer and a focused correction;
 finish that correction before extending the pack. Avoid unmeasured optimizations
 and broad package refactors. New scenarios belong in their feature's host tooling;
 production fixes stay with the feature that owns the behavior.
 
-The next release checkpoint follows accepted M6/M7 results or a substantial
-user-visible fix. Present the tested change and remaining M8 limits, then ask
+M6/M7 are accepted and the EEPROM save fix is verified. This is the next release
+decision checkpoint. Present the tested change and remaining M8 limits, then ask
 for a new release decision. Approval for 0.9.1 does not authorize another tag.
 Rewind, link play, encrypted cheats and new sensor work remain deferred.
 
@@ -139,8 +154,9 @@ Rewind, link play, encrypted cheats and new sensor work remain deferred.
 | **M4 — Playback baseline and measured optimization** | Establish where time and audio continuity are lost in playable scenes. | Reproducible profiles for the three M2 scenes at 1×, full sound and frame skip off: guest work, allocations/GC, queue bounds and produced/consumed PCM. Measure presentation/audio where the environment supports them. Fix one demonstrated bottleneck if needed and compare the same workload/output before and after. | **Host baseline accepted, 2026-11-19.** [Three-scene results, raw repetitions and rejected experiments](../benchmarks/playback-baseline-2026-11-19.json); [reproduction commands](SCENARIOS.md#paced-playback-profiles). RGB/PCM/full states remain exact, queue maximum 1/2, no capture-buffer losses. Two read-path experiments establish no consistent useful gain and are reverted. Sustained target qualification remains open. |
 | **M5 — Reviewed phone preview** | A reviewed, installable phone preview with explicit limits. | M1–M4 accepted in their stated scope; host/export/SDK/actual-CLDC checks pass; the approved numeric version is tagged and the phone ZIP contains raw COD siblings, JAD/ALX, instructions, provenance and checksums. | **Published, 2026-11-19.** [0.9.1 preview](https://github.com/pitrecki/berryboy-advance/releases/tag/v0.9.1), tag `v0.9.1`, commit `3ae037c`. [Release verification](../benchmarks/release-0.9.1-2026-11-19.json) retains the public checksum and manifest. [Candidate evidence](../benchmarks/phone-preview-candidate-2026-11-19.json) remains the pre-release checkpoint. Native runtime/performance acceptance is M8. |
 | **M6 — Long-session durability** | Play and repeatedly save/resume without losing progress or accumulating stuck input/output work. | Two active 36000-frame routes per game at 1×, full sound and no skips; all five slots, at least 20 writes and 10 restores, focus/controller recreation, exact checkpoints and 120-frame RGB/PCM/full-state host/actual-CLDC continuations. Preserve a committed battery through cold reload where the route reaches a new in-game save. Record bounded output, sampled retained heap and capture counts. | **Host accepted, 2026-11-20.** [Golden Sun field/slots](../benchmarks/golden-sun-reliability-2026-11-20.json), [Sonic hub/autosave/slots](../benchmarks/sonic-reliability-2026-11-20.json) and [LeafGreen new-save/cold Continue plus the complete acceptance matrix](../benchmarks/leafgreen-reliability-2026-11-20.json). All six runs pass. Golden Sun/Sonic reach no new in-game save command in these windows; their new-save cold Continue is not claimed. Physical transport and phone speed remain M8. |
+| **M7 — Demanding-game progression pack** | Progress beyond intro/control checkpoints in four supplied demanding games. | Finish one F-Zero race; complete a Tony Hawk 2 timed run with trick/score; reach Doom II's first-level exit/result; win Mario & Luigi's first battle, save in-game and cold-load that progress. Retain controls, named captures, complete frames, capture accounting and exact host/CLDC continuations. | **Host accepted, 2026-11-20.** [F-Zero first place](../benchmarks/fzero-tradition-park-2026-11-20.json), [Tony Hawk 2 timed run](../benchmarks/tony-hawk-timed-run-2026-11-20.json), [Doom II Entryway exit](../benchmarks/doom-first-exit-2026-11-20.json), [Mario & Luigi battle/save/cold Continue and acceptance matrix](../benchmarks/mario-luigi-save-continue-2026-11-20.json). Independent-reference disagreements remain explicit. Native runtime/performance acceptance is M8. |
 
-M1–M4 and M6 are host milestones, with separate isolated CLDC portability checks.
+M1–M4, M6 and M7 are host milestones, with separate isolated CLDC portability checks.
 M5 is the approved preview publication, not a claim of full game accuracy or
 physical phone qualification. Their detailed evidence stays linked above.
 
@@ -167,14 +183,14 @@ No physical Bold is available.
 When new runtime evidence becomes available, make one bounded attempt tied to
 **install → open app → browse ROM
 → play → pause/load**. If the same environment limitation prevents this, record
-the exact blocker and continue M6/M7 on the available host/frontend harness.
+the exact blocker and continue M9 on the available host/frontend harness.
 Do not spend successive delivery batches changing Wine/QEMU settings without
 new evidence. Native key input, file permissions, MMAPI behavior and device
 performance remain explicit target checks; host doubles do not pass them.
 
 ## Current validation
 
-- **5308 host tests**, **4973 exported-core tests** and **4973 tests against the
+- **5310 host tests**, **4975 exported-core tests** and **4975 tests against the
   actual new ECJ/CLDC classes** pass without failures or skips. Native JDE 7.1 /
   ECJ 4.6.1 / RAPC builds the 0.9.2 development COD. Host: Linux x86_64,
   Temurin 21.0.8, Maven 3.9.11.

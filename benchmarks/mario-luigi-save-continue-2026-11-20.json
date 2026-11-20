@@ -1,0 +1,491 @@
+{
+  "date": "2026-11-20",
+  "version": "0.9.2-SNAPSHOT",
+  "milestone": "M7 / Mario & Luigi first battle, real save and cold Continue",
+  "status": "Accepted on host: first Bowser battle won, genuine Save Album write committed and cold-loaded through File 1.",
+  "source_commit": "88305f31abadfd4db52da24edcbb8f585f5ed6d6",
+  "source_dirty": false,
+  "source_provenance": {
+    "capture_base": "582abe1b3d13587609fcb7d761ce91613fa7518e",
+    "capture_source_dirty": true,
+    "explanation": "Corrected captures used an immutable host bundle with the exact EEPROM production change subsequently committed as 88305f3. Their original dirty/base metadata is retained. All current production/tool sources match that tested bundle; only CartridgeBackup changed from the prior f2701dc runtime baseline.",
+    "production_patch_sha256": "135405a4a563d515989ae64e395aefdc6e876bb22f5dd4e4f607fd92a6c5e793",
+    "source_sha256": {
+      "src/main/java/berryboy/cartridge/CartridgeBackup.java": "ab80bf418892e3bb8ee025a00fa2ab414765550f760fc73a68875465b94e64c7",
+      "src/test/java/berryboy/cartridge/CartridgeBackupTest.java": "771d1933a8fe1212f8950e9576c100e33e01a0b55580d05c57c159e9b1daa6c5",
+      "src/main/java/berryboy/desktop/ScenarioRunner.java": "4d0742c4c9f24af090753b2a66a6216fdd8786320e1d3bc04929c66993cffc21",
+      "src/main/java/berryboy/desktop/profile/PlaybackProfiler.java": "813632f65d104f0b46d0e7fffbb561e518e8cfde4b48a48df2834a296922014f",
+      "src/main/java/berryboy/MachineState.java": "2e8d7fe6a3e9761a4ac135f40014fe39107a27c34e394a809e7701beb805097b",
+      "tools/StateRoundTrip.java": "a6e6e54fdd5e163c8603743e6b5e7db0799a1376c101107032ab2ab11e9456d3"
+    },
+    "frozen_backup_class_sha256": "c4671f3229191567c74b017bb484d8a8fd599d9728421ebc73862ebbd80a3444"
+  },
+  "scope": "Headless core gameplay and deterministic host/actual-CLDC continuations on Linux. No BBOS runtime, physical display/audio, phone speed or independent full-game accuracy qualification.",
+  "hardware": {
+    "host": "Linux x86_64; AMD EPYC 9V74 80-Core Processor",
+    "cpu_quota": "400000/100000 = four cores",
+    "memory_max_bytes": 34359738368,
+    "java": "Temurin 21.0.8+9",
+    "scheduling": "Concurrent correctness replays; no isolated performance result."
+  },
+  "assets": {
+    "rom_sha256": "af9066e7eacdab919e92987db8856d038e4b75d4ed011259c893702085a886be",
+    "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+    "game_code": "A88E",
+    "backup_type": 4,
+    "backup_name": "EEPROM 8 KiB",
+    "private_assets": "ROM, BIOS, states, battery bytes, PCM and captures stay outside Git."
+  },
+  "inputs": {
+    "cycle_prefix": {
+      "file": "benchmarks/inputs/mario-house-2026-11-06.tsv",
+      "sha256": "525c2a5f737a5a67a65f7823a053761afc38a25db8d2737e4842d860d2e416fe"
+    },
+    "frame_route": {
+      "file": "benchmarks/inputs/mario-luigi-first-save.tsv",
+      "sha256": "74e77d2a7495a04a1cadca668d8e7d1e122545597b330eab362129d5c25ed317",
+      "events": 637
+    },
+    "cold_continue": {
+      "file": "benchmarks/inputs/mario-luigi-cold-continue.tsv",
+      "sha256": "09914db18c210d38b45a0c3df5f521644aacd76566a1a78efe0f646d3e655920",
+      "events": 12
+    }
+  },
+  "procedure": {
+    "cold_frames": 30429,
+    "guest_seconds": 509.463809967041,
+    "initial_state": null,
+    "initial_battery": null,
+    "speed": 1,
+    "frame_skip": 0,
+    "sound": "Unmuted stereo PCM16 at 32768 Hz",
+    "controls": "Ordinary buttons from BIOS reset. Includes recorded navigation and unsuccessful positioning attempts; no cheats, RAM/ROM edits, teleportation or scripted save payloads.",
+    "ownership": "One deterministic guest owner per JVM; bounded worker capacity 2 receives owned RGB/PCM snapshots.",
+    "complete_state": "Independent cold replay matches the entire exploratory final state byte-for-byte. Capture remains enabled across exploratory loads; no state normalization or capture-ring reset."
+  },
+  "outcome": {
+    "first_battle": "Bowser tutorial battle",
+    "victory": true,
+    "last_visible_mario_hp": "9/10",
+    "victory_evidence": "Bowser defeat dialogue and fallen sprite, battle UI removed, post-battle castle scene and controlled Toadtown field.",
+    "save_location": "Toadtown Square",
+    "save_action": "Jump beneath Save Album, choose Save and Continue, move confirmation from No to Yes, wait until Saving completes.",
+    "genuine_in_game_save": true,
+    "emulator_state_used_for_cold_boot": false,
+    "cold_file": "File 1",
+    "displayed_saved_time": "00:07",
+    "cold_progress": "Start Game restores Mario to the post-battle Save Album square; ordinary Right movement works.",
+    "progression_scope": "First battle plus first real save/cold Continue; not completion of the adventure."
+  },
+  "save_regression": {
+    "previous_commit": "582abe1b3d13587609fcb7d761ce91613fa7518e",
+    "original_runtime_baseline": "f2701dc35a55faa6696d663d7e384d9c362b1759",
+    "cold_failure_frames": 29229,
+    "displayed_failure": "Save failed. Save data may be corrupted. Please try again.",
+    "old_failure_state_sha256": "c94e938146b32227a741a50faeab6b27496d9f48bed17965c475a5e55f61c6f5",
+    "cold_state_matches_exploration": true,
+    "old_capture_report_sha256": "ebcfeb7381564a2332ccff71bb57becbca4886ba224b1f0e514169ee8f4a6500",
+    "old_state_report_sha256": "c438a2cc18e283978382ecf21eb7d70bbb790996894f8e34da42f70f830afd45",
+    "diagnosis": "Read command for EEPROM block 3 ends in a high trailing bit: 11000000000000111. Rejecting that bit discards the pending response, so write verification sees ready bits instead of the saved block.",
+    "correction": "Consume the trailing clock without validating its data bit. Keep four dummy bits and all 64 response bits.",
+    "independent_implementation": "mGBA 0.10.5 src/gba/savedata.c GBASavedataWriteEEPROM consumes the final read/write clock without validating its data value; used to cross-check the protocol rule, not as full-route accuracy acceptance.",
+    "regression_test": "CartridgeBackupTest.eepromReadAcceptsHighTrailingBitAndKeepsTheFullResponse(int)",
+    "old_code_test_result": "Both EEPROM_512 and EEPROM_8K cases fail on the immutable old core; both pass on the corrected host/export/actual-CLDC cores.",
+    "pre_save_battery_sha256": "ac18c6cd5aa62d1797bd9cae00239300ec6b9a702e155368c39caa5a25dd5878",
+    "committed_battery_sha256": "5472f60944f99f36a74a73badac2e97d69d9f9befb2ec2c3e89859b4e791d5c8",
+    "committed_bytes": 8192,
+    "commit_path": "Repository ScenarioRunner commits the actual dirty CartridgeBackup bytes through SaveFile and AtomicSaveWriter after the Saving UI returns to the map.",
+    "committed_battery_matches_warm_discovery": true,
+    "original_committed_battery_unchanged_during_cold_boot": true
+  },
+  "warm_route": {
+    "checkpoints": {
+      "6600": {
+        "name": "Controlled Toad in the house",
+        "rgb_sha256": "139aa8e617184d53c288c77eeee5d0b7be4c76c7a2ce09a7c478ccb8a08068af",
+        "png_sha256": "772a5c31da3e1f9c57cc9ad3b0ac015d833eb28bb3e686a4b3baf1def8cbacd2",
+        "matches_exploration": true,
+        "guest_cycles": 1853913602
+      },
+      "8403": {
+        "name": "Bathroom humming event finds Mario",
+        "rgb_sha256": "45e3a587922e8f1e0f00ded7eb04496680e2b4d46edaef1b34d5586aa3b9cfb4",
+        "png_sha256": "6a77c64a2012385d682a358fe1983300ad45005065eaaba369cfe381e26506b7",
+        "matches_exploration": true,
+        "guest_cycles": 2360369088
+      },
+      "12003": {
+        "name": "First Bowser battle, Solo Attack available",
+        "rgb_sha256": "91bd452e6549d91275b76bbdb7baab87119c28297029b3131650f78b3bed17d7",
+        "png_sha256": "4a73b5b4de29646b7e5d31c948410022e5104e83b4d1c1f3edb1b2fa1760faf2",
+        "matches_exploration": true,
+        "guest_cycles": 3371594688
+      },
+      "15963": {
+        "name": "Bowser defeat dialogue; Mario survives with 9/10 HP",
+        "rgb_sha256": "56ebd40c4edc1f4ec857bb23ee0183d974bbbd397b1ab32ace4826e0b2775b1d",
+        "png_sha256": "b923a368fba7c4031423eb940de3978261d1d639e15ad3d56338829d65821f04",
+        "matches_exploration": true,
+        "guest_cycles": 4483942848
+      },
+      "16083": {
+        "name": "Bowser defeat continues",
+        "rgb_sha256": "1f3b67e4c9e1ab42ab5075b91397b4ced03db958806afd7ae745814c59a0bab2",
+        "png_sha256": "db686912ca5f84b16df34f1ce9d5c66f2b0d5378c4e304600cb0a5cb216fa490",
+        "matches_exploration": true,
+        "guest_cycles": 4517650368
+      },
+      "16203": {
+        "name": "Battle overlay gone and Bowser down",
+        "rgb_sha256": "8ba21d2375ecb4bae809060ece9e29d38544254ba5cfce0366314cd0f4b53771",
+        "png_sha256": "907a26be3a5f7d510c174b2dde0ee4dd7e46adca93d791aeb568d63c5665af17",
+        "matches_exploration": true,
+        "guest_cycles": 4551357894
+      },
+      "16803": {
+        "name": "Defeated Bowser on the floor in the post-battle scene",
+        "rgb_sha256": "96ea559b6324c98299722654bd45f591b984363a8e7bc994e8a4f10559d106d6",
+        "png_sha256": "35ebb66ede609806e9bed1172dfad224813bf8f845fda818ca587720ba913d2e",
+        "matches_exploration": true,
+        "guest_cycles": 4719895489
+      },
+      "19203": {
+        "name": "Toadsworth outside the castle after the battle",
+        "rgb_sha256": "b626b83fc5f770b80dc0a263f79a98958017a57762e90ca51aa3a31f8c2a04a8",
+        "png_sha256": "b71d72f1602010eac81088758e24e3eb41d45c1c2be2aeac74d7b14c1cc54a42",
+        "matches_exploration": true,
+        "guest_cycles": 5394045893
+      },
+      "21003": {
+        "name": "Controlled Mario in Toadtown",
+        "rgb_sha256": "15be3ff0455c66c1dc98789ab1837aa87f43c4bcd340b2db3e903c32bef823d2",
+        "png_sha256": "b0d27cc0d6c6550be0a58f6635c77e2d471497aca41740fee382e3e4e7dfe67e",
+        "matches_exploration": true,
+        "guest_cycles": 5899658693
+      },
+      "26032": {
+        "name": "Toadtown Square and the first Save Album reached",
+        "rgb_sha256": "40a06efa6bbccbb96583dc6f5fe07ef60eb0d29f459fd0a7c3a510d6b4fd2d3e",
+        "png_sha256": "30ccc5dc49fe4f6dab8c0dc0e8a40913a09afaeee2bc92291a7b03a3a6e16980",
+        "matches_exploration": true,
+        "guest_cycles": 7312284680
+      },
+      "28966": {
+        "name": "Album activated by jumping from its ground shadow",
+        "rgb_sha256": "2d05093b81541b45166eff479682af41cbdadf7f4574e3c7ca800dd682c0de39",
+        "png_sha256": "3a23aeb27660dd8d6a767c1840007909ad371c8c24dababedf465c5418feb2cc",
+        "matches_exploration": true,
+        "guest_cycles": 8136433536
+      },
+      "29092": {
+        "name": "Save and Continue confirmation",
+        "rgb_sha256": "bc39e2fe87279125122e915338d2b36e6583b675d368f4ba2f5c2b3201c8d097",
+        "png_sha256": "c013c487d0be22ec3ca8b8e778fb457ce46b9c9b46bff3708ef763c3bead27e0",
+        "matches_exploration": true,
+        "guest_cycles": 8171826432
+      },
+      "29229": {
+        "name": "Saving in progress after the EEPROM correction",
+        "rgb_sha256": "c8793a4bd9add8f66e3a9b6201a97a4e9f2b8c8d0d986dcff1724dbba5e3171e",
+        "png_sha256": "3d9b937d78a29519e98e5dfe240fbe3076cdb75c523956a484a9bdf3a6797fec",
+        "matches_exploration": true,
+        "guest_cycles": 8210309184
+      },
+      "30429": {
+        "name": "Save finished and control returned to the square",
+        "rgb_sha256": "77e4291090c2add95a3310ecc409c995e9e3d11f506958f8638cc7ee75e7d42a",
+        "png_sha256": "f5b2e8c06256e65cce95e1893927370e6dd9e14553e51d7d22d340a8e62c9294",
+        "matches_exploration": true,
+        "guest_cycles": 8547384392
+      }
+    },
+    "capture_report": {
+      "status": "captured",
+      "correctness": "unverified",
+      "qualification": "headless-only; physical presentation and playback unverified",
+      "rom_sha256": "af9066e7eacdab919e92987db8856d038e4b75d4ed011259c893702085a886be",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "525c2a5f737a5a67a65f7823a053761afc38a25db8d2737e4842d860d2e416fe",
+      "rtc_seed": "2000-01-01T00:00:00",
+      "frame_input_sha256": "74e77d2a7495a04a1cadca668d8e7d1e122545597b330eab362129d5c25ed317",
+      "initial_save_sha256": null,
+      "backup_sha256": "5472f60944f99f36a74a73badac2e97d69d9f9befb2ec2c3e89859b4e791d5c8",
+      "backup_type": 4,
+      "backup_bytes": 8192,
+      "save_written": true,
+      "devices": 0,
+      "rumble_active": false,
+      "commit": "582abe1b3d13587609fcb7d761ce91613fa7518e",
+      "source_dirty": "true",
+      "frames": 30429,
+      "warmup_frames": 0,
+      "guest_cycles": 8547384392,
+      "audio_frames": 16694110,
+      "audio_overruns": 0,
+      "audio_underruns": 0,
+      "produced_audio_frames": 16694110,
+      "consumed_audio_frames": 16694110,
+      "dropped_guest_frames": 0,
+      "video_sha256": "dcf4cbbde4d95502b1bc46d399a81db4d58d80d2c7fbe38095aed3397d9dc35d",
+      "audio_sha256": "56ac7a920fc5fd40e8b206ff1216726d1008e8f5897cc7478f3c6af039554096",
+      "work_p50_ns": 9403466,
+      "work_p95_ns": 47076754,
+      "work_p99_ns": 72655783,
+      "work_max_ns": 199986744,
+      "work_deadline_misses": 5337,
+      "physically_presented_frames": null,
+      "physical_audio_underruns": null,
+      "java": "21.0.8+9-LTS",
+      "os": "Linux",
+      "architecture": "amd64",
+      "hardware": "Linux x86_64 host; first battle and real Save Album write verification",
+      "os_version": "6.18.57"
+    },
+    "state_report": {
+      "title": "MARIO&LUIGIU",
+      "rom_sha256": "af9066e7eacdab919e92987db8856d038e4b75d4ed011259c893702085a886be",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "525c2a5f737a5a67a65f7823a053761afc38a25db8d2737e4842d860d2e416fe",
+      "initial_save_sha256": null,
+      "frame_input_sha256": "74e77d2a7495a04a1cadca668d8e7d1e122545597b330eab362129d5c25ed317",
+      "snapshot_frame": 30429,
+      "snapshot_cycles": 8547384392,
+      "resumed_frames": 120,
+      "resumed_audio_frames": 65835,
+      "state_bytes": 781423,
+      "state_sha256": "6be6f83e66a0dc3176200e210678e649fc2521e3c085260372639fe410b299e9",
+      "final_state_sha256": "d437cd8bcce2f20c55d2df39d261483d27b61dd67b8992b56bc122a6663f23a2",
+      "immediate_and_future_full_state_exact": true,
+      "all_resumed_rgb_pcm_exact": true,
+      "original_save_unchanged": true,
+      "scope": "Host core save/load replay, not independent game accuracy or physical phone validation"
+    },
+    "continuation": {
+      "frames": 120,
+      "host_rgb_pcm_and_full_future_state_exact": true,
+      "actual_cldc_rgb_pcm_and_full_future_state_exact": true,
+      "rgb_chain_sha256": "ccdcff6b71821b0892089791c476eb620f514a8cb1060cd59173bd0b69500586",
+      "pcm_sha256": "8e0c6cd68fa1d92c751494f34a0c38bfd1eb1c34e42f2ca1a5cafea8df79fca6",
+      "final_state_sha256": "d437cd8bcce2f20c55d2df39d261483d27b61dd67b8992b56bc122a6663f23a2",
+      "stereo_audio_frames": 65835,
+      "raw_report_sha256": "c7bbc7813f57a5d0110a6034c57b7d21b40d71f25c66acc9b7dc4ad5f0bab6e0"
+    },
+    "raw_capture_report_sha256": "c755de30d5caa552a20c207fa45329c2ad23cd9536b95a87fa370fcad9a56d98",
+    "raw_state_report_sha256": "0a947c3d1a3ae43a201a5afcffc268c8fb183455cb76ced422349692d730169a"
+  },
+  "cold_continue": {
+    "initial_battery_sha256": "5472f60944f99f36a74a73badac2e97d69d9f9befb2ec2c3e89859b4e791d5c8",
+    "frames": 2150,
+    "initial_machine_state": null,
+    "backup_type_explicit": 4,
+    "checkpoints": {
+      "600": {
+        "name": "Cold boot, AlphaDream logo",
+        "rgb_sha256": "f4afc238b948de50e44e10eda194e115ae8c4427d52f099c924228a2902f5fd6",
+        "png_sha256": "325e0792a0500c93f6d923820c881cdf55cd5e0d5e203929528fb16748dac7d1",
+        "matches_exploration": true,
+        "guest_cycles": 168537600
+      },
+      "1386": {
+        "name": "Title screen after authentic BIOS boot",
+        "rgb_sha256": "fe1961c8364b93979da19ba6d46f13854a1dbb8b64b8a3c037e004ac3161f209",
+        "png_sha256": "170212973186427cd68ab21c647a236c0687d91fd75b966d8f51fae2a5779cd1",
+        "matches_exploration": true,
+        "guest_cycles": 389321856
+      },
+      "1512": {
+        "name": "Mario and Luigi selected from the title menu",
+        "rgb_sha256": "a89d5eaaa06cea3063f97f844e75d9c52ac2cf10b90e499bc15b848dc3e60b49",
+        "png_sha256": "3c8726b558585e089e5a36b209138a08a81fd09c18402362eb387b3df0e43f19",
+        "matches_exploration": true,
+        "guest_cycles": 424714755
+      },
+      "1638": {
+        "name": "File 1 retained: Toadtown Square, displayed time 00:07",
+        "rgb_sha256": "63760278f2bd9fc10e64546734de4101b3ad1f361064e5f7b8c8d7853a3a8ed4",
+        "png_sha256": "e75ef7904154d185542a776ab25f8ab47d7a947c59c644a96448367379b42ea2",
+        "matches_exploration": true,
+        "guest_cycles": 460107648
+      },
+      "1764": {
+        "name": "Start Game selected for the saved file",
+        "rgb_sha256": "06c73eb61d3934f3cb28b9c1f295e24b43438db36c91f6670be4865e0f061ef9",
+        "png_sha256": "62458758d49ffe073f3dc945cd07641090a94b3c83736f20987c29a03f6f363b",
+        "matches_exploration": true,
+        "guest_cycles": 495500544
+      },
+      "2010": {
+        "name": "Saved post-battle map restored without loading an emulator state",
+        "rgb_sha256": "9810c6611cfe58079a2a7bae28c3c91c6030bcc19c0095f9d75f5cc9b982f264",
+        "png_sha256": "9165ea504c09f8d3712aa657ff184fe87bac3c0f5d8c0c13b437a242a0efaa33",
+        "matches_exploration": true,
+        "guest_cycles": 564600960
+      },
+      "2030": {
+        "name": "Ordinary movement after cold Continue",
+        "rgb_sha256": "bfc3b71ec50423984547178284f8f59f9f7c71122c0294ca0809f534abf0e91a",
+        "png_sha256": "989fd6c01b791b8b2855db86ce23a88cc53571b9fc4a5ec3a5aef4b579d3e674",
+        "matches_exploration": true,
+        "guest_cycles": 570218882
+      },
+      "2150": {
+        "name": "Controlled post-battle field with all keys released",
+        "rgb_sha256": "ad62d90c79389d855e7a66b673c612254e4b8ac032adc3230219a4c75a87907f",
+        "png_sha256": "7c285dd639c3768c3248562ae9338b709eecaa79b008cd8cf4a8985863fdf2e9",
+        "matches_exploration": true,
+        "guest_cycles": 603926404
+      }
+    },
+    "capture_report": {
+      "status": "captured",
+      "correctness": "unverified",
+      "qualification": "headless-only; physical presentation and playback unverified",
+      "rom_sha256": "af9066e7eacdab919e92987db8856d038e4b75d4ed011259c893702085a886be",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": null,
+      "rtc_seed": "2000-01-01T00:00:00",
+      "frame_input_sha256": "09914db18c210d38b45a0c3df5f521644aacd76566a1a78efe0f646d3e655920",
+      "initial_save_sha256": "5472f60944f99f36a74a73badac2e97d69d9f9befb2ec2c3e89859b4e791d5c8",
+      "backup_sha256": "5472f60944f99f36a74a73badac2e97d69d9f9befb2ec2c3e89859b4e791d5c8",
+      "backup_type": 4,
+      "backup_bytes": 8192,
+      "save_written": false,
+      "devices": 0,
+      "rumble_active": false,
+      "commit": "582abe1b3d13587609fcb7d761ce91613fa7518e",
+      "source_dirty": "true",
+      "frames": 2150,
+      "warmup_frames": 0,
+      "guest_cycles": 603926404,
+      "audio_frames": 1179543,
+      "audio_overruns": 0,
+      "audio_underruns": 0,
+      "produced_audio_frames": 1179543,
+      "consumed_audio_frames": 1179543,
+      "dropped_guest_frames": 0,
+      "video_sha256": "a23f2c6a83a210649ec523cfd3afddc1610f979865a9a19e373ae004c78706b2",
+      "audio_sha256": "0a2ff25568c232b659da09525b6df0b6f691aaec6db3e713c24c9453448e1a11",
+      "work_p50_ns": 11612285,
+      "work_p95_ns": 35809003,
+      "work_p99_ns": 46152041,
+      "work_max_ns": 155208479,
+      "work_deadline_misses": 521,
+      "physically_presented_frames": null,
+      "physical_audio_underruns": null,
+      "java": "21.0.8+9-LTS",
+      "os": "Linux",
+      "architecture": "amd64",
+      "hardware": "Linux x86_64 host; cold boot from committed battery, no emulator state load",
+      "os_version": "6.18.57"
+    },
+    "state_report": {
+      "title": "MARIO&LUIGIU",
+      "rom_sha256": "af9066e7eacdab919e92987db8856d038e4b75d4ed011259c893702085a886be",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": null,
+      "initial_save_sha256": "5472f60944f99f36a74a73badac2e97d69d9f9befb2ec2c3e89859b4e791d5c8",
+      "frame_input_sha256": "09914db18c210d38b45a0c3df5f521644aacd76566a1a78efe0f646d3e655920",
+      "snapshot_frame": 2150,
+      "snapshot_cycles": 603926404,
+      "resumed_frames": 120,
+      "resumed_audio_frames": 65835,
+      "state_bytes": 781423,
+      "state_sha256": "3be957e11581b43fc69075b20e9f80974cf2c68ffbf5415b84584bfba72bd262",
+      "final_state_sha256": "4279605bf30e3d4184c52f7d4b35ba95adfe1705c603196690cf4f53aaa03cbd",
+      "immediate_and_future_full_state_exact": true,
+      "all_resumed_rgb_pcm_exact": true,
+      "original_save_unchanged": true,
+      "scope": "Host core save/load replay, not independent game accuracy or physical phone validation"
+    },
+    "continuation": {
+      "frames": 120,
+      "host_rgb_pcm_and_full_future_state_exact": true,
+      "actual_cldc_rgb_pcm_and_full_future_state_exact": true,
+      "rgb_chain_sha256": "63abf3db14c5b2f6664d2e5ce3d0aea92525eefa9e8d482151ade084a58b802e",
+      "pcm_sha256": "77ea42e18f1568b4d4ea8e03aff1f291f720fc30f8b1a4e6e5707de109d86592",
+      "final_state_sha256": "4279605bf30e3d4184c52f7d4b35ba95adfe1705c603196690cf4f53aaa03cbd",
+      "stereo_audio_frames": 65835,
+      "raw_report_sha256": "c4ee309a1ce4d4c06b553bb2048370b774b18de6a8fdae15de32204d680475bb"
+    },
+    "original_battery_read_only": true,
+    "capture_uses_separate_copy": true,
+    "raw_capture_report_sha256": "2921299dfaa5bdc2eae99b30ec7e2deeed3544aa8b27a346a5a1ed22fc381a5a",
+    "raw_state_report_sha256": "4de829b3711bec397e474736ae852248cbf39272f61be636e094330fa435fc3f"
+  },
+  "actual_cldc": {
+    "classpath": "target/blackberry/classes:<isolated desktop-only profile helpers>",
+    "host_core_fallback": false,
+    "helper_manifest": {
+      "berryboy/desktop/profile/ProfileMetrics.class": "2b0d6697024c7a2d670aa247775f64e5169f7fd3470d365fcf4772851d809c66",
+      "berryboy/desktop/profile/ProfileOutput.class": "ab6111ca35ddea8dc0af44c87d5dab5c892d82c83b9dd4a355a760b001905778",
+      "berryboy/desktop/profile/ProfileRecordingSummary.class": "4b0a34c2b9a97f4277ee30fc5d71b03f8bc841eb3ddc124d639893e89aafb083",
+      "berryboy/desktop/profile/PlaybackProfiler.class": "b1170d5b39059885d240df433fd95e07d5d7791ee2489a3aaa4262b9b9233f3c",
+      "berryboy/desktop/profile/ProfileOutput$Frame.class": "1d5ee079bede9700c797aba887142f9adb060702144270c1ede7a025f1ab9c1c",
+      "berryboy/desktop/concurrent/BoundedWorker$Statistics.class": "fe5b9f8978244d4d7756769f4f969e83d9e52852ea89b10248922bd155623c9c",
+      "berryboy/desktop/concurrent/BoundedWorker$Processor.class": "34aac560b9ddffd800177298f509ccc33a287ecc39b7c64e1455989b25d2548c",
+      "berryboy/desktop/concurrent/BoundedWorker.class": "9ff1ae2feb3b5904f82bfa56035ad42ee21be49a6875c54ded09b1b05cd8eaa5",
+      "berryboy/desktop/scenario/FrameInputs$Input.class": "cc8be4458f5219e255967174371668e6ff0f930c55e148c537ac4f2e3bc42707",
+      "berryboy/desktop/scenario/FrameInputs$Playback.class": "f7bb157ead074d3e4ed0582ee610acbe58319117ff43b054291e06e905686eda",
+      "berryboy/desktop/scenario/FrameInputs.class": "f4d83d4f34cec3d856e60cde5eaedec664f8cf2bb84a13409903b081fd55c7a6",
+      "berryboy/desktop/capture/JsonReport.class": "d3fe5c1f2eaabf1abc7f86eead49e4806ebd114a3c391019eff50eda5d90c593"
+    },
+    "sdk_class_count": 84,
+    "sdk_classes_sha256": "2182f40c65c24dd175daa5efd01c9e807d6c903ac1f39cc1c14d86a505d6500e",
+    "classfile_major": 45,
+    "qualification": "Actual SDK ECJ CLDC-target classes executed by Linux JVM; not native BBOS execution."
+  },
+  "independent_reference_prefix": {
+    "emulator": "mGBA 0.10.5",
+    "frames": 1800,
+    "identical_control_prefix": true,
+    "same_index_rgb_matching_frames": 1462,
+    "first_rgb_mismatch_frame": 10,
+    "strict_all_rgb_exact": false,
+    "strict_pcm_exact": false,
+    "host_pcm_sha256": "26f3a3d19de5802da958403a62049bec0bfb32ef810cd4981e9de6c9a875ad27",
+    "reference_pcm_sha256": "dcff135f6fd54995e59250514e306b65d47310e9b921a8025cd72911d94ff1bb",
+    "reference_report_sha256": "6cbf1ff6cb12b1a81ad9d5d3ec5a4d516cee784659e4c9928c79332f95e7bad6",
+    "reference_binary_sha256": "f82840b661f3c177ccf183d2fafc683aefe6dae9caebf46907a96ee1197d3830",
+    "qualification": "Retained strict boot-prefix disagreement. No alignment shifts, tolerances or replaced reference; the full battle/save route is not independently accuracy-qualified."
+  },
+  "m7_acceptance": {
+    "fzero": "benchmarks/fzero-tradition-park-2026-11-20.json",
+    "tony_hawk": "benchmarks/tony-hawk-timed-run-2026-11-20.json",
+    "doom": "benchmarks/doom-first-exit-2026-11-20.json",
+    "mario_luigi": "This record",
+    "status": "All four declared M7 progression objectives accepted within host correctness scope; M8 target gate remains separate."
+  },
+  "verification": {
+    "maven_verify": {
+      "tests": 5310,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "console_host": {
+      "tests": 5310,
+      "failed": 0
+    },
+    "exported_core": {
+      "tests": 4975,
+      "failed": 0
+    },
+    "actual_cldc": {
+      "tests": 4975,
+      "failed": 0
+    },
+    "sdk": "JDE 7.1 / ECJ 4.6.1 / RAPC development 0.9.2 COD build completed with no errors; no release tag or ZIP created.",
+    "old_code_regression_log_sha256": "9e45293c8dd0cc89422d1dc9fc39dc7b07ca8d506beb3a50178864021d697af2"
+  },
+  "private_reproduction": {
+    "root": "target/m7-mario-luigi-2026-11-20",
+    "warm_config": "progress.properties",
+    "cold_config": "cold.properties",
+    "cold_capture_config": "cold-capture.properties",
+    "state_command": "java -cp <frozen-host>:<StateRoundTrip-tools> berryboy.desktop.StateRoundTrip <config> <snapshot-frame> 120 <fresh-output>",
+    "capture_command": "java -cp <frozen-host> berryboy.desktop.ScenarioRunner <config>",
+    "cldc_command": "java -cp target/blackberry/classes:<desktop-only-helpers> berryboy.desktop.profile.PlaybackProfiler <native.properties>"
+  },
+  "next_step": "M9: isolated paced profiles for the four accepted demanding-game active scenes; measure before optimizing. M8 remains blocked on a usable BBOS target and physical Bold 9900."
+}

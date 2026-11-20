@@ -1,0 +1,13 @@
+# Frame	GBA pressed-key mask; cold boot with only the committed EEPROM image
+600	8
+606	0
+1386	8
+1392	0
+1512	1
+1518	0
+1638	1
+1644	0
+1764	1
+1770	0
+2010	16
+2030	0

@@ -2,6 +2,9 @@
 
 ## 0.9.2-SNAPSHOT — unreleased
 
+- Fix false EEPROM save-verification failures when a read command's trailing bit
+  is high. Mario & Luigi now completes its first Save Album write and cold-loads
+  the saved post-battle map through File 1.
 - Add finite phone-session reliability replay with owned RGB/PCM capture,
   repeated slot operations, controller recreation and paused retained-heap checks.
   Compare successful battery-write receipts and complete committed payloads for
