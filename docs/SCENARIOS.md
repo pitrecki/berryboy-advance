@@ -80,6 +80,13 @@ committed slots. The initial external snapshot and bootstrap frames are setup,
 separate from the measured route. The final 120-frame UI continuation compares
 every RGB/PCM buffer and the complete future state with an independent clone.
 
+Preparation also models successful checkpoint battery writes: first preserve the
+exact pending backup payload, then acknowledge its completed write, as the phone
+session does when pausing/saving. UI-committed battery bytes must agree with
+those independent files, including across controller recreation. Initially dirty
+snapshots therefore retain full binary state checks with the correct IO receipt.
+This does not establish a game-level cold Continue from that battery data.
+
 Paused checkpoints request completed host GC. Report retained heap, exclude the
 first five warmup checkpoints and require the remaining spread to stay within
 the declared 8 MiB bound. This is sampled retained memory including host tools,

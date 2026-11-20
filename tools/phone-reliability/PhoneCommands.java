@@ -72,6 +72,7 @@ final class PhoneCommands implements AutoCloseable {
         message("Loaded slot "+(slot+1)); idle(); held=0;
     }
     byte[] slot(int slot) throws Exception { return ui.readSlot(rom.toUri().toASCIIString(),checksum,slot); }
+    byte[] backup() throws Exception { return ui.readBackup(rom.toUri().toASCIIString(),checksum); }
     void focusCycle() throws Exception { ui.canvas.suspend(); idle(); ui.canvas.open(); }
     void reopen(int slot) throws Exception { close(); openPaused(); load(slot); }
     int pendingAudio() { return gate.pendingAudioPackets(); }

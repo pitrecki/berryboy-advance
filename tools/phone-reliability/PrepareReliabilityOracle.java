@@ -17,12 +17,20 @@ public final class PrepareReliabilityOracle {
         var m=MachineState.load(c.rom(),c.bios(),c.state());long first=m.clock.now()/LcdTiming.FRAME_CYCLES;
         var keys=c.inputs().playback(m);var pcm=new short[2048];var digest=new FrameDigest();
         var checkpoints=new LinkedHashMap<String,Object>();
+        byte[] committedBackup=null;
         for(int frame=1;frame<=c.frames();frame++) {
             keys.afterFrame((int)first+frame-1);m.runCycles((first+frame)*LcdTiming.FRAME_CYCLES-m.clock.now());
             int count=m.memory.clockedAudio().availableFrames();m.memory.clockedAudio().drain(pcm,count);
             digest.add(m.memory.raster().completedFrame(),pcm,count);
             if(frame%c.interval()==0) {
                 if(m.memory.peek16(0x04000130)!=0x3ff)throw new IllegalStateException("Checkpoints require released keys");
+                // PhoneSession flushes dirty battery data when pausing/before saving.
+                // Model the successful IO receipt, preserving every guest payload byte.
+                if(m.memory.backup().dirty()) {
+                    committedBackup=m.memory.backup().snapshot();
+                    Files.write(out.resolve("frame-"+frame+".sav"),committedBackup);
+                    m.memory.backup().markSaved();
+                } else if(committedBackup!=null) Files.write(out.resolve("frame-"+frame+".sav"),committedBackup);
                 var state=MachineState.save(m);Files.write(out.resolve("frame-"+frame+".bbs"),state);
                 var image=new BufferedImage(240,160,BufferedImage.TYPE_INT_RGB);image.setRGB(0,0,240,160,m.memory.raster().completedFrame(),0,240);
                 ImageIO.write(image,"png",out.resolve("frame-"+frame+".png").toFile());

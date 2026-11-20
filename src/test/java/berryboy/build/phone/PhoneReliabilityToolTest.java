@@ -16,15 +16,17 @@ import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import javax.tools.ToolProvider;
 import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.jupiter.api.io.TempDir;
 
 @Tag("build")
 class PhoneReliabilityToolTest {
     @TempDir Path temporary;
 
-    @Test
-    void compilesAndCompletesTheFiniteUiExperimentWithIndependentSyntheticCheckpoints() throws Exception {
+    @ParameterizedTest
+    @ValueSource(booleans={false,true})
+    void compilesAndCompletesTheFiniteUiExperimentWithIndependentSyntheticCheckpoints(boolean dirtyBackup) throws Exception {
         var root=Path.of(System.getProperty("berryboy.projectRoot", ".")).toAbsolutePath();
         var classes=temporary.resolve("classes");assertThat(PhoneHarness.compileUi(root,classes)).isZero();
         var main=root.resolve("target/classes");var compile=new ArrayList<String>();
@@ -34,6 +36,7 @@ class PhoneReliabilityToolTest {
         var rom=DemoRom.create();var bios=new byte[16384];word(bios,0,0xe59ff018);word(bios,0x20,0x08000000);
         var m=new Machine(rom,bios);m.memory.clockedAudio().setCapture(true);m.runCycles(LcdTiming.FRAME_CYCLES);
         var pcm=new short[2048];m.memory.clockedAudio().drain(pcm,m.memory.clockedAudio().availableFrames());
+        if(dirtyBackup)m.memory.backup().write8(0,0x42);
         var p=new Properties();asset(p,"rom",rom);asset(p,"bios",bios);asset(p,"state",MachineState.save(m));asset(p,"frame_input","# neutral fixture\n".getBytes(java.nio.charset.StandardCharsets.UTF_8));
         p.setProperty("frames","120");p.setProperty("checkpoint_interval","6");p.setProperty("hardware","Synthetic host UI fixture");p.setProperty("oracle",temporary.resolve("oracle").toString());
         var config=temporary.resolve("scene.properties");try(var writer=Files.newBufferedWriter(config)){p.store(writer,"Synthetic tool integration");}
@@ -45,6 +48,10 @@ class PhoneReliabilityToolTest {
         assertThat(report).contains("\"frames\":120", "\"writes\":21", "\"checkpoint_loads\":10", "\"all_slots_exercised\":true", "\"controller_recreations\":1", "\"all_rgb_pcm_and_full_state_exact\":true");
         assertThat(Files.readAllBytes(temporary.resolve("ui/states/final.bbs")))
                 .isEqualTo(Files.readAllBytes(temporary.resolve("oracle/frame-120.bbs")));
+        if(dirtyBackup) {
+            assertThat(report).contains("\"committed_battery_checkpoints\":20");
+            assertThat(Files.readAllBytes(temporary.resolve("oracle/frame-6.sav"))).isEqualTo(m.memory.backup().snapshot());
+        } else assertThat(report).contains("\"committed_battery_checkpoints\":0");
     }
     private void asset(Properties p,String name,byte[] data) throws Exception {
         var file=temporary.resolve(name+".bin");Files.write(file,data);p.setProperty(name,file.toString());

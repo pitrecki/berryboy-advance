@@ -33,7 +33,8 @@ public final class RunPhoneReliability {
         var settings=RecordStore.openRecordStore("berryboy-options",true);var encoded=options.encode();settings.addRecord(encoded,0,encoded.length);settings.closeRecordStore();
         var states=Files.createDirectory(out.resolve("states"));var images=Files.createDirectory(out.resolve("checkpoints"));
         var checkpoints=new LinkedHashMap<String,Object>();var digest=new FrameDigest();
-        long minimum=Long.MAX_VALUE,maximum=0;int writes=0,loads=0,focus=0,reopens=0,lastSlot=0;
+        long minimum=Long.MAX_VALUE,maximum=0;int writes=0,loads=0,focus=0,reopens=0,lastSlot=0,batteryChecks=0;
+        String committedBatteryHash=null;
         var slotHashes=new String[5];long started=System.nanoTime();byte[] lastState=null;
         try(var phone=new PhoneCommands(rom,bios,c.rom())) {
             phone.install(c.state());
@@ -50,11 +51,19 @@ public final class RunPhoneReliability {
                     lastState=phone.save(lastSlot);writes++;
                     var canonical=Files.readAllBytes(oracle.resolve("frame-"+frame+".bbs"));
                     if(!Arrays.equals(lastState,canonical))throw new IllegalStateException("Complete UI state differs at frame "+frame);
+                    var batteryPath=oracle.resolve("frame-"+frame+".sav");
+                    if(Files.exists(batteryPath)) {
+                        var committed=Files.readAllBytes(batteryPath);
+                        if(!Arrays.equals(phone.backup(),committed))throw new IllegalStateException("Committed battery differs at frame "+frame);
+                        committedBatteryHash=ReliabilityConfig.hash(committed);batteryChecks++;
+                    }
                     String hash=ReliabilityConfig.hash(lastState);slotHashes[lastSlot]=hash;
                     if(index%2==0){phone.load(lastSlot);loads++;}
                     if(index%4==0){phone.focusCycle();focus++;}
                     if(index==c.frames()/c.interval()/2) {
                         verifySlots(phone,slotHashes);phone.reopen(lastSlot);reopens++;verifySlots(phone,slotHashes);
+                        if(committedBatteryHash!=null && !committedBatteryHash.equals(ReliabilityConfig.hash(phone.backup())))
+                            throw new IllegalStateException("Committed battery changed across controller recreation");
                     }
                     if(phone.pendingAudio()!=0||phone.queuedFrames()!=0)throw new IllegalStateException("Output remains pending at paused checkpoint");
                     var heap=RetainedHeap.collectAndSample();
@@ -95,7 +104,8 @@ public final class RunPhoneReliability {
             report.put("all_slots_exercised",Arrays.stream(slotHashes).allMatch(s->s!=null));report.put("focus_cycles",focus);report.put("controller_recreations",reopens);
             report.put("audio_overruns",0);report.put("audio_underruns",0);
             report.put("legacy_battery_unchanged",true);report.put("in_game_battery_progress_cold_reload",false);
-            report.put("battery_scope","This field-movement route does not reach a new in-game save; legacy input bytes are preserved. Slot continuity is verified, not new battery progress.");
+            report.put("committed_battery_checkpoints",batteryChecks);report.put("committed_battery_sha256",committedBatteryHash);
+            report.put("battery_scope","Legacy input bytes are preserved; pending battery writes are compared byte-for-byte with independent successful-checkpoint receipts, including controller recreation. Game-level cold Continue is a separate check.");
             report.put("frame_gate_capacity",1);report.put("pcm_gate_capacity",1);report.put("no_pending_output_at_paused_checkpoints",true);
             report.put("retained_heap_min_bytes",minimum);report.put("retained_heap_max_bytes",maximum);report.put("retained_heap_spread_limit_bytes",HEAP_SPREAD_LIMIT);
             report.put("heap_scope","Explicit completed host GC at paused equivalent checkpoints; first five checkpoints excluded from bound. Includes runner and platform adapters. Sampled retained heap, not peak allocation or a physical-device heap claim.");

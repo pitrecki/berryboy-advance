@@ -4,9 +4,13 @@
 
 - Add finite phone-session reliability replay with owned RGB/PCM capture,
   repeated slot operations, controller recreation and paused retained-heap checks.
+  Compare successful battery-write receipts and complete committed payloads for
+  initially dirty snapshots.
   Keep native BBOS and physical playback qualification separate.
 - Release destroyed application displays in the host platform adapter so long
   session measurements do not retain closed test applications.
+- Preserve completion status after confirmed restart/slot overwrite when the
+  worker finishes quickly; publish the acknowledgement before its completion.
 
 ## 0.9.1 — 2026-11-19 (preview)
 

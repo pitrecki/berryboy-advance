@@ -56,6 +56,10 @@ public final class UiHarness implements AutoCloseable {
     public byte[] readSlot(String romUrl,int checksum,int slot)throws Exception{
         awaitIdle();return new PhoneStorage(romUrl,checksum).read("st"+slot);
     }
+    /** Owned committed battery bytes; no live cartridge or machine access. */
+    public byte[] readBackup(String romUrl,int checksum)throws Exception{
+        awaitIdle();return new PhoneStorage(romUrl,checksum).read("sav");
+    }
     /** Test-owned external payload preparation; production UI loading still validates every byte. */
     public void writeSlot(String romUrl,int checksum,int slot,byte[] bytes)throws Exception{
         awaitIdle();new PhoneStorage(romUrl,checksum).write("st"+slot,bytes);
