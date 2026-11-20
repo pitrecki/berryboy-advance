@@ -3,7 +3,7 @@
 Updated **2026-11-20**, for **0.9.2-SNAPSHOT**. Latest published phone preview:
 [**0.9.1**](https://github.com/pitrecki/berryboy-advance/releases/tag/v0.9.1).
 
-**M1–M5 complete within their recorded host/preview scope. M6 in progress: Golden Sun and Sonic long-session slices accepted on host.**
+**M1–M6 complete within their recorded host/preview scope. Next: M7 demanding-game progression.**
 Use the supplied games and existing frontend. New CPU/DMA/VRAM investigations
 need a demonstrated milestone blocker or an explicit user priority.
 
@@ -17,10 +17,10 @@ The connected M1 session, all three M2 progression routes and the M3 combined
 frontend matrix now pass on the host. The fifteen boot/intro smoke routes remain
 regression coverage alongside named Doom II, F-Zero and Mario & Luigi gameplay
 routes. Three active scenes have isolated paced playback profiles and the approved
-0.9.1 phone preview is published. The main remaining gaps are longer real-game
-sessions, progression in the demanding supplied titles and actual BBOS behavior.
-M4 samples about 15 seconds per window; it does not establish ten-minute memory
-or save/lifecycle reliability. F-Zero, Tony Hawk 2, Doom II and Mario & Luigi
+0.9.1 phone preview is published. M6 now adds two 36000-frame sessions per game,
+repeated slot/lifecycle operations, bounded sampled retained heap and LeafGreen
+new-save cold Continue. The main remaining gaps are progression in the demanding
+supplied titles and actual BBOS behavior. F-Zero, Tony Hawk 2, Doom II and Mario & Luigi
 already have boot or control routes, so their next useful result is a completed
 gameplay objective with preserved progress.
 
@@ -35,24 +35,33 @@ matrices support a milestone; they do not complete it by themselves.
 
 | Priority / milestone | User-visible result | Acceptance and evidence | Dependency / status |
 | --- | --- | --- | --- |
-| **1. M6 — Long-session durability** | Keep playing and repeatedly save/resume without losing progress or accumulating stuck input/output work. | Golden Sun, Sonic and LeafGreen each have an active 36000-frame route (~10 minutes at native refresh), 1×, full sound and no presentation skips. Exercise all five slots with at least 20 completed writes and 10 restores per title, plus pause/focus/resume and controller recreation. Retain recorded controls and exact checkpoints, preserve a committed battery save through cold reload where the route reaches one, and compare a 120-frame RGB/PCM/full-state continuation on host and actual CLDC classes. Record queue bounds, retained heap after equivalent checkpoints and captured sample counts; retained memory must reach a repeatable bound rather than grow with elapsed frames. | **Golden Sun field/slot slice accepted, 2026-11-20.** [Two complete UI repetitions, exact checkpoints/continuations and retained-heap results](../benchmarks/golden-sun-reliability-2026-11-20.json). [Sonic two-run hub/slot results](../benchmarks/sonic-reliability-2026-11-20.json) also pass, including committed autosave payloads and actual-CLDC continuation. LeafGreen long/new-save/Cold Continue acceptance remains in progress; physical transport and phone speed remain M8. |
-| **2. M7 — Demanding-game progression pack** | Demonstrate actual progression beyond the existing intro/control checkpoints in supplied action and 3D-heavy games. | F-Zero: finish one race and show its result. Tony Hawk 2: complete a timed run with a recorded trick and score. Doom II: reach the first level's exit/result. Mario & Luigi: win the first battle, reach an in-game save and cold-load the progress. Each route retains input, named checkpoints, complete frames, capture-buffer accounting and exact state continuation on host/CLDC. Keep strict reference mismatches visible. | **Planned after the first M6 slice.** Reuse the supplied four ROMs and existing startup/race/house/level-entry routes. A visible blocker warrants one bounded diagnosis; it does not reopen a broad timing sweep. |
+| **1. M7 — Demanding-game progression pack** | Demonstrate actual progression beyond the existing intro/control checkpoints in supplied action and 3D-heavy games. | F-Zero: finish one race and show its result. Tony Hawk 2: complete a timed run with a recorded trick and score. Doom II: reach the first level's exit/result. Mario & Luigi: win the first battle, reach an in-game save and cold-load the progress. Each route retains input, named checkpoints, complete frames, capture-buffer accounting and exact state continuation on host/CLDC. Keep strict reference mismatches visible. | **Next: F-Zero race completion.** Reuse the supplied four ROMs and existing startup/race/house/level-entry routes. A visible blocker warrants one bounded diagnosis; it does not reopen a broad timing sweep. |
 | **Parallel. M8 — Native BBOS session and device playback** | Install the package, open a supplied game and use the implemented controls, audio and saves on the target. | Install → open → choose local BIOS/ROM → boot → play → pause/save/load → close/reopen. Verify native input/focus, file permissions and MMAPI. Separately on a Bold 9900, run the sustained suite: 30-second warmup, three 10-minute runs, full sound, no frame skips, native refresh, bounded memory/queues and measured transport losses/latency/A/V drift. | **Blocked on a working BBOS target; physical performance also needs a Bold.** The existing simulator attempt did not confirm app execution. Retry environment work only with new evidence; this gate does not block M6/M7 host work. |
 
 ### Next executable slice
 
-1. Finish both LeafGreen 36000-frame UI runs from the accepted post-rival state.
-   The independent route performs a genuine new in-game save and then recorded
-   movement in Pallet Town. Its local configuration is
-   `target/m6-leafgreen-2026-11-20/long.properties`; paused complete-state,
-   slot/focus/recreation, captured-output and retained-heap checks remain strict.
-2. Finish each battery-only cold replay through Continue to the party screen,
-   with no emulator slot load. Verify the new saved generation, Bulbasaur L6 /
-   204 XP / 22 HP, lab/rival progress and exact UI/cold-oracle frames and state.
-   The older original legacy input must remain unchanged.
-3. Match the 120-frame long-route continuation on isolated actual CLDC classes,
-   record both repetitions and close M6 only within its stated host scope.
+1. Extend the existing 6000-frame F-Zero race-entry route into an actual finish
+   and result. Reuse [the recorded prefix](../benchmarks/inputs/fzero-race-2026-11-06.tsv)
+   and [its accepted checkpoints](../benchmarks/gameplay-state-routes-2026-11-06.json).
+   Record ordinary steering/acceleration, named lap/finish checkpoints and full
+   output; race entry alone does not complete this objective.
+2. Verify a 120-frame RGB/PCM/full-state continuation from the result on host
+   and isolated actual CLDC classes. Keep any visible blocker and its bounded
+   reproducer in the linked evidence, without reopening unrelated timing sweeps.
+3. Continue the remaining M7 objectives in order: Tony Hawk 2 timed run with
+   trick/score, Doom II first exit, Mario & Luigi battle/save/cold Continue.
    Keep detailed results in linked JSON rather than a second status guide.
+
+[LeafGreen M6 evidence](../benchmarks/leafgreen-reliability-2026-11-20.json)
+closes the three-game host pack. Each of its two 36000-frame runs preserves all
+twenty complete checkpoints, RGB/PCM and a 120-frame actual-CLDC continuation.
+Both perform a genuine new in-game save, advancing generation 5 to 6, then cold
+boot their own committed battery through Continue to Bulbasaur L6 / 204 XP /
+22 HP. No emulator state is loaded during cold boot; the older generation-3
+legacy input stays unchanged. Both cold endpoints and a separate battery-only
+replay match byte-for-byte, including a 120-frame full-state CLDC continuation.
+Sampled post-warmup retained-heap spreads are 63512 and 1048368 bytes, within the
+declared 8 MiB bound. This is host reliability evidence, separate from M8.
 
 Sonic's two 36000-frame hub routes now match all twenty complete checkpoints,
 RGB/PCM streams and the shared 120-frame CLDC continuation. Each performs 21
@@ -71,10 +80,10 @@ one controller recreation. Complete committed states, RGB/PCM and the final
 Post-warmup retained heap stays within about 66 KB in each run, with exactly two
 sidecar generations per slot. Host adapters and their temporary graphics buffers
 are included; these measurements do not establish a device heap budget. This
-field route reaches no new in-game save, so it does not accept battery-progress
-cold reload or the entire three-game M6 pack.
+field route reaches no new in-game save, so battery-progress cold reload is not
+claimed for this slice. LeafGreen supplies M6's new-save cold-Continue coverage.
 
-M6 proceeds one game at a time so a concrete failure is actionable before
+M7 proceeds one game at a time so a concrete failure is actionable before
 expanding coverage. A failing slice produces a named reproducer and a focused correction;
 finish that correction before extending the pack. Avoid unmeasured optimizations
 and broad package refactors. New scenarios belong in their feature's host tooling;
@@ -94,8 +103,9 @@ Rewind, link play, encrypted cheats and new sensor work remain deferred.
 | **M3 — Phone frontend acceptance** | The implemented settings and save features work together during play. | Complete the interaction matrix below through application commands; preferences survive restart, cancellation/failures preserve the running game and committed saves, and input never remains stuck. Exercise state formats 1/2 loading and current-format saving. | **Host accepted, 2026-11-19.** [Complete matrix and playback/lifecycle checks](../benchmarks/phone-playback-acceptance-2026-11-19.json), [library/startup and slots](../benchmarks/phone-library-slots-acceptance-2026-11-19.json), [controls](../benchmarks/phone-controls-acceptance-2026-11-19.json) and [cheats](../benchmarks/phone-cheats-acceptance-2026-11-19.json) pass. All six combined UI journeys and existing regression suites pass together. Native BBOS qualification remains separate. |
 | **M4 — Playback baseline and measured optimization** | Establish where time and audio continuity are lost in playable scenes. | Reproducible profiles for the three M2 scenes at 1×, full sound and frame skip off: guest work, allocations/GC, queue bounds and produced/consumed PCM. Measure presentation/audio where the environment supports them. Fix one demonstrated bottleneck if needed and compare the same workload/output before and after. | **Host baseline accepted, 2026-11-19.** [Three-scene results, raw repetitions and rejected experiments](../benchmarks/playback-baseline-2026-11-19.json); [reproduction commands](SCENARIOS.md#paced-playback-profiles). RGB/PCM/full states remain exact, queue maximum 1/2, no capture-buffer losses. Two read-path experiments establish no consistent useful gain and are reverted. Sustained target qualification remains open. |
 | **M5 — Reviewed phone preview** | A reviewed, installable phone preview with explicit limits. | M1–M4 accepted in their stated scope; host/export/SDK/actual-CLDC checks pass; the approved numeric version is tagged and the phone ZIP contains raw COD siblings, JAD/ALX, instructions, provenance and checksums. | **Published, 2026-11-19.** [0.9.1 preview](https://github.com/pitrecki/berryboy-advance/releases/tag/v0.9.1), tag `v0.9.1`, commit `3ae037c`. [Release verification](../benchmarks/release-0.9.1-2026-11-19.json) retains the public checksum and manifest. [Candidate evidence](../benchmarks/phone-preview-candidate-2026-11-19.json) remains the pre-release checkpoint. Native runtime/performance acceptance is M8. |
+| **M6 — Long-session durability** | Play and repeatedly save/resume without losing progress or accumulating stuck input/output work. | Two active 36000-frame routes per game at 1×, full sound and no skips; all five slots, at least 20 writes and 10 restores, focus/controller recreation, exact checkpoints and 120-frame RGB/PCM/full-state host/actual-CLDC continuations. Preserve a committed battery through cold reload where the route reaches a new in-game save. Record bounded output, sampled retained heap and capture counts. | **Host accepted, 2026-11-20.** [Golden Sun field/slots](../benchmarks/golden-sun-reliability-2026-11-20.json), [Sonic hub/autosave/slots](../benchmarks/sonic-reliability-2026-11-20.json) and [LeafGreen new-save/cold Continue plus the complete acceptance matrix](../benchmarks/leafgreen-reliability-2026-11-20.json). All six runs pass. Golden Sun/Sonic reach no new in-game save command in these windows; their new-save cold Continue is not claimed. Physical transport and phone speed remain M8. |
 
-M1–M4 are host milestones, with separate isolated CLDC portability checks.
+M1–M4 and M6 are host milestones, with separate isolated CLDC portability checks.
 M5 is the approved preview publication, not a claim of full game accuracy or
 physical phone qualification. Their detailed evidence stays linked above.
 
