@@ -73,6 +73,31 @@ class CartridgeBackupTest {
         assertThat(restored.dirty()).isFalse();
     }
 
+    @ParameterizedTest
+    @ValueSource(ints = {CartridgeBackup.EEPROM_512, CartridgeBackup.EEPROM_8K})
+    void eepromReadAcceptsHighTrailingBitAndKeepsTheFullResponse(int type) {
+        var b = new CartridgeBackup(type);
+        int bits = type == CartridgeBackup.EEPROM_512 ? 6 : 14;
+        byte[] payload = {0, (byte) 0xef, 0, 0x40, 0, 4, 1, 0x13};
+        serialPrefix(b, false, 3, bits);
+        for (byte value : payload) for (int i = 7; i >= 0; i--) b.writeSerial((value >>> i) & 1);
+        b.writeSerial(0);
+        b.markSaved();
+
+        // The driver's extra clock has a high data bit. It is not a new
+        // command and must not discard the pending block-three response.
+        serialPrefix(b, true, 3, bits);
+        b.writeSerial(1);
+        for (int i = 0; i < 4; i++) assertThat(b.readSerial()).isZero();
+        for (byte value : payload) {
+            int actual = 0;
+            for (int i = 0; i < 8; i++) actual = (actual << 1) | b.readSerial();
+            assertThat(actual).isEqualTo(value & 255);
+        }
+        assertThat(b.readSerial()).isEqualTo(1);
+        assertThat(b.dirty()).isFalse();
+    }
+
     @Test
     void sizeMismatchDoesNotDestroyExistingSaveAndSnapshotsDoNotAliasStorage() {
         var b = new CartridgeBackup(CartridgeBackup.SRAM);

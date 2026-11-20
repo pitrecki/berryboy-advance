@@ -98,7 +98,9 @@ public final class CartridgeBackup {
         var read = serial[1] == 1;
         var expected = 2 + addressBits + (read ? 0 : 64) + 1;
         if (serialCount < expected) return;
-        if (serial[expected - 1] != 0) { serialCount = 0; return; }
+        // Consume the trailing clock regardless of its data bit. EEPROM drivers
+        // can leave it high (Mario & Luigi does on readback); rejecting it loses
+        // the response and turns a successful write into a verification failure.
         int block = 0;
         for (var i = 2; i < 2 + addressBits; i++) block = (block << 1) | serial[i];
         var address = (block * 8) & (data.length - 1);
