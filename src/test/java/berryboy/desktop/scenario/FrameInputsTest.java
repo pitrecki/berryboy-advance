@@ -14,6 +14,19 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 class FrameInputsTest {
+    @Test
+    void deliversValidatedBoundariesToIndependentUiAdaptersWithoutTouchingAGuest() {
+        var recording = FrameInputs.parse(bytes("0 0\n1 64\n3 0\n"));
+        var first = new java.util.ArrayList<Integer>(); var second = new java.util.ArrayList<Integer>();
+        var a = recording.playbackTo(first::add); var b = recording.playbackTo(second::add);
+        assertThat(first).isEmpty();
+        for (int frame = 0; frame <= 4; frame++) a.afterFrame(frame);
+        assertThat(first).containsExactly(0,64,0); assertThat(second).isEmpty();
+        b.afterFrame(0); b.afterFrame(1);
+        assertThat(second).containsExactly(0,64);
+        assertThatThrownBy(() -> recording.playbackTo(null)).isInstanceOf(NullPointerException.class);
+    }
+
     @ParameterizedTest
     @ValueSource(strings = {"-1 0", "2147483648 0", "0 -1", "0 1024", "0 nope", "0", "0 0 0",
             "1 0\n1 1", "2 0\n1 0"})

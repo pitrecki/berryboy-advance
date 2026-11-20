@@ -1,6 +1,6 @@
 # Current status and roadmap
 
-Updated **2026-11-19**, for **0.9.1**. Latest published phone preview:
+Updated **2026-11-20**, for **0.9.2-SNAPSHOT**. Latest published phone preview:
 [**0.9.1**](https://github.com/pitrecki/berryboy-advance/releases/tag/v0.9.1).
 
 **M1–M5 complete within their recorded host/preview scope. Next: M6 — long-session durability.**
@@ -42,7 +42,7 @@ matrices support a milestone; they do not complete it by themselves.
 ### Next executable slice
 
 1. Extend the accepted Golden Sun battle/field route into one active 36000-frame
-   session, with named interaction checkpoints and recorded frame controls.
+   session, with named movement checkpoints and recorded frame controls.
    Use disposable battery data and existing externally supplied assets.
 2. Drive slot rotation, restore, pause and focus changes through the production
    application controller at recorded boundaries. Compare owned committed states;
@@ -107,9 +107,9 @@ performance remain explicit target checks; host doubles do not pass them.
 
 ## Current validation
 
-- **5295 host tests**, **4973 exported-core tests** and **4973 tests against the
+- **5304 host tests**, **4973 exported-core tests** and **4973 tests against the
   actual new ECJ/CLDC classes** pass without failures or skips. Native JDE 7.1 /
-  ECJ 4.6.1 / RAPC builds the released 0.9.1 COD. Host: Linux x86_64,
+  ECJ 4.6.1 / RAPC builds the 0.9.2 development COD. Host: Linux x86_64,
   Temurin 21.0.8, Maven 3.9.11.
 - [0.9.1 release verification](../benchmarks/release-0.9.1-2026-11-19.json)
   records the successful publication workflow and downloaded public ZIP. Its

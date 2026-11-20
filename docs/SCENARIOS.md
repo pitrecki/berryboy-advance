@@ -39,6 +39,57 @@ the Linux core plus headless scaling/PCM/checksum sink. They do not measure a
 physical display, audio transport or Bold FPS. The sink receives owned copies;
 live guest buffers never cross threads.
 
+## Phone long-session reliability
+
+`tools/phone-reliability.sh` exercises the production phone controller, session,
+renderer, mixer and storage using the existing host platform adapters. First
+compile with `mvn verify`. Each invocation freezes its host/adapter classes in
+a fresh sibling `-classes` directory; source/class hashes accompany the output.
+The reusable 640×480 host display surface avoids allocating a screenshot buffer
+for every frame. ROM, BIOS, battery data and machine states remain local.
+
+Provide a local Java-properties file with absolute Linux paths for `rom`, `bios`,
+`state`, `frame_input` and each corresponding `_sha256`. Also set:
+
+```properties
+frames=36000
+checkpoint_interval=1800
+oracle=/absolute/path/to/target/reliability-oracle
+hardware=Actual host CPU, quota, memory and headless adapter description
+```
+
+Use 1..108000 frames with 6..60 evenly spaced checkpoints. The input uses the
+existing `after_guest_frame keys` format and absolute guest frames from the
+starting state. Keys must be released at each checkpoint and on the following
+resumed frame, matching the application's pause/load input policy. The same
+validated input parser delivers UI buttons and independent replay controls.
+
+```sh
+tools/phone-reliability.sh prepare /path/to/scene.properties target/reliability-oracle
+tools/phone-reliability.sh run /path/to/scene.properties target/reliability-ui-1
+tools/phone-reliability.sh run /path/to/scene.properties target/reliability-ui-2
+```
+
+Preparation completes the independent single-owner replay and writes expected
+RGB/PCM hashes and complete checkpoint states before the UI experiment. Runs
+use 1×, 100% unmuted stereo and no frame skips. One owned RGB/PCM frame gates
+the unchanged guest owner; UI button changes finish before its release. Each
+checkpoint rotates slots, compares complete committed bytes, alternates loads
+and exercises focus; halfway through, recreate the controller and verify all
+committed slots. The initial external snapshot and bootstrap frames are setup,
+separate from the measured route. The final 120-frame UI continuation compares
+every RGB/PCM buffer and the complete future state with an independent clone.
+
+Paused checkpoints request completed host GC. Report retained heap, exclude the
+first five warmup checkpoints and require the remaining spread to stay within
+the declared 8 MiB bound. This is sampled retained memory including host tools,
+not peak allocation or a phone heap budget. The output records gate bounds,
+all operation counts and the original legacy-save hash. A route that never
+reaches a new in-game save does not qualify battery-progress cold reload.
+Separate JVM repetitions may run concurrently for reliability; do not treat
+their elapsed times as isolated performance results. These adapters do not
+measure native file permissions, physical presentation or MMAPI transport.
+
 ## Local configuration
 
 Create an ignored `benchmarks/games.local.json`, mapping the five identifiers in

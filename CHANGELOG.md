@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.9.2-SNAPSHOT — unreleased
+
+- Add finite phone-session reliability replay with owned RGB/PCM capture,
+  repeated slot operations, controller recreation and paused retained-heap checks.
+  Keep native BBOS and physical playback qualification separate.
+- Release destroyed application displays in the host platform adapter so long
+  session measurements do not retain closed test applications.
+
 ## 0.9.1 — 2026-11-19 (preview)
 
 - Add reproducible Golden Sun battle/field, Sonic Act 1 clear and LeafGreen

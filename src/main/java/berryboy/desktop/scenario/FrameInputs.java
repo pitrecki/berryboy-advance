@@ -5,6 +5,7 @@ import berryboy.input.Keypad;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.IntConsumer;
 
 /** Host button changes between completed frames; never adds events to the guest clock. */
 public final class FrameInputs {
@@ -35,15 +36,17 @@ public final class FrameInputs {
 
     public int firstFrame() { return events.isEmpty() ? -1 : events.getFirst().frame(); }
     public int lastFrame() { return events.isEmpty() ? -1 : events.getLast().frame(); }
-    public Playback playback(Machine machine) { return new Playback(machine); }
+    public Playback playback(Machine machine) { return playbackTo(machine.memory::setPressedKeys); }
+    /** Deliver the same validated recording to an owning host/UI input adapter. */
+    public Playback playbackTo(IntConsumer keys) { return new Playback(java.util.Objects.requireNonNull(keys)); }
 
     /** One cursor per deterministic guest owner; parsing and construction never change the guest. */
     public final class Playback {
-        private final Machine machine;
+        private final IntConsumer keys;
         private int index;
         private int previous = -1;
 
-        private Playback(Machine machine) { this.machine = machine; }
+        private Playback(IntConsumer keys) { this.keys = keys; }
 
         /** Call just before executing frame completedFrame+1, after any cycle-input prefix. */
         public void afterFrame(int completedFrame) {
@@ -53,7 +56,7 @@ public final class FrameInputs {
             }
             previous = completedFrame;
             if (index < events.size() && events.get(index).frame() == completedFrame) {
-                machine.memory.setPressedKeys(events.get(index++).keys());
+                keys.accept(events.get(index++).keys());
             }
         }
     }
