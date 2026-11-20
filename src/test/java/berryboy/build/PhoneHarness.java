@@ -13,10 +13,17 @@ public final class PhoneHarness {
     public static int compileUi(Path root, Path output) throws Exception {
         return compile(root, output, true, true);
     }
+    /** A focused worker fixture can control completion ordering without a live guest. */
+    public static int compileUi(Path root, Path output, Path sessionFixture) throws Exception {
+        return compile(root, output, true, true, sessionFixture);
+    }
     public static void main(String[] args) throws Exception {
         if (args.length != 2 || compileUi(Path.of(args[0]), Path.of(args[1])) != 0) throw new IllegalStateException("UI harness compilation failed");
     }
     private static int compile(Path root, Path output, boolean session, boolean ui) throws Exception {
+        return compile(root,output,session,ui,null);
+    }
+    private static int compile(Path root, Path output, boolean session, boolean ui, Path sessionFixture) throws Exception {
         Files.createDirectories(output);
         var args = new ArrayList<String>();
         args.addAll(java.util.List.of("--release", "21", "-cp", root.resolve("target/classes").toString(), "-d", output.toString()));
@@ -27,7 +34,7 @@ public final class PhoneHarness {
         }
         for (var name : new String[]{"PhoneFiles", "PhoneRecords", "PhoneStorage"}) args.add(root.resolve("platform/midp/berryboy/phone/" + name + ".java").toString());
         for (var name : new String[]{"FileUrls", "FilePicker"}) args.add(root.resolve("platform/midp/berryboy/phone/library/" + name + ".java").toString());
-        if (session) args.add(root.resolve("platform/midp/berryboy/phone/PhoneSession.java").toString());
+        if (session) args.add((sessionFixture==null ? root.resolve("platform/midp/berryboy/phone/PhoneSession.java") : sessionFixture).toString());
         if (ui) {
             try (var sources = Files.walk(root.resolve("src/test/fixtures/phone-ui"))) {
                 sources.filter(p -> p.toString().endsWith(".java")).forEach(p -> args.add(p.toString()));

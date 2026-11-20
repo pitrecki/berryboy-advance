@@ -421,10 +421,13 @@ public final class PhoneCanvas extends Canvas implements CommandListener {
         form.append(explanation); form.addCommand(yes); form.addCommand(back);
         form.setCommandListener(new CommandListener() {
             public void commandAction(Command command, Displayable source) {
-                display.setCurrent(PhoneCanvas.this);
-                if (command == yes) {
-                    if (session.requestForGame(operation, slot, generation)) message("Working...");
-                    else message("Game changed or an operation is in progress");
+                synchronized (PhoneCanvas.this) {
+                    // Publish acknowledgement before the owner can publish completion.
+                    display.setCurrent(PhoneCanvas.this);
+                    if (command == yes) {
+                        if (session.requestForGame(operation, slot, generation)) message("Working...");
+                        else message("Game changed or an operation is in progress");
+                    }
                 }
             }
         });
