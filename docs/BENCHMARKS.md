@@ -45,10 +45,14 @@ matrices support a milestone; they do not complete it by themselves.
 1. Extend Doom II's supplied `A9DE` first-level route to an actual exit and
    intermission/result. Reuse [its recorded startup controls](../benchmarks/inputs/doom-entry-2026-11-06.tsv)
    and [the existing state-continuation evidence](../benchmarks/gameplay-state-routes-2026-11-06.json).
-   The fresh local seed is `target/m7-doom-2026-11-20/seed-state/state.bbs`
-   at frame 2400; exploratory actions/captures stay under its `play` directory.
-   Use ordinary movement, fire/use and the in-game map; level entry alone does
-   not complete this objective.
+   [The new navigation preparation](../benchmarks/doom-navigation-preparation-2026-11-20.json)
+   resumes at frame **6198**, from
+   `target/m7-doom-2026-11-20/navigation-state/state.bbs`, with released controls
+   and the map off. Its full state and nine named captures match cold replay;
+   120-frame RGB/PCM/full-state continuation also matches actual CLDC classes.
+   The explored eastern branch currently ends at a wall. Inspect the open route
+   from this junction using normal view/map before extending the recording.
+   The first exit/result remains open; this checkpoint does not accept it.
 2. Preserve named gameplay/result checkpoints, complete RGB/PCM and capture
    accounting; verify a 120-frame RGB/PCM/full-state continuation on host and
    isolated actual CLDC classes. A concrete blocker gets a bounded reproducer.

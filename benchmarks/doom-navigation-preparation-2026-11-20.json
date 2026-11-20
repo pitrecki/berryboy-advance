@@ -1,0 +1,199 @@
+{
+  "date": "2026-11-20",
+  "version": "0.9.2-SNAPSHOT",
+  "milestone": "M7 / Doom II preparation",
+  "status": "Preparation checkpoint verified; first-level exit/result NOT accepted.",
+  "source_commit": "559617c92914f98c237eeac8977021c433a7dc99",
+  "source_dirty": false,
+  "runtime_tool_baseline": "f2701dc35a55faa6696d663d7e384d9c362b1759",
+  "scope": "Headless cold gameplay/checkpoint continuation on Linux, including actual SDK ECJ/CLDC classes. A navigation preparation, not a completed level, phone frontend session or physical playback test.",
+  "hardware": "Linux x86_64; AMD EPYC 9V74; four-core CPU quota; 32 GiB; Temurin 21.0.8+9; concurrent correctness replays, not isolated performance measurements.",
+  "inputs": {
+    "input": {
+      "file": "benchmarks/inputs/doom-entry-2026-11-06.tsv",
+      "sha256": "62ae23d5fefa6ac388138b0ebe6e84293cb3d0c48df772db4d7f77561957b5e1"
+    },
+    "frame_input": {
+      "file": "benchmarks/inputs/doom-navigation-preparation.tsv",
+      "sha256": "bf31287260ed3500e2af10c4a926f10f75d507811ab9b78d6b57d0eddb6fbece",
+      "events": 98
+    }
+  },
+  "procedure": {
+    "cold_frames": 6198,
+    "initial_state": null,
+    "initial_battery": null,
+    "speed": 1,
+    "frame_skip": 0,
+    "sound": "Unmuted stereo PCM16, 32768 Hz",
+    "ownership": "One deterministic guest owner per JVM; capture snapshots are owned and bounded by worker capacity 2.",
+    "input_discovery": "Ordinary controls and map inspection. Supplementary read-only inspection loads owned state copies; guest RAM, ROM and saves are never edited. Reproduction needs only frozen inputs and the repository replay tools."
+  },
+  "checkpoints": {
+    "2400": {
+      "name": "Initial first-level seed",
+      "rgb_sha256": "00656d6246ea215c76d2901320dd711a0471ddd887d98aab716a5425cf2b3031",
+      "png_sha256": "38dde3e873e1ab043a8f8de87977aceb0a47dabf54449fcfb204e2a257ea66df",
+      "matches_exploration": true
+    },
+    "2496": {
+      "name": "In-game map opened",
+      "rgb_sha256": "db8a4178a1988a66cba2a2a0e90083cabe9a6ed2b42991c48e2c89e27a67bdd6",
+      "png_sha256": "56767962bb04c519baead8a052edc33394887fd85652b6371157f1fce2f21c38",
+      "matches_exploration": true
+    },
+    "2837": {
+      "name": "Movement and firing in the starting room",
+      "rgb_sha256": "26dd3b0d7c560ff1131669ed6e74c271750f107f1543c31ce385cb90da2dbdc9",
+      "png_sha256": "a805fdbd0bf319373f709aabe485190dd67b07eca7f0c7230fc2fd5a984d75c3",
+      "matches_exploration": true
+    },
+    "3275": {
+      "name": "Starting-room map after navigation",
+      "rgb_sha256": "1c01aa53b7b07389d85df10100fee5bbcdd8e22c84f2e09b0917dc1007cd4556",
+      "png_sha256": "bdeacc4ceaf9eec69ad38f28d815e4362c7ed7e3fca77a5f63efd9f16ff40897",
+      "matches_exploration": true
+    },
+    "4351": {
+      "name": "Normal view before shoulder-strafe alignment",
+      "rgb_sha256": "8d2de95f1025f1307e8623b9ac1fc9ba1dcb845f9f9697d57bdbf279c8cbbffc",
+      "png_sha256": "02c306a03451269cee90efe7e0d2a53b479b0a15efc0f721abaff1993db27ec4",
+      "matches_exploration": true
+    },
+    "4909": {
+      "name": "Beyond the starting room in the northern corridor",
+      "rgb_sha256": "cb156e5b8023f2c2d0d3770557967b3f5d9cc82800c72bb07df17e190c85734f",
+      "png_sha256": "dc321fe2f2820e4dfe9a64fe013448a347fe19c728f6f01651012ad3bd9d727e",
+      "matches_exploration": true
+    },
+    "5594": {
+      "name": "Eastern passage on the map",
+      "rgb_sha256": "167cec51673ca2faf6d0994b9636fa110ca99f9a7aa1922483779dcb54df4365",
+      "png_sha256": "b79d7056fc786a4d11e64213ca5705addeb2c149ea75aee9460b8946cb987164",
+      "matches_exploration": true
+    },
+    "5642": {
+      "name": "Health bonus collected in the eastern passage",
+      "rgb_sha256": "3e14668bd6eba9d8b815f9c9e14fac2465cfdad6fc4c9920397c53814d04faa3",
+      "png_sha256": "be9f7e619035065138ab4cb21bdb5fd6448f32e7fdb60744fd68f7fd69cf92bd",
+      "matches_exploration": true
+    },
+    "6198": {
+      "name": "Released-input checkpoint at the explored eastern branch",
+      "rgb_sha256": "82e006322dbf060c4e67345a32b99ac50dc0f151f77399dc3bb92c92c3256afd",
+      "png_sha256": "7560af839010b94137017a5f60b0173fabf96c15b4c6e796cc6068561fbcba99",
+      "matches_exploration": true
+    }
+  },
+  "observed": {
+    "progress": "Walked beyond the starting room into the north/east passage; fired the pistol and collected ammunition/health bonuses.",
+    "exit_reached": false,
+    "intermission_observed": false,
+    "endpoint": "Released controls, map off; facing a wall at the end of the currently explored branch. Further route planning is required.",
+    "controls": "Supplementary in-game Control Setup, config 1, labels A as Run/Activate, B as Attack, Select as Map and L/R as strafing. Holding L on the map changes scale; its map behavior must not be treated as normal-view strafing.",
+    "control_setup_png_sha256": "9520ab813d6c78f569196aefbe9c59fddf73c976716ad50f365a42c2068a8faf",
+    "control_setup_scope": "Inspected after the accepted checkpoint, without remapping. This supplementary menu capture is outside the recorded preparation route.",
+    "next_action": "Inspect the open branch from this junction in normal view and map; retain the first actual exit/intermission. Do not repeatedly move forward into the same wall or open a broad core timing investigation without a concrete reproducer."
+  },
+  "capture": {
+    "raw_report_sha256": "55b664c85d6222dd0f7a879ca0ed2ab3463c8cb330ba7587e4e153e205b2d461",
+    "report": {
+      "status": "captured",
+      "correctness": "unverified",
+      "qualification": "headless-only; physical presentation and playback unverified",
+      "rom_sha256": "2a4c00510638659b6b207a7d2aa51cbd17bbad9a63f42bc2dc01c121eb83cf95",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "62ae23d5fefa6ac388138b0ebe6e84293cb3d0c48df772db4d7f77561957b5e1",
+      "rtc_seed": "2000-01-01T00:00:00",
+      "frame_input_sha256": "bf31287260ed3500e2af10c4a926f10f75d507811ab9b78d6b57d0eddb6fbece",
+      "initial_save_sha256": null,
+      "backup_sha256": "c958d25958f00db95c8c8928f4f92b19e1a3199c9b3547d574701f5a180d8a40",
+      "backup_type": 3,
+      "backup_bytes": 512,
+      "save_written": false,
+      "devices": 0,
+      "rumble_active": false,
+      "commit": "559617c92914f98c237eeac8977021c433a7dc99",
+      "source_dirty": "false",
+      "frames": 6198,
+      "warmup_frames": 0,
+      "guest_cycles": 1740993411,
+      "audio_frames": 3400377,
+      "audio_overruns": 0,
+      "audio_underruns": 0,
+      "produced_audio_frames": 3400377,
+      "consumed_audio_frames": 3400377,
+      "dropped_guest_frames": 0,
+      "video_sha256": "df109b9ff0b10a17bc7fe44c9537db868f1f5478d63f15f4bc85149c3ae03d74",
+      "audio_sha256": "f99e37991c1bb681565cc2591de2ab3d7f6b304fe5bc999f2ec16a940db92f39",
+      "work_p50_ns": 12864388,
+      "work_p95_ns": 25346601,
+      "work_p99_ns": 34370054,
+      "work_max_ns": 63428487,
+      "work_deadline_misses": 1610,
+      "physically_presented_frames": null,
+      "physical_audio_underruns": null,
+      "java": "21.0.8+9-LTS",
+      "os": "Linux",
+      "architecture": "amd64",
+      "hardware": "Linux x86_64 host; deterministic Doom II navigation checkpoint, no exit or physical playback qualification",
+      "os_version": "6.18.57"
+    }
+  },
+  "host_state_replay": {
+    "raw_report_sha256": "2676379ee14b3757ad49733fb433495ffd791c728a944d6cdf8d86177a5c70ac",
+    "report": {
+      "title": "DOOM II",
+      "rom_sha256": "2a4c00510638659b6b207a7d2aa51cbd17bbad9a63f42bc2dc01c121eb83cf95",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "62ae23d5fefa6ac388138b0ebe6e84293cb3d0c48df772db4d7f77561957b5e1",
+      "initial_save_sha256": null,
+      "frame_input_sha256": "bf31287260ed3500e2af10c4a926f10f75d507811ab9b78d6b57d0eddb6fbece",
+      "snapshot_frame": 6198,
+      "snapshot_cycles": 1740993411,
+      "resumed_frames": 120,
+      "resumed_audio_frames": 65835,
+      "state_bytes": 773755,
+      "state_sha256": "5ffcb68fbef08efce473ef6235f7810351453a4e30a39a20ad8fb6b6e1fe63f3",
+      "final_state_sha256": "8459a89cecdff643034b85f7c4ad12596c30f0e9673995c48c6a126a83f7d74f",
+      "immediate_and_future_full_state_exact": true,
+      "all_resumed_rgb_pcm_exact": true,
+      "original_save_unchanged": true,
+      "scope": "Host core save/load replay, not independent game accuracy or physical phone validation"
+    },
+    "complete_state_matches_exploration": true
+  },
+  "actual_cldc_continuation": {
+    "frames": 120,
+    "rgb_pcm_and_complete_future_state_exact": true,
+    "rgb_chain_sha256": "3009db84d2ebf12780b673a8a4a550360bdd3d904e03f360b0e8efc2a8a2b0c2",
+    "pcm_sha256": "e902ea093c77feba899e8478f5b095ba5888485efeb1b7a8a03c70d901aa41fc",
+    "final_state_sha256": "8459a89cecdff643034b85f7c4ad12596c30f0e9673995c48c6a126a83f7d74f",
+    "audio_frames": 65835,
+    "raw_report_sha256": "5927b1c3a46ea3497a78c25c77bd46eff791d650c5e3eb617b411d8665340967",
+    "scope": "Actual ECJ/CLDC core/mobile classes first on classpath; desktop-only profile helpers from the verified M6 bundle. No host core fallback."
+  },
+  "independent_reference": {
+    "evidence": "benchmarks/gameplay-state-routes-2026-11-06.json",
+    "scope": "Earlier strict reference mismatches remain recorded. No new independent accuracy acceptance is claimed for this navigation route."
+  },
+  "validation": {
+    "source_runtime_and_replay_tools_unchanged": true,
+    "suite_evidence": "benchmarks/leafgreen-reliability-2026-11-20.json",
+    "host_tests": 5308,
+    "exported_core_tests": 4973,
+    "actual_cldc_tests": 4973
+  },
+  "local_artifacts": "target/m7-doom-2026-11-20",
+  "resume": {
+    "state": "target/m7-doom-2026-11-20/navigation-state/state.bbs",
+    "frame": 6198,
+    "state_sha256": "5ffcb68fbef08efce473ef6235f7810351453a4e30a39a20ad8fb6b6e1fe63f3",
+    "scenario": "target/m7-doom-2026-11-20/navigation.properties"
+  },
+  "remaining": [
+    "Reach Doom II first-level exit/intermission and verify its continuation.",
+    "Mario & Luigi first battle victory, in-game save and cold progress reload.",
+    "Native BBOS / physical Bold qualification remains M8."
+  ]
+}
