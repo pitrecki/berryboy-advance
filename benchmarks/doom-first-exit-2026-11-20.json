@@ -1,0 +1,264 @@
+{
+  "date": "2026-11-20",
+  "version": "0.9.2-SNAPSHOT",
+  "milestone": "M7 / Doom II first-level objective",
+  "status": "Accepted on host: activate the first level exit and retain the Entryway Finished intermission.",
+  "source_commit": "511c8c40ebfa8c360e1a4d1c8f04d42f936cc582",
+  "source_dirty": false,
+  "runtime_tool_baseline": "f2701dc35a55faa6696d663d7e384d9c362b1759",
+  "source_provenance": "Verified immutable modern core/tool bundle from f2701dc; production and replay-tool sources unchanged at 511c8c4. Acceptance uses repository ScenarioRunner/StateRoundTrip and frozen recorded controls.",
+  "scope": "Headless core gameplay plus deterministic host/actual-CLDC continuation on Linux. Separate from the phone frontend, BBOS execution, physical display/audio and independent full-game accuracy.",
+  "hardware": {
+    "host": "Linux x86_64; AMD EPYC 9V74 80-Core Processor",
+    "cpu_quota": "400000/100000 = four cores",
+    "memory_max_bytes": 34359738368,
+    "java": "Temurin 21.0.8+9",
+    "scheduling": "Concurrent correctness replays; wall times are not isolated performance results."
+  },
+  "inputs": {
+    "input": {
+      "file": "benchmarks/inputs/doom-entry-2026-11-06.tsv",
+      "sha256": "62ae23d5fefa6ac388138b0ebe6e84293cb3d0c48df772db4d7f77561957b5e1"
+    },
+    "frame_input": {
+      "file": "benchmarks/inputs/doom-first-exit.tsv",
+      "sha256": "67968dbc7d71fdbd18253b67b4bdb84b93d57451a2d2a216f0bb1c1cb9c766be",
+      "events": 132
+    }
+  },
+  "preparation": {
+    "evidence": "benchmarks/doom-navigation-preparation-2026-11-20.json",
+    "frame": 6198,
+    "state_sha256": "5ffcb68fbef08efce473ef6235f7810351453a4e30a39a20ad8fb6b6e1fe63f3",
+    "navigation_aid": "Owned saved-state geometry was read to plan ordinary controls, including a type-11 exit segment at x=2624..2688, y=3584. The acceptance replay starts from BIOS reset and requires no inspection helper or geometry data. No RAM/ROM/save edits, cheats or teleportation.",
+    "path": "Return from the eastern alcove to the horizontal corridor; move south into the central room, approach the marked EXIT door, open it and activate the exit-room switch."
+  },
+  "procedure": {
+    "cold_frames": 7809,
+    "guest_seconds": 130.74379348754883,
+    "initial_state": null,
+    "initial_battery": null,
+    "speed": 1,
+    "frame_skip": 0,
+    "sound": "Unmuted stereo PCM16 at 32768 Hz",
+    "controls": "Ordinary movement, strafing, firing, activation and map. All controls released after frame 7329 and remain released through snapshot/future continuation.",
+    "ownership": "One deterministic guest owner per JVM; bounded capture worker capacity 2 consumes owned RGB/PCM snapshots.",
+    "complete_state": "Entire final state is byte-identical to the selected exploratory route. Capture stays enabled across loads; no state normalization, masking or capture-ring reset."
+  },
+  "outcome": {
+    "level": "Entryway",
+    "exit_activated": true,
+    "displayed_result": "ENTRYWAY FINISHED",
+    "displayed_time": "1:27",
+    "displayed_par": "1:30",
+    "kills_percent": 11,
+    "items_percent": 52,
+    "secrets_percent": 0,
+    "continuation_prompt": "PRESS START TO CONTINUE",
+    "acceptance": "The marked door is approached and opened, then the exit switch is activated. Intermission displays the level name, Finished, counters, time and par. Acceptance is based on this observed transition, not inferred position alone.",
+    "progression_scope": "One completed level. This does not claim all kills/items/secrets, a full game clear, an in-game save cold Continue or target-device qualification."
+  },
+  "checkpoints": {
+    "2400": {
+      "name": "First-level seed",
+      "rgb_sha256": "00656d6246ea215c76d2901320dd711a0471ddd887d98aab716a5425cf2b3031",
+      "png_sha256": "38dde3e873e1ab043a8f8de87977aceb0a47dabf54449fcfb204e2a257ea66df",
+      "matches_exploration": true,
+      "guest_cycles": 674150401
+    },
+    "3275": {
+      "name": "Starting-room map",
+      "rgb_sha256": "1c01aa53b7b07389d85df10100fee5bbcdd8e22c84f2e09b0917dc1007cd4556",
+      "png_sha256": "bdeacc4ceaf9eec69ad38f28d815e4362c7ed7e3fca77a5f63efd9f16ff40897",
+      "matches_exploration": true,
+      "guest_cycles": 919934400
+    },
+    "4909": {
+      "name": "Northern corridor beyond the starting room",
+      "rgb_sha256": "cb156e5b8023f2c2d0d3770557967b3f5d9cc82800c72bb07df17e190c85734f",
+      "png_sha256": "dc321fe2f2820e4dfe9a64fe013448a347fe19c728f6f01651012ad3bd9d727e",
+      "matches_exploration": true,
+      "guest_cycles": 1378918464
+    },
+    "6198": {
+      "name": "Previously accepted eastern-branch checkpoint",
+      "rgb_sha256": "82e006322dbf060c4e67345a32b99ac50dc0f151f77399dc3bb92c92c3256afd",
+      "png_sha256": "7560af839010b94137017a5f60b0173fabf96c15b4c6e796cc6068561fbcba99",
+      "matches_exploration": true,
+      "guest_cycles": 1740993411
+    },
+    "6672": {
+      "name": "Aligned with the corridor to the central room",
+      "rgb_sha256": "1977c876d869c6e53b8c7ce24e2a1b1685fc437cd2a11c05baf176477dd7e39b",
+      "png_sha256": "08366b372f59d663639aa4f85c68c9249a8b6638ce15c82b98e4dc53340b6a69",
+      "matches_exploration": true,
+      "guest_cycles": 1874138113
+    },
+    "6860": {
+      "name": "Central room reached",
+      "rgb_sha256": "a02006f5d255cff40670a1e44fe9b60fdbe3e6e5b7bdb1493d2446f1edaefb2f",
+      "png_sha256": "97a356f072675cbce38c619a3b5ca83f37a987680245f4ce93fc5b82f90d5570",
+      "matches_exploration": true,
+      "guest_cycles": 1926946560
+    },
+    "7098": {
+      "name": "EXIT sign and door visible",
+      "rgb_sha256": "7e27009b984926bfcedf6e139be287fdc5d8179092f2f6deafe464f0020e6978",
+      "png_sha256": "30a7f3d17b07283eede56735f45c1bbc333b146f9f5d2fff6b0430ead518931f",
+      "matches_exploration": true,
+      "guest_cycles": 1993799808
+    },
+    "7136": {
+      "name": "Approach to EXIT door",
+      "rgb_sha256": "f9cf5ad59d62f1d2e80deada96b176043d19faad77487d1a93caa9e3ff747d04",
+      "png_sha256": "1134ddc502d7dfa442d26af86f6d22ba6c7633be6f23cd0ced470e441ab75ed3",
+      "matches_exploration": true,
+      "guest_cycles": 2004473857
+    },
+    "7317": {
+      "name": "Inside exit room, before activating its switch",
+      "rgb_sha256": "37b51915930fcb4fd612a599ff0468a0bde30fea023f9e413e99f0222acb0293",
+      "png_sha256": "7814d5954d2e13d5701c5faf1c044706791119fdbeb0f454b43df1dd2a7ebaab",
+      "matches_exploration": true,
+      "guest_cycles": 2055316033
+    },
+    "7509": {
+      "name": "Entryway Finished intermission begins",
+      "rgb_sha256": "c0118de9e7361705d9016a40b87a4280a3deb6731106aa8823f651b471ec4e9c",
+      "png_sha256": "2c36fc5ffc6b01c7c0d89e7b74fa3567691b2db3b6efe3899c5f97dba09ce23a",
+      "matches_exploration": true,
+      "guest_cycles": 2109248064
+    },
+    "7809": {
+      "name": "Completed intermission counters and released controls",
+      "rgb_sha256": "890ecdc6e659a413b9effc7fbbf4c33a7b511942b45dc8eaf1ea68e8541cafba",
+      "png_sha256": "a933503cc5019e11ddd4f23cf11bddc110aa82e67d20d1cbe412a271f06d1b12",
+      "matches_exploration": true,
+      "guest_cycles": 2193516864
+    }
+  },
+  "capture": {
+    "raw_report_sha256": "3dc202b44d26649245762c0728d9b3448f990a37eec74e1276a55b0e9f8df047",
+    "frames_jsonl_sha256": "010bea326aa9c39632d7ba09eadf4a5cd04a3e5d78079a80ec116c91303e6749",
+    "report": {
+      "status": "captured",
+      "correctness": "unverified",
+      "qualification": "headless-only; physical presentation and playback unverified",
+      "rom_sha256": "2a4c00510638659b6b207a7d2aa51cbd17bbad9a63f42bc2dc01c121eb83cf95",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "62ae23d5fefa6ac388138b0ebe6e84293cb3d0c48df772db4d7f77561957b5e1",
+      "rtc_seed": "2000-01-01T00:00:00",
+      "frame_input_sha256": "67968dbc7d71fdbd18253b67b4bdb84b93d57451a2d2a216f0bb1c1cb9c766be",
+      "initial_save_sha256": null,
+      "backup_sha256": "c958d25958f00db95c8c8928f4f92b19e1a3199c9b3547d574701f5a180d8a40",
+      "backup_type": 3,
+      "backup_bytes": 512,
+      "save_written": false,
+      "devices": 0,
+      "rumble_active": false,
+      "commit": "511c8c40ebfa8c360e1a4d1c8f04d42f936cc582",
+      "source_dirty": "false",
+      "frames": 7809,
+      "warmup_frames": 0,
+      "guest_cycles": 2193516864,
+      "audio_frames": 4284212,
+      "audio_overruns": 0,
+      "audio_underruns": 0,
+      "produced_audio_frames": 4284212,
+      "consumed_audio_frames": 4284212,
+      "dropped_guest_frames": 0,
+      "video_sha256": "9a2673b83efe659195697ff778c872a48c0fb6f8008ae4aaffc1dd3c21a08dba",
+      "audio_sha256": "129870c41f0b6a5978946b63e779deef624e590c462cf2b593f2f25ded2d1cf3",
+      "work_p50_ns": 13781249,
+      "work_p95_ns": 30117351,
+      "work_p99_ns": 41915932,
+      "work_max_ns": 72619594,
+      "work_deadline_misses": 2880,
+      "physically_presented_frames": null,
+      "physical_audio_underruns": null,
+      "java": "21.0.8+9-LTS",
+      "os": "Linux",
+      "architecture": "amd64",
+      "hardware": "Linux x86_64 host; deterministic Entryway exit route, no phone playback or physical performance claim",
+      "os_version": "6.18.57"
+    }
+  },
+  "host_state_replay": {
+    "raw_report_sha256": "fb59acc3dbf988bacf41139b28e874d2f7c2585f7829420da4080a6b4c78f13e",
+    "report": {
+      "title": "DOOM II",
+      "rom_sha256": "2a4c00510638659b6b207a7d2aa51cbd17bbad9a63f42bc2dc01c121eb83cf95",
+      "bios_sha256": "fd2547724b505f487e6dcb29ec2ecff3af35a841a77ab2e85fd87350abd36570",
+      "input_sha256": "62ae23d5fefa6ac388138b0ebe6e84293cb3d0c48df772db4d7f77561957b5e1",
+      "initial_save_sha256": null,
+      "frame_input_sha256": "67968dbc7d71fdbd18253b67b4bdb84b93d57451a2d2a216f0bb1c1cb9c766be",
+      "snapshot_frame": 7809,
+      "snapshot_cycles": 2193516864,
+      "resumed_frames": 120,
+      "resumed_audio_frames": 65835,
+      "state_bytes": 773767,
+      "state_sha256": "b901943493c4b2846918aadd1974edda79823285ed43151e4cce7a4672cc0b42",
+      "final_state_sha256": "daaba237b863fe9cde9d22b83e09347fc374b23e2a9cd53026bc4f6ae8af1a31",
+      "immediate_and_future_full_state_exact": true,
+      "all_resumed_rgb_pcm_exact": true,
+      "original_save_unchanged": true,
+      "scope": "Host core save/load replay, not independent game accuracy or physical phone validation"
+    },
+    "complete_state_matches_exploration": true
+  },
+  "actual_cldc_continuation": {
+    "frames": 120,
+    "rgb_pcm_and_complete_future_state_exact": true,
+    "rgb_chain_sha256": "c0c027fb8d259aff7acc7dee2e3c3ac68b40a606d66eb44add9d0367ff5726c2",
+    "pcm_sha256": "06fd7f4dcd233d4cde722f2afff008105d6b0acfbb7e008fa25fd7db496a2846",
+    "final_state_sha256": "daaba237b863fe9cde9d22b83e09347fc374b23e2a9cd53026bc4f6ae8af1a31",
+    "audio_frames": 65835,
+    "raw_report_sha256": "64b95dd1dbeff5295a2699d0bb4602822b0616dc9c93d4ba8060613dc4a0f297",
+    "helper_manifest": {
+      "berryboy/desktop/profile/ProfileMetrics.class": "2b0d6697024c7a2d670aa247775f64e5169f7fd3470d365fcf4772851d809c66",
+      "berryboy/desktop/profile/ProfileOutput.class": "ab6111ca35ddea8dc0af44c87d5dab5c892d82c83b9dd4a355a760b001905778",
+      "berryboy/desktop/profile/ProfileRecordingSummary.class": "4b0a34c2b9a97f4277ee30fc5d71b03f8bc841eb3ddc124d639893e89aafb083",
+      "berryboy/desktop/profile/PlaybackProfiler.class": "b1170d5b39059885d240df433fd95e07d5d7791ee2489a3aaa4262b9b9233f3c",
+      "berryboy/desktop/profile/ProfileOutput$Frame.class": "1d5ee079bede9700c797aba887142f9adb060702144270c1ede7a025f1ab9c1c",
+      "berryboy/desktop/concurrent/BoundedWorker$Statistics.class": "fe5b9f8978244d4d7756769f4f969e83d9e52852ea89b10248922bd155623c9c",
+      "berryboy/desktop/concurrent/BoundedWorker$Processor.class": "34aac560b9ddffd800177298f509ccc33a287ecc39b7c64e1455989b25d2548c",
+      "berryboy/desktop/concurrent/BoundedWorker.class": "9ff1ae2feb3b5904f82bfa56035ad42ee21be49a6875c54ded09b1b05cd8eaa5",
+      "berryboy/desktop/scenario/FrameInputs$Input.class": "cc8be4458f5219e255967174371668e6ff0f930c55e148c537ac4f2e3bc42707",
+      "berryboy/desktop/scenario/FrameInputs$Playback.class": "f7bb157ead074d3e4ed0582ee610acbe58319117ff43b054291e06e905686eda",
+      "berryboy/desktop/scenario/FrameInputs.class": "f4d83d4f34cec3d856e60cde5eaedec664f8cf2bb84a13409903b081fd55c7a6",
+      "berryboy/desktop/capture/JsonReport.class": "d3fe5c1f2eaabf1abc7f86eead49e4806ebd114a3c391019eff50eda5d90c593"
+    },
+    "sdk_class_count": 84,
+    "sdk_classes_sha256": "ff8d23881776d8db647e4df05134ad8a23ead290c97557f3cef81b75a4bed7e6",
+    "scope": "Actual ECJ/CLDC core/mobile classes first on classpath; isolated desktop-only profile helpers, no host core fallback. The earlier preparation separately retains a dynamic 120-frame continuation from frame 6198."
+  },
+  "independent_reference": {
+    "evidence": "benchmarks/stress-games-2026-11-06.json",
+    "frames": 2400,
+    "exact_rgb_frames": 1495,
+    "first_rgb_mismatch": 10,
+    "all_rgb_exact": false,
+    "pcm_exact": false,
+    "berryboy_audio_frames": 1316700,
+    "reference_audio_frames": 1316700,
+    "berryboy_pcm_sha256": "1f620c5212c596f424a50dbab13492642b53411755605dee01d988099d24da90",
+    "reference_pcm_sha256": "fe8dd48bd059d0fbd48985b397fa35a63b048eb9009816c1a986b06fd7ab5d1b",
+    "scope": "Only the first 2400 frames share controls with the retained old mGBA capture. New controls start after that frame; no independent complete-exit reference exists.",
+    "status": "mismatch; retained without tolerance or suppression"
+  },
+  "validation": {
+    "host_tests": 5308,
+    "exported_core_tests": 4973,
+    "actual_cldc_tests": 4973,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite_evidence": "benchmarks/leafgreen-reliability-2026-11-20.json",
+    "source_change": "Recorded input, measured evidence and canonical roadmap only. Runtime and replay sources unchanged since the full verified suite."
+  },
+  "local_artifacts": "target/m7-doom-exit-2026-11-20",
+  "remaining": [
+    "Mario & Luigi first battle victory, in-game save and cold progress reload.",
+    "Native BBOS and physical Bold qualification remain M8."
+  ]
+}
