@@ -27,7 +27,8 @@ public final class RunPhoneReliability {
         var assets=Files.createDirectory(out.resolve("local-files"));var rom=assets.resolve("game.gba");var bios=assets.resolve("bios.bin");
         Files.write(rom,c.rom());Files.write(bios,c.bios());
         var legacy=assets.resolve("game.sav");
-        Files.write(legacy,MachineState.load(c.rom(),c.bios(),c.state()).memory.backup().snapshot());
+        Files.write(legacy,c.values().containsKey("legacy_save")?c.verified("legacy_save")
+                :MachineState.load(c.rom(),c.bios(),c.state()).memory.backup().snapshot());
         var legacyHash=ReliabilityConfig.hash(Files.readAllBytes(legacy));
         var options=new PhoneOptions();options.setVolume(100);
         var settings=RecordStore.openRecordStore("berryboy-options",true);var encoded=options.encode();settings.addRecord(encoded,0,encoded.length);settings.closeRecordStore();
@@ -91,6 +92,7 @@ public final class RunPhoneReliability {
             if(minimum==Long.MAX_VALUE||maximum-minimum>HEAP_SPREAD_LIMIT)throw new IllegalStateException("Retained heap did not remain within the declared checkpoint bound");
             Files.write(states.resolve("final.bbs"),lastState);
             var continuation=continuation(phone,c,lastState,states);
+            var cold=c.values().containsKey("cold_frame_input")?ColdBatteryReplay.run(phone,c,out):null;
             if(!legacyHash.equals(ReliabilityConfig.hash(Files.readAllBytes(legacy))))throw new IllegalStateException("Original legacy save changed");
             var report=new LinkedHashMap<String,Object>();report.put("source_commit",args[2]);report.put("source_dirty",args[3]);
             report.put("scope","Production phone UI/session/storage/rendering/mixer with headless LCDUI/filesystem/RMS/PCM adapters; no native BBOS or physical transport/performance qualification");
@@ -100,12 +102,13 @@ public final class RunPhoneReliability {
             for(var key:new String[]{"rom_sha256","bios_sha256","state_sha256","frame_input_sha256"})report.put(key,c.values().getProperty(key));
             report.put("frames",result.frames());report.put("audio_frames",result.audioFrames());report.put("rgb_chain_sha256",result.rgbChainSha256());report.put("pcm_sha256",result.pcmSha256());
             report.put("start_frame",first);report.put("end_frame",first+c.frames());report.put("speed",1);report.put("frame_skip",0);report.put("sound","100 percent stereo, unmuted");
-            report.put("writes",writes+1);report.put("loads",loads+reopens+1);report.put("checkpoint_writes",writes);report.put("checkpoint_loads",loads);
-            report.put("all_slots_exercised",Arrays.stream(slotHashes).allMatch(s->s!=null));report.put("focus_cycles",focus);report.put("controller_recreations",reopens);
+            report.put("writes",writes+1+(cold==null?0:1));report.put("loads",loads+reopens+1);report.put("checkpoint_writes",writes);report.put("checkpoint_loads",loads);
+            report.put("all_slots_exercised",Arrays.stream(slotHashes).allMatch(s->s!=null));report.put("focus_cycles",focus);report.put("controller_recreations",reopens+(cold==null?0:1));
             report.put("audio_overruns",0);report.put("audio_underruns",0);
-            report.put("legacy_battery_unchanged",true);report.put("in_game_battery_progress_cold_reload",false);
+            report.put("legacy_battery_unchanged",true);report.put("cold_battery_replay_verified",cold!=null);report.put("cold_battery_replay",cold);
+            report.put("legacy_battery_sha256",legacyHash);
             report.put("committed_battery_checkpoints",batteryChecks);report.put("committed_battery_sha256",committedBatteryHash);
-            report.put("battery_scope","Legacy input bytes are preserved; pending battery writes are compared byte-for-byte with independent successful-checkpoint receipts, including controller recreation. Game-level cold Continue is a separate check.");
+            report.put("battery_scope","Legacy input bytes are preserved; pending battery writes are compared byte-for-byte with independent successful-checkpoint receipts. Optional battery-only cold boot is verified separately; game-level checkpoint acceptance belongs to the scenario evidence.");
             report.put("frame_gate_capacity",1);report.put("pcm_gate_capacity",1);report.put("no_pending_output_at_paused_checkpoints",true);
             report.put("retained_heap_min_bytes",minimum);report.put("retained_heap_max_bytes",maximum);report.put("retained_heap_spread_limit_bytes",HEAP_SPREAD_LIMIT);
             report.put("heap_scope","Explicit completed host GC at paused equivalent checkpoints; first five checkpoints excluded from bound. Includes runner and platform adapters. Sampled retained heap, not peak allocation or a physical-device heap claim.");

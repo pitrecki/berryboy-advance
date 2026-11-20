@@ -11,6 +11,9 @@
   session measurements do not retain closed test applications.
 - Preserve completion status after confirmed restart/slot overwrite when the
   worker finishes quickly; publish the acknowledgement before its completion.
+- Verify fresh phone-controller startup from committed battery sidecars without
+  loading an emulator slot; retain older legacy inputs and compare every cold
+  boot/game frame, PCM packet and complete endpoint state.
 
 ## 0.9.1 — 2026-11-19 (preview)
 

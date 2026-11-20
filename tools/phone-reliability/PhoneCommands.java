@@ -23,10 +23,10 @@ final class PhoneCommands implements AutoCloseable {
         this.rom=rom; this.bios=bios; checksum=new Cartridge(cartridge).checksum();
         try{openPaused();}catch(Exception error){try{close();}catch(Exception cleanup){error.addSuppressed(cleanup);}throw error;}
     }
-    private void openPaused() throws Exception {
+    private FrameGate.Frame openPaused() throws Exception {
         ui=new UiHarness(); attach();
         ui.select("Open game"); ui.text(0,rom.toUri().toASCIIString()); ui.text(1,bios.toUri().toASCIIString());
-        ui.command("Start game"); await(); pause(); gate.close(); attach();
+        ui.command("Start game"); var bootstrap=await(); pause(); gate.close(); attach(); return bootstrap;
     }
     private void attach() {
         gate=new FrameGate();
@@ -75,6 +75,8 @@ final class PhoneCommands implements AutoCloseable {
     byte[] backup() throws Exception { return ui.readBackup(rom.toUri().toASCIIString(),checksum); }
     void focusCycle() throws Exception { ui.canvas.suspend(); idle(); ui.canvas.open(); }
     void reopen(int slot) throws Exception { close(); openPaused(); load(slot); }
+    /** Fresh application/BIOS boot from committed battery data; never loads an emulator slot. */
+    FrameGate.Frame coldReopen() throws Exception { close(); return openPaused(); }
     int pendingAudio() { return gate.pendingAudioPackets(); }
     int queuedFrames() { return gate.queuedFrames(); }
     private berryboy.mobile.ui.PhoneScreen screen() {

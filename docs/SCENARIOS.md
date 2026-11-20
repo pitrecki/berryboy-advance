@@ -97,6 +97,26 @@ Separate JVM repetitions may run concurrently for reliability; do not treat
 their elapsed times as isolated performance results. These adapters do not
 measure native file permissions, physical presentation or MMAPI transport.
 
+For a cold battery-only continuation, add `cold_frame_input`, its `_sha256` and
+`cold_frames` (2..7000) to the local properties. Controls use a fresh zero-based
+guest timeline and must release every button for boot, the first resumed frame
+and the endpoint. The run requires an actual committed battery sidecar, closes
+the application, starts a fresh BIOS/game session and executes those controls
+without loading an emulator slot. Every boot/game RGB/PCM frame and the final
+owned state must match an independent machine initialized only from the
+committed battery. The read-only continuation must preserve that payload.
+`cold-endpoint.png`, `cold-state.bbs` and `committed-battery.sav` remain local;
+the scenario evidence must identify the observed game-level progress.
+
+Optional `legacy_save` and `legacy_save_sha256` supply an older read-only input
+instead of using the initial machine snapshot's battery bytes. This exercises
+the application's preference for its new committed sidecar over the old `.sav`.
+The original copied input must remain unchanged. A requested cold replay with
+no committed sidecar fails, rather than accepting the older input as new progress.
+Cold operation/frame counters are reported separately from the long route;
+retained-heap bounds cover the paused long-route checkpoints, before the
+independent cold-replay clone is created.
+
 ## Local configuration
 
 Create an ignored `benchmarks/games.local.json`, mapping the five identifiers in
