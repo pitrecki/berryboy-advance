@@ -3,7 +3,7 @@
 Updated **2026-11-20**, for **0.9.2-SNAPSHOT**. Latest published phone preview:
 [**0.9.1**](https://github.com/pitrecki/berryboy-advance/releases/tag/v0.9.1).
 
-**M1–M5 complete within their recorded host/preview scope. Next: M6 — long-session durability.**
+**M1–M5 complete within their recorded host/preview scope. M6 in progress: Golden Sun field/slot reliability accepted on host.**
 Use the supplied games and existing frontend. New CPU/DMA/VRAM investigations
 need a demonstrated milestone blocker or an explicit user priority.
 
@@ -35,25 +35,39 @@ matrices support a milestone; they do not complete it by themselves.
 
 | Priority / milestone | User-visible result | Acceptance and evidence | Dependency / status |
 | --- | --- | --- | --- |
-| **1. M6 — Long-session durability** | Keep playing and repeatedly save/resume without losing progress or accumulating stuck input/output work. | Golden Sun, Sonic and LeafGreen each have an active 36000-frame route (~10 minutes at native refresh), 1×, full sound and no presentation skips. Exercise all five slots with at least 20 completed writes and 10 restores per title, plus pause/focus/resume and controller recreation. Retain recorded controls and exact checkpoints, preserve a committed battery save through cold reload where the route reaches one, and compare a 120-frame RGB/PCM/full-state continuation on host and actual CLDC classes. Record queue bounds, retained heap after equivalent checkpoints and captured sample counts; retained memory must reach a repeatable bound rather than grow with elapsed frames. | **Next executable work.** Existing ROMs, BIOS, M2 routes and frontend adapters are sufficient. Headless reliability does not establish physical transport continuity or phone speed. |
+| **1. M6 — Long-session durability** | Keep playing and repeatedly save/resume without losing progress or accumulating stuck input/output work. | Golden Sun, Sonic and LeafGreen each have an active 36000-frame route (~10 minutes at native refresh), 1×, full sound and no presentation skips. Exercise all five slots with at least 20 completed writes and 10 restores per title, plus pause/focus/resume and controller recreation. Retain recorded controls and exact checkpoints, preserve a committed battery save through cold reload where the route reaches one, and compare a 120-frame RGB/PCM/full-state continuation on host and actual CLDC classes. Record queue bounds, retained heap after equivalent checkpoints and captured sample counts; retained memory must reach a repeatable bound rather than grow with elapsed frames. | **Golden Sun field/slot slice accepted, 2026-11-20.** [Two complete UI repetitions, exact checkpoints/continuations and retained-heap results](../benchmarks/golden-sun-reliability-2026-11-20.json). Sonic, LeafGreen and applicable battery-progress cold reload remain open. Existing assets/adapters are sufficient; physical transport and phone speed remain M8. |
 | **2. M7 — Demanding-game progression pack** | Demonstrate actual progression beyond the existing intro/control checkpoints in supplied action and 3D-heavy games. | F-Zero: finish one race and show its result. Tony Hawk 2: complete a timed run with a recorded trick and score. Doom II: reach the first level's exit/result. Mario & Luigi: win the first battle, reach an in-game save and cold-load the progress. Each route retains input, named checkpoints, complete frames, capture-buffer accounting and exact state continuation on host/CLDC. Keep strict reference mismatches visible. | **Planned after the first M6 slice.** Reuse the supplied four ROMs and existing startup/race/house/level-entry routes. A visible blocker warrants one bounded diagnosis; it does not reopen a broad timing sweep. |
 | **Parallel. M8 — Native BBOS session and device playback** | Install the package, open a supplied game and use the implemented controls, audio and saves on the target. | Install → open → choose local BIOS/ROM → boot → play → pause/save/load → close/reopen. Verify native input/focus, file permissions and MMAPI. Separately on a Bold 9900, run the sustained suite: 30-second warmup, three 10-minute runs, full sound, no frame skips, native refresh, bounded memory/queues and measured transport losses/latency/A/V drift. | **Blocked on a working BBOS target; physical performance also needs a Bold.** The existing simulator attempt did not confirm app execution. Retry environment work only with new evidence; this gate does not block M6/M7 host work. |
 
 ### Next executable slice
 
-1. Extend the accepted Golden Sun battle/field route into one active 36000-frame
-   session, with named movement checkpoints and recorded frame controls.
-   Use disposable battery data and existing externally supplied assets.
-2. Drive slot rotation, restore, pause and focus changes through the production
-   application controller at recorded boundaries. Compare owned committed states;
-   keep every guest mutation on its existing deterministic owner.
-3. Repeat the route and account for captures, queues and retained memory. Accept
-   its exact 120-frame host/CLDC continuation, then apply the same bounded
-   reliability procedure to Sonic and LeafGreen. Store detailed results in JSON
-   linked here; do not add another parallel Markdown status guide.
+1. Prepare Sonic's long route from its accepted M2 Act 1 result: use ordinary
+   recorded controls to enter the next playable section and retain named
+   checkpoints. Account for the game's timer; a result screen, timeout or
+   unattended game-over loop is not the active-route goal.
+2. Repeat the validated route through the phone reliability harness with the
+   same slot/focus/recreation checks and exact host/CLDC continuations. A first
+   differing checkpoint is a bounded reproducer: distinguish frontend save
+   flush/lifecycle semantics from guest emulation before changing the core.
+3. Apply the procedure to LeafGreen from its recorded post-rival progress and
+   include a genuine in-game save followed by cold Continue. Verify game-level
+   progress and original input-file preservation alongside slot continuity.
+   Keep detailed results in linked JSON rather than a second status guide.
 
-M6 starts with one game so a concrete failure is actionable before expanding
-coverage. A failing slice produces a named reproducer and a focused correction;
+The Golden Sun slice uses repeated recorded Up/Down field movement after its
+accepted M2 first battle. Each of two independent UI runs completes 36000 frames
+(~10 minutes of guest time), 20 rotating checkpoint writes plus one continuation
+write, 10 checkpoint loads plus initial/recreation loads, five focus cycles and
+one controller recreation. Complete committed states, RGB/PCM and the final
+120-frame continuation agree with independent replay and actual CLDC classes.
+Post-warmup retained heap stays within about 66 KB in each run, with exactly two
+sidecar generations per slot. Host adapters and their temporary graphics buffers
+are included; these measurements do not establish a device heap budget. This
+field route reaches no new in-game save, so it does not accept battery-progress
+cold reload or the entire three-game M6 pack.
+
+M6 proceeds one game at a time so a concrete failure is actionable before
+expanding coverage. A failing slice produces a named reproducer and a focused correction;
 finish that correction before extending the pack. Avoid unmeasured optimizations
 and broad package refactors. New scenarios belong in their feature's host tooling;
 production fixes stay with the feature that owns the behavior.
